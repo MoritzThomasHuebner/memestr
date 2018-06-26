@@ -25,7 +25,7 @@ psi = 2.659
 geocent_time = 1126259642.413
 
 start_time = -0.5
-end_time = 0.029
+end_time = 0.01 # 0.029
 
 outdir = 'outdir'
 label = 'test'
@@ -64,7 +64,7 @@ for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23'
             'inc', 'pol', 'ra', 'dec', 'geocent_time', 'psi']:
     priors[key] = injection_parameters[key]
 priors['total_mass'] = tupak.prior.Uniform(minimum=50, maximum=70)
-priors['luminosity_distance'] = tupak.prior.Uniform(minimum=1500, maximum=2500)
+priors['luminosity_distance'] = tupak.prior.Uniform(minimum=1800, maximum=2100)
 
 likelihood = tupak.GravitationalWaveTransient(interferometers=IFOs, waveform_generator=waveform_generator,
                                               time_marginalization=False, phase_marginalization=False,
