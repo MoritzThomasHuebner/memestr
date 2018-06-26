@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import tupak
 import matplotlib.pyplot as plt
-from core import waveform_functions
+import core.waveforms
 
 mass_ratio = 2
 name = 'memester'
@@ -49,7 +49,7 @@ waveform_generator = tupak.WaveformGenerator(time_duration=time_duration,
                                              time_domain_nr_sur_waveform_without_memory,
                                              parameters=injection_parameters,
                                              waveform_arguments=dict(LMax=LMax))
-waveform_generator.time_array = time_array
+waveform_generator.time_array = time_array.copy()
 waveform_generator.frequency_array = frequency_array
 hf_signal = waveform_generator.frequency_domain_strain()
 test_strain_signal = waveform_generator.time_domain_strain()
