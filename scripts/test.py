@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import tupak
 import matplotlib.pyplot as plt
-import core.waveforms
+import core.waveforms as waveforms
 
 mass_ratio = 2
 name = 'memester'
@@ -28,7 +28,7 @@ start_time = -0.5
 end_time = 0.029
 
 outdir = 'outdir'
-label = 'test_2'
+label = 'test'
 
 tupak.core.utils.setup_logger(outdir=outdir, label=label)
 time_array = np.linspace(start_time, end_time, 1000)
@@ -45,7 +45,7 @@ injection_parameters = dict(total_mass=total_mass, mass_ratio=mass_ratio, s11=s1
 
 waveform_generator = tupak.WaveformGenerator(time_duration=time_duration,
                                              sampling_frequency=sampling_frequency,
-                                             time_domain_source_model=waveform_functions.
+                                             time_domain_source_model=waveforms.
                                              time_domain_nr_sur_waveform_without_memory,
                                              parameters=injection_parameters,
                                              waveform_arguments=dict(LMax=LMax))
