@@ -60,9 +60,9 @@ priors = dict()
 for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23', 'luminosity_distance',
             'inc', 'pol', 'ra', 'dec', 'geocent_time', 'psi']:
     priors[key] = injection_parameters[key]
-priors['total_mass'] = tupak.prior.Uniform(minimum=50, maximum=70)
-priors['luminosity_distance'] = tupak.prior.Uniform(minimum=400, maximum=600)
-priors['inc'] = tupak.prior.Uniform(minimum=0, maximum=np.pi)
+priors['total_mass'] = tupak.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
+priors['luminosity_distance'] = tupak.prior.Uniform(minimum=400, maximum=600, latex_label="$L_{D}$")
+priors['inc'] = tupak.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$inc$")
 
 likelihood = tupak.GravitationalWaveTransient(interferometers=IFOs, waveform_generator=waveform_generator,
                                               time_marginalization=False, phase_marginalization=False,
