@@ -25,7 +25,7 @@ psi = 2.659
 geocent_time = 1126259642.413
 
 starting_time = -0.5
-end_time = 0.01 # 0.029
+end_time = 0.01  # 0.029
 
 time_duration = end_time - starting_time
 sampling_frequency = 2000
@@ -34,11 +34,6 @@ outdir = 'outdir'
 label = 'test'
 
 tupak.core.utils.setup_logger(outdir=outdir, label=label)
-# time_array = np.linspace(starting_time, end_time, 1000)
-# time_duration = time_array[-1] - time_array[0]
-# sampling_frequency = tupak.utils.get_sampling_frequency(time_array)
-# frequency_array = tupak.utils.create_frequency_series(sampling_frequency=sampling_frequency,
-#                                                       duration=time_duration)
 
 np.random.seed(88170235)
 
@@ -53,8 +48,6 @@ waveform_generator = tupak.WaveformGenerator(time_duration=time_duration,
                                              time_domain_nr_sur_waveform_without_memory,
                                              parameters=injection_parameters,
                                              waveform_arguments=dict(LMax=LMax))
-# waveform_generator.time_array = time_array.copy()
-# waveform_generator.frequency_array = frequency_array
 hf_signal = waveform_generator.frequency_domain_strain()
 test_strain_signal = waveform_generator.time_domain_strain()
 plt.plot(waveform_generator.time_array, test_strain_signal['plus'])
