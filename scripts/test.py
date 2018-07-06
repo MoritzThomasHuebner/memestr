@@ -4,7 +4,7 @@ import tupak
 import matplotlib.pyplot as plt
 import core.waveforms as waveforms
 
-mass_ratio = 2
+mass_ratio = 1.5
 name = 'memester'
 total_mass = 60
 S1 = np.array([0.8, 0, 0])
@@ -61,6 +61,7 @@ for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23'
             'inc', 'pol', 'ra', 'dec', 'geocent_time', 'psi']:
     priors[key] = injection_parameters[key]
 priors['total_mass'] = tupak.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
+priors['mass_ratio'] = tupak.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
 priors['luminosity_distance'] = tupak.prior.Uniform(minimum=400, maximum=600, latex_label="$L_{D}$")
 priors['inc'] = tupak.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$inc$")
 
