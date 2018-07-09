@@ -24,10 +24,10 @@ dec = -1.2108
 psi = 2.659
 geocent_time = 1126259642.413
 
-starting_time = -0.5
+start_time = -0.5
 end_time = 0.01  # 0.029
 
-time_duration = end_time - starting_time
+duration = end_time - start_time
 sampling_frequency = 2000
 
 outdir = 'outdir'
@@ -43,7 +43,7 @@ injection_parameters = dict(total_mass=total_mass, mass_ratio=mass_ratio, s11=s1
 
 waveform_generator = tupak.WaveformGenerator(duration=duration,
                                              sampling_frequency=sampling_frequency,
-                                             starting_time=starting_time,
+                                             start_time=start_time,
                                              time_domain_source_model=waveforms.
                                              time_domain_nr_sur_waveform_without_memory,
                                              parameters=injection_parameters,
@@ -54,7 +54,7 @@ plt.plot(waveform_generator.time_array, test_strain_signal['plus'])
 plt.show()
 IFOs = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
     name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, time_duration=time_duration,
-    sampling_frequency=sampling_frequency, start_time=starting_time, outdir=outdir) for name in ['H1', 'L1']]
+    sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir) for name in ['H1', 'L1']]
 
 priors = dict()
 for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23', 'luminosity_distance',
