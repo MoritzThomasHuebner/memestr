@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import tupak
 import matplotlib.pyplot as plt
-import core.waveforms as waveforms
+import memestr.core.waveforms as waveforms
 
 mass_ratio = 1.5
 name = 'memester'
