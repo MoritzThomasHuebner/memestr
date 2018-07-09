@@ -53,7 +53,7 @@ test_strain_signal = waveform_generator.time_domain_strain()
 plt.plot(waveform_generator.time_array, test_strain_signal['plus'])
 plt.show()
 IFOs = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
-    name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, time_duration=time_duration,
+    name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, duration=duration,
     sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir) for name in ['H1', 'L1']]
 
 priors = dict()
