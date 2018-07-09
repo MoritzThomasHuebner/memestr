@@ -41,7 +41,7 @@ injection_parameters = dict(total_mass=total_mass, mass_ratio=mass_ratio, s11=s1
                             s22=s22, s23=s23, luminosity_distance=luminosity_distance, inc=inc, pol=pol,
                             psi=psi, geocent_time=geocent_time, ra=ra, dec=dec, LMax=LMax)
 
-waveform_generator = tupak.WaveformGenerator(time_duration=time_duration,
+waveform_generator = tupak.WaveformGenerator(duration=duration,
                                              sampling_frequency=sampling_frequency,
                                              starting_time=starting_time,
                                              time_domain_source_model=waveforms.
