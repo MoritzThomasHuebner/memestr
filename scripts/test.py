@@ -19,8 +19,8 @@ LMax = 3
 luminosity_distance = 500.
 inc = np.pi / 2
 pol = 0
-ra = 1.375
-dec = -1.2108
+ra = 50.
+dec = 30.
 psi = 2.659
 geocent_time = 1126259642.413
 
@@ -30,7 +30,7 @@ end_time = 0.01  # 0.029
 duration = end_time - start_time
 sampling_frequency = 2000
 
-outdir = 'outdir'
+outdir = 'outdir_2'
 label = 'test'
 
 tupak.core.utils.setup_logger(outdir=outdir, label=label)
@@ -62,8 +62,11 @@ for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23'
     priors[key] = injection_parameters[key]
 priors['total_mass'] = tupak.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
 priors['mass_ratio'] = tupak.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-priors['luminosity_distance'] = tupak.prior.Uniform(minimum=400, maximum=600, latex_label="$L_{D}$")
-priors['inc'] = tupak.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$inc$")
+priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e2, maximum=5e3, latex_label="$L_D$")
+# priors['inc'] = tupak.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$inc$") #Inclination of source
+priors['ra'] = tupak.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
+priors['dec'] = tupak.prior.Cosine(name='dec', latex_label="$DEC$")
+priors['psi'] = tupak.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
 
 likelihood = tupak.GravitationalWaveTransient(interferometers=IFOs, waveform_generator=waveform_generator,
                                               time_marginalization=False, phase_marginalization=False,
