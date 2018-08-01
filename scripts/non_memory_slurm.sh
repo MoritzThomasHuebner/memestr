@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-#SBATCH --job-name=test
-#SBATCH --output=res.txt
+#SBATCH --job-name=non_memory_inference
+#SBATCH --output=non_memory_inference.txt
 #
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
