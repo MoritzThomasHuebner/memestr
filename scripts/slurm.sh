@@ -8,4 +8,5 @@
 #SBATCH --time=24:00:00
 #SBATCH --mem-per-cpu=500
 
-srun python ./memory_injection_recovery.py
+PYTHON_FILE=$1
+srun python $PYTHON_FILE
