@@ -2,7 +2,7 @@ import numpy as np
 import tupak
 
 
-def run_basic_injection(source_model, outdir):
+def run_basic_injection(injection_model, recovery_model, outdir):
     mass_ratio = 1.5
     total_mass = 60
     S1 = np.array([0, 0, 0])
@@ -34,13 +34,14 @@ def run_basic_injection(source_model, outdir):
     waveform_generator = tupak.WaveformGenerator(duration=duration,
                                                  sampling_frequency=sampling_frequency,
                                                  start_time=start_time,
-                                                 time_domain_source_model=source_model,
+                                                 time_domain_source_model=injection_model,
                                                  parameters=injection_parameters,
                                                  waveform_arguments=dict(LMax=LMax))
     hf_signal = waveform_generator.frequency_domain_strain()
-    IFOs = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
+    ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, duration=duration,
         sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir) for name in ['H1', 'L1']]
+    waveform_generator.time_domain_source_model = recovery_model
     priors = dict()
     for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23', 'luminosity_distance',
                 'inc', 'pol', 'ra', 'dec', 'geocent_time', 'psi']:
@@ -52,7 +53,7 @@ def run_basic_injection(source_model, outdir):
     # priors['ra'] = tupak.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
     # priors['dec'] = tupak.prior.Cosine(name='dec', latex_label="$DEC$")
     # priors['psi'] = tupak.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    likelihood = tupak.GravitationalWaveTransient(interferometers=IFOs,
+    likelihood = tupak.GravitationalWaveTransient(interferometers=ifos,
                                                   waveform_generator=waveform_generator,
                                                   prior=priors)
     result = tupak.run_sampler(likelihood=likelihood, priors=priors, sampler='dynesty', npoints=300,
