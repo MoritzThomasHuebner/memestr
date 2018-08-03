@@ -3,6 +3,7 @@ import tupak
 
 
 def run_basic_injection(injection_model, recovery_model, outdir):
+    print('1')
     mass_ratio = 1.5
     total_mass = 60
     S1 = np.array([0, 0, 0])
@@ -27,6 +28,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     sampling_frequency = 2000
     label = 'test'
     tupak.core.utils.setup_logger(outdir=outdir, label=label)
+    print('2')
     np.random.seed(88170235)
     injection_parameters = dict(total_mass=total_mass, mass_ratio=mass_ratio, s11=s11, s12=s12, s13=s13, s21=s21,
                                 s22=s22, s23=s23, luminosity_distance=luminosity_distance, inc=inc, pol=pol,
@@ -37,11 +39,14 @@ def run_basic_injection(injection_model, recovery_model, outdir):
                                                     time_domain_source_model=injection_model,
                                                     parameters=injection_parameters,
                                                     waveform_arguments=dict(LMax=LMax))
+    print('3')
     hf_signal = waveform_generator.frequency_domain_strain()
     ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, duration=duration,
         sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir) for name in ['H1', 'L1']]
+    print('4')
     waveform_generator.time_domain_source_model = recovery_model
+    print('5')
     priors = dict()
     for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23', 'luminosity_distance',
                 'inc', 'pol', 'ra', 'dec', 'geocent_time', 'psi']:
@@ -53,10 +58,14 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
     # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     # priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    print('6')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
+    print('7')
     result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=300,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
+    print('8')
     result.plot_corner(lionize=True)
+    print('9')
     print(result)
