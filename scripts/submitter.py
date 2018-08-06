@@ -1,8 +1,7 @@
 from collections import OrderedDict
 import subprocess
-import time
 import os
-
+import numpy as np
 
 def reformat_input(files, sep=" "):
     """files, a list of files or a string of many files
@@ -60,13 +59,55 @@ def make_bash_script(iter_items, resource, type_script='bash'):
     return "\n".join(cmdstr + [scmd]).format(**resource)
 
 
+class SlurmResources(object):
+
+    def __init__(self, memory=2, cores=1, hours=24, ngpu=0):
+        """
+
+        :param memory: memory in GB
+        :param cores: number of cores
+        :param hours: time in hours
+        :param ngpu: number of gpus
+        """
+        self.memory = memory
+        self.cores = cores
+        self.time_in_hours = hours
+        self.ngpu = ngpu
+
+    @property
+    def cores(self):
+        return self.__cores
+
+    @cores.setter
+    def cores(self, cores):
+        if not isinstance(cores, int) or isinstance(cores, float):
+            raise TypeError("Number of cores must be a number")
+        self.__cores = int(cores)
+
+    @property
+    def time_in_hours(self):
+        return self.__time
+
+    @time_in_hours.setter
+    def time_in_hours(self, time_in_hours):
+        self.__time = time_in_hours
+
+    @property
+    def time(self):
+        days = np.floor(self.__time/24)
+        tmp = self.__time % 24
+        hours = np.floor(self.__time/24)
+        tmp = self.__time - hours
+        minutes =
+
+
 class JobSubmitter(object):
     """ initial class object that will take in all of the
     required information to do the work of creating files,
     submitting jobs, etc.
     """
     def __init__(self, call_items, resources, submit_dir, sbatch_name, prog_type=None, iter_dir=None):
-        self.call_items = OrderedDict(call_items) # this might break everything
+        self.call_items = OrderedDict(call_items)
         self.resources = OrderedDict(resources)
         self.submit_dir = submit_dir
         self.sbatch_name = sbatch_name
