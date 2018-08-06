@@ -55,3 +55,50 @@ def time_domain_nr_sur_memory_waveform(times, mass_ratio, total_mass, s11, s12, 
                                                     )
     h_memory, _ = memory_generator.time_domain_memory(inc=inc, pol=pol)
     return h_memory
+
+
+def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
+                                                s21, s22, s23, inc, pol):
+    temp_times = copy.copy(times)
+    wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
+                                          q=mass_ratio,
+                                          MTot=total_mass,
+                                          distance=luminosity_distance,
+                                          S1=np.array([s11, s12, s13]),
+                                          S2=np.array([s21, s22, s23]),
+                                          times=temp_times)
+    oscillatory, _ = wave.time_domain_oscillatory(inc=inc, pol=pol)
+    memory, _ = wave.time_domain_memory(inc=inc, pol=pol, gamma_lmlm=gwmemory.angles.load_gamma())
+
+    res = dict()
+    for mode in memory:
+        res[mode] = memory[mode] + oscillatory[mode]
+    return res
+
+
+def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
+                                                   s21, s22, s23, inc, pol):
+    temp_times = copy.copy(times)
+    wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
+                                          q=mass_ratio,
+                                          MTot=total_mass,
+                                          distance=luminosity_distance,
+                                          S1=np.array([s11, s12, s13]),
+                                          S2=np.array([s21, s22, s23]),
+                                          times=temp_times)
+    oscillatory, _ = wave.time_domain_oscillatory(inc=inc, pol=pol)
+    return oscillatory
+
+
+def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
+                                           s21, s22, s23, inc, pol):
+    temp_times = copy.copy(times)
+    wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
+                                          q=mass_ratio,
+                                          MTot=total_mass,
+                                          distance=luminosity_distance,
+                                          S1=np.array([s11, s12, s13]),
+                                          S2=np.array([s21, s22, s23]),
+                                          times=temp_times)
+    memory, _ = wave.time_domain_memory(inc=inc, pol=pol, gamma_lmlm=gwmemory.angles.load_gamma())
+    return memory
