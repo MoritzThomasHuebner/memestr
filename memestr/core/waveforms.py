@@ -67,7 +67,7 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    oscillatory, _ = wave.time_domain_oscillatory(inc=inc, pol=pol)
+    oscillatory = wave.time_domain_oscillatory(inc=inc, pol=pol)
     memory, _ = wave.time_domain_memory(inc=inc, pol=pol, gamma_lmlm=gwmemory.angles.load_gamma())
 
     res = dict()
@@ -86,7 +86,7 @@ def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    oscillatory, _ = wave.time_domain_oscillatory(inc=inc, pol=pol)
+    oscillatory = wave.time_domain_oscillatory(inc=inc, pol=pol)
     return oscillatory
 
 
