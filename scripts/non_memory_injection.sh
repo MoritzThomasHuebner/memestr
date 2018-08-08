@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #SBATCH --job-name=non_mem_inj
-#SBATCH --output=non_mem_inj_5.txt
+#SBATCH --output=non_mem_inj_6.txt
 #
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
