@@ -2,6 +2,8 @@ from collections import OrderedDict
 import subprocess
 import os
 import numpy as np
+import time
+import uuid
 
 def reformat_input(files, sep=" "):
     """files, a list of files or a string of many files
@@ -38,30 +40,29 @@ def slurm_handle(piped_input):
         del piped_input[-1]
 
 
-def make_bash_script(iter_items, resource, type_script='bash'):
+def make_bash_script(script_calls, resources, type_script='bash'):
     """iter_items: dict
-    resource: dict, resources for sbatch call
+    resource: SlurmResources, resources for sbatch call
     type_script: string, this will insert the command to
     the program you want to run
     """
     script_call = [type_script]
-    format_place_holders = ["{{{}}}".format(key) for key in iter_items.keys()]
-    cmdstr = [
-        "#!/bin/bash\n", "#SBATCH --mem={mem}G", "#SBATCH -c {cores}",
-        "#SBATCH --time={time}", "#SBATCH --gres=gpu:{ngpu}\n"
-    ]
-    for key in ["mem", "cores", "time", "ngpu"]:
-        if key not in resource.keys():
-            raise ValueError(
-                "resource dictionary should have the key: {}".format(key)
-            )
-    scmd = " ".join(script_call + format_place_holders).format(**iter_items)
-    return "\n".join(cmdstr + [scmd]).format(**resource)
+    format_place_holders = ["{{{}}}".format(key) for key in script_calls.keys()]
+    slurm_syntax = "#!/bin/bash\n " \
+                   "#SBATCH --ntasks={}\n " \
+                   "#SBATCH --mem-per-cpu={}G\n " \
+                   "#SBATCH --cpus-per-task {}\n " \
+                   "#SBATCH --time={}\n " \
+                   "#SBATCH --gres=gpu:{}\n"\
+                   .format(resources.ntasks, resources.memory, resources.cores, resources.time, resources.ngpu)
 
+
+    script_command = " ".join(script_call + format_place_holders).format(**script_calls)
+    return "\n".join(slurm_syntax + script_command).format(**resources)
 
 class SlurmResources(object):
 
-    def __init__(self, memory=2, cores=1, hours=24, ngpu=0):
+    def __init__(self, ntasks=1, memory=2, cores=1, hours=24, ngpu=0):
         """
 
         :param memory: memory in GB
@@ -69,6 +70,7 @@ class SlurmResources(object):
         :param hours: time in hours
         :param ngpu: number of gpus
         """
+        self.ntasks = ntasks
         self.memory = memory
         self.cores = cores
         self.time_in_hours = hours
@@ -94,11 +96,10 @@ class SlurmResources(object):
 
     @property
     def time(self):
-        days = np.floor(self.__time/24)
-        tmp = self.__time % 24
-        hours = np.floor(self.__time/24)
-        tmp = self.__time - hours
-        minutes =
+        hours = np.floor(self.__time)
+        minutes = np.floor((np.floor(self.__time) - hours)*60)
+        return "{}:{}:00".format(hours, minutes)
+
 
 
 class JobSubmitter(object):
@@ -106,44 +107,70 @@ class JobSubmitter(object):
     required information to do the work of creating files,
     submitting jobs, etc.
     """
-    def __init__(self, call_items, resources, submit_dir, sbatch_name, prog_type=None, iter_dir=None):
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    def __init__(self, call_items, sbatch_name=str(uuid.uuid4().hex), submit_dir=dir_path, resources=SlurmResources(),
+                 shell_type='bash',
+                 iter_dir=None):
         self.call_items = OrderedDict(call_items)
-        self.resources = OrderedDict(resources)
+        self.resources = resources
         self.submit_dir = submit_dir
         self.sbatch_name = sbatch_name
-        self.prog_type = prog_type
+        self.shell_type = shell_type
         self.iter_dir = iter_dir
 
-    def _write(self, text):
-        split_name = self.sbatch_name.split(".")
-        if split_name[-1] != "sh":
-            raise Exception(
-                "make sure that your file ends with .sh (e.g test.sh)"
-            )
+    @property
+    def sbatch_name(self):
+        return self.__sbatch_name
+
+    @sbatch_name.setter
+    def sbatch_name(self, sbatch_name):
+        self.__sbatch_name = sbatch_name
+        split = sbatch_name.split(".")
+        if split[-1] != "sh":
+            self.__sbatch_name += ".sh"
+
+    @property
+    def sbatch_dir_name(self):
         if self.iter_dir is not None:
-            sbatch_dir_name = self.iter_dir
+            return self.iter_dir
         else:
-            sbatch_dir_name = '_'.join([i for i in split_name[:-1]])
-        if "~" in self.submit_dir:
-            raise Exception(
-                "~ in place of the home path is not allowed please provide the full path"
-            )
-        write_dir = os.path.join(self.submit_dir, sbatch_dir_name)
-        if not os.path.isdir(write_dir):
-            os.makedirs(write_dir)
-            os.chdir(write_dir)
+            split = self.sbatch_name.split(".")
+            return '_'.join([i for i in split[:-1]])
+
+    @property
+    def submit_dir(self):
+        return self.__submit_dir
+
+    @submit_dir.setter
+    def submit_dir(self, submit_dir):
+        if "~" in submit_dir:
+            raise ValueError("~ in place of the home path is not allowed please provide the full path")
+        self.__submit_dir = submit_dir
+
+    @property
+    def write_dir(self):
+        return os.path.join(self.submit_dir, self.sbatch_dir_name)
+
+    @property
+    def file_path(self):
+        return os.path.join(self.write_dir, self.sbatch_name)
+
+    @property
+    def file_written(self):
+        return self.file_path
+
+    def _write(self, text):
+        if not os.path.isdir(self.write_dir):
+            os.makedirs(self.write_dir)
+            os.chdir(self.write_dir)
         else:
-            raise FileExistsError(
-                "{} exists".format(write_dir)
-            )
-        file_path = os.path.join(write_dir, self.sbatch_name)
-        with open(file_path, "w") as writing:
+            raise IOError("{} exists".format(self.write_dir))
+        with open(self.file_path, "w") as writing:
             writing.write(text)
-        self.file_written = file_path
-        return file_path
 
     def run(self):
-        cmd = make_call_cmd(self.call_items, self.resources, self.prog_type)
+        cmd = make_bash_script(script_calls=self.call_items, resources=self.resources, type_script=self.shell_type)
         file_written = self._write(cmd)
         sbatch_res = command("sbatch {}".format(file_written))
         slurm_handle(sbatch_res)
