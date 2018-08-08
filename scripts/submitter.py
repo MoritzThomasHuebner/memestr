@@ -5,6 +5,7 @@ import numpy as np
 import time
 import uuid
 
+
 def reformat_input(files, sep=" "):
     """files, a list of files or a string of many files
     each seperated by a space
@@ -56,7 +57,6 @@ def make_bash_script(script_calls, resources, type_script='bash'):
                    "#SBATCH --gres=gpu:{}\n"\
                    .format(resources.ntasks, resources.memory, resources.cores, resources.time, resources.ngpu)
 
-
     script_command = " ".join(script_call + format_place_holders).format(**script_calls)
     return "\n".join(slurm_syntax + script_command).format(**resources)
 
@@ -99,7 +99,6 @@ class SlurmResources(object):
         hours = np.floor(self.__time)
         minutes = np.floor((np.floor(self.__time) - hours)*60)
         return "{}:{}:00".format(hours, minutes)
-
 
 
 class JobSubmitter(object):
