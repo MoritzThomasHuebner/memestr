@@ -56,7 +56,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='dynesty', npoints=400,
+    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='dynesty', npoints=600,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
     result.plot_corner(lionize=True)
     print(result)
