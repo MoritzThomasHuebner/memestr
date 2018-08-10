@@ -53,10 +53,11 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
     # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    priors['pol'] = tupak.core.prior.Uniform(name='pol', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='dynesty', npoints=600,
+    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=600,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
     result.plot_corner(lionize=True)
     print(result)

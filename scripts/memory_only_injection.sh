@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #SBATCH --job-name=mem_only_inj
-#SBATCH --output=mem_only_inj_7.txt
+#SBATCH --output=mem_only_inj_001.txt
 #
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
