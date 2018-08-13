@@ -14,7 +14,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     s22 = S2[1]
     s23 = S2[2]
     LMax = 3
-    luminosity_distance = 500.
+    luminosity_distance = 50.
     inc = np.pi / 2
     pol = 0
     ra = 50.
@@ -49,9 +49,9 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     priors['total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
     priors['mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
     priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e2, maximum=5e3, latex_label="$L_D$")
-    # priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
+    priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
     priors['pol'] = tupak.core.prior.Uniform(name='pol', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,

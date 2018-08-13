@@ -2,4 +2,3 @@
 bash ../install.sh
 sbatch non_memory_injection.sh
 sbatch memory_injection.sh
-sbatch memory_only_injection.sh
