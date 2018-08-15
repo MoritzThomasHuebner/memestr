@@ -16,9 +16,9 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     LMax = 3
     luminosity_distance = 50.
     inc = np.pi / 2
-    pol = 0
-    ra = 50.
-    dec = 30.
+    phi = 0
+    ra = 1.54
+    dec = -0.7
     psi = 2.659
     geocent_time = 1126259642.413
     start_time = -0.5
@@ -28,8 +28,9 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     label = 'test'
     tupak.core.utils.setup_logger(outdir=outdir, label=label)
     np.random.seed(88170235)
+    # pol in gwmemory is phase at coalescence
     injection_parameters = dict(total_mass=total_mass, mass_ratio=mass_ratio, s11=s11, s12=s12, s13=s13, s21=s21,
-                                s22=s22, s23=s23, luminosity_distance=luminosity_distance, inc=inc, pol=pol,
+                                s22=s22, s23=s23, luminosity_distance=luminosity_distance, inc=inc, pol=phi,
                                 psi=psi, geocent_time=geocent_time, ra=ra, dec=dec, LMax=LMax)
     waveform_generator = tupak.gw.WaveformGenerator(duration=duration,
                                                     sampling_frequency=sampling_frequency,
@@ -48,12 +49,14 @@ def run_basic_injection(injection_model, recovery_model, outdir):
         priors[key] = injection_parameters[key]
     priors['total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
     priors['mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-    priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e2, maximum=5e3, latex_label="$L_D$")
+    priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+                                                                         maximum=5e3, latex_label="$L_D$")
     priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
     priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
     priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    priors['pol'] = tupak.core.prior.Uniform(name='pol', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
+    priors['phi'] = tupak.core.prior.Uniform(name='phi', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
+    priors['geocent_time'] = tupak.core.prior.Uniform(1126259462.322, 1126259462.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
