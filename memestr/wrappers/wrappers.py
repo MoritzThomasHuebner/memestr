@@ -30,7 +30,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     np.random.seed(88170235)
     # pol in gwmemory is phase at coalescence
     injection_parameters = dict(total_mass=total_mass, mass_ratio=mass_ratio, s11=s11, s12=s12, s13=s13, s21=s21,
-                                s22=s22, s23=s23, luminosity_distance=luminosity_distance, inc=inc, pol=phi,
+                                s22=s22, s23=s23, luminosity_distance=luminosity_distance, inc=inc, phi=phi,
                                 psi=psi, geocent_time=geocent_time, ra=ra, dec=dec, LMax=LMax)
     waveform_generator = tupak.gw.WaveformGenerator(duration=duration,
                                                     sampling_frequency=sampling_frequency,
