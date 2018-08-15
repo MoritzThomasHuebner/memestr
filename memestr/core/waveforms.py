@@ -5,7 +5,7 @@ import copy
 
 def time_domain_nr_sur_waveform_without_memory(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
                                                luminosity_distance,
-                                               inc, pol, LMax, **kwargs):
+                                               inc, phase, LMax, **kwargs):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
@@ -16,13 +16,13 @@ def time_domain_nr_sur_waveform_without_memory(times, mass_ratio, total_mass, s1
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
-    h_oscillatory, _ = memory_generator.time_domain_oscillatory(times=temp_times, inc=inc, pol=pol)
+    h_oscillatory, _ = memory_generator.time_domain_oscillatory(times=temp_times, inc=inc, phase=phase)
     return h_oscillatory
 
 
 def time_domain_nr_sur_waveform_with_memory(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
                                             luminosity_distance,
-                                            inc, pol, LMax, **kwargs):
+                                            inc, phase, LMax, **kwargs):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
@@ -33,8 +33,8 @@ def time_domain_nr_sur_waveform_with_memory(times, mass_ratio, total_mass, s11, 
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
-    h_oscillatory, _ = memory_generator.time_domain_oscillatory(times=temp_times, inc=inc, pol=pol)
-    h_memory, _ = memory_generator.time_domain_memory(inc=inc, pol=pol)
+    h_oscillatory, _ = memory_generator.time_domain_oscillatory(times=temp_times, inc=inc, phase=phase)
+    h_memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase)
     res = dict()
     for mode in h_memory:
         res[mode] = h_memory[mode] + h_oscillatory[mode]
@@ -42,7 +42,7 @@ def time_domain_nr_sur_waveform_with_memory(times, mass_ratio, total_mass, s11, 
 
 
 def time_domain_nr_sur_memory_waveform(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23, luminosity_distance,
-                                       inc, pol, LMax, **kwargs):
+                                       inc, phase, LMax, **kwargs):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
@@ -53,12 +53,12 @@ def time_domain_nr_sur_memory_waveform(times, mass_ratio, total_mass, s11, s12, 
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
-    h_memory, _ = memory_generator.time_domain_memory(inc=inc, pol=pol)
+    h_memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase)
     return h_memory
 
 
 def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
-                                                s21, s22, s23, inc, pol):
+                                                s21, s22, s23, inc, phase, **kwargs):
     temp_times = copy.copy(times)
     wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
                                           q=mass_ratio,
@@ -67,8 +67,8 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    oscillatory = wave.time_domain_oscillatory(inc=inc, pol=pol)
-    memory, _ = wave.time_domain_memory(inc=inc, pol=pol, gamma_lmlm=gwmemory.angles.load_gamma())
+    oscillatory, _ = wave.time_domain_oscillatory(inc=inc, phase=phase)
+    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gwmemory.angles.load_gamma())
 
     res = dict()
     for mode in memory:
@@ -77,7 +77,7 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
 
 
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
-                                                   s21, s22, s23, inc, pol):
+                                                   s21, s22, s23, inc, phase, **kwargs):
     temp_times = copy.copy(times)
     wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
                                           q=mass_ratio,
@@ -86,12 +86,12 @@ def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    oscillatory = wave.time_domain_oscillatory(inc=inc, pol=pol)
+    oscillatory, _ = wave.time_domain_oscillatory(inc=inc, phase=phase)
     return oscillatory
 
 
 def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
-                                           s21, s22, s23, inc, pol):
+                                           s21, s22, s23, inc, phase, **kwargs):
     temp_times = copy.copy(times)
     wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
                                           q=mass_ratio,
@@ -100,5 +100,5 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    memory, _ = wave.time_domain_memory(inc=inc, pol=pol, gamma_lmlm=gwmemory.angles.load_gamma())
+    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gwmemory.angles.load_gamma())
     return memory
