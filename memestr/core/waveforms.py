@@ -2,6 +2,7 @@ import numpy as np
 import gwmemory
 import copy
 
+gamma_lmlm = gwmemory.angles.load_gamma()
 
 def time_domain_nr_sur_waveform_without_memory(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
                                                luminosity_distance,
@@ -34,7 +35,7 @@ def time_domain_nr_sur_waveform_with_memory(times, mass_ratio, total_mass, s11, 
                                                     distance=luminosity_distance
                                                     )
     h_oscillatory, _ = memory_generator.time_domain_oscillatory(times=temp_times, inc=inc, phase=phase)
-    h_memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase)
+    h_memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     res = dict()
     for mode in h_memory:
         res[mode] = h_memory[mode] + h_oscillatory[mode]
@@ -53,7 +54,7 @@ def time_domain_nr_sur_memory_waveform(times, mass_ratio, total_mass, s11, s12, 
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
-    h_memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase)
+    h_memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     return h_memory
 
 
@@ -68,7 +69,7 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
     oscillatory = wave.time_domain_oscillatory(inc=inc, phase=phase)
-    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gwmemory.angles.load_gamma())
+    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
 
     res = dict()
     for mode in memory:
@@ -100,5 +101,5 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gwmemory.angles.load_gamma())
+    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     return memory
