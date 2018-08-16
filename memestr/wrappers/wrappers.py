@@ -85,7 +85,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
     psi = 2.659
     geocent_time = 1126259642.413
     start_time = 0
-    end_time = 3  # 0.029
+    end_time = 3
     duration = end_time - start_time
     sampling_frequency = 4096
     label = 'test'
@@ -120,10 +120,10 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
                                                                          maximum=5e3, latex_label="$L_D$")
     priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
     priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
-    # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    # priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    # priors['geocent_time'] = tupak.core.prior.Uniform(1126259462.322, 1126259462.522, name='geocent_time')
+    priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    priors['geocent_time'] = tupak.core.prior.Uniform(1126259462.322, 1126259462.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
