@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-#SBATCH --job-name=mem_only_inj
-#SBATCH --output=mem_only_inj_001.txt
+#SBATCH --job-name=IMR_mem_inj_mem_rec
+#SBATCH --output=IMR_mem_inj_mem_rec.log
 #
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=72:00:00
 #SBATCH --mem-per-cpu=16G
 
-srun python memory_only_injection_recovery.py
+srun python IMR_mem_inj_mem_rec.py
