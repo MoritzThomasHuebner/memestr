@@ -179,7 +179,7 @@ class JobSubmitter(object):
 def create_fresh_numbered_outdir(outdir_base):
     outdir = ''
     for i in range(0, 999):
-        outdir = outdir_base + str(i).zfill(3)
+        outdir = str(i).zfill(3) + "_" + outdir_base
         if not os.path.exists(outdir):
             break
     return outdir
