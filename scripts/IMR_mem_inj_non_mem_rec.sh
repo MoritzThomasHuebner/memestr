@@ -9,4 +9,4 @@
 #SBATCH --mem-per-cpu=16G
 #SBATCH --mail-type=END --mail-user=email@moritz-huebner.de
 
-srun python IMR_mem_inj_non_mem_rec.py
+srun python run_basic_job.py IMR_mem_inj_non_mem_rec run_basic_injection_imr_phenom time_domain_IMRPhenomD_waveform_with_memory time_domain_IMRPhenomD_waveform_without_memory
