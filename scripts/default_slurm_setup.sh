@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
 LABEL="${1::-3}"
-echo ${LABEL}
-PYTHON_COMMAND="import memestr.submit.submitter; find_unallocated_name(name=\"$LABEL\")"
-echo ${PYTHON_COMMAND}
-python -c "${PYTHON_COMMAND}"
-echo ${LABEL}
+PYTHON_COMMAND="import memestr; print(memestr.submit.submitter.find_unallocated_name(name=\"$LABEL\"))"
+OUTDIR=`python -c "${PYTHON_COMMAND}"`
 JOB_NAME="--job_name=$LABEL"
 OUTPUT="--output=$LABEL.log"
 TIME="--time=72:00:00"
