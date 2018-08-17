@@ -40,7 +40,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     hf_signal = waveform_generator.frequency_domain_strain()
     ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, duration=duration,
-        sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir) for name in ['H1', 'L1']]
+        sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir) for name in ['H1', 'L1', 'V1']]
     waveform_generator.time_domain_source_model = recovery_model
     priors = dict()
     for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23', 'luminosity_distance',
@@ -109,7 +109,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
     ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, duration=duration,
         sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir, zero_noise=True)
-        for name in ['H1', 'L1']]
+        for name in ['H1', 'L1', 'V1']]
     waveform_generator.time_domain_source_model = recovery_model
     priors = dict()
     for key in ['total_mass', 'mass_ratio', 's11', 's12', 's13', 's21', 's22', 's23', 'luminosity_distance',
