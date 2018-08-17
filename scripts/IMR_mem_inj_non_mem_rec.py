@@ -1,7 +1,6 @@
 from __future__ import division
-import memestr
-import os
 
+import memestr
 import submitter
 
 submitter.run_job(naming_scheme='IMR_mem_inj_non_mem_rec',
