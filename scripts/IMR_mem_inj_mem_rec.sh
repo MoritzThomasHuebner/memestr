@@ -2,7 +2,7 @@
 
 source default_slurm_setup.sh ${0}
 
-sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL}<<'EOF'
+sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} --export=JOB_NAME=${JOB_NAME}<<'EOF'
 #!/usr/bin/env bash
 JOB=run_basic_job.py
 NAMING_SCHEME=$LABEL
