@@ -2,7 +2,7 @@
 
 source default_slurm_setup.sh ${0}
 
-sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} test.sh
+sbatch ${OUTPUT} ${JOB_NAME} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} test.sh
 
 
 #<<'EOF'
