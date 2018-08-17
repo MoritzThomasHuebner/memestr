@@ -54,11 +54,12 @@ def make_bash_script(script_calls, resources, type_script='bash'):
                    "#SBATCH --mem-per-cpu={}G\n " \
                    "#SBATCH --cpus-per-task {}\n " \
                    "#SBATCH --time={}\n " \
-                   "#SBATCH --gres=gpu:{}\n"\
-                   .format(resources.ntasks, resources.memory, resources.cores, resources.time, resources.ngpu)
+                   "#SBATCH --gres=gpu:{}\n" \
+        .format(resources.ntasks, resources.memory, resources.cores, resources.time, resources.ngpu)
 
     script_command = " ".join(script_call + format_place_holders).format(**script_calls)
     return "\n".join(slurm_syntax + script_command).format(**resources)
+
 
 class SlurmResources(object):
 
@@ -97,7 +98,7 @@ class SlurmResources(object):
     @property
     def time(self):
         hours = np.floor(self.__time)
-        minutes = np.floor((np.floor(self.__time) - hours)*60)
+        minutes = np.floor((np.floor(self.__time) - hours) * 60)
         return "{}:{}:00".format(hours, minutes)
 
 
@@ -187,3 +188,13 @@ def create_fresh_numbered_outdir(outdir_base):
 
 def move_log_file_to_outdir(dir_path, outdir, log_file):
     os.rename(dir_path + "/" + log_file, dir_path + "/" + outdir + "/" + log_file)
+
+
+def run_job(naming_scheme, script, **kwargs):
+    outdir = create_fresh_numbered_outdir(outdir_base=naming_scheme)
+    script(injection_model=kwargs['injection_model'],
+           recovery_model=kwargs['recovery_model'],
+           outdir=outdir)
+    move_log_file_to_outdir(dir_path=os.path.dirname(os.path.realpath(__file__)),
+                            log_file=naming_scheme + '.log',
+                            outdir=outdir)
