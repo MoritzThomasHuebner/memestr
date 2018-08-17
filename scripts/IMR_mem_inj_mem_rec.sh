@@ -9,4 +9,9 @@
 #SBATCH --mem-per-cpu=16G
 #SBATCH --mail-type=END --mail-user=email@moritz-huebner.de
 
-srun python run_basic_job.py IMR_mem_inj_mem_rec run_basic_injection_imr_phenom time_domain_IMRPhenomD_waveform_with_memory time_domain_IMRPhenomD_waveform_with_memory
+JOB=run_basic_job.py
+NAMING_SCHEME=IMR_mem_inj_mem_rec
+SCRIPT=run_basic_injection_imr_phenom
+INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
+RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory
+srun python ${JOB} ${NAMING_SCHEME} ${SCRIPT} ${INJECTION_MODEL} ${RECOVERY_MODEL}
