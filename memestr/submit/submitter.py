@@ -177,10 +177,10 @@ class JobSubmitter(object):
         return sbatch_res
 
 
-def create_fresh_numbered_outdir(outdir_base):
+def find_unallocated_name(name):
     outdir = ''
     for i in range(0, 999):
-        outdir = str(i).zfill(3) + "_" + outdir_base
+        outdir = str(i).zfill(3) + "_" + name
         if not os.path.exists(outdir):
             break
     return outdir
@@ -191,7 +191,7 @@ def move_log_file_to_outdir(dir_path, outdir, log_file):
 
 
 def run_job(naming_scheme, script, **kwargs):
-    outdir = create_fresh_numbered_outdir(outdir_base=naming_scheme)
+    outdir = find_unallocated_name(name=naming_scheme)
     script(injection_model=kwargs['injection_model'],
            recovery_model=kwargs['recovery_model'],
            outdir=outdir)

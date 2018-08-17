@@ -1,5 +1,6 @@
 import wrappers
 import core
+import submit
 
 models = dict(
     time_domain_IMRPhenomD_memory_waveform=core.waveforms.time_domain_IMRPhenomD_memory_waveform,
