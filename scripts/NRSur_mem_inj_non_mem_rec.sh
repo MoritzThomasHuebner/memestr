@@ -3,6 +3,7 @@
 bash default_slurm_setup.sh ${0}
 
 sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL}<<'EOF'
+#!/usr/bin/env bash
 JOB=run_basic_job.py
 NAMING_SCHEME=$LABEL
 SCRIPT=run_basic_injection
