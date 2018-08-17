@@ -59,7 +59,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=600,
+    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=1200,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
     result.plot_corner(lionize=True)
     print(result)
@@ -128,7 +128,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=2000,
+    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=4000,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
     result.plot_corner(lionize=True)
     print(result)
