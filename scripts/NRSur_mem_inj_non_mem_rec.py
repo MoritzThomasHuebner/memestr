@@ -1,7 +1,7 @@
 from __future__ import division
 import memestr
 
-from scripts import submitter
+from . import submitter
 
 outdir = submitter.create_fresh_numbered_outdir(outdir_base='NRSur_mem_inj_non_mem_rec_')
 
