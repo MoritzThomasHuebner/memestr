@@ -1,6 +1,6 @@
 from __future__ import division
 import sys
-import submitter
+from memestr.submit import submitter
 from memestr import models, scripts
 
 submitter.run_job(naming_scheme=sys.argv[1],
