@@ -9,5 +9,6 @@ NAMING_SCHEME=$LABEL
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory
+echo "TEST
 srun python ${JOB} ${NAMING_SCHEME} ${SCRIPT} ${INJECTION_MODEL} ${RECOVERY_MODEL}
 EOF
