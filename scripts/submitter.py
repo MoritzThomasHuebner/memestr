@@ -174,3 +174,12 @@ class JobSubmitter(object):
         sbatch_res = command("sbatch {}".format(file_written))
         slurm_handle(sbatch_res)
         return sbatch_res
+
+
+def create_fresh_numbered_outdir(outdir_base):
+    outdir = ''
+    for i in range(0, 999):
+        outdir = outdir_base + str(i).zfill(3)
+        if not os.path.exists(outdir):
+            break
+    return outdir
