@@ -196,5 +196,5 @@ def run_job(naming_scheme, script, **kwargs):
            recovery_model=kwargs['recovery_model'],
            outdir=outdir)
     move_log_file_to_outdir(dir_path=os.path.dirname(os.path.realpath(__file__)),
-                            log_file=naming_scheme + '.log',
+                            log_file=outdir + '.log',
                             outdir=outdir)
