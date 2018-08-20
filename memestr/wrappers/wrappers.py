@@ -108,7 +108,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
     plt.clf()
     ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name, injection_polarizations=hf_signal, injection_parameters=injection_parameters, duration=duration,
-        sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir, zero_noise=True)
+        sampling_frequency=sampling_frequency, start_time=start_time, outdir=outdir, zero_noise=False)
         for name in ['H1', 'L1', 'V1']]
     waveform_generator.time_domain_source_model = recovery_model
     priors = dict()
