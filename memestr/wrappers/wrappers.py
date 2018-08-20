@@ -76,7 +76,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
     s21 = S2[0]
     s22 = S2[1]
     s23 = S2[2]
-    LMax = 3
+    LMax = 2
     luminosity_distance = 500.
     inc = np.pi / 2
     phase = 1.0
@@ -117,14 +117,14 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
         priors[key] = injection_parameters[key]
     priors['total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
     priors['mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-    # priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
-    #                                                                      maximum=5e3, latex_label="$L_D$")
-    # priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
+    priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+                                                                         maximum=5e3, latex_label="$L_D$")
+    priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
     priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
-    # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    # priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
