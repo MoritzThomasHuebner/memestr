@@ -55,7 +55,7 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
     priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    priors['geocent_time'] = tupak.core.prior.Uniform(1126259462.322, 1126259462.522, name='geocent_time')
+    priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
