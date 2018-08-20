@@ -54,12 +54,12 @@ def run_basic_injection(injection_model, recovery_model, outdir):
     priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
     # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2*np.pi, latex_label="$RA$")
     # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    # priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
     # priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=1200,
+    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=3000,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
     result.plot_corner(lionize=True)
     print(result)
@@ -128,7 +128,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=2000,
+    result = tupak.core.sampler.run_sampler(likelihood=likelihood, priors=priors, sampler='pymultinest', npoints=6000,
                                             injection_parameters=injection_parameters, outdir=outdir, label=label)
     result.plot_corner(lionize=True)
     print(result)
