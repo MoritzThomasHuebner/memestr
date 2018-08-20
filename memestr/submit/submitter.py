@@ -191,7 +191,7 @@ def move_log_file_to_outdir(dir_path, outdir, log_file):
 
 
 def run_job(naming_scheme, script, **kwargs):
-    outdir = find_unallocated_name(name=naming_scheme)
+    outdir = naming_scheme
     script(injection_model=kwargs['injection_model'],
            recovery_model=kwargs['recovery_model'],
            outdir=outdir)
