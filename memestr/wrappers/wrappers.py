@@ -1,6 +1,6 @@
+from __future__ import division
 import numpy as np
 import tupak
-
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     default_injection_parameters = dict(
@@ -43,10 +43,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
         lionize=True
     )
 
-    if not default_injection_parameters['new_seed']:
-        np.random.seed(88170235)
-
-    tupak.core.utils.setup_logger(outdir=outdir, label=default_injection_parameters['label'])
 
     waveform_arguments = update_kwargs(default_waveform_arguments, kwargs)
     injection_parameters = update_kwargs(default_injection_parameters, kwargs)
@@ -57,14 +53,19 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     for key in waveform_arguments:
         injection_parameters[key] = waveform_arguments[key]
 
+    tupak.core.utils.setup_logger(outdir=outdir, label=sampler_kwargs['label'])
+    if not other_kwargs['new_seed']:
+        np.random.seed(88170235)
+
     waveform_generator = tupak.gw.WaveformGenerator(time_domain_source_model=injection_model,
                                                     parameters=injection_parameters,
                                                     waveform_arguments=waveform_arguments,
                                                     **waveform_data)
 
+    hf_signal = waveform_generator.frequency_domain_strain()
     ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name,
-        injection_polarizations=waveform_generator.frequency_domain_strain(),
+        injection_polarizations=hf_signal,
         injection_parameters=injection_parameters,
         outdir=outdir,
         zero_noise=other_kwargs['zero_noise'],
@@ -77,15 +78,15 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                 'inc', 'phase', 'ra', 'dec', 'geocent_time', 'psi']:
         priors[key] = injection_parameters[key]
     priors['total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
-    priors['mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-    priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
-                                                                         maximum=5e3, latex_label="$L_D$")
-    priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
-    priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    # priors['mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
+    # priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+    #                                                                      maximum=5e3, latex_label="$L_D$")
+    # priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
+    # priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
+    # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    # priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    # priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
@@ -101,7 +102,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
 
 def update_kwargs(default_kwargs, kwargs):
     new_kwargs = default_kwargs.copy()
-    for key in list(set(default_kwargs.keys()).union(kwargs.keys())):
+    for key in list(set(default_kwargs.keys()).intersection(kwargs.keys())):
         new_kwargs[key] = kwargs[key]
     return new_kwargs
 
