@@ -2,7 +2,7 @@ import numpy as np
 import tupak
 
 
-def run_basic_injection(injection_model, recovery_model, outdir):
+def run_basic_injection_NRSur(injection_model, recovery_model, outdir):
     mass_ratio = 1.5
     total_mass = 60
     S1 = np.array([0, 0, 0])
