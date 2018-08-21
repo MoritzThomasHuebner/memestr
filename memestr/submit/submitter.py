@@ -190,8 +190,7 @@ def move_log_file_to_outdir(dir_path, outdir, log_file):
     os.rename(dir_path + "/" + log_file, dir_path + "/" + outdir + "/" + log_file)
 
 
-def run_job(naming_scheme, script, **kwargs):
-    outdir = naming_scheme
+def run_job(outdir, script, **kwargs):
     script(injection_model=kwargs['injection_model'],
            recovery_model=kwargs['recovery_model'],
            outdir=outdir)
