@@ -5,14 +5,14 @@ import tupak
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     default_injection_parameters = dict(
         mass_ratio=1.5,
-        total_mass=6,
+        total_mass=60,
         s11=0,
         s12=0,
         s13=0,
         s21=0,
         s22=0,
         s23=0,
-        luminosity_distance=50.,
+        luminosity_distance=500.,
         inc=np.pi / 2,
         phase=0,
         ra=1.54,
@@ -106,15 +106,26 @@ def update_kwargs(default_kwargs, kwargs):
         new_kwargs[key] = kwargs[key]
     return new_kwargs
 
-
-def run_basic_injection_NRSur(injection_model, recovery_model, outdir):
+def run_basic_injection_NRSur(injection_model, recovery_model, outdir, **kwargs):
     start_time = -0.5
     end_time = 0.01  # 0.029
     duration = end_time - start_time
-    run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
-                        start_time=start_time, duration=duration, label='NRSur', new_seed=False, zero_noise=True)
+    nr_sur_kwargs = dict(
+        start_time=start_time,
+        duration=duration,
+        label='NRSur',
+        new_seed=False,
+        zero_noise=True
+    )
+    nr_sur_kwargs.update(kwargs)
+    run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir, **nr_sur_kwargs)
 
 
-def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir):
-    run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
-                        label='IMRPhenomD', new_seed=True, zero_noise=True)
+def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kwargs):
+    imr_phenom_kwargs = dict(
+        label='IMRPhenomD',
+        new_seed=True,
+        zero_noise=True
+    )
+    imr_phenom_kwargs.update(kwargs)
+    run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir, **imr_phenom_kwargs)
