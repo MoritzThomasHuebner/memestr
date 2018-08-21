@@ -3,7 +3,7 @@ import sys
 from memestr.submit import submitter
 from memestr import models, scripts
 print(sys.argv)
-submitter.run_job(naming_scheme=sys.argv[1],
+submitter.run_job(outdir=sys.argv[1],
                   script=scripts[sys.argv[2]],
                   injection_model=models[sys.argv[3]],
                   recovery_model=models[sys.argv[4]])
