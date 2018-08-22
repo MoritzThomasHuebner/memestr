@@ -43,6 +43,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
         lionize=True
     )
 
+
     waveform_arguments = update_kwargs(default_waveform_arguments, kwargs)
     injection_parameters = update_kwargs(default_injection_parameters, kwargs)
     waveform_data = update_kwargs(default_waveform_data, kwargs)
