@@ -8,10 +8,10 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
         total_mass=60,
         s11=0,
         s12=0,
-        s13=0,
+        s13=0.5,
         s21=0,
         s22=0,
-        s23=0,
+        s23=0.3,
         luminosity_distance=500.,
         inc=np.pi / 2,
         phase=1,
@@ -81,16 +81,16 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                          maximum=5e3, latex_label="$L_D$")
     priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=injection_parameters['phase']-np.pi/4,
-                                               maximum=injection_parameters['phase']+np.pi/4, latex_label="$\phi$")
+    priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2*np.pi, latex_label="$\phi$")
     priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
     priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=injection_parameters['psi']-np.pi/4,
-                                             maximum=injection_parameters['psi']+np.pi/4, latex_label="$\psi$")
+    priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2*np.pi, latex_label="$\psi$")
     priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
+    priors['s13'] = tupak.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13')
+    priors['s23'] = tupak.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s13')
 
     result = tupak.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
