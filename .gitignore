@@ -106,3 +106,6 @@ venv.bak/
 # Pycharm
 .idea/*
 .idea
+
+# Project specific
+memestr/submit/current_job_id
