@@ -177,7 +177,7 @@ class JobSubmitter(object):
         return sbatch_res
 
 
-def find_unallocated_name(name):
+def find_next_job_id(name):
     outdir = ''
     for i in range(0, 999):
         outdir = str(i).zfill(3) + "_" + name
