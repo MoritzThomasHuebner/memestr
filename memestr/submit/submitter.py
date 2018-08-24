@@ -40,10 +40,6 @@ def make_bash_script(script_calls, resources, type_script='bash'):
     script_call = [type_script]
     format_place_holders = ["{{{}}}".format(key) for key in script_calls.keys()]
     slurm_syntax = "#!/usr/bin/env bash\n " \
-                   "#SBATCH --label={}\n " \
-                   "#SBATCH --ntasks={}\n " \
-                   "#SBATCH --ntasks={}\n " \
-                   "#SBATCH --ntasks={}\n " \
                    "#SBATCH --ntasks={}\n " \
                    "#SBATCH --mem-per-cpu={}G\n " \
                    "#SBATCH --cpus-per-task {}\n " \
@@ -132,10 +128,10 @@ class JobSubmitter(object):
     required information to do the work of creating files,
     submitting jobs, etc.
     """
-    def __init__(self, call_items, sbatch_name=str(uuid.uuid4().hex), resources=SlurmSetup(),
+    def __init__(self, call_items, sbatch_name=str(uuid.uuid4().hex), resources=SlurmSetup('test'),
                  shell_type='bash',
                  iter_dir=None,
-                 submit_dir=dir_path):
+                 submit_dir=None):
         self.call_items = OrderedDict(call_items)
         self.resources = resources
         self.submit_dir = submit_dir
