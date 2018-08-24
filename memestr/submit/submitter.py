@@ -6,16 +6,6 @@ import time
 import uuid
 
 
-def reformat_input(files, sep=" "):
-    """files, a list of files or a string of many files
-    each seperated by a space
-    """
-    if isinstance(files, str):
-        files = files.split(" ")
-    out = sep.join(files)
-    return '"{}"'.format(out)
-
-
 def command(cmd, sep=" "):
     """cmd: string or list, the command you want to execute,
     examples: "ls -a", ["ls", "-a"]
@@ -49,7 +39,11 @@ def make_bash_script(script_calls, resources, type_script='bash'):
     """
     script_call = [type_script]
     format_place_holders = ["{{{}}}".format(key) for key in script_calls.keys()]
-    slurm_syntax = "#!/bin/bash\n " \
+    slurm_syntax = "#!/usr/bin/env bash\n " \
+                   "#SBATCH --label={}\n " \
+                   "#SBATCH --ntasks={}\n " \
+                   "#SBATCH --ntasks={}\n " \
+                   "#SBATCH --ntasks={}\n " \
                    "#SBATCH --ntasks={}\n " \
                    "#SBATCH --mem-per-cpu={}G\n " \
                    "#SBATCH --cpus-per-task {}\n " \
@@ -61,9 +55,10 @@ def make_bash_script(script_calls, resources, type_script='bash'):
     return "\n".join(slurm_syntax + script_command).format(**resources)
 
 
-class SlurmResources(object):
+class SlurmSetup(object):
 
-    def __init__(self, ntasks=1, memory=2, cores=1, hours=24, ngpu=0):
+    def __init__(self, label, outdir=None, job_name=None, output=None, email_type=None,
+                 email_user=None, ntasks=1, memory=16, cores=1, hours=72, ngpu=0):
         """
 
         :param memory: memory in GB
@@ -71,11 +66,41 @@ class SlurmResources(object):
         :param hours: time in hours
         :param ngpu: number of gpus
         """
+        self.label = label
+        self.outdir = outdir
+        self.job_name = job_name
+        self.output = output
+        self.email_type = email_type
+        self.email_user = email_user
         self.ntasks = ntasks
         self.memory = memory
         self.cores = cores
         self.time_in_hours = hours
         self.ngpu = ngpu
+
+    @property
+    def job_name(self):
+        return self.__job_name
+
+    @job_name.setter
+    def job_name(self, job_name):
+        if job_name is None:
+            self.__job_name = self.label
+        self.__job_name = job_name
+
+    @property
+    def output(self):
+        return self.__output
+
+    @output.setter
+    def output(self, output):
+        if output is None:
+            self.__output = self.label
+        else:
+            self.__output = output
+        if self.__output[-4:] != '.log':
+            self.__output = self.__output + '.log'
+
 
     @property
     def cores(self):
@@ -107,11 +132,10 @@ class JobSubmitter(object):
     required information to do the work of creating files,
     submitting jobs, etc.
     """
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
-    def __init__(self, call_items, sbatch_name=str(uuid.uuid4().hex), submit_dir=dir_path, resources=SlurmResources(),
+    def __init__(self, call_items, sbatch_name=str(uuid.uuid4().hex), resources=SlurmSetup(),
                  shell_type='bash',
-                 iter_dir=None):
+                 iter_dir=None,
+                 submit_dir=dir_path):
         self.call_items = OrderedDict(call_items)
         self.resources = resources
         self.submit_dir = submit_dir
