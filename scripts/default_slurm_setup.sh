@@ -5,7 +5,7 @@ PYTHON_COMMAND="import memestr; print(memestr.submit.submitter.find_unallocated_
 OUTDIR=`python -c "${PYTHON_COMMAND}"`
 JOB_NAME="--job-name=$LABEL"
 OUTPUT="--output=$OUTDIR.log"
-TIME="--time=72:00:00"
+TIME="--time=00:30:00"
 NTASKS="--ntasks=1"
 MEM_PER_CPU="--mem-per-cpu=16G"
 CPUS_PER_TASK="--cpus-per-task=1"

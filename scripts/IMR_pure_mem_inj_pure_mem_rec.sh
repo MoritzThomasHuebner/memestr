@@ -8,5 +8,5 @@ JOB=run_basic_job.py
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_memory_waveform
 RECOVERY_MODEL=time_domain_IMRPhenomD_memory_waveform
-srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL}
+srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${1}
 EOF

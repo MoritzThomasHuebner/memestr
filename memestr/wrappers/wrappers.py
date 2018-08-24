@@ -193,6 +193,12 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     result.plot_corner(lionize=settings.other_settings.lionize)
     print(result)
 
+    filename = 'distance_evidence' + outdir[4:] + '.dat'
+    with open(filename, 'w') as outfile:
+        outfile.write(str(settings.injection_parameters['luminosity_distance']) + '\t' +
+                      str(result.log_evidence) + '\t' +
+                      str(result.log_evidence_err) + '\n')
+
 
 def update_kwargs(default_kwargs, kwargs):
     new_kwargs = default_kwargs.copy()
@@ -222,7 +228,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
     priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
+    # priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
     # priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
     #                                                                            maximum=5e3, latex_label="$L_D$")
     # priors['prior_inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
