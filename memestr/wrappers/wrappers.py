@@ -15,17 +15,21 @@ class AllSettings(object):
         self.detector_settings = detector_settings
         self.other_settings = other_settings
 
+        self.__update_arguments_into_injection_parameters()
+
+    def __update_arguments_into_injection_parameters(self):
+        for key in self.waveform_arguments.__dict__:
+            self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
+
     @classmethod
     def from_defaults_with_some_specified_kwargs(cls, **kwargs):
-        result = cls(injection_parameters=InjectionParameters.init_with_updated_kwargs(**kwargs),
-                     recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
-                     waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
-                     waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
-                     sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),
-                     detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
-                     other_settings=OtherSettings.init_with_updated_kwargs(**kwargs)
-                     )
-        return result
+        return cls(injection_parameters=InjectionParameters.init_with_updated_kwargs(**kwargs),
+                   recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
+                   waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
+                   waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
+                   sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),
+                   detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
+                   other_settings=OtherSettings.init_with_updated_kwargs(**kwargs))
 
 
 class RunParameters(object):
@@ -157,9 +161,6 @@ class OtherSettings(RunParameters):
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
 
-    for key in settings.waveform_arguments.__dict__:
-        settings.injection_parameters.__dict__[key] = settings.waveform_arguments.__dict__[key]
-
     tupak.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
     if not settings.other_settings.new_seed:
         np.random.seed(88170235)
@@ -221,7 +222,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
     priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
-    # priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
+    priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
     # priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
     #                                                                            maximum=5e3, latex_label="$L_D$")
     # priors['prior_inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
