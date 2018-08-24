@@ -78,14 +78,14 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
         priors[key] = injection_parameters[key]
     priors['total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
     priors['mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-    # priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
-    #                                                                      maximum=5e3, latex_label="$L_D$")
-    # priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    # priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2*np.pi, latex_label="$\phi$")
-    # priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    # priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    # priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2*np.pi, latex_label="$\psi$")
-    # priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    priors['luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+                                                                         maximum=5e3, latex_label="$L_D$")
+    priors['inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
+    priors['phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2*np.pi, latex_label="$\phi$")
+    priors['ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    priors['dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    priors['psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2*np.pi, latex_label="$\psi$")
+    priors['geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     # priors['s13'] = tupak.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13')
     # priors['s23'] = tupak.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s13')
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
