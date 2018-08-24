@@ -40,7 +40,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     default_other_kwargs = dict(
         new_seed=True,
         zero_noise=False,
-        lionize=True
+        lionize=False
     )
 
     waveform_arguments = update_kwargs(default_waveform_arguments, kwargs)
@@ -89,8 +89,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                                 waveform_generator=waveform_generator,
                                                                 prior=priors)
-    priors['s13'] = tupak.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13')
-    priors['s23'] = tupak.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s13')
+    # priors['s13'] = tupak.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13')
+    # priors['s23'] = tupak.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s13')
 
     result = tupak.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
@@ -108,7 +108,7 @@ def update_kwargs(default_kwargs, kwargs):
     return new_kwargs
 
 
-def run_basic_injection_NRSur(injection_model, recovery_model, outdir, **kwargs):
+def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs):
     start_time = -0.5
     end_time = 0.01  # 0.029
     duration = end_time - start_time
