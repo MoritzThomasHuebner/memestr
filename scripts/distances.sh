@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 bash ../install.sh
-for i in `seq 50 20 500`;
+for i in `seq 50 100 500`;
         do
                 bash IMR_mem_inj_mem_rec.sh ${i}
                 bash IMR_mem_inj_non_mem_rec.sh ${i}
