@@ -17,7 +17,6 @@ for arg in sys.argv[5:]:
     if any(char.isdigit() for char in value):
         value = float(value)
     kwargs[key] = value
-    print "Keyword argument: %s = %s" % (key, value)
 
 submitter.run_job(outdir=outdir,
                   script=script,
