@@ -10,4 +10,4 @@ submitter.run_job(outdir=sys.argv[1],
                   dir_path=os.path.dirname(os.path.realpath(__file__)),
                   injection_model=models[sys.argv[3]],
                   recovery_model=models[sys.argv[4]],
-                  luminosity_distance=sys.argv[5])
+                  luminosity_distance=int(sys.argv[5]))

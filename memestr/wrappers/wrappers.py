@@ -246,5 +246,6 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
+    print(imr_phenom_kwargs)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
                         **imr_phenom_kwargs)
