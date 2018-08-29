@@ -9,12 +9,6 @@ def time_domain_nr_sur_waveform_without_memory(times, mass_ratio, total_mass, s1
                                                luminosity_distance,
                                                inc, phase, LMax, **kwargs):
     temp_times = copy.copy(times)
-    print(s11)
-    print(s12)
-    print(s13)
-    print(s21)
-    print(s22)
-    print(s23)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
                                                     MTot=total_mass,
