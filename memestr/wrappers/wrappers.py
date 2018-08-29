@@ -235,6 +235,7 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
     )
     nr_sur_kwargs.update(kwargs)
     nr_sur_kwargs.update(kwargs)
+    print(nr_sur_kwargs)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir, **nr_sur_kwargs)
 
 
