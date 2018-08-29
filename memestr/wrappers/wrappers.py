@@ -224,7 +224,7 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
 
 def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kwargs):
     priors = dict()
-    injection_parameters = InjectionParameters()
+    injection_parameters = InjectionParameters.init_with_updated_kwargs(kwargs)
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
     priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
