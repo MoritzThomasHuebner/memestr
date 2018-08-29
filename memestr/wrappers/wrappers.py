@@ -52,7 +52,7 @@ class RunParameters(object):
 class InjectionParameters(RunParameters):
 
     def __init__(self, mass_ratio=1, total_mass=60, s11=0, s12=0, s13=0, s21=0, s22=0, s23=0,
-                 luminosity_distance=500., inc=np.pi / 2, phase=1, ra=1.54, dec=-0.7, psi=2.659,
+                 luminosity_distance=500., inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659,
                  geocent_time=1126259642.413):
         super(InjectionParameters, self).__init__()
         self.mass_ratio = mass_ratio
