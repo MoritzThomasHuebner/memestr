@@ -8,5 +8,5 @@ JOB=run_basic_job.py
 SCRIPT=run_basic_injection_nrsur
 INJECTION_MODEL=time_domain_nr_sur_waveform_with_memory
 RECOVERY_MODEL=time_domain_nr_sur_waveform_with_memory
-srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL}
+srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} $@
 EOF
