@@ -4,6 +4,7 @@ from memestr.submit import submitter
 from memestr import models, scripts
 import os
 
+print(sys.argv)
 submitter.run_job(outdir=sys.argv[1],
                   script=scripts[sys.argv[2]],
                   dir_path=os.path.dirname(os.path.realpath(__file__)),
