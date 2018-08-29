@@ -209,7 +209,7 @@ def update_kwargs(default_kwargs, kwargs):
 
 def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs):
     start_time = -0.5
-    end_time = 0.00 # 0.01  # 0.029
+    end_time = 0.00  # 0.01   0.029
     duration = end_time - start_time
 
     priors = dict()
@@ -226,7 +226,6 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
     # priors['prior_dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
     priors['prior_psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
     # priors['prior_geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
-
     nr_sur_kwargs = dict(
         start_time=start_time,
         duration=duration,
@@ -234,6 +233,7 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
         new_seed=False,
         zero_noise=False
     )
+    nr_sur_kwargs.update(kwargs)
     nr_sur_kwargs.update(kwargs)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir, **nr_sur_kwargs)
 
