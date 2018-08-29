@@ -4,9 +4,24 @@ from memestr.submit import submitter
 from memestr import models, scripts
 import os
 
-submitter.run_job(outdir=sys.argv[1],
-                  script=scripts[sys.argv[2]],
-                  dir_path=os.path.dirname(os.path.realpath(__file__)),
-                  injection_model=models[sys.argv[3]],
-                  recovery_model=models[sys.argv[4]])
-#                  luminosity_distance=int(sys.argv[5]))
+outdir = sys.argv[1]
+script = scripts[sys.argv[2]]
+dir_path = os.path.dirname(os.path.realpath(__file__))
+injection_model = models[sys.argv[3]]
+recovery_model = models[sys.argv[4]]
+
+kwargs = dict()
+for arg in sys.argv[5:]:
+    key = arg.split("=")[0]
+    value = arg.split("=")[1]
+    if any(char.isdigit() for char in value):
+        value = float(value)
+    kwargs[key] = value
+    print "Keyword argument: %s = %s" % (key, value)
+
+submitter.run_job(outdir=outdir,
+                  script=script,
+                  dir_path=dir_path,
+                  injection_model=injection_model,
+                  recovery_model=recovery_model,
+                  **kwargs)
