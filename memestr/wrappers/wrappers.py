@@ -197,7 +197,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     filename = super_dir + '/distance_evidence.dat'
     with open(filename, 'a') as outfile:
         outfile.write(str(settings.injection_parameters.luminosity_distance) + '\t' +
-                      str(result.log_evidence) + '\t' +
+                      str(result.log_bayes_factor) + '\t' +
                       str(result.log_evidence_err) + '\n')
 
 
