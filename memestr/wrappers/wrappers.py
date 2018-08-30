@@ -65,7 +65,6 @@ class RunParameters(object):
         return res
 
 
-
 class InjectionParameters(RunParameters):
 
     def __init__(self, mass_ratio=1.2, total_mass=60, s11=0, s12=0, s13=0, s21=0, s22=0, s23=0,
