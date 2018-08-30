@@ -11,6 +11,5 @@ for subdir, dirs, files in os.walk(dir_path):
         with open('distance_evidence.dat', 'a') as outfile:
             outfile.write(str(subdir) + '\t' +
                           str(result.log_bayes_factor) + '\t' +
-                          str(result.log_bayes_factor_err) + '\t' +
                           str(result.log_evidence) + '\t' +
                           str(result.log_evidence_err) + '\n')
