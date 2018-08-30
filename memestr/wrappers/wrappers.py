@@ -258,7 +258,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     imr_phenom_kwargs = dict(
         label='IMRPhenomD',
         new_seed=True,
-        zero_noise=True,
+        zero_noise=False,
         npoints=5000
     )
     imr_phenom_kwargs.update(priors)
