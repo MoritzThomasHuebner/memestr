@@ -9,7 +9,7 @@ for subdir, dirs, files in os.walk(dir_path):
         result = tupak.core.result.read_in_result(filename=dir_path)
 
         with open('distance_evidence.dat', 'a') as outfile:
-            outfile.write(str(subdir) + '\t' +
+            outfile.write(str(dir) + '\t' +
                           str(result.log_bayes_factor) + '\t' +
                           str(result.log_evidence) + '\t' +
                           str(result.log_evidence_err) + '\n')
