@@ -207,15 +207,13 @@ def find_unallocated_name(name):
 
 
 def move_log_file_to_outdir(dir_path, outdir, log_file):
-    print(dir_path + "/" + log_file)
-    print(dir_path + "/" + outdir + "/" + log_file)
     os.rename(dir_path + "/" + log_file, dir_path + "/" + outdir + "/" + log_file)
 
 
 def run_job(outdir, script, dir_path=None, **kwargs):
     script(outdir=outdir,
            **kwargs)
-    if dir_path is not None:
-        move_log_file_to_outdir(dir_path=dir_path,
-                                log_file=outdir + '.log',
-                                outdir=outdir)
+    # if dir_path is not None:
+        # move_log_file_to_outdir(dir_path=dir_path,
+        #                         log_file=outdir + '.log',
+        #                         outdir=outdir)
