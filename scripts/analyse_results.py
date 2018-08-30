@@ -10,17 +10,15 @@ runs = [run_id+'_IMR_mem_inj_mem_rec',
 for run in runs:
     with open(run + '_distance_evidence.dat', 'a') as outfile:
         outfile.write("#Luminosity distance\tlog_bayes_factor\tlog_bayes_evidence\tlog_bayes_evidence_err")
-
-    dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
-    for subdir, dirs, _ in os.walk(dir_path):
-        for dir in dirs:
-            dir_path = subdir + "/" + dir + "/" + "IMRPhenomD_result.h5"
-            print(dir_path)
-            try:
-                result = tupak.core.result.read_in_result(filename=dir_path)
-            except ValueError:
-                break
-            with open(run + '_distance_evidence.dat', 'a') as outfile:
+        dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
+        for subdir, dirs, _ in os.walk(dir_path):
+            for dir in dirs:
+                dir_path = subdir + "/" + dir + "/" + "IMRPhenomD_result.h5"
+                print(dir_path)
+                try:
+                    result = tupak.core.result.read_in_result(filename=dir_path)
+                except ValueError:
+                    break
                 outfile.write(str(dir) + '\t' +
                               str(result.log_evidence) + '\t' +
                               str(result.log_bayes_factor) + '\t' +
