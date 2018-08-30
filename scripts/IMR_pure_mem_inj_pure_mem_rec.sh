@@ -3,7 +3,7 @@
 source distances_slurm_setup.sh ${0}
 # source default_slurm_setup.sh ${0}
 
-sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL}<<EOF
+sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} ${ARRAY}<<EOF
 #!/usr/bin/env bash
 JOB=run_basic_job.py
 SCRIPT=run_basic_injection_imr_phenom
