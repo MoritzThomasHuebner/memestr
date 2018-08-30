@@ -21,6 +21,15 @@ class AllSettings(object):
         for key in self.waveform_arguments.__dict__:
             self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
 
+    def __repr__(self):
+        return 'AllSettings(' + repr(self.injection_parameters) + \
+                       ', \n' + repr(self.recovery_priors) + \
+                       ', \n' + repr(self.waveform_arguments) + \
+                       ', \n' + repr(self.waveform_data) + \
+                       ', \n' + repr(self.sampler_settings) + \
+                       ', \n' + repr(self.detector_settings) +  \
+                       ', \n' + repr(self.other_settings)
+
     @classmethod
     def from_defaults_with_some_specified_kwargs(cls, **kwargs):
         return cls(injection_parameters=InjectionParameters.init_with_updated_kwargs(**kwargs),
@@ -47,6 +56,14 @@ class RunParameters(object):
         res = cls()
         res.update_args(**kwargs)
         return res
+
+    def __repr__(self):
+        res = self.__class__.__name__ + "("
+        for key in self.__dict__:
+            res = res + key + "=" + self.__dict__[key] + ", "
+        res = res + ")"
+        return res
+
 
 
 class InjectionParameters(RunParameters):
@@ -191,6 +208,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             outdir=outdir,
                                             **settings.sampler_settings.__dict__)
     result.plot_corner(lionize=settings.other_settings.lionize)
+    result['memory_settings'] = settings
     print(result)
 
     super_dir = outdir.split("/")[0]
@@ -248,17 +266,17 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
     priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=5e3, latex_label="$L_D$")
-    priors['prior_inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    priors['prior_phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
-    priors['prior_ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    priors['prior_dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['prior_psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    priors['prior_geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    # priors['prior_inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
+    # priors['prior_phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
+    # priors['prior_ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    # priors['prior_psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    # priors['prior_geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD',
         new_seed=True,
-        zero_noise=False,
+        zero_noise=True,
         npoints=5000
     )
     imr_phenom_kwargs.update(priors)
