@@ -93,9 +93,9 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
     priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-    priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
-                                                                               maximum=5e3, latex_label="$L_D$")
+    # priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
+    # priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+    #                                                                            maximum=5e3, latex_label="$L_D$")
     # priors['prior_inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
     # priors['prior_phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
     # priors['prior_ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
@@ -107,7 +107,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
         label='IMRPhenomD',
         new_seed=False,
         zero_noise=True,
-        npoints=5000
+        npoints=500
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
