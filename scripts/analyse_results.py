@@ -8,8 +8,8 @@ runs = [run_id+'_IMR_mem_inj_mem_rec',
         run_id+'_IMR_pure_mem_inj_pure_mem_rec']
 
 for run in runs:
-    with open(run + '_distance_evidence.dat', 'a') as outfile:
-        outfile.write("#Luminosity distance\tlog_bayes_factor\tlog_bayes_evidence\tlog_bayes_evidence_err")
+    with open(run + '_distance_evidence.dat', 'w') as outfile:
+        outfile.write("#Luminosity distance\tlog_bayes_factor\tlog_bayes_evidence\tlog_bayes_evidence_err\n")
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
         for subdir, dirs, _ in os.walk(dir_path):
             for dir in dirs:
