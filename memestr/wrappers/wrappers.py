@@ -193,7 +193,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     result.plot_corner(lionize=settings.other_settings.lionize)
     print(result)
 
-    filename = 'distance_evidence_' + outdir[4:] + '.dat'
+    filename = outdir + '/distance_evidence_.dat'
     with open(filename, 'a') as outfile:
         outfile.write(str(settings.injection_parameters.luminosity_distance) + '\t' +
                       str(result.log_evidence) + '\t' +
