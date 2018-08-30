@@ -13,13 +13,13 @@ for run in runs:
 
     dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
     for subdir, dirs, _ in os.walk(dir_path):
-        for dir in dirs:
-            dir_path = subdir + "/" + dir + "/" + "IMRPhenomD_result.h5"
-            print(dir_path)
-            result = tupak.core.result.read_in_result(filename=dir_path)
 
-            with open(run + '_distance_evidence.dat', 'a') as outfile:
-                outfile.write(str(dir) + '\t' +
-                              str(result.log_evidence) + '\t' +
-                              str(result.log_bayes_factor) + '\t' +
-                              str(result.log_evidence_err) + '\n')
+        dir_path = subdir + "/" + dirs[0] + "/" + "IMRPhenomD_result.h5"
+        print(dir_path)
+
+        result = tupak.core.result.read_in_result(filename=dir_path)
+        with open(run + '_distance_evidence.dat', 'a') as outfile:
+            outfile.write(str(dirs[0]) + '\t' +
+                          str(result.log_evidence) + '\t' +
+                          str(result.log_bayes_factor) + '\t' +
+                          str(result.log_evidence_err) + '\n')
