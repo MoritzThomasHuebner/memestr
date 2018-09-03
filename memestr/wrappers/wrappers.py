@@ -58,7 +58,7 @@ def update_kwargs(default_kwargs, kwargs):
 
 def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs):
     start_time = -0.5
-    end_time = 0.00  # 0.01   0.029
+    end_time = 0.01  # 0.029
     duration = end_time - start_time
 
     priors = dict()
@@ -79,7 +79,7 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
         start_time=start_time,
         duration=duration,
         label='NRSur',
-        new_seed=False,
+        new_seed=True,
         zero_noise=False
     )
     nr_sur_kwargs.update(priors)
