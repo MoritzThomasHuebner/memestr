@@ -40,6 +40,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             **settings.sampler_settings.__dict__)
     result.plot_corner(lionize=settings.other_settings.lionize)
     result.memory_settings = settings
+    result.ifos = ifos
     print(result)
 
     result.save_to_file()
