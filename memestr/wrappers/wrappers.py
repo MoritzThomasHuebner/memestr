@@ -36,10 +36,13 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             priors=settings.recovery_priors.proper_dict(),
                                             injection_parameters=settings.injection_parameters.__dict__,
                                             outdir=outdir,
+                                            save=False,
                                             **settings.sampler_settings.__dict__)
     result.plot_corner(lionize=settings.other_settings.lionize)
-    result['memory_settings'] = settings
+    result.memory_settings = settings
     print(result)
+
+    result.save_to_file()
 
     super_dir = outdir.split("/")[0]
     filename = super_dir + '/distance_evidence.dat'
