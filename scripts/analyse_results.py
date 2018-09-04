@@ -1,6 +1,6 @@
 import tupak
 import os
-run_id = '002'
+run_id = '003'
 runs = [run_id+'_IMR_mem_inj_mem_rec',
         run_id+'_IMR_mem_inj_non_mem_rec',
         run_id+'_IMR_non_mem_inj_mem_rec',
