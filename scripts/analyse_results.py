@@ -18,7 +18,7 @@ for run in runs:
                     dir_path = subdir + "/" + f
                     print(dir_path)
                     result = tupak.core.result.read_in_result(filename=dir_path)
-                    outfile.write(str(os.path.basename(dir_path)) + '\t' +
+                    outfile.write(str(os.path.basename(subdir)) + '\t' +
                                   str(result.log_evidence) + '\t' +
                                   str(result.log_bayes_factor) + '\t' +
                                   str(result.log_evidence_err) + '\n')
