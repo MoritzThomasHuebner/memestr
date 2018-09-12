@@ -159,7 +159,10 @@ class DetectorSettings(RunParameters):
 
     def __init__(self, zero_noise=False, *detectors):
         super(DetectorSettings, self).__init__()
-        self.zero_noise = zero_noise
+        if zero_noise == 'True':
+            self.zero_noise = True
+        else:
+            self.zero_noise = zero_noise
         self.detectors = list(detectors)
         if len(self.detectors) == 0:
             self.detectors = ['H1', 'L1', 'V1']
@@ -175,12 +178,12 @@ class OtherSettings(RunParameters):
         if time_marginalization == 'True':
             self.time_marginalization = True
         else:
-            self.time_marginalization = False
+            self.time_marginalization = time_marginalization
         if distance_marginalization == 'True':
             self.distance_marginalization = True
         else:
-            self.distance_marginalization = False
+            self.distance_marginalization = distance_marginalization
         if phase_marginalization == 'True':
             self.phase_marginalization = True
         else:
-            self.phase_marginalization = False
+            self.phase_marginalization = phase_marginalization
