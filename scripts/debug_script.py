@@ -5,9 +5,9 @@ from memestr import models, scripts
 #                                                          recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
 #                                                          outdir='test')
 submitter.run_job(outdir='NRSur_HOM_NRSur_HOM',
-                  script=scripts['run_basic_injection_nrsur'],
-                  injection_model=models['time_domain_nr_sur_waveform_with_memory'],
-                  recovery_model=models['time_domain_nr_sur_waveform_with_memory'],
+                  script=scripts['run_basic_injection_imr_phenom'],
+                  injection_model=models['time_domain_IMRPhenomD_waveform_without_memory'],
+                  recovery_model=models['time_domain_IMRPhenomD_waveform_without_memory'],
                   luminosity_distance=50,
                   l_max=4,
                   mass_ratio=1.2414,
