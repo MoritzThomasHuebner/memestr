@@ -13,8 +13,9 @@ for run in runs:
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
         for subdirs, _, _ in os.walk(dir_path):
             for subdir in subdirs:
+                print(subdir)
+                continue
                 files = os.listdir(subdir)
-                print(files)
                 for f in files:
                     if 'result.h5' in f:
                         dir_path = subdir + "/" + f
