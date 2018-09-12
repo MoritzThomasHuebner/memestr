@@ -59,7 +59,7 @@ class RunParameters(object):
     def __repr__(self):
         res = self.__class__.__name__ + "("
         for key in self.__dict__:
-            res = res + key + "=" + self.__dict__[key] + ", "
+            res = res + key + "=" + str(self.__dict__[key]) + ", "
         res = res + ")"
         return res
 
