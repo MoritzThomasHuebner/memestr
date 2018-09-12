@@ -173,8 +173,14 @@ class OtherSettings(RunParameters):
     def __init__(self, new_seed=True, lionize=False, time_marginalization=False,
                  distance_marginalization=False, phase_marginalization=False):
         super(OtherSettings, self).__init__()
-        self.new_seed = new_seed
-        self.lionize = lionize
+        if new_seed == 'False':
+            self.new_seed = False
+        else:
+            self.new_seed = new_seed
+        if lionize == 'True':
+            self.lionize = True
+        else:
+            self.lionize = lionize
         if time_marginalization == 'True':
             self.time_marginalization = True
         else:
