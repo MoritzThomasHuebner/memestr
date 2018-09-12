@@ -14,9 +14,11 @@ for run in runs:
         for subdirs, _, _ in os.walk(dir_path):
             for subdir in subdirs:
                 files = os.listdir(subdirs)
+                print(files)
                 for f in files:
                     if 'result.h5' in f:
                         dir_path = subdir + "/" + f
+                        print(subdir)
                         print(dir_path)
                         result = tupak.core.result.read_in_result(filename=dir_path)
                         outfile.write(str(dir) + '\t' +
