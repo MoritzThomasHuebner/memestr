@@ -151,7 +151,7 @@ class SamplerSettings(RunParameters):
     def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD'):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
-        self.npoints = npoints
+        self.npoints = int(npoints)
         self.label = label
 
 
