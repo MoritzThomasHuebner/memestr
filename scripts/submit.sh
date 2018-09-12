@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-bash ../install.sh
 bash IMR_mem_inj_mem_rec.sh           time_marginalization=True npoints=500 zero_noise=True label=IMR_mem_inj_mem_rec
 bash IMR_mem_inj_non_mem_rec.sh       time_marginalization=True npoints=500 zero_noise=True label=IMR_mem_inj_non_mem_rec
 bash IMR_non_mem_inj_non_mem_rec.sh   time_marginalization=True npoints=500 zero_noise=True label=IMR_non_mem_inj_non_mem_rec
