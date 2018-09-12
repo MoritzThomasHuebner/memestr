@@ -15,7 +15,10 @@ for arg in sys.argv[5:]:
     key = arg.split("=")[0]
     value = arg.split("=")[1]
     if any(char.isdigit() for char in value):
-        value = float(value)
+        if all(char.isdigit() for char in value):
+            value = int(value)
+        else:
+            value = float(value)
     kwargs[key] = value
 print(kwargs)
 
