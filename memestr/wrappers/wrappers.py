@@ -118,7 +118,6 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
         zero_noise=True,
         npoints=5000,
         time_marginalization=True
-        # distance_marginalization=True
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
