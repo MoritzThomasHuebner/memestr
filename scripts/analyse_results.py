@@ -12,13 +12,10 @@ for run in runs:
         outfile.write("#Luminosity distance\tlog_bayes_factor\tlog_bayes_evidence\tlog_bayes_evidence_err\n")
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
         for subdir, _, _ in os.walk(dir_path):
-            print(subdir)
-            continue
             files = os.listdir(subdir)
             for f in files:
                 if 'result.h5' in f:
                     dir_path = subdir + "/" + f
-                    print(subdir)
                     print(dir_path)
                     result = tupak.core.result.read_in_result(filename=dir_path)
                     outfile.write(str(dir) + '\t' +
