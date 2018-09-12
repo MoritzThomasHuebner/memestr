@@ -43,9 +43,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             save=False,
                                             **settings.sampler_settings.__dict__)
     result.plot_corner(lionize=settings.other_settings.lionize)
-    result.memory_settings = settings
-    for key in settings:
-        result['key'] = settings[key]
+    result.memory_settings = repr(settings)
+
     # result.ifos = ifos
     print(result)
 
@@ -117,7 +116,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
         label='IMRPhenomD',
         new_seed=False,
         zero_noise=True,
-        npoints=5000,
+        npoints=500,
         time_marginaliztaion=True,
         # phase_marginalization=True
     )
