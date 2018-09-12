@@ -15,8 +15,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     waveform_generator = tupak.gw.WaveformGenerator(time_domain_source_model=injection_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
-                                                    parameter_conversion=tupak.gw.conversion.
-                                                    convert_to_lal_binary_black_hole_parameters,
                                                     **settings.waveform_data.__dict__)
 
     hf_signal = waveform_generator.frequency_domain_strain()
@@ -118,9 +116,9 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
         label='IMRPhenomD',
         new_seed=False,
         zero_noise=True,
-        npoints=5000
-        # time_marginalization=True,
-        # distance_marginalization=True
+        npoints=5000,
+        time_marginalization=True,
+        distance_marginalization=True
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
