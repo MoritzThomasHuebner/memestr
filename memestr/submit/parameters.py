@@ -148,11 +148,17 @@ class WaveformData(RunParameters):
 
 class SamplerSettings(RunParameters):
 
-    def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD'):
+    conversion_functions = dict(
+        convert_to_lal_binary_black_hole_parameters=tupak.gw.conversion.convert_to_lal_binary_black_hole_parameters
+    )
+
+    def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
+        if conversion_function is not None:
+            self.conversion_function = self.conversion_functions['conversion_function']
 
 
 class DetectorSettings(RunParameters):
