@@ -172,6 +172,6 @@ class OtherSettings(RunParameters):
         super(OtherSettings, self).__init__()
         self.new_seed = new_seed
         self.lionize = lionize
-        self.time_marginalisation = time_marginalization
-        self.distance_marginalisation = distance_marginalization
-        self.phase_marginalisation = phase_marginalization
+        self.time_marginalization = time_marginalization
+        self.distance_marginalization = distance_marginalization
+        self.phase_marginalization = phase_marginalization
