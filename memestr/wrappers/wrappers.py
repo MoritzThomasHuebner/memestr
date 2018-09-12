@@ -117,7 +117,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
         label='IMRPhenomD',
         new_seed=False,
         zero_noise=True,
-        npoints=500,
+        npoints=5000,
         time_marginaliztaion=True,
         # phase_marginalization=True
     )
