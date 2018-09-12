@@ -167,7 +167,11 @@ class DetectorSettings(RunParameters):
 
 class OtherSettings(RunParameters):
 
-    def __init__(self, new_seed=True, lionize=False):
+    def __init__(self, new_seed=True, lionize=False, time_marginalization=False,
+                 distance_marginalization=False, phase_marginalization=False):
         super(OtherSettings, self).__init__()
         self.new_seed = new_seed
         self.lionize = lionize
+        self.time_marginalisation = time_marginalization
+        self.distance_marginalisation = distance_marginalization
+        self.phase_marginalisation = phase_marginalization

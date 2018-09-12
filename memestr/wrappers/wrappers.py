@@ -28,9 +28,13 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
 
     waveform_generator.time_domain_source_model = recovery_model
 
-    likelihood = tupak.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
-                                                                waveform_generator=waveform_generator,
-                                                                prior=settings.recovery_priors.proper_dict())
+    likelihood = tupak.gw.likelihood \
+        .GravitationalWaveTransient(interferometers=ifos,
+                                    waveform_generator=waveform_generator,
+                                    prior=settings.recovery_priors.proper_dict(),
+                                    time_marginalization=settings.other_settings.time_marginalization,
+                                    distance_marginalization=settings.other_settings.distance_marginalization,
+                                    phase_marginalization=settings.other_settings.phase_marginalization)
 
     result = tupak.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=settings.recovery_priors.proper_dict(),
