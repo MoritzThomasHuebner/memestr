@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source distances_slurm_setup.sh ${0}
-# source default_slurm_setup.sh ${0}
+#source distances_slurm_setup.sh ${0}
+source default_slurm_setup.sh ${0}
 
 sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} ${ARRAY}<<EOF
 #!/usr/bin/env bash

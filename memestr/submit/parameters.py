@@ -85,7 +85,7 @@ class InjectionParameters(RunParameters):
         self.dec = dec
         self.psi = psi
         self.geocent_time = geocent_time
-        self.random_injection_paramters = random_injection_parameters
+        self.random_injection_parameters = random_injection_parameters
 
 
 class RecoveryPriors(RunParameters):
