@@ -68,7 +68,7 @@ class InjectionParameters(RunParameters):
 
     def __init__(self, mass_ratio=1.2, total_mass=60, s11=0, s12=0, s13=0, s21=0, s22=0, s23=0,
                  luminosity_distance=500., inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659,
-                 geocent_time=1126259642.413):
+                 geocent_time=1126259642.413, random_injection_parameters=False):
         super(InjectionParameters, self).__init__()
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
@@ -85,6 +85,7 @@ class InjectionParameters(RunParameters):
         self.dec = dec
         self.psi = psi
         self.geocent_time = geocent_time
+        self.random_injection_paramters = random_injection_parameters
 
 
 class RecoveryPriors(RunParameters):

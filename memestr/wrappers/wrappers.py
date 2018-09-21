@@ -7,7 +7,8 @@ from memestr.submit.parameters import AllSettings, InjectionParameters
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
-
+    if settings.injection_parameters.random_injection_parameters:
+        settings.injection_parameters.__dict__.update(sample_injection_parameters())
     tupak.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
     if not settings.other_settings.new_seed:
         np.random.seed(88170235)
@@ -120,3 +121,8 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     imr_phenom_kwargs.update(kwargs)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
                         **imr_phenom_kwargs)
+
+
+def sample_injection_parameters():
+    priors = tupak.gw.prior.BBHPriorSet()
+    return priors.sample()
