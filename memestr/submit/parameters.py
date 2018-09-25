@@ -125,6 +125,7 @@ class RecoveryPriors(RunParameters):
         self.prior_s23 = s23
 
     def proper_dict(self):
+        """ Removes 'prior_' from the dict"""
         result = dict()
         for key in self.__dict__:
             result[key[6:]] = self.__dict__[key]

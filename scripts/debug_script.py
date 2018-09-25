@@ -4,7 +4,7 @@ from memestr import models, scripts
 # memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
 #                                                          recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
 #                                                          outdir='test')
-submitter.run_job(outdir='NRSur_HOM_NRSur_HOM',
+submitter.run_job(outdir='debug',
                   script=scripts['run_basic_injection_imr_phenom'],
                   injection_model=models['time_domain_IMRPhenomD_waveform_without_memory'],
                   recovery_model=models['time_domain_IMRPhenomD_waveform_without_memory'],
@@ -18,7 +18,12 @@ submitter.run_job(outdir='NRSur_HOM_NRSur_HOM',
                   phase=1.3,
                   geocent_time=1126259642.413,
                   ra=1.375,
-                  dec=-1.2108)
+                  dec=-1.2108,
+                  random_seed=3,
+                  time_marginalization=True,
+                  zero_noise=False,
+                  random_injection_parameters=True,
+                  label='IMR_non_mem_inj_mem_rec')
 
 # submitter.run_job(outdir='NRSur_HOM_IMR_Base_Mode',
 #                   script=scripts['run_basic_injection_nrsur'],
