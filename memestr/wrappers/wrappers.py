@@ -11,6 +11,12 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
         np.random.seed(settings.other_settings.random_seed)
     if settings.injection_parameters.random_injection_parameters:
         settings.injection_parameters.__dict__.update(sample_injection_parameters())
+        pd = settings.recovery_priors.proper_dict()
+        for key in pd:
+            if isinstance(pd[key], (int, float, tupak.core.prior.DeltaFunction)):
+                settings.recovery_priors.__dict__['prior_' + key] = \
+                    tupak.core.prior.DeltaFunction(peak=settings.injection_parameters.__dict__[key])
+
     tupak.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
 
     waveform_generator = tupak.gw.WaveformGenerator(time_domain_source_model=injection_model,
@@ -130,4 +136,10 @@ def sample_injection_parameters():
     priors['luminosity_distance'].maximum = 1000
     priors['total_mass'] = tupak.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
     priors['mass_ratio'] = tupak.prior.Uniform(minimum=0.125, maximum=1, latex_label='$q$')
+    priors['a_1'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['a_2'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['tilt_1'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['tilt_2'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['phi_12'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['phi_jl'] = tupak.core.prior.DeltaFunction(peak=0)
     return priors.sample()

@@ -22,12 +22,12 @@ class AllSettings(object):
 
     def __repr__(self):
         return 'AllSettings(' + repr(self.injection_parameters) + \
-                       ', \n' + repr(self.recovery_priors) + \
-                       ', \n' + repr(self.waveform_arguments) + \
-                       ', \n' + repr(self.waveform_data) + \
-                       ', \n' + repr(self.sampler_settings) + \
-                       ', \n' + repr(self.detector_settings) +  \
-                       ', \n' + repr(self.other_settings)
+               ', \n' + repr(self.recovery_priors) + \
+               ', \n' + repr(self.waveform_arguments) + \
+               ', \n' + repr(self.waveform_data) + \
+               ', \n' + repr(self.sampler_settings) + \
+               ', \n' + repr(self.detector_settings) + \
+               ', \n' + repr(self.other_settings)
 
     @classmethod
     def from_defaults_with_some_specified_kwargs(cls, **kwargs):
@@ -125,10 +125,13 @@ class RecoveryPriors(RunParameters):
         self.prior_s23 = s23
 
     def proper_dict(self):
-        """ Removes 'prior_' from the dict"""
         result = dict()
-        for key in self.__dict__:
-            result[key[6:]] = self.__dict__[key]
+        for key in [
+            'prior_total_mass', 'prior_mass_ratio', 'prior_luminosity_distance', 'prior_inc', 'prior_phase', 'prior_ra',
+            'prior_dec', 'prior_psi', 'prior_geocent_time', 'prior_s11', 'prior_s12', 'prior_s21', 'prior_s22',
+            'prior_s13', 'prior_s23'
+        ]:
+            result[key[6:]] = getattr(self, key)
         return result
 
 
@@ -149,12 +152,11 @@ class WaveformData(RunParameters):
 
 
 class SamplerSettings(RunParameters):
-
     conversion_functions = dict(
         convert_to_lal_binary_black_hole_parameters=tupak.gw.conversion.convert_to_lal_binary_black_hole_parameters
     )
 
-    def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None):
+    def __init__(self, sampler='dynesty', npoints=6000, label='IMRPhenomD', conversion_function=None):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
