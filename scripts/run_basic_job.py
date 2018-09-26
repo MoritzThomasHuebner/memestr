@@ -12,6 +12,7 @@ recovery_model = models[sys.argv[4]]
 
 kwargs = dict()
 for arg in sys.argv[5:]:
+    print(arg)
     key = arg.split("=")[0]
     value = arg.split("=")[1]
     if any(char.isdigit() for char in value):

@@ -2,10 +2,10 @@ from memestr.submit import submitter
 from memestr.wrappers import wrappers
 from memestr import models, scripts
 
-# submitter.create_injection_parameter_set(10, wrappers.sample_injection_parameters)
+submitter.create_injection_parameter_set(10, wrappers.sample_injection_parameters)
 params = submitter.get_injection_bash_strings(5)
 print(params)
-# memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+#  memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
 #                                                          recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
 #                                                          outdir='test')
 # submitter.run_job(outdir='debug',
