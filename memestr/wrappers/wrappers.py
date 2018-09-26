@@ -147,6 +147,8 @@ def sample_injection_parameters():
     priors['s22'] = tupak.core.prior.DeltaFunction(peak=0)
     priors['s23'] = tupak.core.prior.DeltaFunction(peak=0)
     priors['luminosity_distance'].maximum = 1000
+    priors['phase'].maximum = np.pi
+    priors['psi'].maximum = np.pi
     priors['total_mass'] = tupak.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
     priors['mass_ratio'] = tupak.prior.Uniform(minimum=0.5, maximum=1, latex_label='$q$')
     return priors.sample()
