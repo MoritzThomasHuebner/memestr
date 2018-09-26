@@ -10,6 +10,6 @@ JOB=run_basic_job.py
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory
-PARAMS="import memestr; print(memestr.submit.submitter.get_injection_bash_strings(id=\${SLURM_ARRAY_TASK_ID}))"
+PARAMS=`python -c "import memestr; print(memestr.submit.submitter.get_injection_bash_strings(id=\${SLURM_ARRAY_TASK_ID}))"`
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
 EOF
