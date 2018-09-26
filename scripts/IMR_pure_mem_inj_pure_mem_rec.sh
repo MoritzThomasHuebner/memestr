@@ -10,6 +10,6 @@ JOB=run_basic_job.py
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_memory_waveform
 RECOVERY_MODEL=time_domain_IMRPhenomD_memory_waveform
-PARAMS=`python get_injection_bash_strings.py \${SLURM_ARRAY_TASK_ID}`
+PARAMS=`python get_injection_bash_strings.py '\${SLURM_ARRAY_TASK_ID}'`
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
 EOF
