@@ -109,7 +109,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
-    priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=40, maximum=200, latex_label="$M_{tot}$")
+    priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=40, maximum=80, latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=0.125, maximum=1, latex_label="$q$")
     priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=1000, latex_label="$L_D$")
@@ -135,7 +135,7 @@ def sample_injection_parameters():
     del priors['mass_1']
     del priors['mass_2']
     priors['luminosity_distance'].maximum = 1000
-    priors['total_mass'] = tupak.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
+    priors['total_mass'] = tupak.prior.Uniform(minimum=40, maximum=80, latex_label='$M_{tot}$')
     priors['mass_ratio'] = tupak.prior.Uniform(minimum=0.125, maximum=1, latex_label='$q$')
     priors['a_1'] = tupak.core.prior.DeltaFunction(peak=0)
     priors['a_2'] = tupak.core.prior.DeltaFunction(peak=0)
