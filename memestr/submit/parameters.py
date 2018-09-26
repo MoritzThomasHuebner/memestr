@@ -156,7 +156,7 @@ class SamplerSettings(RunParameters):
         convert_to_lal_binary_black_hole_parameters=tupak.gw.conversion.convert_to_lal_binary_black_hole_parameters
     )
 
-    def __init__(self, sampler='dynesty', npoints=6000, label='IMRPhenomD', conversion_function=None):
+    def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
