@@ -206,6 +206,36 @@ def find_unallocated_name(name):
     return outdir
 
 
+def get_injection_parameter_set(id):
+    injection_params = {}
+    with open('parameter_sets/' + str(id)) as f:
+        complete_file = f.read()
+        parameter_strings = complete_file.split('\n')
+        for s in parameter_strings:
+            if s:
+                key_value = s.split('=')
+                injection_params[key_value[0]] = key_value[1]
+    return injection_params
+
+
+def get_injection_bash_strings(id):
+    params = get_injection_parameter_set(id)
+    res = ''
+    for param, val in params.items():
+        res = res + param + '=' + str(val) + ' '
+    return res
+
+
+def create_injection_parameter_set(size, sampling_function):
+    if not os.path.isdir('parameter_sets'):
+        os.mkdir('parameter_sets')
+    for id in range(size):
+        parameters = sampling_function()
+        with open('parameter_sets/' + str(id), 'w') as f:
+            for key, value in parameters.items():
+                f.write(key + '=' + str(value) + '\n')
+
+
 def move_log_file_to_outdir(dir_path, outdir, log_file):
     os.rename(dir_path + "/" + log_file, dir_path + "/" + outdir + "/" + log_file)
 

@@ -134,13 +134,19 @@ def sample_injection_parameters():
     priors = tupak.gw.prior.BBHPriorSet()
     del priors['mass_1']
     del priors['mass_2']
+    del priors['a_1']
+    del priors['a_2']
+    del priors['tilt_1']
+    del priors['tilt_2']
+    del priors['phi_12']
+    del priors['phi_jl']
+    priors['s11'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['s12'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['s13'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['s21'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['s22'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['s23'] = tupak.core.prior.DeltaFunction(peak=0)
     priors['luminosity_distance'].maximum = 1000
     priors['total_mass'] = tupak.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
     priors['mass_ratio'] = tupak.prior.Uniform(minimum=0.5, maximum=1, latex_label='$q$')
-    priors['a_1'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['a_2'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['tilt_1'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['tilt_2'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['phi_12'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['phi_jl'] = tupak.core.prior.DeltaFunction(peak=0)
     return priors.sample()
