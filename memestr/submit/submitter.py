@@ -235,6 +235,7 @@ def create_injection_parameter_set(size, sampling_function):
         with open('parameter_sets/' + str(id), 'w') as f:
             for key, value in parameters.items():
                 f.write(key + '=' + str(value) + ' ')
+            f.write('\n')
 
 
 def move_log_file_to_outdir(dir_path, outdir, log_file):

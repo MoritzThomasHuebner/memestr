@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
-FILENAME=$1
-PARAMS=`python -c "import memestr; print(memestr.submit.submitter.find_unallocated_name(name=\"$FILENAME\"))"`
+FILENAME="./parameter_sets/$1"
+while IFS= read -r var
+do
+  echo "$var"
+done < "$FILENAME"
