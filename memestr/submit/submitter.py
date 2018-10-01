@@ -210,11 +210,12 @@ def get_injection_parameter_set(id):
     injection_params = {}
     with open('parameter_sets/' + str(id)) as f:
         complete_file = f.read()
-        parameter_strings = complete_file.split('\n')
-        for s in parameter_strings:
-            if s:
-                key_value = s.split('=')
-                injection_params[key_value[0]] = key_value[1]
+        attributes = complete_file.split(' ')
+        for attribute in attributes:
+            if attribute:
+                key_value = attribute.split('=')
+                if len(key_value) > 1:
+                    injection_params[key_value[0]] = key_value[1]
     return injection_params
 
 
@@ -233,7 +234,7 @@ def create_injection_parameter_set(size, sampling_function):
         parameters = sampling_function()
         with open('parameter_sets/' + str(id), 'w') as f:
             for key, value in parameters.items():
-                f.write(key + '=' + str(value) + '\n')
+                f.write(key + '=' + str(value) + ' ')
 
 
 def move_log_file_to_outdir(dir_path, outdir, log_file):
