@@ -1,4 +1,4 @@
 numpy
-tupak
+bilby
 NRSur7dq2
 matplotlib
