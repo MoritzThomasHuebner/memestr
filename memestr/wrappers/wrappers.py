@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-import bilby as tupak
+import bilby
 
 from memestr.submit.parameters import AllSettings, InjectionParameters
 
@@ -13,19 +13,19 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
         settings.injection_parameters.__dict__.update(sample_injection_parameters())
         pd = settings.recovery_priors.proper_dict()
         for key in pd:
-            if isinstance(pd[key], (int, float, tupak.core.prior.DeltaFunction)):
+            if isinstance(pd[key], (int, float, bilby.core.prior.DeltaFunction)):
                 settings.recovery_priors.__dict__['prior_' + key] = \
-                    tupak.core.prior.DeltaFunction(peak=settings.injection_parameters.__dict__[key])
+                    bilby.core.prior.DeltaFunction(peak=settings.injection_parameters.__dict__[key])
 
-    tupak.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
+    bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
 
-    waveform_generator = tupak.gw.WaveformGenerator(time_domain_source_model=injection_model,
+    waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=injection_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
 
     hf_signal = waveform_generator.frequency_domain_strain()
-    ifos = [tupak.gw.detector.get_interferometer_with_fake_noise_and_injection(
+    ifos = [bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name,
         injection_polarizations=hf_signal,
         injection_parameters=settings.injection_parameters.__dict__,
@@ -35,7 +35,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
 
     waveform_generator.time_domain_source_model = recovery_model
 
-    likelihood = tupak.gw.likelihood \
+    likelihood = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
                                     prior=settings.recovery_priors.proper_dict(),
@@ -43,7 +43,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
-    result = tupak.core.sampler.run_sampler(likelihood=likelihood,
+    result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=settings.recovery_priors.proper_dict(),
                                             injection_parameters=settings.injection_parameters.__dict__,
                                             outdir=outdir,
@@ -82,16 +82,16 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
-    # priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
-    # priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
-    # priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+    # priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
+    # priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
+    # priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
     #                                                                            maximum=5e3, latex_label="$L_D$")
-    # priors['prior_inc'] = tupak.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    priors['prior_phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
-    # priors['prior_ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    # priors['prior_dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['prior_psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
-    # priors['prior_geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    # priors['prior_inc'] = bilby.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
+    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = bilby.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    # priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     nr_sur_kwargs = dict(
         start_time=start_time,
         duration=duration,
@@ -109,16 +109,16 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
-    priors['prior_total_mass'] = tupak.core.prior.Uniform(minimum=40, maximum=200, latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = tupak.core.prior.Uniform(minimum=0.5, maximum=1, latex_label="$q$")
-    priors['prior_luminosity_distance'] = tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=40, maximum=200, latex_label="$M_{tot}$")
+    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
+    priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=1000, latex_label="$L_D$")
-    priors['prior_inc'] = tupak.core.prior.Sine(latex_label="$\iota$")
-    priors['prior_phase'] = tupak.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
-    priors['prior_ra'] = tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    priors['prior_dec'] = tupak.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['prior_psi'] = tupak.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
-    priors['prior_geocent_time'] = tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\iota$")
+    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
+    priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD',
@@ -131,7 +131,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 
 def sample_injection_parameters():
-    priors = tupak.gw.prior.BBHPriorSet()
+    priors = bilby.gw.prior.BBHPriorSet()
     del priors['mass_1']
     del priors['mass_2']
     del priors['a_1']
@@ -143,15 +143,15 @@ def sample_injection_parameters():
 
     priors['inc'] = priors['iota']
     del priors['iota']
-    priors['s11'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['s12'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['s13'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['s21'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['s22'] = tupak.core.prior.DeltaFunction(peak=0)
-    priors['s23'] = tupak.core.prior.DeltaFunction(peak=0)
+    priors['s11'] = bilby.core.prior.DeltaFunction(peak=0)
+    priors['s12'] = bilby.core.prior.DeltaFunction(peak=0)
+    priors['s13'] = bilby.core.prior.DeltaFunction(peak=0)
+    priors['s21'] = bilby.core.prior.DeltaFunction(peak=0)
+    priors['s22'] = bilby.core.prior.DeltaFunction(peak=0)
+    priors['s23'] = bilby.core.prior.DeltaFunction(peak=0)
     priors['luminosity_distance'].maximum = 1000
     priors['phase'].maximum = np.pi
     priors['psi'].maximum = np.pi
-    priors['total_mass'] = tupak.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
-    priors['mass_ratio'] = tupak.prior.Uniform(minimum=0.5, maximum=1, latex_label='$q$')
+    priors['total_mass'] = bilby.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
+    priors['mass_ratio'] = bilby.prior.Uniform(minimum=1, maximum=2, latex_label='$q$')
     return priors.sample()

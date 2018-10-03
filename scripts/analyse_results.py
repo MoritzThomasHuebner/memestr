@@ -1,5 +1,5 @@
 import numpy as np
-import tupak
+import bilby
 import os
 
 run_id = '011'
@@ -24,7 +24,7 @@ for run in runs:
                 if 'result.h5' in f:
                     dir_path = subdir + "/" + f
                     print(dir_path)
-                    result = tupak.core.result.read_in_result(filename=dir_path)
+                    result = bilby.core.result.read_in_result(filename=dir_path)
                     luminosity_distances.append(int(os.path.basename(subdir)))
                     log_evidence.append(result.log_evidence)
                     log_bayes_factor.append(result.log_bayes_factor)

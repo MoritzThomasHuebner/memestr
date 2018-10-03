@@ -1,5 +1,5 @@
 import numpy as np
-import bilby as tupak
+import bilby
 
 
 class AllSettings(object):
@@ -91,22 +91,22 @@ class InjectionParameters(RunParameters):
 class RecoveryPriors(RunParameters):
 
     def __init__(self,
-                 total_mass=tupak.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$"),
-                 mass_ratio=tupak.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$"),
-                 luminosity_distance=tupak.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
+                 total_mass=bilby.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$"),
+                 mass_ratio=bilby.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$"),
+                 luminosity_distance=bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                           maximum=5e3, latex_label="$L_D$"),
-                 iota=tupakA.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$"),
-                 phase=tupak.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$"),
-                 ra=tupak.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$"),
-                 dec=tupak.core.prior.Cosine(name='dec', latex_label="$DEC$"),
-                 psi=tupak.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$"),
-                 geocent_time=tupak.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time'),
-                 s11=tupak.core.prior.Uniform(name='s11', minimum=0, maximum=0.8, latex_label='s11'),
-                 s12=tupak.core.prior.Uniform(name='s12', minimum=0, maximum=0.8, latex_label='s12'),
-                 s21=tupak.core.prior.Uniform(name='s21', minimum=0, maximum=0.8, latex_label='s21'),
-                 s22=tupak.core.prior.Uniform(name='s22', minimum=0, maximum=0.8, latex_label='s22'),
-                 s13=tupak.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13'),
-                 s23=tupak.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s23')):
+                 iota=bilby.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$"),
+                 phase=bilby.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$"),
+                 ra=bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$"),
+                 dec=bilby.core.prior.Cosine(name='dec', latex_label="$DEC$"),
+                 psi=bilby.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$"),
+                 geocent_time=bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time'),
+                 s11=bilby.core.prior.Uniform(name='s11', minimum=0, maximum=0.8, latex_label='s11'),
+                 s12=bilby.core.prior.Uniform(name='s12', minimum=0, maximum=0.8, latex_label='s12'),
+                 s21=bilby.core.prior.Uniform(name='s21', minimum=0, maximum=0.8, latex_label='s21'),
+                 s22=bilby.core.prior.Uniform(name='s22', minimum=0, maximum=0.8, latex_label='s22'),
+                 s13=bilby.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13'),
+                 s23=bilby.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s23')):
         super(RecoveryPriors, self).__init__()
         self.prior_total_mass = total_mass
         self.prior_mass_ratio = mass_ratio
@@ -153,7 +153,7 @@ class WaveformData(RunParameters):
 
 class SamplerSettings(RunParameters):
     conversion_functions = dict(
-        convert_to_lal_binary_black_hole_parameters=tupak.gw.conversion.convert_to_lal_binary_black_hole_parameters
+        convert_to_lal_binary_black_hole_parameters=bilby.gw.conversion.convert_to_lal_binary_black_hole_parameters
     )
 
     def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None):
