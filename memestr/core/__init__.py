@@ -1,1 +1,1 @@
-import waveforms
+import memestr.core.waveforms
