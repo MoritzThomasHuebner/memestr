@@ -67,7 +67,7 @@ class RunParameters(object):
 class InjectionParameters(RunParameters):
 
     def __init__(self, mass_ratio=1.2, total_mass=60, s11=0, s12=0, s13=0, s21=0, s22=0, s23=0,
-                 luminosity_distance=500., iota=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659,
+                 luminosity_distance=500., inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659,
                  geocent_time=1126259642.413, random_injection_parameters=False):
         super(InjectionParameters, self).__init__()
         self.mass_ratio = mass_ratio
@@ -79,7 +79,7 @@ class InjectionParameters(RunParameters):
         self.s22 = s22
         self.s23 = s23
         self.luminosity_distance = luminosity_distance
-        self.iota = iota
+        self.inc = inc
         self.phase = phase
         self.ra = ra
         self.dec = dec
@@ -95,7 +95,7 @@ class RecoveryPriors(RunParameters):
                  mass_ratio=bilby.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$"),
                  luminosity_distance=bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                           maximum=5e3, latex_label="$L_D$"),
-                 iota=bilby.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$"),
+                 inc=bilby.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$"),
                  phase=bilby.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$"),
                  ra=bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$"),
                  dec=bilby.core.prior.Cosine(name='dec', latex_label="$DEC$"),
@@ -111,7 +111,7 @@ class RecoveryPriors(RunParameters):
         self.prior_total_mass = total_mass
         self.prior_mass_ratio = mass_ratio
         self.prior_luminosity_distance = luminosity_distance
-        self.prior_iota = iota
+        self.prior_inc = inc
         self.prior_phase = phase
         self.prior_ra = ra
         self.prior_dec = dec
@@ -127,7 +127,7 @@ class RecoveryPriors(RunParameters):
     def proper_dict(self):
         result = dict()
         for key in [
-            'prior_total_mass', 'prior_mass_ratio', 'prior_luminosity_distance', 'prior_iota', 'prior_phase', 'prior_ra',
+            'prior_total_mass', 'prior_mass_ratio', 'prior_luminosity_distance', 'prior_inc', 'prior_phase', 'prior_ra',
             'prior_dec', 'prior_psi', 'prior_geocent_time', 'prior_s11', 'prior_s12', 'prior_s21', 'prior_s22',
             'prior_s13', 'prior_s23'
         ]:
