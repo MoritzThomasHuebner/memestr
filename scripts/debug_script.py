@@ -4,21 +4,21 @@ from memestr.wrappers import wrappers
 from memestr import models, scripts
 import matplotlib.pyplot as plt
 import numpy as np
-# submitter.create_injection_parameter_set(256, wrappers.sample_injection_parameters)
-times = np.linspace(0, 4, 32000)
-for i in range(16):
-    params = submitter.get_injection_parameter_set(i)
-    params['inc'] = params['iota']
-    del params['iota']
-    print(params)
-    a = waveforms.time_domain_IMRPhenomD_waveform_with_memory(times, **params)
-    b = waveforms.time_domain_IMRPhenomD_waveform_without_memory(times, **params)
-    c = waveforms.time_domain_IMRPhenomD_memory_waveform(times, **params)
-    # plt.plot(a['plus'])
-    # plt.plot(b['plus'])
-    plt.plot(c['plus'])
-    plt.show()
-    plt.clf()
+submitter.create_injection_parameter_set(256, wrappers.sample_injection_parameters)
+# times = np.linspace(0, 4, 32000)
+# for i in range(16):
+#     params = submitter.get_injection_parameter_set(i)
+#     params['inc'] = params['iota']
+#     del params['iota']
+#     print(params)
+#     a = waveforms.time_domain_IMRPhenomD_waveform_with_memory(times, **params)
+#     b = waveforms.time_domain_IMRPhenomD_waveform_without_memory(times, **params)
+#     c = waveforms.time_domain_IMRPhenomD_memory_waveform(times, **params)
+#     # plt.plot(a['plus'])
+#     # plt.plot(b['plus'])
+#     plt.plot(c['plus'])
+#     plt.show()
+#     plt.clf()
 
 # print(params)
 #  memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
