@@ -24,7 +24,7 @@ def get_injection_parameter_set(id):
             if attribute:
                 key_value = attribute.split('=')
                 if len(key_value) > 1:
-                    injection_params[key_value[0]] = key_value[1]
+                    injection_params[key_value[0]] = float(key_value[1])
     return injection_params
 
 

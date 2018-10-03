@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-import tupak
+import bilby as tupak
 
 from memestr.submit.parameters import AllSettings, InjectionParameters
 
@@ -140,6 +140,9 @@ def sample_injection_parameters():
     del priors['tilt_2']
     del priors['phi_12']
     del priors['phi_jl']
+
+    priors['inc'] = priors['iota']
+    del priors['iota']
     priors['s11'] = tupak.core.prior.DeltaFunction(peak=0)
     priors['s12'] = tupak.core.prior.DeltaFunction(peak=0)
     priors['s13'] = tupak.core.prior.DeltaFunction(peak=0)
