@@ -144,7 +144,7 @@ class WaveformArguments(RunParameters):
 
 class WaveformData(RunParameters):
 
-    def __init__(self, start_time=0, duration=4, sampling_frequency=4096):
+    def __init__(self, start_time=0, duration=8, sampling_frequency=4096):
         super(WaveformData, self).__init__()
         self.start_time = start_time
         self.duration = duration
