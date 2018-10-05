@@ -48,7 +48,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             injection_parameters=settings.injection_parameters.__dict__,
                                             outdir=outdir,
                                             save=False,
-                                            verbose=False,
+                                            verbose=True,
                                             **settings.sampler_settings.__dict__)
     result.plot_corner(lionize=settings.other_settings.lionize)
     result.memory_settings = repr(settings)
