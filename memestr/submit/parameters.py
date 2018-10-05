@@ -195,12 +195,12 @@ class OtherSettings(RunParameters):
         if time_marginalization == 'True':
             self.time_marginalization = True
         else:
-            self.time_marginalization = time_marginalization
+            self.time_marginalization = False
         if distance_marginalization == 'True':
             self.distance_marginalization = True
         else:
-            self.distance_marginalization = distance_marginalization
+            self.distance_marginalization = False
         if phase_marginalization == 'True':
             self.phase_marginalization = True
         else:
-            self.phase_marginalization = phase_marginalization
+            self.phase_marginalization = False
