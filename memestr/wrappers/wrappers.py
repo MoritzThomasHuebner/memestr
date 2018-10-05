@@ -109,16 +109,16 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
-    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=40, maximum=200, latex_label="$M_{tot}$")
+    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=30, maximum=80, latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=1000, latex_label="$L_D$")
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\iota$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
-    priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\iota$")
+    # priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = bilby.core.prior.Cosine(name='dec', latex_label="$DEC$")
+    # priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
+    # priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD',
