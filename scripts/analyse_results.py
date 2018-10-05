@@ -28,7 +28,10 @@ for run in runs:
                     luminosity_distances.append(int(os.path.basename(subdir)))
                     log_evidence.append(result.log_evidence)
                     log_bayes_factor.append(result.log_bayes_factor)
-                    log_evidence_err.append(result.log_evidence_err)
+                    try:
+                        log_evidence_err.append(result.log_evidence_err)
+                    except AttributeError:
+                        log_evidence_err.append(0)
 
         data = zip(luminosity_distances, log_evidence, log_bayes_factor, log_evidence_err)
         data.sort()
