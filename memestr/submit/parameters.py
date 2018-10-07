@@ -2,44 +2,6 @@ import numpy as np
 import bilby
 
 
-class AllSettings(object):
-
-    def __init__(self, injection_parameters, recovery_priors, waveform_arguments, waveform_data, sampler_settings,
-                 detector_settings, other_settings):
-        self.injection_parameters = injection_parameters
-        self.recovery_priors = recovery_priors
-        self.waveform_arguments = waveform_arguments
-        self.waveform_data = waveform_data
-        self.sampler_settings = sampler_settings
-        self.detector_settings = detector_settings
-        self.other_settings = other_settings
-
-        self.__update_arguments_into_injection_parameters()
-
-    def __update_arguments_into_injection_parameters(self):
-        for key in self.waveform_arguments.__dict__:
-            self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
-
-    def __repr__(self):
-        return 'AllSettings(' + repr(self.injection_parameters) + \
-               ', \n' + repr(self.recovery_priors) + \
-               ', \n' + repr(self.waveform_arguments) + \
-               ', \n' + repr(self.waveform_data) + \
-               ', \n' + repr(self.sampler_settings) + \
-               ', \n' + repr(self.detector_settings) + \
-               ', \n' + repr(self.other_settings)
-
-    @classmethod
-    def from_defaults_with_some_specified_kwargs(cls, **kwargs):
-        return cls(injection_parameters=InjectionParameters.init_with_updated_kwargs(**kwargs),
-                   recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
-                   waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
-                   waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
-                   sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),
-                   detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
-                   other_settings=OtherSettings.init_with_updated_kwargs(**kwargs))
-
-
 class RunParameters(object):
 
     def __init__(self):
@@ -204,3 +166,43 @@ class OtherSettings(RunParameters):
             self.phase_marginalization = True
         else:
             self.phase_marginalization = False
+
+
+class AllSettings(object):
+
+    def __init__(self, injection_parameters=InjectionParameters(), recovery_priors=RecoveryPriors(),
+                 waveform_arguments=WaveformArguments(), waveform_data=WaveformData(),
+                 sampler_settings=SamplerSettings(), detector_settings=DetectorSettings(),
+                 other_settings=OtherSettings()):
+        self.injection_parameters = injection_parameters
+        self.recovery_priors = recovery_priors
+        self.waveform_arguments = waveform_arguments
+        self.waveform_data = waveform_data
+        self.sampler_settings = sampler_settings
+        self.detector_settings = detector_settings
+        self.other_settings = other_settings
+
+        self.__update_arguments_into_injection_parameters()
+
+    def __update_arguments_into_injection_parameters(self):
+        for key in self.waveform_arguments.__dict__:
+            self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
+
+    def __repr__(self):
+        return 'AllSettings(' + repr(self.injection_parameters) + \
+               ', \n' + repr(self.recovery_priors) + \
+               ', \n' + repr(self.waveform_arguments) + \
+               ', \n' + repr(self.waveform_data) + \
+               ', \n' + repr(self.sampler_settings) + \
+               ', \n' + repr(self.detector_settings) + \
+               ', \n' + repr(self.other_settings)
+
+    @classmethod
+    def from_defaults_with_some_specified_kwargs(cls, **kwargs):
+        return cls(injection_parameters=InjectionParameters.init_with_updated_kwargs(**kwargs),
+                   recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
+                   waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
+                   waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
+                   sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),
+                   detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
+                   other_settings=OtherSettings.init_with_updated_kwargs(**kwargs))
