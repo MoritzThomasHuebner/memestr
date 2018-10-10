@@ -134,7 +134,7 @@ class DetectorSettings(RunParameters):
         if zero_noise == 'True':
             self.zero_noise = True
         else:
-            self.zero_noise = zero_noise
+            self.zero_noise = 'False'
         self.detectors = list(detectors)
         if len(self.detectors) == 0:
             self.detectors = ['H1', 'L1', 'V1']
@@ -148,12 +148,12 @@ class OtherSettings(RunParameters):
         if new_seed == 'False':
             self.new_seed = False
         else:
-            self.new_seed = new_seed
+            self.new_seed = True
         self.random_seed = random_seed
         if lionize == 'True':
             self.lionize = True
         else:
-            self.lionize = lionize
+            self.lionize = False
         if time_marginalization == 'True':
             self.time_marginalization = True
         else:
