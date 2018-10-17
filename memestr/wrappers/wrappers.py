@@ -114,10 +114,14 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=1000, latex_label="$L_D$")
     priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\iota$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
+    # priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
+    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=injection_parameters.phase - np.pi/4,
+                                                     maximum=injection_parameters.phase + np.pi/4, latex_label="$\phi$")
     priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
     priors['prior_dec'] = bilby.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
+    # priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=injection_parameters.psi - np.pi/4,
+                                                   maximum=injection_parameters.psi + np.pi/4, latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
     imr_phenom_kwargs = dict(
@@ -150,8 +154,8 @@ def sample_injection_parameters():
     priors['s22'] = bilby.core.prior.DeltaFunction(peak=0)
     priors['s23'] = bilby.core.prior.DeltaFunction(peak=0)
     priors['luminosity_distance'].maximum = 1000
-    priors['phase'].maximum = np.pi
-    priors['psi'].maximum = np.pi
+    priors['phase'].maximum = 2 * np.pi
+    priors['psi'].maximum = 2 * np.pi
     priors['total_mass'] = bilby.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
     priors['mass_ratio'] = bilby.prior.Uniform(minimum=1, maximum=2, latex_label='$q$')
     return priors.sample()
