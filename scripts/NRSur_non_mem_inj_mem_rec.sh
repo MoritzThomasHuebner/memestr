@@ -8,8 +8,8 @@ sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} $
 #!/usr/bin/env bash
 JOB=run_basic_job.py
 SCRIPT=run_basic_injection_nrsur
-INJECTION_MODEL=time_domain_nr_sur_waveform_with_memory
-RECOVERY_MODEL=time_domain_nr_sur_waveform_without_memory
+INJECTION_MODEL=time_domain_nr_sur_waveform_without_memory
+RECOVERY_MODEL=time_domain_nr_sur_waveform_with_memory
 FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
 #while IFS= read -r var
 #do
