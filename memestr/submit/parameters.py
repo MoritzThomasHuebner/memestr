@@ -101,7 +101,7 @@ class WaveformArguments(RunParameters):
 
     def __init__(self, l_max=2):
         super(WaveformArguments, self).__init__()
-        self.LMax = l_max
+        self.l_max = l_max
 
 
 class WaveformData(RunParameters):
@@ -125,7 +125,9 @@ class SamplerSettings(RunParameters):
         self.label = label
         self.clean = clean
         if conversion_function is not None:
-            self.conversion_function = self.conversion_functions['conversion_function']
+            self.conversion_function = self.conversion_functions[conversion_function]
+        else:
+            self.conversion_function = None
 
 
 class DetectorSettings(RunParameters):
@@ -183,11 +185,11 @@ class AllSettings(object):
         self.detector_settings = detector_settings
         self.other_settings = other_settings
 
-        self.__update_arguments_into_injection_parameters()
+        # self.__update_arguments_into_injection_parameters()
 
-    def __update_arguments_into_injection_parameters(self):
-        for key in self.waveform_arguments.__dict__:
-            self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
+    # def __update_arguments_into_injection_parameters(self):
+    #     for key in self.waveform_arguments.__dict__:
+    #         self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
 
     def __repr__(self):
         return 'AllSettings(' + repr(self.injection_parameters) + \

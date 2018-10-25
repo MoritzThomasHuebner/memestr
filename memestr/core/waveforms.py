@@ -7,14 +7,14 @@ gamma_lmlm = gwmemory.angles.load_gamma()
 
 def time_domain_nr_sur_waveform_without_memory(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
                                                luminosity_distance,
-                                               inc, phase, LMax, **kwargs):
+                                               inc, phase, **kwargs):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
                                                     MTot=total_mass,
                                                     S1=np.array([s11, s12, s13]),
                                                     S2=np.array([s21, s22, s23]),
-                                                    LMax=LMax,
+                                                    LMax=kwargs['l_max'],
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
@@ -24,14 +24,14 @@ def time_domain_nr_sur_waveform_without_memory(times, mass_ratio, total_mass, s1
 
 def time_domain_nr_sur_waveform_with_memory(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
                                             luminosity_distance,
-                                            inc, phase, LMax, **kwargs):
+                                            inc, phase, **kwargs):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
                                                     MTot=total_mass,
                                                     S1=np.array([s11, s12, s13]),
                                                     S2=np.array([s21, s22, s23]),
-                                                    LMax=LMax,
+                                                    LMax=kwargs['l_max'],
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
@@ -44,14 +44,14 @@ def time_domain_nr_sur_waveform_with_memory(times, mass_ratio, total_mass, s11, 
 
 
 def time_domain_nr_sur_memory_waveform(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23, luminosity_distance,
-                                       inc, phase, LMax, **kwargs):
+                                       inc, phase, **kwargs):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Surrogate(q=mass_ratio,
                                                     name='',
                                                     MTot=total_mass,
                                                     S1=np.array([s11, s12, s13]),
                                                     S2=np.array([s21, s22, s23]),
-                                                    LMax=LMax,
+                                                    LMax=kwargs['l_max'],
                                                     times=temp_times,
                                                     distance=luminosity_distance
                                                     )
