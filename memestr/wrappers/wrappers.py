@@ -80,6 +80,8 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
 
     priors = dict()
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
+    injection_parameters.psi = np.pi / 8
+    injection_parameters.phase = np.pi / 8
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
     # priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
@@ -87,10 +89,10 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
     # priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
     #                                                                            maximum=5e3, latex_label="$L_D$")
     # priors['prior_inc'] = bilby.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$")
+    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=0, maximum=np.pi, latex_label="$\phi$")
     # priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$")
     # priors['prior_dec'] = bilby.core.prior.Cosine(name='dec', latex_label="$DEC$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=0, maximum=np.pi, latex_label="$\psi$")
     # priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
     nr_sur_kwargs = dict(
         start_time=start_time,
