@@ -4,16 +4,13 @@ import os
 def find_unallocated_name(name):
     items = next(os.walk('.'))
     outdirs = items[1]
+    new_dir = ''
     for i in range(0, 999):
         for outdir in outdirs:
-            print(outdir)
-            print(str(i).zfill(3))
-            print(str(str(i).zfill(3) in outdir))
-            if str(i).zfill(3) not in outdir:
-                continue
-            elif str(i).zfill(3) in outdir:
+            if str(i).zfill(3) in outdir:
                 break
-        return str(i).zfill(3) + "_" + name
+            elif outdir == outdirs[-1]:
+                return str(i).zfill(3) + "_" + name
     raise RuntimeError('Not able to find an unused out directory name')
 
 
