@@ -1,18 +1,16 @@
-from collections import OrderedDict
-import subprocess
 import os
-import numpy as np
-import time
-import uuid
 
 
 def find_unallocated_name(name):
-    outdir = ''
+    items = next(os.walk('.'))
+    outdirs = items[1]
     for i in range(0, 999):
-        outdir = str(i).zfill(3) + "_" + name
-        if not os.path.exists(outdir):
-            break
-    return outdir
+        for outdir in outdirs:
+            if str(i).zfill(3) in outdir:
+                break
+            else:
+                return str(i).zfill(3) + "_" + name
+    raise RuntimeError('Not able to find an unused out directory name')
 
 
 def get_injection_parameter_set(id):
