@@ -80,8 +80,6 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
 
     priors = dict()
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
-    injection_parameters.psi = np.pi / 8
-    injection_parameters.phase = np.pi / 8
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
     # priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$")
@@ -103,6 +101,7 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
     )
     nr_sur_kwargs.update(priors)
     nr_sur_kwargs.update(kwargs)
+    nr_sur_kwargs.update(injection_parameters)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir, **nr_sur_kwargs)
 
 
@@ -132,6 +131,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
+    imr_phenom_kwargs.update(injection_parameters)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
                         **imr_phenom_kwargs)
 
