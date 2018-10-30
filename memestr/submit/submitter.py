@@ -8,7 +8,7 @@ def find_unallocated_name(name):
         for outdir in outdirs:
             print(outdir)
             print(str(i).zfill(3))
-            print('')
+            print(str(str(i).zfill(3) in outdir))
             if str(i).zfill(3) in outdir:
                 break
             else:
