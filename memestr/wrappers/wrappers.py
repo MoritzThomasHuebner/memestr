@@ -101,7 +101,6 @@ def run_basic_injection_nrsur(injection_model, recovery_model, outdir, **kwargs)
     )
     nr_sur_kwargs.update(priors)
     nr_sur_kwargs.update(kwargs)
-    nr_sur_kwargs.update(injection_parameters)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir, **nr_sur_kwargs)
 
 
@@ -131,7 +130,6 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
-    imr_phenom_kwargs.update(injection_parameters)
     run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
                         **imr_phenom_kwargs)
 

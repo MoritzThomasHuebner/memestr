@@ -2,7 +2,7 @@
 
 LABEL="${1::-3}"
 PYTHON_COMMAND="import memestr; print(memestr.submit.submitter.find_unallocated_name(name=\"$LABEL\"))"
-OUTDIR=`python -c "${PYTHON_COMMAND}"`
+OUTDIR="003_$LABEL"#`python -c "${PYTHON_COMMAND}"`
 JOB_NAME="--job-name=$LABEL"
 OUTPUT=""
 TIME="--time=120:00:00"
