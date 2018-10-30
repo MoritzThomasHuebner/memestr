@@ -21,9 +21,9 @@ class RunParameters(object):
     def __repr__(self):
         res = self.__class__.__name__ + "("
         for key in self.__dict__:
-            res = res + key + "=" + str(self.__dict__[key]) + ", "
+            res = res + '\t' + key + "=" + str(self.__dict__[key]) + ", \n"
 
-        res = res[:-2] + ")"
+        res = res[:-3] + ")"
         return res
 
 
@@ -186,20 +186,14 @@ class AllSettings(object):
         self.detector_settings = detector_settings
         self.other_settings = other_settings
 
-        # self.__update_arguments_into_injection_parameters()
-
-    # def __update_arguments_into_injection_parameters(self):
-    #     for key in self.waveform_arguments.__dict__:
-    #         self.injection_parameters.__dict__[key] = self.waveform_arguments.__dict__[key]
-
     def __repr__(self):
-        return 'AllSettings(' + repr(self.injection_parameters) + \
+        return 'AllSettings(\n' + repr(self.injection_parameters) + \
                ', \n' + repr(self.recovery_priors) + \
                ', \n' + repr(self.waveform_arguments) + \
                ', \n' + repr(self.waveform_data) + \
                ', \n' + repr(self.sampler_settings) + \
                ', \n' + repr(self.detector_settings) + \
-               ', \n' + repr(self.other_settings)
+               ', \n' + repr(self.other_settings) + '\n)'
 
     @classmethod
     def from_defaults_with_some_specified_kwargs(cls, **kwargs):
