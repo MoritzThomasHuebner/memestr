@@ -4,10 +4,8 @@ import os
 def find_unallocated_name(name):
     items = next(os.walk('.'))
     outdirs = items[1]
-    print(outdirs)
     for i in range(0, 999):
         for outdir in outdirs:
-            print(outdirs)
             print(outdir)
             str(i).zfill(3)
             print('')
