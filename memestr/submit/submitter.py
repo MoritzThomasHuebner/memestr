@@ -9,10 +9,11 @@ def find_unallocated_name(name):
             print(outdir)
             print(str(i).zfill(3))
             print(str(str(i).zfill(3) in outdir))
-            if str(i).zfill(3) in outdir:
+            if str(i).zfill(3) not in outdir:
+                continue
+            elif str(i).zfill(3) in outdir:
                 break
-            else:
-                return str(i).zfill(3) + "_" + name
+        return str(i).zfill(3) + "_" + name
     raise RuntimeError('Not able to find an unused out directory name')
 
 
