@@ -22,7 +22,8 @@ class RunParameters(object):
         res = self.__class__.__name__ + "("
         for key in self.__dict__:
             res = res + key + "=" + str(self.__dict__[key]) + ", "
-        res = res + ")"
+
+        res = res[:-2] + ")"
         return res
 
 
