@@ -119,12 +119,15 @@ class SamplerSettings(RunParameters):
         convert_to_lal_binary_black_hole_parameters=bilby.gw.conversion.convert_to_lal_binary_black_hole_parameters
     )
 
-    def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None, clean=True):
+    def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None, clean=True,
+                 walks=None):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
         self.clean = clean
+        if walks:
+            self.walks = walks
         if conversion_function is not None:
             self.conversion_function = self.conversion_functions[conversion_function]
         else:
