@@ -120,12 +120,14 @@ class SamplerSettings(RunParameters):
     )
 
     def __init__(self, sampler='pymultinest', npoints=6000, label='IMRPhenomD', conversion_function=None, clean=True,
-                 walks=None):
+                 walks=None, dlogz=None):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
         self.clean = clean
+        if dlogz:
+            self.dlogz = dlogz
         if walks:
             self.walks = int(walks)
         if conversion_function is not None:
@@ -135,7 +137,7 @@ class SamplerSettings(RunParameters):
 
     def update_args(self, **kwargs):
         for key in kwargs:
-            if hasattr(self, key) or key == 'walks' or key == 'conversion_function':
+            if hasattr(self, key) or key in ['walks', 'dlogz', 'conversion_function']:
                 setattr(self, key, kwargs[key])
 
 
