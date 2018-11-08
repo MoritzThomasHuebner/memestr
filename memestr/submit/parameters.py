@@ -127,11 +127,16 @@ class SamplerSettings(RunParameters):
         self.label = label
         self.clean = clean
         if walks:
-            self.walks = walks
+            self.walks = int(walks)
         if conversion_function is not None:
             self.conversion_function = self.conversion_functions[conversion_function]
         else:
             self.conversion_function = None
+
+    def update_args(self, **kwargs):
+        for key in kwargs:
+            if hasattr(self, key) or key == 'walks' or key == 'conversion_function':
+                setattr(self, key, kwargs[key])
 
 
 class DetectorSettings(RunParameters):
