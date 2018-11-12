@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-#source setup_distances_run.sh ${0}
-source setup_points_walks_run.sh ${0}
+source setup_distances_run.sh ${0}
+#source setup_points_walks_run.sh ${0}
 #source default_slurm_setup.sh ${0}
 #source setup_random_injections.sh ${0}
 
@@ -17,6 +17,6 @@ FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
 #  PARAMS="\$var"
 #done < "\$FILENAME"
 PARAMS=""
-#srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} luminosity_distance=\${SLURM_ARRAY_TASK_ID} $@
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} walks=\${SLURM_ARRAY_TASK_ID} $@
+srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} luminosity_distance=\${SLURM_ARRAY_TASK_ID} $@
+#srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} walks=\${SLURM_ARRAY_TASK_ID} $@
 EOF
