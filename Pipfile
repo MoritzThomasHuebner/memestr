@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy="*"
+bilby="*"
+NRSur7dq2="*"
+matplotlib="*"
+
+[requires]
+
+[dev-packages]
+
+[pipenv]
+allow_prereleases = false
