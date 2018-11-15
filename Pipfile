@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 numpy="*"
 bilby="*"
-NRSur7dq2="*"
 matplotlib="*"
+gwmemoritz = "*"
 
 [requires]
 
