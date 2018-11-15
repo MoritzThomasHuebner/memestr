@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-cd  ..
-pipenv shell
-cd -
 source setup_distances_run.sh ${0}
 #source default_slurm_setup.sh ${0}
 #source setup_random_injections.sh ${0}

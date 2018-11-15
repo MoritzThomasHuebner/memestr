@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-cd  ..
-pipenv shell
-cd -
-source ~/.local/share/virtualenvs/memestr-oe8lzZpa/bin/activate
 source setup_distances_run.sh ${0}
 #source setup_points_walks_run.sh ${0}
 #source default_slurm_setup.sh ${0}
