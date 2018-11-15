@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-pipenv shell
+source ~/.local/share/virtualenvs/memestr-OPSVMNuO/bin/activate
 source setup_distances_run.sh ${0}
 #source setup_points_walks_run.sh ${0}
 #source default_slurm_setup.sh ${0}
