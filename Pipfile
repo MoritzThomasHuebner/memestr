@@ -8,6 +8,7 @@ numpy="*"
 bilby="*"
 matplotlib="*"
 gwmemoritz = "*"
+memestr = {path = ".", editable = true}
 
 [requires]
 
