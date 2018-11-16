@@ -29,7 +29,7 @@ class RunParameters(object):
 
 class InjectionParameters(RunParameters):
 
-    def __init__(self, mass_ratio=1.2, total_mass=60, s11=0, s12=0, s13=0, s21=0, s22=0, s23=0,
+    def __init__(self, mass_ratio=1.2, total_mass=60.0, s11=0.0, s12=0.0, s13=0.0, s21=0.0, s22=0.0, s23=0.0,
                  luminosity_distance=500., inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659,
                  geocent_time=1126259642.413, random_injection_parameters=False):
         super(InjectionParameters, self).__init__()
@@ -64,12 +64,12 @@ class RecoveryPriors(RunParameters):
                  dec=bilby.core.prior.Cosine(name='dec', latex_label="$DEC$"),
                  psi=bilby.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$"),
                  geocent_time=bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time'),
-                 s11=bilby.core.prior.Uniform(name='s11', minimum=0, maximum=0.8, latex_label='s11'),
-                 s12=bilby.core.prior.Uniform(name='s12', minimum=0, maximum=0.8, latex_label='s12'),
-                 s21=bilby.core.prior.Uniform(name='s21', minimum=0, maximum=0.8, latex_label='s21'),
-                 s22=bilby.core.prior.Uniform(name='s22', minimum=0, maximum=0.8, latex_label='s22'),
-                 s13=bilby.core.prior.Uniform(name='s13', minimum=0, maximum=0.8, latex_label='s13'),
-                 s23=bilby.core.prior.Uniform(name='s23', minimum=0, maximum=0.8, latex_label='s23')):
+                 s11=bilby.core.prior.Uniform(name='s11', minimum=0.0, maximum=0.8, latex_label='s11'),
+                 s12=bilby.core.prior.Uniform(name='s12', minimum=0.0, maximum=0.8, latex_label='s12'),
+                 s21=bilby.core.prior.Uniform(name='s21', minimum=0.0, maximum=0.8, latex_label='s21'),
+                 s22=bilby.core.prior.Uniform(name='s22', minimum=0.0, maximum=0.8, latex_label='s22'),
+                 s13=bilby.core.prior.Uniform(name='s13', minimum=0.0, maximum=0.8, latex_label='s13'),
+                 s23=bilby.core.prior.Uniform(name='s23', minimum=0.0, maximum=0.8, latex_label='s23')):
         super(RecoveryPriors, self).__init__()
         self.prior_total_mass = total_mass
         self.prior_mass_ratio = mass_ratio
