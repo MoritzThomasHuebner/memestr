@@ -24,12 +24,12 @@ import numpy as np
 #     plt.show()
 #     plt.clf()
 
-# memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
-#                                                          recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
-#                                                          outdir='test', sampler='dynesty')
-memestr.wrappers.wrappers.run_basic_injection_nrsur(injection_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
-                                                    recovery_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
-                                                    outdir='test', sampler='dynesty', npoints=1000)
+memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+                                                         recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+                                                         outdir='test', sampler='dynesty')
+# memestr.wrappers.wrappers.run_basic_injection_nrsur(injection_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
+#                                                     recovery_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
+#                                                     outdir='test', sampler='dynesty', npoints=1000)
 # submitter.run_job(outdir='debug',
 #                   script=scripts['run_basic_injection_imr_phenom'],
 #                   injection_model=models['time_domain_IMRPhenomD_waveform_without_memory'],
