@@ -129,11 +129,11 @@
         },
         "gwmemoritz": {
             "hashes": [
-                "sha256:05955b0163b2f36add33076327eda985a7cad62f6e52a6b1c92d7be3a27c8171",
-                "sha256:de013495281e87422533b42a47a23c4e35f5c9d1a51e3eeb8a3f2137be92cbd3"
+                "sha256:122da3689e48287f67f469d7b48913326c35a85a2b9db3fd6b13d280fe5253fe",
+                "sha256:44478f4caa6be1a23c7150ee68626b1a5dc7072dc6d4a63f7baf9bb553de9373"
             ],
             "index": "pypi",
-            "version": "==0.1.2"
+            "version": "==0.1.3"
         },
         "h5py": {
             "hashes": [
