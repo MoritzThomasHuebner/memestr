@@ -2,7 +2,8 @@ import numpy as np
 import bilby
 import os
 
-run_id = '011'
+run_id = '016'
+
 runs = [run_id + '_IMR_mem_inj_mem_rec',
         run_id + '_IMR_mem_inj_non_mem_rec',
         run_id + '_IMR_non_mem_inj_mem_rec',
@@ -34,7 +35,7 @@ for run in runs:
                         log_evidence_err.append(0)
 
         data = zip(luminosity_distances, log_evidence, log_bayes_factor, log_evidence_err)
-        data.sort()
+        data = sorted(data)
         print(data)
         for row in data:
             outfile.write('{}\t{}\t{}\t{}\n'.format(*row))
