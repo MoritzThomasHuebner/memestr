@@ -159,7 +159,7 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
     return memory
 
 
-@lru_cache
+@lru_cache(maxsize=16)
 def _get_tukey_window(alpha, times):
     return tukey(M=len(times), alpha=alpha)
 
