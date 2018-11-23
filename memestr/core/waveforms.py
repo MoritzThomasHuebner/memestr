@@ -116,7 +116,7 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
     oscillatory = wave.time_domain_oscillatory(inc=inc, phase=phase)
     memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     alpha = _get_alpha(kwargs, times)
-    window = _get_tukey_window(alpha, times)
+    window = tukey(M=len(times), alpha=alpha)
     res = dict()
     for mode in memory:
         res[mode] = (memory[mode] + oscillatory[mode]) * window
@@ -134,7 +134,7 @@ def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
     alpha = _get_alpha(kwargs, times)
-    window = _get_tukey_window(alpha, times)
+    window = tukey(M=len(times), alpha=alpha)
     oscillatory = wave.time_domain_oscillatory(inc=inc, phase=phase)
     for mode in oscillatory:
         oscillatory[mode] *= window
@@ -152,16 +152,11 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
     alpha = _get_alpha(kwargs, times)
-    window = _get_tukey_window(alpha, times)
+    window = tukey(M=len(times), alpha=alpha)
     memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     for mode in memory:
         memory[mode] *= window
     return memory
-
-
-@lru_cache(maxsize=16)
-def _get_tukey_window(alpha, times):
-    return tukey(M=len(times), alpha=alpha)
 
 
 def _get_alpha(kwargs, times):
