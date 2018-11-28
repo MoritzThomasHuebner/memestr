@@ -100,9 +100,10 @@ class RecoveryPriors(RunParameters):
 
 class WaveformArguments(RunParameters):
 
-    def __init__(self, l_max=2):
+    def __init__(self, l_max=2, alpha=None):
         super(WaveformArguments, self).__init__()
         self.l_max = l_max
+        self.alpha = alpha
 
 
 class WaveformData(RunParameters):
