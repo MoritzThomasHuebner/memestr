@@ -16,7 +16,6 @@ FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
 #  PARAMS="\$var"
 #done < "\$FILENAME"
 PARAMS=""
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
-#srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} luminosity_distance=\${SLURM_ARRAY_TASK_ID} $@
+srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} luminosity_distance=\${SLURM_ARRAY_TASK_ID} $@
 #srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} walks=\${SLURM_ARRAY_TASK_ID} $@
 EOF
