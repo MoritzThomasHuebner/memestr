@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-bash IMR_mem_inj_mem_rec.sh                 npoints=5000 distance_marginalization=Tru alpha=0.1 zero_noise=True sampler=dynesty label=IMR_mem_inj_mem_rec
-bash IMR_mem_inj_non_mem_rec.sh             npoints=5000 distance_marginalization=Tru alpha=0.1 zero_noise=True sampler=dynesty label=IMR_mem_inj_non_mem_rec
+bash IMR_mem_inj_mem_rec.sh                 npoints=5000 distance_marginalization=True alpha=0.1 zero_noise=True sampler=dynesty label=IMR_mem_inj_mem_rec
+bash IMR_mem_inj_non_mem_rec.sh             npoints=5000 distance_marginalization=True alpha=0.1 zero_noise=True sampler=dynesty label=IMR_mem_inj_non_mem_rec
 #bash IMR_non_mem_inj_non_mem_rec.sh         npoints=5000 walks=200 zero_noise=True sampler=dynesty label=IMR_non_mem_inj_non_mem_rec
 #bash IMR_non_mem_inj_mem_rec.sh             npoints=5000 walks=200 zero_noise=True sampler=dynesty label=IMR_non_mem_inj_mem_rec
 #bash IMR_pure_mem_inj_pure_mem_rec.sh       npoints=4000 zero_noise=False sampler=dynesty time_marginalization=True label=IMR_pure_mem_inj_pure_mem_rec
