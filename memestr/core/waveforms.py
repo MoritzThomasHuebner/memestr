@@ -161,8 +161,6 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
 
 def _get_alpha(kwargs, times):
     if 'alpha' in kwargs:
-        alpha = kwargs['alpha']
-    else:
-        alpha = roll_off / (times[-1] - times[0])
-    return alpha
-
+        if kwargs['alpha']:
+            return kwargs['alpha']
+    return roll_off / (times[-1] - times[0])
