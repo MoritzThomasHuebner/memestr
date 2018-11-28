@@ -24,9 +24,9 @@ import numpy as np
 #     plt.show()
 #     plt.clf()
 
-# memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
-#                                                          recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
-#                                                          outdir='test', sample='auto', npoints=300, walks=45)
+memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
+                                                         recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
+                                                         outdir='test', sample='auto', alpha=0.1)
 # memestr.wrappers.wrappers.run_basic_injection_nrsur(injection_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
 #                                                     recovery_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
 #                                                     outdir='test', sampler='dynesty', npoints=1000)
