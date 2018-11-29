@@ -1,6 +1,5 @@
 import numpy as np
 import gwmemory
-from functools import lru_cache
 import copy
 from scipy.signal.windows import tukey
 
