@@ -41,7 +41,7 @@ for run in runs:
             outfile.write('{}\t{}\t{}\t{}\n'.format(*row))
 
 for run in runs:
-    with open(run + '_distance_evidence.dat', 'w') as outfile:
+    with open(run + '_bf_max_like.dat', 'w') as outfile:
         outfile.write("#log_bayes_factor\tMax likelihood")
         dir_path = os.path.dirname(os.path.realpath(__file__)) + "/" + run
         log_bayes_factor = []
