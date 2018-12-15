@@ -35,7 +35,10 @@ def memory_bayes_factor(luminosity_distance):
             zero_noise=settings.detector_settings.zero_noise,
             plot=False,
             **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors])
-    opt_snr_squared = sum([ifo.optimal_snr_squared(hf_signal['plus']) for ifo in ifos])
+    opt_snr_squared = 0
+    for ifo in ifos:
+        signal_ifo = ifo.get_detector_response(waveform_polarizations=hf_signal, parameters=settings.injection_parameters.__dict__)
+        opt_snr_squared += sum([ifo.optimal_snr_squared(signal_ifo) for ifo in ifos])
     return opt_snr_squared / 2
 
 

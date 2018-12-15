@@ -11,8 +11,10 @@ print(settings.injection_parameters)
 
 
 def plot_waveform(td_model):
-    settings.waveform_arguments.alpha = 0.1
-    settings.waveform_data.duration = 8
+    settings.waveform_arguments.alpha = 0.025
+    settings.waveform_data.duration = 2
+    settings.injection_parameters.total_mass = 150
+    settings.injection_parameters.mass_ratio = 1.1
     waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
