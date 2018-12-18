@@ -115,7 +115,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                                                maximum=1000, latex_label="$L_D$")
     priors['prior_inc'] = bilby.core.prior.Uniform(minimum=np.pi/2-0.1, maximum=np.pi/2+0.1, latex_label="$\iota$")
     priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=1.38, maximum=1.8, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Uniform(name='dec', minimum=np.pi/2-0.1, maximum=np.pi/2+0.1, latex_label="$DEC$")
+    priors['prior_dec'] = bilby.core.prior.Uniform(name='dec', minimum=-0.9, maximum=-0.5, latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=injection_parameters.phase - np.pi/4,
                                                      maximum=injection_parameters.phase + np.pi/4, latex_label="$\phi$")
     priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=injection_parameters.psi - np.pi/4,
