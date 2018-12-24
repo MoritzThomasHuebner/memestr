@@ -42,7 +42,7 @@ processes = [mp.Process(target=submitter.run_job,
                         args=(output, outdir + '/' + str(x), script),
                         kwargs=dict(injection_model=injection_model,
                                     recovery_model=recovery_model,
-                                    **kwargs)) for x in range(number_of_tasks)]
+                                    **kwargs)) for x in range(number_of_tasks - 1)]
 
 # Run processes
 for p in processes:
