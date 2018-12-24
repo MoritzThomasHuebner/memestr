@@ -4,7 +4,7 @@ LABEL="${1::-3}"
 PYTHON_COMMAND="import memestr; print(memestr.submit.submitter.find_unallocated_name(name=\"$LABEL\"))"
 OUTDIR=`python -c "${PYTHON_COMMAND}"`
 JOB_NAME="--job-name=$LABEL"
-OUTPUT=""
+OUTPUT="--output=/dev/null"
 TIME="--time=1:00:00"
 NUMBER_OF_TASKS=4
 NTASKS="--ntasks=$NUMBER_OF_TASKS"
