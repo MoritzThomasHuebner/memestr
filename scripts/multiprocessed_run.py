@@ -19,7 +19,7 @@ number_of_tasks = int(sys.argv[5])
 # recovery_model = models['time_domain_IMRPhenomD_waveform_without_memory']
 # number_of_tasks = 2
 
-kwargs = submitter.parse_kwargs(input=sys.argv[5:])
+kwargs = submitter.parse_kwargs(input=sys.argv[6:])
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 result = submitter.run_job(outdir=outdir,
