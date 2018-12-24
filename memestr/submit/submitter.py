@@ -1,4 +1,5 @@
 import os
+import bilby
 
 
 def find_unallocated_name(name):
@@ -50,5 +51,5 @@ def move_log_file_to_outdir(dir_path, outdir, log_file):
 
 
 def run_job(outdir, script, **kwargs):
-    script(outdir=outdir,
-           **kwargs)
+    bilby.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
+    return script(outdir=outdir, **kwargs)
