@@ -54,3 +54,17 @@ def run_job(output, outdir, script, **kwargs):
     bilby.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
     result = script(outdir=outdir, **kwargs)
     output.put(result)
+
+
+def parse_kwargs(input):
+    kwargs = dict()
+    for arg in input:
+        key = arg.split("=")[0]
+        value = arg.split("=")[1]
+        if any(char.isdigit() for char in value):
+            if all(char.isdigit() for char in value):
+                value = int(value)
+            else:
+                value = float(value)
+        kwargs[key] = value
+    return kwargs
