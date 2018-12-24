@@ -7,8 +7,8 @@ JOB=multiprocessed_run.py
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
-for i in {1..${NUMBER_OF_TASKS}}
-do
-srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} $@
-done
+srun python \${JOB} ${OUTDIR}/0 \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} $@
+srun python \${JOB} ${OUTDIR}/1 \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} $@
+srun python \${JOB} ${OUTDIR}/2 \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} $@
+srun python \${JOB} ${OUTDIR}/3 \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} $@
 EOF
