@@ -39,10 +39,8 @@ output = mp.Queue()
 
 # Setup a list of processes that we want to run
 processes = [mp.Process(target=submitter.run_job,
-                        kwargs=dict(outdir=outdir + '/' + str(x),
-                                    script=script,
-                                    dir_path=dir_path,
-                                    injection_model=injection_model,
+                        args=(output, outdir + '/' + str(x), script),
+                        kwargs=dict(injection_model=injection_model,
                                     recovery_model=recovery_model,
                                     **kwargs)) for x in range(number_of_tasks)]
 
