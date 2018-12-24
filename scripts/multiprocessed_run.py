@@ -21,7 +21,7 @@ number_of_tasks = int(sys.argv[5])
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 kwargs = dict()
-for arg in sys.argv[5:]:
+for arg in sys.argv[6:]:
     print(arg)
     key = arg.split("=")[0]
     value = arg.split("=")[1]
