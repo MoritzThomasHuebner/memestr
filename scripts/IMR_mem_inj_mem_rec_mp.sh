@@ -3,7 +3,7 @@ source setup_distances_run.sh ${0}
 
 sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} ${ARRAY}<<EOF
 #!/usr/bin/env bash
-JOB=run_basic_job.py
+JOB=multiprocessed_run.py
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory

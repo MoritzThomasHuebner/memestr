@@ -7,17 +7,17 @@ import os
 import numpy as np
 
 
-# outdir = sys.argv[1]
-# script = scripts[sys.argv[2]]
-# injection_model = models[sys.argv[3]]
-# recovery_model = models[sys.argv[4]]
-# number_of_tasks = sys.argv[5]
+outdir = sys.argv[1]
+script = scripts[sys.argv[2]]
+injection_model = models[sys.argv[3]]
+recovery_model = models[sys.argv[4]]
+number_of_tasks = sys.argv[5]
 
-outdir = 'debug_mp'
-script = scripts['run_basic_injection_imr_phenom']
-injection_model = models['time_domain_IMRPhenomD_waveform_without_memory']
-recovery_model = models['time_domain_IMRPhenomD_waveform_without_memory']
-number_of_tasks = 2
+# outdir = 'debug_mp'
+# script = scripts['run_basic_injection_imr_phenom']
+# injection_model = models['time_domain_IMRPhenomD_waveform_without_memory']
+# recovery_model = models['time_domain_IMRPhenomD_waveform_without_memory']
+# number_of_tasks = 2
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 kwargs = dict()
