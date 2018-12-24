@@ -9,6 +9,6 @@ INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 for i in {1..${NUMBER_OF_TASKS}}
 do
-srun python \${JOB} ${OUTDIR}/$i \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} --output=${OUTDIR}/$i/slurm.out $@
+srun python \${JOB} ${OUTDIR}/$i \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} ${NUMBER_OF_TASKS} $@
 done
 EOF
