@@ -49,6 +49,6 @@ def move_log_file_to_outdir(dir_path, outdir, log_file):
     os.rename(dir_path + "/" + log_file, dir_path + "/" + outdir + "/" + log_file)
 
 
-def run_job(outdir, script, dir_path=None, **kwargs):
+def run_job(outdir, script, **kwargs):
     script(outdir=outdir,
            **kwargs)
