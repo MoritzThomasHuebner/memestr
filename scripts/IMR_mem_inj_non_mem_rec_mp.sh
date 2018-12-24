@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source setup_distances_run.sh ${0}
+source setup_distances_run_mp.sh ${0}
 
 sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} ${ARRAY}<<EOF
 #!/usr/bin/env bash
