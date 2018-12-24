@@ -51,7 +51,6 @@ def move_log_file_to_outdir(dir_path, outdir, log_file):
 
 
 def run_job(outdir, script, **kwargs):
-    bilby.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
     result = script(outdir=outdir, **kwargs)
     return result
 
