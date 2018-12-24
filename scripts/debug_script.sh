@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-JOB=run_basic_job.py
-OUTDIR="NRSur_HOM"
+JOB=multiprocessed_run.py
+OUTDIR="debug_mp"
 SCRIPT=run_basic_job
-INJECTION_MODEL=time_domain_nr_sur_waveform_with_memory
-RECOVERY_MODEL=time_domain_nr_sur_waveform_with_memory
-DISTANCE=200
-python ${JOB} ${OUTDIR} ${SCRIPT} ${INJECTION_MODEL} ${RECOVERY_MODEL} luminosity_distance=50 l_max=4 mass_ratio=1.2414 total_mass=65
+INJECTION_MODEL=time_domain_IMRPhenomD_waveform_without_memory
+RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
+DISTANCE=800
+python ${JOB} ${OUTDIR} ${SCRIPT} ${INJECTION_MODEL} ${RECOVERY_MODEL} luminosity_distance=800
