@@ -11,7 +11,7 @@ outdir = sys.argv[1]
 script = scripts[sys.argv[2]]
 injection_model = models[sys.argv[3]]
 recovery_model = models[sys.argv[4]]
-number_of_tasks = sys.argv[5]
+number_of_tasks = int(sys.argv[5])
 
 # outdir = 'debug_mp'
 # script = scripts['run_basic_injection_imr_phenom']
