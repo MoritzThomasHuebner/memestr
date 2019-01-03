@@ -121,6 +121,24 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
         res[mode] = (memory[mode] + oscillatory[mode]) * window
     return res
 
+def time_domain_IMRPhenomD_waveform_with_memory_open_data(times, mass_1, mass_2, luminosity_distance,
+                                                iota, phase, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl, **kwargs):
+    temp_times = copy.copy(times)
+    wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
+                                          q=mass_1/mass_2,
+                                          MTot=mass_1+mass_2,
+                                          distance=luminosity_distance,
+                                          S1=np.array([0.0, 0.0, 0.0]),
+                                          S2=np.array([0.0, 0.0, 0.0]),
+                                          times=temp_times)
+    oscillatory = wave.time_domain_oscillatory(inc=iota, phase=phase)
+    memory, _ = wave.time_domain_memory(inc=iota, phase=phase, gamma_lmlm=gamma_lmlm)
+    alpha = _get_alpha(kwargs, times)
+    window = tukey(M=len(times), alpha=alpha)
+    res = dict()
+    for mode in memory:
+        res[mode] = (memory[mode] + oscillatory[mode]) * window
+    return res
 
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
                                                    s21, s22, s23, inc, phase, **kwargs):
