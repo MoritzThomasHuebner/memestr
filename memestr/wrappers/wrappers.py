@@ -35,16 +35,17 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
 
     waveform_generator.time_domain_source_model = recovery_model
 
+    priors = settings.recovery_priors.proper_dict()
     likelihood = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
-                                    priors=settings.recovery_priors.proper_dict(),
+                                    priors=priors,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
-                                            priors=settings.recovery_priors.proper_dict(),
+                                            priors=priors,
                                             injection_parameters=settings.injection_parameters.__dict__,
                                             outdir=outdir,
                                             save=False,
