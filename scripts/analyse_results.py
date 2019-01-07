@@ -5,10 +5,7 @@ import os
 run_id = '016'
 
 runs = [run_id + '_IMR_mem_inj_mem_rec',
-        run_id + '_IMR_mem_inj_non_mem_rec',
-        run_id + '_IMR_non_mem_inj_mem_rec',
-        run_id + '_IMR_non_mem_inj_non_mem_rec',
-        run_id + '_IMR_pure_mem_inj_pure_mem_rec']
+        run_id + '_IMR_mem_inj_non_mem_rec']
 
 for run in runs:
     with open(run + '_distance_evidence.dat', 'w') as outfile:
