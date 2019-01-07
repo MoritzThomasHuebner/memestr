@@ -118,18 +118,18 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     #                                                maximum=injection_parameters.psi + np.pi / 4, latex_label="$\psi$")
     # priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
-    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=58, maximum=62.0, latex_label="$M_{tot}$")
+    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=55, maximum=65.0, latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=1.0, maximum=2.0, latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=1000, latex_label="$L_D$")
-    # priors['prior_inc'] = bilby.core.prior.Uniform(minimum=np.pi/2-0.2, maximum=np.pi/2+0.2, latex_label="$\iota$")
-    # priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=1.38, maximum=1.8, latex_label="$RA$")
-    # priors['prior_dec'] = bilby.core.prior.Uniform(name='dec', minimum=-0.9, maximum=-0.5, latex_label="$DEC$")
-    # priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=injection_parameters.phase - np.pi/4,
-    #                                                  maximum=injection_parameters.phase + np.pi/4, latex_label="$\phi$")
-    # priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=injection_parameters.psi - np.pi/4,
-    #                                                maximum=injection_parameters.psi + np.pi/4, latex_label="$\psi$")
-    # priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
+    priors['prior_inc'] = bilby.core.prior.Uniform(minimum=np.pi/2-0.2, maximum=np.pi/2+0.2, latex_label="$\iota$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=1.38, maximum=1.8, latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Uniform(name='dec', minimum=-0.9, maximum=-0.5, latex_label="$DEC$")
+    priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=injection_parameters.phase - np.pi/4,
+                                                     maximum=injection_parameters.phase + np.pi/4, latex_label="$\phi$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=injection_parameters.psi - np.pi/4,
+                                                   maximum=injection_parameters.psi + np.pi/4, latex_label="$\psi$")
+    priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
 
     imr_phenom_kwargs = dict(
