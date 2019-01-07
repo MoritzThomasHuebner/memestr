@@ -1,8 +1,12 @@
 import numpy as np
 import bilby
 import os
+import sys
+
 
 run_id = '016'
+if sys.argv[1]:
+    run_id = sys.argv[1]
 
 runs = [run_id + '_IMR_mem_inj_mem_rec',
         run_id + '_IMR_mem_inj_non_mem_rec']
