@@ -1,5 +1,4 @@
 import os
-import bilby
 
 
 def find_unallocated_name(name):
@@ -7,7 +6,8 @@ def find_unallocated_name(name):
     outdirs = items[1]
     for i in range(0, 999):
         for outdir in outdirs:
-            if str(i).zfill(3) in outdir:
+            string = str(i).zfill(3) + "_" + name
+            if string in outdir:
                 break
             elif outdir == outdirs[-1]:
                 return str(i).zfill(3) + "_" + name
