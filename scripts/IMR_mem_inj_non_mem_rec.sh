@@ -11,7 +11,7 @@ SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} new_seed=FALSE random_seed=\${ARGS[\${SLURM_ARRAY_TASK_ID}]} $@
+srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} random_seed=\${NOISE_SEEDS[\${SLURM_ARRAY_TASK_ID}]} $@
 #while IFS= read -r var
 #do
 #  PARAMS="\$var"
