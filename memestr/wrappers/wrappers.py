@@ -1,7 +1,5 @@
 from __future__ import division
 
-import logging
-
 import numpy as np
 import bilby
 
@@ -9,12 +7,10 @@ from memestr.submit.parameters import AllSettings, InjectionParameters
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
-    logger = logging.getLogger('bilby')
-    logger.setLevel(logging.DEBUG)
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
     if not settings.other_settings.new_seed:
         np.random.seed(settings.other_settings.random_seed)
-        logger.info("Random seed: " + str(settings.other_settings.random_seed))
+        print("Random seed: " + str(settings.other_settings.random_seed))
     if settings.injection_parameters.random_injection_parameters:
         settings.injection_parameters.__dict__.update(sample_injection_parameters())
         pd = settings.recovery_priors.proper_dict()
