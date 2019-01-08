@@ -1,6 +1,5 @@
 import memestr.wrappers as wrappers
 import memestr.core as core
-import memestr.submit as submit
 
 models = dict(
     time_domain_IMRPhenomD_memory_waveform=core.waveforms.time_domain_IMRPhenomD_memory_waveform,
