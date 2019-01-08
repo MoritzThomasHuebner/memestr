@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='memestr',
-      version='0.0.1',
-      packages=['memestr', 'memestr.core', 'memestr.wrappers', 'memestr.submit'],
+      version='0.0.2',
+      packages=['memestr', 'memestr.core', 'memestr.wrappers'],
       package_dir={'memestr': 'memestr'},
       )
