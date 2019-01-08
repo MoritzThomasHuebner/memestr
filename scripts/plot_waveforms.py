@@ -3,7 +3,7 @@ import bilby
 import matplotlib.pyplot as plt
 import numpy as np
 
-settings = memestr.submit.parameters.AllSettings()
+settings = memestr.core.parameters.AllSettings()
 models = [memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
           memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
           memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory]

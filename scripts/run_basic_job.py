@@ -1,6 +1,6 @@
 from __future__ import division
 import sys
-from memestr.submit import submitter
+from memestr.core import submit
 from memestr import models, scripts
 import os
 
@@ -23,9 +23,9 @@ for arg in sys.argv[5:]:
     kwargs[key] = value
 print(kwargs)
 
-submitter.run_job(outdir=outdir,
-                  script=script,
-                  dir_path=dir_path,
-                  injection_model=injection_model,
-                  recovery_model=recovery_model,
-                  **kwargs)
+submit.run_job(outdir=outdir,
+               script=script,
+               dir_path=dir_path,
+               injection_model=injection_model,
+               recovery_model=recovery_model,
+               **kwargs)

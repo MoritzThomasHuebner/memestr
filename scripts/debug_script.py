@@ -1,11 +1,4 @@
 import memestr
-import bilby
-from memestr.submit import submitter
-from memestr.core import waveforms
-from memestr.wrappers import wrappers
-from memestr import models, scripts
-import matplotlib.pyplot as plt
-import numpy as np
 
 # Debug Waveform plots
 # submitter.create_injection_parameter_set(256, wrappers.sample_injection_parameters)
@@ -24,10 +17,10 @@ import numpy as np
 #     plt.show()
 #     plt.clf()
 
-memestr.wrappers.wrappers.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
-                                                         recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
-                                                         outdir='test', npoints=500, alpha=0.1, sample='unif', zero_noise=False, sampler='dynesty',
-                                                         luminosity_distance=350, distance_marginalization=True)
+memestr.wrappers.injection_recovery.run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+                                                                   recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+                                                                   outdir='test', npoints=500, alpha=0.1, sample='unif', zero_noise=False, sampler='dynesty',
+                                                                   luminosity_distance=350, distance_marginalization=True)
 
 # memestr.wrappers.wrappers.run_basic_injection_nrsur(injection_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
 #                                                     recovery_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,

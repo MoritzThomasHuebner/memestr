@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 
-from memestr.submit import submitter
+from memestr.core import submit
 from memestr import models, scripts
 
 
@@ -19,15 +19,15 @@ number_of_tasks = int(sys.argv[5])
 # recovery_model = models['time_domain_IMRPhenomD_waveform_without_memory']
 # number_of_tasks = 2
 
-kwargs = submitter.parse_kwargs(input=sys.argv[6:])
+kwargs = submit.parse_kwargs(input=sys.argv[6:])
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-result = submitter.run_job(outdir=outdir,
-                           script=script,
-                           dir_path=dir_path,
-                           injection_model=injection_model,
-                           recovery_model=recovery_model,
-                           **kwargs)
+result = submit.run_job(outdir=outdir,
+                        script=script,
+                        dir_path=dir_path,
+                        injection_model=injection_model,
+                        recovery_model=recovery_model,
+                        **kwargs)
 
 with open(str(outdir[0:3]) + '_distance_evidence.dat', 'w') as outfile:
     if not list(outfile):

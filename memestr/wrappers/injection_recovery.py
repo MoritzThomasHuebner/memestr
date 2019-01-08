@@ -3,7 +3,7 @@ from __future__ import division
 import numpy as np
 import bilby
 
-from memestr.submit.parameters import AllSettings, InjectionParameters
+from memestr.core.parameters import AllSettings, InjectionParameters
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):

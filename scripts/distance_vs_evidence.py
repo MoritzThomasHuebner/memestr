@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.stats
 
 import bilby
 import memestr
@@ -16,7 +15,7 @@ mem_inj_non_mem_rec_data = mem_inj_non_mem_rec_data.T
 
 @np.vectorize
 def memory_bayes_factor(luminosity_distance):
-    settings = memestr.submit.parameters.AllSettings()
+    settings = memestr.core.parameters.AllSettings()
     settings.injection_parameters.luminosity_distance = luminosity_distance
     outdir = "distance_vs_evidence"
     model = memestr.models['time_domain_IMRPhenomD_memory_waveform']
