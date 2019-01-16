@@ -10,11 +10,11 @@ models = [memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
 print(settings.injection_parameters)
 
 
-def plot_waveform(td_model):
-    settings.waveform_arguments.alpha = 0.025
-    settings.waveform_data.duration = 2
-    settings.injection_parameters.total_mass = 150
-    settings.injection_parameters.mass_ratio = 1.1
+def plot_waveform(td_model, total_mass):
+    settings.waveform_arguments.alpha = 0.1
+    settings.waveform_data.duration = 16
+    settings.injection_parameters.total_mass = total_mass
+    settings.injection_parameters.mass_ratio = 1.2
     waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
@@ -36,24 +36,22 @@ def plot_waveform(td_model):
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
     plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='red')
-
+    interferometers = bilby.gw.detector.InterferometerList(['H1', 'L1', 'V1'])
+    interferometers.\
+        set_strain_data_from_power_spectral_densities(sampling_frequency=settings.waveform_data.sampling_frequency,
+                                                      duration=settings.waveform_data.duration,
+                                                      start_time=settings.waveform_data.start_time)
+    interferometers.inject_signal(parameters=settings.injection_parameters.__dict__,
+                                  waveform_generator=waveform_generator)
     plt.show()
-        # hf_signal = waveform_generator.frequency_domain_strain()
-        # ifo = bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
-        #     'H1',
-        #     injection_polarizations=hf_signal,
-        #     injection_parameters=settings.injection_parameters.__dict__,
-        #     outdir='test',
-        #     zero_noise=False,
-        #     **settings.waveform_data.__dict__)
-        # plt.plot(ifo.strain_data.frequency_array, np.abs(ifo.strain_data.frequency_domain_strain))
-        # plt.title('alpha = ' + str(settings.waveform_arguments.alpha))
-        # plt.loglog()
-        # plt.show()
+    plt.clf()
+    network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR']**2 for ifo in interferometers]))
+    return network_snr
 
 
+network_snrs = []
+for total_mass in [20, 40, 60, 80, 100, 120]:
+    network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform, total_mass))
+plt.show()
 
-plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory)
-
-# for model in models:
-#     plot_waveform(model)
+print(network_snrs)
