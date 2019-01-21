@@ -36,22 +36,26 @@ class OptimalSNRLikelihood(bilby.core.likelihood.Likelihood):
         return 100*np.sqrt(np.sum([ifo.meta_data['optimal_SNR'] ** 2 for ifo in ifos]))
 
 
-priors = settings.recovery_priors.proper_dict()
-for key in ['phase', 'luminosity_distance', 'geocent_time', 'total_mass', 'mass_ratio',
-            's11', 's12', 's13', 's21', 's22', 's23']:
-    priors[key] = settings.injection_parameters.__dict__[key]
+res = bilby.core.result.read_in_result(outdir=outdir, label=label)
+del res.posterior['inc']
+print(res.posterior)
 
-wg = bilby.gw.WaveformGenerator(
-    duration=settings.waveform_data.duration, sampling_frequency=settings.waveform_data.sampling_frequency,
-    time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
-    waveform_arguments=settings.waveform_arguments.__dict__, parameters=settings.injection_parameters.__dict__)
-
-
-likelihood = OptimalSNRLikelihood(
-    interferometers=bilby.gw.detector.InterferometerList(['H1', 'L1', 'V1']),
-    waveform_generator=wg)
-
-result = bilby.run_sampler(likelihood=likelihood, priors=priors, sampler='dynesty', npoints=500, outdir=outdir,
-                           label=label, sample='unif')
-
-result.plot_corner()
+# priors = settings.recovery_priors.proper_dict()
+# for key in ['phase', 'luminosity_distance', 'geocent_time', 'total_mass', 'mass_ratio',
+#             's11', 's12', 's13', 's21', 's22', 's23']:
+#     priors[key] = settings.injection_parameters.__dict__[key]
+#
+# wg = bilby.gw.WaveformGenerator(
+#     duration=settings.waveform_data.duration, sampling_frequency=settings.waveform_data.sampling_frequency,
+#     time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
+#     waveform_arguments=settings.waveform_arguments.__dict__, parameters=settings.injection_parameters.__dict__)
+#
+#
+# likelihood = OptimalSNRLikelihood(
+#     interferometers=bilby.gw.detector.InterferometerList(['H1', 'L1', 'V1']),
+#     waveform_generator=wg)
+#
+# result = bilby.run_sampler(likelihood=likelihood, priors=priors, sampler='dynesty', npoints=500, outdir=outdir,
+#                            label=label, sample='unif')
+#
+# result.plot_corner()
