@@ -36,33 +36,7 @@ class OptimalSNRLikelihood(bilby.core.likelihood.Likelihood):
         return 100*np.sqrt(np.sum([ifo.meta_data['optimal_SNR'] ** 2 for ifo in ifos]))
 
 
-# settings.waveform_data.duration = 16
-#
-#
-# psis = np.linspace(0, 2*np.pi, 16)
-# network_snrs = []
-# for psi in psis:
-#     settings.injection_parameters.psi = psi
-#     wg = bilby.gw.WaveformGenerator(
-#         duration=settings.waveform_data.duration, sampling_frequency=settings.waveform_data.sampling_frequency,
-#         time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
-#         waveform_arguments=settings.waveform_arguments.__dict__, parameters=settings.injection_parameters.__dict__)
-#     hf_signal = wg.frequency_domain_strain()
-#     ifos = [bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
-#         name,
-#         injection_polarizations=hf_signal,
-#         injection_parameters=settings.injection_parameters.__dict__,
-#         outdir=outdir,
-#         zero_noise=True,
-#         **settings.waveform_data.__dict__) for name in ['H1', 'L1', 'V1']]
-#
-#     network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR'] ** 2 for ifo in ifos]))
-#     del ifos
-#     print('Network SNR: ' + str(network_snr))
-#     network_snrs.append(network_snr)
-# print(network_snrs)
 priors = settings.recovery_priors.proper_dict()
-# priors['total_mass'] = bilby.prior.Uniform(minimum=40, maximum=100)
 for key in ['phase', 'luminosity_distance', 'geocent_time', 'total_mass', 'mass_ratio',
             's11', 's12', 's13', 's21', 's22', 's23']:
     priors[key] = settings.injection_parameters.__dict__[key]
