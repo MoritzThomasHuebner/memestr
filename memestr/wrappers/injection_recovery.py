@@ -123,10 +123,10 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
                                                                                maximum=1000, latex_label="$L_D$")
     priors['prior_inc'] = bilby.core.prior.Uniform(minimum=np.pi/2-0.25, maximum=np.pi/2+0.25, latex_label="$\iota$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=injection_parameters['ra']-0.24,
-                                                  maximum=injection_parameters['ra']+0.24, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Uniform(name='dec', minimum=injection_parameters['dec']-0.2,
-                                                   maximum=injection_parameters['dec']+0.2, latex_label="$DEC$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(name='ra', minimum=injection_parameters.ra-0.24,
+                                                  maximum=injection_parameters.ra+0.24, latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Uniform(name='dec', minimum=injection_parameters.dec-0.2,
+                                                   maximum=injection_parameters.dec+0.2, latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(name='phase', minimum=injection_parameters.phase - np.pi/4,
                                                      maximum=injection_parameters.phase + np.pi/4, latex_label="$\phi$")
     priors['prior_psi'] = bilby.core.prior.Uniform(name='psi', minimum=injection_parameters.psi - np.pi/4,
@@ -141,30 +141,3 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     imr_phenom_kwargs.update(kwargs)
     return run_basic_injection(injection_model=injection_model, recovery_model=recovery_model, outdir=outdir,
                                **imr_phenom_kwargs)
-
-
-def sample_injection_parameters():
-    priors = bilby.gw.prior.BBHPriorSet()
-    del priors['mass_1']
-    del priors['mass_2']
-    del priors['a_1']
-    del priors['a_2']
-    del priors['tilt_1']
-    del priors['tilt_2']
-    del priors['phi_12']
-    del priors['phi_jl']
-
-    priors['inc'] = priors['iota']
-    del priors['iota']
-    priors['s11'] = bilby.core.prior.DeltaFunction(peak=0)
-    priors['s12'] = bilby.core.prior.DeltaFunction(peak=0)
-    priors['s13'] = bilby.core.prior.DeltaFunction(peak=0)
-    priors['s21'] = bilby.core.prior.DeltaFunction(peak=0)
-    priors['s22'] = bilby.core.prior.DeltaFunction(peak=0)
-    priors['s23'] = bilby.core.prior.DeltaFunction(peak=0)
-    priors['luminosity_distance'].maximum = 1000
-    priors['phase'].maximum = 2 * np.pi
-    priors['psi'].maximum = 2 * np.pi
-    priors['total_mass'] = bilby.prior.Uniform(minimum=40, maximum=200, latex_label='$M_{tot}$')
-    priors['mass_ratio'] = bilby.prior.Uniform(minimum=1, maximum=2, latex_label='$q$')
-    return priors.sample()

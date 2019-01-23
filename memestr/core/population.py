@@ -372,3 +372,32 @@ dq = qs[1] - qs[0]
 norm_array = dict()
 norm_array['m1'] = np.einsum('i,j->ji', m1s, np.ones_like(qs))
 norm_array['q'] = np.einsum('i,j->ji', np.ones_like(m1s), qs)
+
+
+def mass_pdf(size):
+    m_1 = np.linspace(6.5, 50, size)
+    qs = np.linspace(0.1, 1, size)
+
+    q_mesh, m_mesh = np.meshgrid(qs, m_1)
+    dataset = dict(m1_source=m_mesh, q=q_mesh)
+
+    probs = mass_distribution_no_vt(dataset=dataset, alpha=9,
+                                    mmin=6.5, mmax=50, lam=0.4,
+                                    mpp=30, sigpp=5, beta=5.8, delta_m=4)
+    return qs, m_1, probs
+
+
+def mass_ratio_pdf(size):
+    qs, _, probs = mass_pdf(size)
+    q_probs = np.zeros(size)
+    for i, q in enumerate(q_probs):
+        q_probs[i] = np.sum(probs[:, i])
+    return qs, q_probs
+
+
+def primary_mass_pdf(size):
+    _, m_1, probs = mass_pdf(size)
+    m_1_probs = np.zeros(size)
+    for j, m in enumerate(m_1_probs):
+        m_1_probs[j] = np.sum(probs[j])
+    return m_1, m_1_probs
