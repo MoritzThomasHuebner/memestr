@@ -33,9 +33,6 @@ class InjectionParameters(RunParameters):
                  luminosity_distance=500., inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659,
                  geocent_time=1126259642.413, random_injection_parameters=False):
         super(InjectionParameters, self).__init__()
-        ra = 0.684
-        dec = 0.672
-        psi = 4.28
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
         self.s11 = s11
