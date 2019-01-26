@@ -16,7 +16,7 @@ def expected_bayes_factor(luminosity_distances=None, distance_marginalization=Fa
     logger = logging.getLogger('bilby')
     logger.disabled = True
 
-    if not luminosity_distances:
+    if luminosity_distances is None:
         luminosity_distances = [settings.injection_parameters.luminosity_distance]
 
     log_bfs = []
