@@ -45,7 +45,7 @@ def debug_plots():
 def create_parameter_set(filename):
     best_snr = 0
     settings = AllSettings()
-    while best_snr < 10:
+    while best_snr < 8:
         mass_1 = bilby.core.prior.Interped(xx=pm, yy=pm_pdf).sample()
         mass_ratio = bilby.core.prior.Interped(xx=mr, yy=mr_pdf).sample()
         total_mass = mass_1 + mass_1 / mass_ratio
