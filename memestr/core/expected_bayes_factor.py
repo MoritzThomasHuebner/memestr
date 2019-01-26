@@ -41,12 +41,13 @@ def expected_bayes_factor(luminosity_distances=None, distance_marginalization=Fa
             duration=duration, start_time=start_time,
             zero_noise=True,
             plot=False) for name in ['H1', 'L1', 'V1']]
-
+        priors = settings.recovery_priors.proper_dict()
         likelihood_with_mem = \
             bb.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                         waveform_generator=waveform_generator_with_mem,
                                                         priors=priors,
                                                         distance_marginalization=distance_marginalization)
+        priors = settings.recovery_priors.proper_dict()
         likelihood_no_mem = \
             bb.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                         waveform_generator=waveform_generator_no_mem,
