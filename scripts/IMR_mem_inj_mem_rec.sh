@@ -16,6 +16,7 @@ while IFS= read -r var
 do
   PARAMS="\$var"
 done < "\$FILENAME"
+echo \$PARAMS
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=42 $@
 
 #Distance vs evidence
