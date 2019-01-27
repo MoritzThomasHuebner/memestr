@@ -10,13 +10,8 @@ SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
-PARAMS=""
-while IFS= read -r var
-do
-  PARAMS="\$var"
-done < "\$FILENAME"
-echo \$PARAMS
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=42 $@
+PARAMS=`cat \$FILENAME`
+srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
 
 #Distance vs evidence
 #NOISE_SEEDS=(36380 66957 81888 74796 60079 70495 19376 76630)
