@@ -10,13 +10,13 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
     np.random.seed(settings.other_settings.random_seed)
     print("Random seed: " + str(settings.other_settings.random_seed))
-    if settings.injection_parameters.random_injection_parameters:
-        settings.injection_parameters.__dict__.update(sample_injection_parameters())
-        pd = settings.recovery_priors.proper_dict()
-        for key in pd:
-            if isinstance(pd[key], (int, float, bilby.core.prior.DeltaFunction)):
-                settings.recovery_priors.__dict__['prior_' + key] = \
-                    bilby.core.prior.DeltaFunction(peak=settings.injection_parameters.__dict__[key])
+    # if settings.injection_parameters.random_injection_parameters:
+    #     settings.injection_parameters.__dict__.update(sample_injection_parameters())
+    #     pd = settings.recovery_priors.proper_dict()
+    #     for key in pd:
+    #         if isinstance(pd[key], (int, float, bilby.core.prior.DeltaFunction)):
+    #             settings.recovery_priors.__dict__['prior_' + key] = \
+    #                 bilby.core.prior.DeltaFunction(peak=settings.injection_parameters.__dict__[key])
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
 
