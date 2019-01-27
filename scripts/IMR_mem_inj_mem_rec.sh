@@ -10,8 +10,9 @@ SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
-
+echo \$FILENAME
 PARAMS=`cat \$FILENAME`
+echo "test"
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
 
 #Distance vs evidence
