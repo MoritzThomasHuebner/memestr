@@ -10,13 +10,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
     np.random.seed(settings.other_settings.random_seed)
     print("Random seed: " + str(settings.other_settings.random_seed))
-    # if settings.injection_parameters.random_injection_parameters:
-    #     settings.injection_parameters.__dict__.update(sample_injection_parameters())
-    #     pd = settings.recovery_priors.proper_dict()
-    #     for key in pd:
-    #         if isinstance(pd[key], (int, float, bilby.core.prior.DeltaFunction)):
-    #             settings.recovery_priors.__dict__['prior_' + key] = \
-    #                 bilby.core.prior.DeltaFunction(peak=settings.injection_parameters.__dict__[key])
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
 
@@ -134,7 +127,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     #                                                maximum=injection_parameters.psi + np.pi/4, latex_label="$\psi$")
     # priors['prior_geocent_time'] = bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time')
 
-    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 4),
+    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 16),
                                                           maximum=injection_parameters.total_mass + 20,
                                                           latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=1.0,
