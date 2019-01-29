@@ -130,8 +130,8 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 16),
                                                           maximum=injection_parameters.total_mass + 20,
                                                           latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=1.0,
-                                                          maximum=injection_parameters.mass_ratio + 1,
+    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.3),
+                                                          maximum=1,
                                                           latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                                maximum=2000,
