@@ -10,11 +10,11 @@ models = [memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
 print(settings.injection_parameters)
 
 
-def plot_waveform(td_model, total_mass):
+def plot_waveform(td_model, mass_ratio):
     settings.waveform_arguments.alpha = 0.1
     settings.waveform_data.duration = 16
-    settings.injection_parameters.total_mass = total_mass
-    settings.injection_parameters.mass_ratio = 1.2
+    settings.injection_parameters.total_mass = 16
+    settings.injection_parameters.mass_ratio = mass_ratio
     waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
@@ -27,9 +27,9 @@ def plot_waveform(td_model, total_mass):
     # plt.savefig('memory_alpha_' + str(alpha) + '.png')
     plt.show()
     plt.clf()
-    plt.ylim(-0.8e-21, 0.8e-21)
-    plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='black')
-    plt.plot(waveform_generator.time_array, memestr.core.waveforms.tukey(M=len(waveform_generator.time_array), alpha=settings.waveform_arguments.alpha)*1.5e-22, color='blue')
+    # plt.ylim(-0.8e-21, 0.8e-21)
+    # plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='black')
+    # plt.plot(waveform_generator.time_array, memestr.core.waveforms.tukey(M=len(waveform_generator.time_array), alpha=settings.waveform_arguments.alpha)*1.5e-22, color='blue')
     settings.waveform_arguments.alpha = 0
     waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
                                                     parameters=settings.injection_parameters.__dict__,
@@ -50,8 +50,8 @@ def plot_waveform(td_model, total_mass):
 
 
 network_snrs = []
-for total_mass in [20, 40, 60, 80, 100, 120]:
-    network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform, total_mass))
+for mass_ratio in [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]:
+    network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory, mass_ratio))
 plt.show()
 
 print(network_snrs)
