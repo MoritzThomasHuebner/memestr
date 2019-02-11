@@ -1,7 +1,7 @@
 import bilby
 import memestr
 
-duration = 8.
+duration = 4.
 sampling_frequency = 4096.
 
 outdir = 'real_data'
@@ -17,9 +17,10 @@ waveform_generator = bilby.gw.WaveformGenerator(
 interferometers = bilby.gw.detector.get_event_data(label)
 interferometers[0].plot_data(signal=interferometers[0].frequency_domain_strain, outdir=outdir)
 interferometers[1].plot_data(signal=interferometers[1].frequency_domain_strain, outdir=outdir)
-interferometers[0].plot_time_domain_data(outdir=outdir)
-interferometers[1].plot_time_domain_data(outdir=outdir)
+# interferometers[0].plot_time_domain_data(outdir=outdir)
+# interferometers[1].plot_time_domain_data(outdir=outdir)
 prior = bilby.gw.prior.BBHPriorDict(filename='GW150914.prior')
+
 prior['a_1'] = bilby.gw.prior.DeltaFunction(0.0)
 prior['a_2'] = bilby.gw.prior.DeltaFunction(0.0)
 prior['tilt_1'] = bilby.gw.prior.DeltaFunction(0.0)
@@ -27,8 +28,8 @@ prior['tilt_2'] = bilby.gw.prior.DeltaFunction(0.0)
 prior['phi_12'] = bilby.gw.prior.DeltaFunction(0.0)
 prior['phi_jl'] = bilby.gw.prior.DeltaFunction(0.0)
 likelihood = bilby.gw.likelihood.GravitationalWaveTransient(
-    interferometers, waveform_generator, distance_marginalization=True, priors=prior)
+    interferometers, waveform_generator, priors=prior)
 
 result = bilby.run_sampler(likelihood, prior, sampler='dynesty',
-                           outdir=outdir, label=label)
+                           outdir=outdir, label=label, resume=True)
 result.plot_corner()
