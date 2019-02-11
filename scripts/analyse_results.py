@@ -36,9 +36,9 @@ for run in runs:
                         log_evidence_err.append(result.log_evidence_err)
                     except AttributeError:
                         log_evidence_err.append(0)
-                    network_snr.append(np.sqrt(
-                        np.sum(result.meta_data['likelihood'][detector]['optimal_SNR']**2)
-                        for detector in ['H1', 'L1', 'V1']))
+                    network_snr.append(np.sqrt(np.sum(
+                                [result.meta_data['likelihood'][detector]['optimal_SNR']**2
+                                 for detector in ['H1', 'L1', 'V1']])))
 
         data = zip(luminosity_distances, log_evidence, log_bayes_factor, log_evidence_err, network_snr)
         data = sorted(data)
