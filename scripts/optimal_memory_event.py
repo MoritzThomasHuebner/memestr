@@ -3,9 +3,11 @@ from __future__ import division, print_function
 import numpy as np
 import bilby
 import memestr
+from memestr.core.population import primary_mass_pdf
 import logging
 import copy
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 
 settings = memestr.core.parameters.AllSettings()
 
@@ -57,7 +59,7 @@ def find_optimal_snr_from_result():
 
 
 wg = bilby.gw.WaveformGenerator(
-    duration=settings.waveform_data.duration*2, sampling_frequency=settings.waveform_data.sampling_frequency,
+    duration=settings.waveform_data.duration*4, sampling_frequency=settings.waveform_data.sampling_frequency,
     time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
     waveform_arguments=settings.waveform_arguments.__dict__, parameters=settings.injection_parameters.__dict__)
 interferometers = bilby.gw.detector.InterferometerList(['H1', 'L1', 'V1'])
@@ -123,31 +125,111 @@ interferometers.set_strain_data_from_power_spectral_densities(
 # settings.injection_parameters.dec = dec_old
 # settings.injection_parameters.ra = ra_old
 
+# 2D mass plot
+# tms = np.linspace(20, 200, 100)
+# qs = np.linspace(1, 5, 100)
+# network_snrs = np.zeros(shape=(100, 100))
+# for i, tm in enumerate(tms):
+#     for j, q in enumerate(qs):
+#         settings.injection_parameters.mass_ratio = q
+#         settings.injection_parameters.total_mass = tm
+#         ifos = copy.deepcopy(interferometers)
+#         ifos.inject_signal(waveform_generator=wg, parameters=settings.injection_parameters.__dict__)
+#         network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR'] ** 2 for ifo in ifos]))
+#         network_snrs[j][i] = network_snr
+# tm_mesh, q_mesh = np.meshgrid(tms, qs)
+# cf = plt.contourf(tm_mesh, q_mesh, network_snrs)
+# plt.xlabel('total_mass')
+# plt.ylabel('mass ratio')
+# plt.title('Optimal Network SNR')
+# plt.colorbar(cf)
+# plt.savefig('opt_snr_vs_mass_params.png')
+# plt.show()
+# plt.clf()
 
-tms = np.linspace(20, 100, 100)
-qs = np.linspace(1, 5, 100)
-network_snrs = np.zeros(shape=(100, 100))
+pm, pm_pdf = primary_mass_pdf(1000)
+pm[-1] = 150
+pm_pdf[-1] = 0
+# tms = np.linspace(10, 300, 100)
+# network_snrs = np.zeros(100)
+# for i, tm in enumerate(tms):
+#     settings.injection_parameters.mass_ratio = 1
+#     settings.injection_parameters.total_mass = tm
+#     ifos = copy.deepcopy(interferometers)
+#     ifos.inject_signal(waveform_generator=wg, parameters=settings.injection_parameters.__dict__)
+#     network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR'] ** 2 for ifo in ifos]))
+#     network_snrs[i] = network_snr
+#
+# fig, ax1 = plt.subplots()
+# ax1.plot(tms, network_snrs, color='b')
+# ax1.set_xlabel('total_mass')
+# ax1.set_ylabel('optimal SNR', color='b')
+# ax1.tick_params('y', colors='b')
+# ax2 = ax1.twinx()
+# ax2.plot(2 * pm, pm_pdf, color='r')
+# ax2.set_ylabel('Total mass pdf', color='r')
+# ax2.tick_params('y', colors='r')
+# plt.savefig('optimal_event/opt_snr_vs_total_mass.png')
+# plt.show()
+# plt.clf()
+
+wg_no_mem = bilby.gw.WaveformGenerator(
+    duration=settings.waveform_data.duration*4, sampling_frequency=settings.waveform_data.sampling_frequency,
+    time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
+    waveform_arguments=settings.waveform_arguments.__dict__, parameters=settings.injection_parameters.__dict__)
+wg_with_mem = bilby.gw.WaveformGenerator(
+    duration=settings.waveform_data.duration*4, sampling_frequency=settings.waveform_data.sampling_frequency,
+    time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+    waveform_arguments=settings.waveform_arguments.__dict__, parameters=settings.injection_parameters.__dict__)
+
+tms = np.linspace(10, 300, 100)
+log_evidences = []
+settings.injection_parameters.luminosity_distance = 1000
 for i, tm in enumerate(tms):
-    for j, q in enumerate(qs):
-        settings.injection_parameters.mass_ratio = q
-        settings.injection_parameters.total_mass = tm
-        ifos = copy.deepcopy(interferometers)
-        ifos.inject_signal(waveform_generator=wg, parameters=settings.injection_parameters.__dict__)
-        network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR'] ** 2 for ifo in ifos]))
-        network_snrs[j][i] = network_snr
+    settings.injection_parameters.mass_ratio = 1
+    settings.injection_parameters.total_mass = tm
+    ifos = bilby.gw.detector.InterferometerList(
+        [bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
+            name,
+            injection_polarizations=wg_with_mem.frequency_domain_strain(settings.injection_parameters.__dict__),
+            injection_parameters=settings.injection_parameters.__dict__,
+            outdir=outdir,
+            zero_noise=settings.detector_settings.zero_noise,
+            plot=False,
+            duration=settings.waveform_data.duration*4,
+            sampling_frequency=settings.waveform_data.sampling_frequency) for name in settings.detector_settings.detectors])
+    likelihood1 = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+                                                                 waveform_generator=wg_with_mem)
+    likelihood2 = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+                                                                 waveform_generator=wg_no_mem)
+    likelihood1.parameters = settings.injection_parameters.__dict__
+    likelihood2.parameters = settings.injection_parameters.__dict__
+    log_evidence = likelihood1.log_likelihood() - likelihood2.log_likelihood()
+    log_evidences.append(log_evidence)
 
-tm_mesh, q_mesh = np.meshgrid(tms, qs)
 
-cf = plt.contourf(tm_mesh, q_mesh, network_snrs)
-plt.xlabel('total_mass')
-plt.ylabel('mass ratio')
-plt.title('Optimal Network SNR')
-plt.colorbar(cf)
-plt.savefig('opt_snr_vs_mass_params.png')
+fig, ax1 = plt.subplots()
+ax1.plot(tms, log_evidences, color='b')
+ax1.set_xlabel('total_mass')
+ax1.set_ylabel('log evidence', color='b')
+ax1.tick_params('y', colors='b')
+ax2 = ax1.twinx()
+ax2.plot(2 * pm, pm_pdf, color='r')
+ax2.set_ylabel('Total mass pdf', color='r')
+ax2.tick_params('y', colors='r')
+plt.savefig('optimal_event/log_evidence_vs_total_mass.png')
 plt.show()
 plt.clf()
 
+log_evidence_func = interp1d(tms, log_evidences)
+tm_pdf_func = interp1d(2 * pm, pm_pdf)
 
+plt.plot(2*pm, log_evidence_func(2*pm) * tm_pdf_func(2*pm))
+plt.xlabel('Total mass')
+plt.ylabel('log evidence times total mass pdf')
+plt.savefig('optimal_event/true_log_bf_dist.png')
+plt.show()
+plt.clf()
 # priors = settings.recovery_priors.proper_dict()
 # for key in ['phase', 'luminosity_distance', 'geocent_time', 'total_mass', 'mass_ratio',
 #             's11', 's12', 's13', 's21', 's22', 's23']:
