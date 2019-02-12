@@ -42,7 +42,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             priors=priors,
                                             injection_parameters=settings.injection_parameters.__dict__,
                                             outdir=outdir,
-                                            save=False,
+                                            save=True,
                                             verbose=True,
                                             **settings.sampler_settings.__dict__)
     result.plot_corner(lionize=settings.other_settings.lionize)
@@ -156,8 +156,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                             latex_label='$t_c$')
 
     imr_phenom_kwargs = dict(
-        label='IMRPhenomD',
-        npoints=5000
+        label='IMRPhenomD'
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)

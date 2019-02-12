@@ -56,7 +56,7 @@ def create_parameter_set(filename):
         mass_ratio = bilby.core.prior.Interped(xx=mr, yy=mr_pdf).sample()
         total_mass = mass_1 + mass_1 * mass_ratio
         luminosity_distance = \
-            bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1, maximum=4e3).sample()
+            bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1, maximum=2e3).sample()
         dec = bilby.core.prior.Cosine(name='dec').sample()
         ra = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi).sample()
         inc = bilby.core.prior.Sine(name='inc').sample()
@@ -95,11 +95,12 @@ def create_parameter_set(filename):
             zero_noise=False,
             plot=False,
             **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
-        best_snrs = [ifo.meta_data['optimal_SNR'] for ifo in ifos]
+        best_snrs = [ifo.meta_data['matched_filter_SNR'].real for ifo in ifos]
         best_snr = max(best_snrs)
         network_snr = np.sqrt(np.sum([snr ** 2 for snr in best_snrs]))
     print(best_snr)
     print(network_snr)
+    print(filename)
     print('\n')
 
     with open('parameter_sets/' + str(filename), 'w') as f:

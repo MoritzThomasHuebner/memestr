@@ -121,17 +121,22 @@ class SamplerSettings(RunParameters):
     )
 
     def __init__(self, sampler='dynesty', npoints=6000, label='IMRPhenomD', conversion_function=None, clean=True,
-                 walks=None, dlogz=None, sample='rwalk'):
+                 walks=None, dlogz=None, maxmcmc=None, sample=None):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
         self.clean = clean
-        self.sample = sample
+        if sample:
+            self.sample = sample
+        elif sampler == 'dynesty':
+            self.sample = 'rwalk'
         if dlogz:
             self.dlogz = dlogz
         if walks:
             self.walks = int(walks)
+        if maxmcmc:
+            self.maxmcmc = int(maxmcmc)
         if conversion_function is not None:
             self.conversion_function = self.conversion_functions[conversion_function]
         else:
