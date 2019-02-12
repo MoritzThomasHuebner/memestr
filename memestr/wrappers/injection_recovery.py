@@ -135,7 +135,8 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                           latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                                maximum=2000,
-                                                                               latex_label="$L_D$")
+                                                                               latex_label="$L_D$",
+                                                                               name='luminosity_distance')
     priors['prior_inc'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.inc-0.5, 0),
                                                    maximum=np.minimum(injection_parameters.inc+0.5, np.pi),
                                                    latex_label="$\iota$")
