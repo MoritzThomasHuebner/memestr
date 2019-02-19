@@ -48,25 +48,38 @@ def calculate_expected_log_bf(parameters,
         sampling_frequency=sampling_frequency,
         duration=duration,
         start_time=start_time)
-    ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
-        name=name,
-        injection_parameters=parameters,
-        waveform_generator=waveform_generator_with_mem,
-        sampling_frequency=sampling_frequency,
-        duration=duration, start_time=start_time,
-        zero_noise=True,
-        plot=False) for name in ['H1', 'L1', 'V1']]
+    ifos = bb.gw.detector.InterferometerList([])
+    for name in ['H1', 'L1', 'V1']:
+        interferometer = bb.gw.detector.get_empty_interferometer(name)
+        # interferometer.power_spectral_density = bb.gw.detector.PowerSpectralDensity(asd_file='Aplus_asd.txt')
+        interferometer.power_spectral_density = bb.gw.detector.\
+            PowerSpectralDensity(psd_file='aLIGO_ZERO_DET_high_P_psd.txt')
+        interferometer.set_strain_data_from_zero_noise(
+            sampling_frequency=sampling_frequency, duration=duration,
+            start_time=start_time)
+        # interferometer.set_strain_data_from_power_spectral_density(
+        #     sampling_frequency=sampling_frequency, duration=duration,
+        #     start_time=start_time)
+
+        interferometer.inject_signal(parameters=parameters,
+                                     waveform_generator=waveform_generator_with_mem)
+        ifos.append(interferometer)
+
     likelihood_with_mem = \
         bb.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                     waveform_generator=waveform_generator_with_mem,
                                                     priors=dict(luminosity_distance=
-                                                                bb.gw.prior.UniformComovingVolume(10, 5000)),
+                                                                bb.gw.prior.
+                                                                UniformComovingVolume(10, 5000,
+                                                                                      name='luminosity_distance')),
                                                     distance_marginalization=distance_marginalization)
     likelihood_no_mem = \
         bb.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
                                                     waveform_generator=waveform_generator_no_mem,
                                                     priors=dict(luminosity_distance=
-                                                                bb.gw.prior.UniformComovingVolume(10, 5000)),
+                                                                bb.gw.prior.
+                                                                UniformComovingVolume(10, 5000,
+                                                                                      name='luminosity_distance')),
                                                     distance_marginalization=distance_marginalization)
     likelihood_with_mem.parameters = parameters
     likelihood_no_mem.parameters = parameters
