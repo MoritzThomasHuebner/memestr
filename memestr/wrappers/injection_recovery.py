@@ -30,6 +30,10 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     waveform_generator.time_domain_source_model = recovery_model
 
     priors = settings.recovery_priors.proper_dict()
+    print('Distance marginalisation: ' + str(settings.other_settings.distance_marginalization))
+    print('Time marginalisation: ' + str(settings.other_settings.time_marginalization))
+    print('Phase marginalisation: ' + str(settings.other_settings.phase_marginalization))
+    print('Priors: ' + str(priors))
     likelihood = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
