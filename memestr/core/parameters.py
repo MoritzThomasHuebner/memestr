@@ -121,16 +121,19 @@ class SamplerSettings(RunParameters):
     )
 
     def __init__(self, sampler='dynesty', npoints=6000, label='IMRPhenomD', conversion_function=None, clean=True,
-                 walks=None, dlogz=None, maxmcmc=None, sample=None):
+                 walks=None, dlogz=None, maxmcmc=None, sample=None, nthreads=1):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
         self.clean = clean
-        if sample:
-            self.sample = sample
-        elif sampler == 'dynesty':
-            self.sample = 'rwalk'
+        if sampler == 'dynesty':
+            if sample:
+                self.sample = sample
+            else:
+                self.sample = 'rwalk'
+        if sampler == 'cpnest':
+            self.nthreads = nthreads
         if dlogz:
             self.dlogz = dlogz
         if walks:
