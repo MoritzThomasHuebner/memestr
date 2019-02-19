@@ -34,6 +34,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
 
     priors = settings.recovery_priors.proper_dict()
     logger.info('Distance marginalisation: ' + str(settings.other_settings.distance_marginalization))
+    logger.info('Distance marginalization:' + str(type(settings.other_settings.distance_marginalization)))
     logger.info('Time marginalisation: ' + str(settings.other_settings.time_marginalization))
     logger.info('Phase marginalisation: ' + str(settings.other_settings.phase_marginalization))
     logger.info('Priors: ' + str(priors))
