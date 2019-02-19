@@ -49,6 +49,9 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
+    likelihood.parameters = settings.injection_parameters.__dict__
+    logger.info("Likelihood at injected value: " + str(likelihood.log_likelihood()))
+
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
                                             injection_parameters=settings.injection_parameters.__dict__,
