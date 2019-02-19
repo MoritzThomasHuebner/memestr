@@ -28,5 +28,6 @@ for id in range(256):
 plt.plot(cummulative_log_bfs)
 plt.xlabel('Number of events')
 plt.ylabel('Cumulative log BF')
-plt.savefig('plots/expected_cumulative_log_bfs_model_b.png')
+plt.tight_layout()
+plt.savefig('plots/expected_cumulative_log_bfs_model_c_zero_noise.png')
 plt.clf()

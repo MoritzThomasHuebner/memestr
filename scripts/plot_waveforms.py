@@ -12,8 +12,8 @@ print(settings.injection_parameters)
 
 def plot_waveform(td_model, mass_ratio):
     settings.waveform_arguments.alpha = 0.1
-    settings.waveform_data.duration = 16
-    settings.injection_parameters.total_mass = 16
+    settings.waveform_data.duration = 2
+    settings.injection_parameters.total_mass = 65
     settings.injection_parameters.mass_ratio = mass_ratio
     waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
                                                     parameters=settings.injection_parameters.__dict__,
@@ -35,7 +35,18 @@ def plot_waveform(td_model, mass_ratio):
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
-    plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='red')
+    plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='red',
+             label='total strain')
+    waveform_generator.time_domain_source_model = memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform
+    plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='blue',
+             label='memory strain')
+    plt.xlim(1.52, 1.63)
+    plt.xlabel('$t [\mathrm{s}]$')
+    plt.ylabel('h')
+    plt.legend()
+    plt.axhline(0, xmin=1.5, xmax=1.7)
+    plt.show()
+    plt.clf()
     interferometers = bilby.gw.detector.InterferometerList(['H1', 'L1', 'V1'])
     interferometers.\
         set_strain_data_from_power_spectral_densities(sampling_frequency=settings.waveform_data.sampling_frequency,
@@ -43,14 +54,12 @@ def plot_waveform(td_model, mass_ratio):
                                                       start_time=settings.waveform_data.start_time)
     interferometers.inject_signal(parameters=settings.injection_parameters.__dict__,
                                   waveform_generator=waveform_generator)
-    plt.show()
-    plt.clf()
     network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR']**2 for ifo in interferometers]))
     return network_snr
 
 
 network_snrs = []
-for mass_ratio in [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]:
+for mass_ratio in [1]:  # , 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]:
     network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory, mass_ratio))
 plt.show()
 

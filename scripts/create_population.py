@@ -123,7 +123,7 @@ def create_parameter_set(filename):
 
 debug_plots()
 
-for i in range(128):
+for i in range(512):
     create_parameter_set(i)
 
 
