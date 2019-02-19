@@ -178,18 +178,42 @@ class OtherSettings(RunParameters):
             self.lionize = True
         else:
             self.lionize = False
-        if time_marginalization == 'True':
-            self.time_marginalization = True
+        self.phase_marginalization = phase_marginalization
+        self.time_marginalization = time_marginalization
+        self.distance_marginalization = distance_marginalization
+
+    @property
+    def distance_marginalization(self):
+        return self._distance_marginalization
+
+    @distance_marginalization.setter
+    def distance_marginalization(self, distance_marginalization):
+        if distance_marginalization == 'True' or distance_marginalization is True:
+            self._distance_marginalization = True
         else:
-            self.time_marginalization = False
-        if distance_marginalization == 'True':
-            self.distance_marginalization = True
+            self._distance_marginalization = False
+
+    @property
+    def time_marginalization(self):
+        return self._time_marginalization
+
+    @time_marginalization.setter
+    def time_marginalization(self, time_marginalization):
+        if time_marginalization == 'True' or time_marginalization is True:
+            self._time_marginalization = True
         else:
-            self.distance_marginalization = False
-        if phase_marginalization == 'True':
-            self.phase_marginalization = True
+            self._time_marginalization = False
+
+    @property
+    def phase_marginalization(self):
+        return self._phase_marginalization
+
+    @phase_marginalization.setter
+    def phase_marginalization(self, phase_marginalization):
+        if phase_marginalization == 'True' or phase_marginalization is True:
+            self._phase_marginalization = True
         else:
-            self.phase_marginalization = False
+            self._phase_marginalization = False
 
 
 class AllSettings(object):
