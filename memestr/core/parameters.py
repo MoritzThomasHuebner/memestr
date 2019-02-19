@@ -115,39 +115,24 @@ class WaveformData(RunParameters):
         self.sampling_frequency = sampling_frequency
 
 
-class SamplerSettings(RunParameters):
+class CpnestSettings(RunParameters):
     conversion_functions = dict(
         convert_to_lal_binary_black_hole_parameters=bilby.gw.conversion.convert_to_lal_binary_black_hole_parameters
     )
 
-    def __init__(self, sampler='dynesty', npoints=6000, label='IMRPhenomD', conversion_function=None, clean=True,
-                 walks=None, dlogz=None, maxmcmc=None, sample=None, nthreads=1):
-        super(SamplerSettings, self).__init__()
+    def __init__(self, sampler='cpnest', npoints=200, label='IMRPhenomD', conversion_function=None, clean=True,
+                 dlogz=0.1, maxmcmc=100, nthreads=1):
+        super(CpnestSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
         self.clean = clean
-        if sampler == 'dynesty':
-            if sample:
-                self.sample = sample
-            else:
-                self.sample = 'rwalk'
         self.nthreads = nthreads
-        if dlogz:
-            self.dlogz = dlogz
-        if walks:
-            self.walks = int(walks)
-        if maxmcmc:
-            self.maxmcmc = int(maxmcmc)
+        self.dlogz = dlogz
+        self.maxmcmc = int(maxmcmc)
+        self.conversion_function = None
         if conversion_function is not None:
             self.conversion_function = self.conversion_functions[conversion_function]
-        else:
-            self.conversion_function = None
-
-    def update_args(self, **kwargs):
-        for key in kwargs:
-            if hasattr(self, key) or key in ['walks', 'dlogz', 'conversion_function']:
-                setattr(self, key, kwargs[key])
 
 
 class DetectorSettings(RunParameters):
@@ -219,7 +204,7 @@ class AllSettings(object):
 
     def __init__(self, injection_parameters=InjectionParameters(), recovery_priors=RecoveryPriors(),
                  waveform_arguments=WaveformArguments(), waveform_data=WaveformData(),
-                 sampler_settings=SamplerSettings(), detector_settings=DetectorSettings(),
+                 sampler_settings=CpnestSettings(), detector_settings=DetectorSettings(),
                  other_settings=OtherSettings()):
         self.injection_parameters = injection_parameters
         self.recovery_priors = recovery_priors
@@ -244,6 +229,6 @@ class AllSettings(object):
                    recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
                    waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
                    waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
-                   sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),
+                   sampler_settings=CpnestSettings.init_with_updated_kwargs(**kwargs),
                    detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
                    other_settings=OtherSettings.init_with_updated_kwargs(**kwargs))
