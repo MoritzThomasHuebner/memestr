@@ -2,14 +2,17 @@ from __future__ import division
 
 import numpy as np
 import bilby
+import logging
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
+    logger = logging.getLogger('bilby')
+
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
     np.random.seed(settings.other_settings.random_seed)
-    print("Random seed: " + str(settings.other_settings.random_seed))
+    logger.info("Random seed: " + str(settings.other_settings.random_seed))
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
 
@@ -30,11 +33,11 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     waveform_generator.time_domain_source_model = recovery_model
 
     priors = settings.recovery_priors.proper_dict()
-    print('Distance marginalisation: ' + str(settings.other_settings.distance_marginalization))
-    print('Time marginalisation: ' + str(settings.other_settings.time_marginalization))
-    print('Phase marginalisation: ' + str(settings.other_settings.phase_marginalization))
-    print('Priors: ' + str(priors))
-    print('Sampler settings: ' + str(settings.sampler_settings))
+    logger.info('Distance marginalisation: ' + str(settings.other_settings.distance_marginalization))
+    logger.info('Time marginalisation: ' + str(settings.other_settings.time_marginalization))
+    logger.info('Phase marginalisation: ' + str(settings.other_settings.phase_marginalization))
+    logger.info('Priors: ' + str(priors))
+    logger.info('Sampler settings: ' + str(settings.sampler_settings))
     likelihood = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
