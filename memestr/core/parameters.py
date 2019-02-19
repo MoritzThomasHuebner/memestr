@@ -132,8 +132,7 @@ class SamplerSettings(RunParameters):
                 self.sample = sample
             else:
                 self.sample = 'rwalk'
-        if sampler == 'cpnest':
-            self.nthreads = nthreads
+        self.nthreads = nthreads
         if dlogz:
             self.dlogz = dlogz
         if walks:
