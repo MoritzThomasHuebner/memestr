@@ -6,9 +6,9 @@ OUTDIR=`python -c "${PYTHON_COMMAND}"`
 mkdir ${OUTDIR}
 JOB_NAME="--job-name=$LABEL"
 OUTPUT=""
-TIME="--time=144:00:00"
+TIME="--time=240:00:00"
 NTASKS="--ntasks=1"
 MEM_PER_CPU="--mem-per-cpu=4G"
-CPUS_PER_TASK="--cpus-per-task=1"
-ARRAY="--array=0-127"
+CPUS_PER_TASK="--cpus-per-task=4"
+ARRAY="--array=0-32"
 EMAIL="--mail-type=END --mail-user=email@moritz-huebner.de"
