@@ -9,9 +9,13 @@ JOB=run_basic_job.py
 SCRIPT=run_basic_injection_imr_phenom
 INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory
-FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
-PARAMS=\$(cat \$FILENAME)
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
+
+srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} $@
+
+#Random injections
+#FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
+#PARAMS=\$(cat \$FILENAME)
+#srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
 
 #Distance vs evidence
 #NOISE_SEEDS=(36380 66957 81888 74796 60079 70495 19376 76630)
