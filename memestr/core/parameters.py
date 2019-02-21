@@ -150,13 +150,9 @@ class DetectorSettings(RunParameters):
 
 class OtherSettings(RunParameters):
 
-    def __init__(self, new_seed=True, lionize=False, time_marginalization=False,
+    def __init__(self, lionize=False, time_marginalization=False,
                  distance_marginalization=False, phase_marginalization=False, random_seed=0):
         super(OtherSettings, self).__init__()
-        if new_seed == 'False':
-            self.new_seed = False
-        else:
-            self.new_seed = True
         self.random_seed = random_seed
         if lionize == 'True':
             self.lionize = True
