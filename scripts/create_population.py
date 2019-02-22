@@ -123,9 +123,9 @@ def create_parameter_set(filename):
 
 debug_plots()
 
-for i in range(512):
+for i in range(127, 256):
     create_parameter_set(i)
 
 
-params = get_injection_parameter_set(id=10)
-print(params)
+# params = get_injection_parameter_set(id=10)
+# print(params)
