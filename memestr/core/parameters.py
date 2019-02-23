@@ -142,7 +142,7 @@ class DetectorSettings(RunParameters):
         if zero_noise == 'True':
             self.zero_noise = True
         else:
-            self.zero_noise = 'False'
+            self.zero_noise = False
         self.detectors = list(detectors)
         if len(self.detectors) == 0:
             self.detectors = ['H1', 'L1', 'V1']
