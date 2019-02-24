@@ -13,9 +13,14 @@ RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 #srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} $@
 
 #Random injections
-FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
+#FILENAME="./parameter_sets/\${SLURM_ARRAY_TASK_ID}"
+#PARAMS=\$(cat \$FILENAME)
+#srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
+
+FILENAME="./parameter_sets/99"
 PARAMS=\$(cat \$FILENAME)
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
+srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
+
 
 #Distance vs evidence
 #NOISE_SEEDS=(36380 66957 81888 74796 60079 70495 19376 76630)
