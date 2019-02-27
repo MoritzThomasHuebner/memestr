@@ -131,7 +131,7 @@ class CpnestSettings(RunParameters):
         self.dlogz = dlogz
         self.maxmcmc = int(maxmcmc)
         self.conversion_function = None
-        self.resume = True
+        self.resume = resume
         if conversion_function is not None:
             self.conversion_function = self.conversion_functions[conversion_function]
 

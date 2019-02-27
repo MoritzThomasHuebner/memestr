@@ -54,12 +54,12 @@ def calculate_expected_log_bf(parameters,
         # interferometer.power_spectral_density = bb.gw.detector.PowerSpectralDensity(asd_file='Aplus_asd.txt')
         interferometer.power_spectral_density = bb.gw.detector.\
             PowerSpectralDensity(psd_file='aLIGO_ZERO_DET_high_P_psd.txt')
-        interferometer.set_strain_data_from_zero_noise(
-            sampling_frequency=sampling_frequency, duration=duration,
-            start_time=start_time)
-        # interferometer.set_strain_data_from_power_spectral_density(
+        # interferometer.set_strain_data_from_zero_noise(
         #     sampling_frequency=sampling_frequency, duration=duration,
         #     start_time=start_time)
+        interferometer.set_strain_data_from_power_spectral_density(
+            sampling_frequency=sampling_frequency, duration=duration,
+            start_time=start_time)
 
         interferometer.inject_signal(parameters=parameters,
                                      waveform_generator=waveform_generator_with_mem)
