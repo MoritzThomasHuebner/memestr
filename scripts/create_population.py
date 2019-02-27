@@ -51,12 +51,16 @@ def create_parameter_set(filename):
     best_snr = 0
     network_snr = 0
     settings = AllSettings()
-    while best_snr < 15 and network_snr < 20:
+    while best_snr < 8 and network_snr < 12:
         mass_1 = bilby.core.prior.Interped(xx=pm, yy=pm_pdf).sample()
         mass_ratio = bilby.core.prior.Interped(xx=mr, yy=mr_pdf).sample()
         total_mass = mass_1 + mass_1 * mass_ratio
+        if total_mass < 15:
+            continue
         luminosity_distance = \
             bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1, maximum=2e3).sample()
+        if total_mass < 25 and luminosity_distance > 1500:
+            continue
         dec = bilby.core.prior.Cosine(name='dec').sample()
         ra = bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi).sample()
         inc = bilby.core.prior.Sine(name='inc').sample()
@@ -123,7 +127,7 @@ def create_parameter_set(filename):
 
 debug_plots()
 
-for i in range(127, 256):
+for i in range(10500, 10700):
     create_parameter_set(i)
 
 

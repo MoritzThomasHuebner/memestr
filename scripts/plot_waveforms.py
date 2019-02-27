@@ -12,19 +12,32 @@ print(settings.injection_parameters)
 
 def plot_waveform(td_model, mass_ratio):
     settings.waveform_arguments.alpha = 0.1
-    settings.waveform_data.duration = 2
+    settings.waveform_data.duration = 16
+    settings.waveform_data.sampling_frequency = 2048
     settings.injection_parameters.total_mass = 65
     settings.injection_parameters.mass_ratio = mass_ratio
+    settings.injection_parameters.inc = np.pi/2
     waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
-    plt.plot(waveform_generator.frequency_array, np.abs(waveform_generator.frequency_domain_strain()['plus']))
-    plt.title('alpha = ' + str(settings.waveform_arguments.alpha))
-    plt.xlim(20, 1000)
-    plt.ylim(1e-30, 4e-23)
+    psd = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+    waveform_generator.time_domain_source_model = memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory
+    plt.plot(waveform_generator.frequency_array, np.abs(waveform_generator.frequency_domain_strain()['plus']),
+             label='Oscillatory')
+    waveform_generator.time_domain_source_model = memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform
+
+    plt.plot(waveform_generator.frequency_array, np.abs(waveform_generator.frequency_domain_strain()['plus']), label='Memory')
+    plt.plot(psd.frequency_array, psd.asd_array, label='aLIGO ASD')
+    # plt.title('alpha = ' + str(settings.waveform_arguments.alpha))
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('h')
+    plt.xlim(10, 1000)
+    plt.ylim(1e-30, 4e-19)
     plt.loglog()
-    # plt.savefig('memory_alpha_' + str(alpha) + '.png')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('waveforms/memory_frequency_domain')
     plt.show()
     plt.clf()
     # plt.ylim(-0.8e-21, 0.8e-21)
@@ -54,13 +67,15 @@ def plot_waveform(td_model, mass_ratio):
                                                       start_time=settings.waveform_data.start_time)
     interferometers.inject_signal(parameters=settings.injection_parameters.__dict__,
                                   waveform_generator=waveform_generator)
+    for ifo in interferometers:
+        ifo.plot_data(outdir='waveforms')
     network_snr = np.sqrt(np.sum([ifo.meta_data['optimal_SNR']**2 for ifo in interferometers]))
     return network_snr
 
 
 network_snrs = []
 for mass_ratio in [1]:  # , 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]:
-    network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory, mass_ratio))
+    network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform, mass_ratio))
 plt.show()
 
 print(network_snrs)
