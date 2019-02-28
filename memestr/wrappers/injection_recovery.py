@@ -33,14 +33,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     waveform_generator.time_domain_source_model = recovery_model
 
     priors = settings.recovery_priors.proper_dict()
-    logger.info('Distance marginalisation: ' + str(settings.other_settings.distance_marginalization))
-    logger.info('Distance marginalization:' + str(type(settings.other_settings.distance_marginalization)))
-    logger.info('Time marginalisation: ' + str(settings.other_settings.time_marginalization))
-    logger.info('Time marginalization:' + str(type(settings.other_settings.time_marginalization)))
-    logger.info('Phase marginalisation: ' + str(settings.other_settings.phase_marginalization))
-    logger.info('Phase marginalization:' + str(type(settings.other_settings.phase_marginalization)))
-    logger.info('Priors: ' + str(priors))
-    logger.info('Sampler settings: ' + str(settings.sampler_settings))
     likelihood = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
@@ -50,7 +42,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
     likelihood.parameters = settings.injection_parameters.__dict__
-    logger.info(str(likelihood.parameters))
+    logger.info('Sampler settings: ' + str(settings.sampler_settings))
+    logger.info('Waveform data: ' + str(settings.waveform_data))
     logger.info("Log Likelihood at injected value: " + str(likelihood.log_likelihood_ratio()))
 
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
@@ -59,10 +52,9 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             outdir=outdir,
                                             save=True,
                                             verbose=True,
+                                            random_seed=np.random.randint(0, 1000),
                                             **settings.sampler_settings.__dict__)
-    result.plot_corner(lionize=settings.other_settings.lionize)
-    result.memory_settings = repr(settings)
-
+    result.plot_corner(lionize=settings.other_settings.lionize, truths=settings.injection_parameters.__dict__)
     logger.info(str(result))
     result.save_to_file()
     return result

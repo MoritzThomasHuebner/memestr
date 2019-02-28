@@ -1,5 +1,6 @@
 from scipy.misc import logsumexp
 import numpy as np
+import sys
 import bilby as bb
 import memestr
 from memestr.core.parameters import AllSettings
@@ -8,9 +9,9 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 import logging
 import pandas as pd
 
-outdir = 'evidence_reweighing/cpnest_example'
-outdir_memory = 'evidence_reweighing/068_IMR_mem_inj_mem_rec'
-outdir_non_memory = 'evidence_reweighing/068_IMR_mem_inj_non_mem_rec'
+outdir = 'evidence_reweighing'
+outdir_memory = 'evidence_reweighing/IMR_mem_inj_mem_rec'
+outdir_non_memory = 'evidence_reweighing/IMR_mem_inj_non_mem_rec'
 
 logger = logging.getLogger('bilby')
 logger.disabled = True
@@ -125,7 +126,7 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
                                       sampling_bfs=sampling_bfs,
                                       reweighing_to_memory_bfs=reweighing_to_memory_bfs,
                                       reweighing_from_memory_bfs=reweighing_from_memory_bfs))
-    res.to_json('evidence_reweighing_' + str(subdirs[0]) + '_' + str(subdirs[-1]))
+    res.to_json('evidence_reweighing/' + str(subdirs[0]) + '_' + str(subdirs[-1]) + '.json')
 
 
 def reweigh_log_evidence_by_weights(log_evidence, log_weights):
@@ -142,5 +143,7 @@ def _calculate_log_weights(likelihood, posterior):
     return weights
 
 
-print_evidences(subdirs=[str(subdir) for subdir in range(0, 65)], sampling_frequency=4096)
-print_evidences(subdirs=[str(subdir) for subdir in range(65, 130)], sampling_frequency=2048)
+# Use sampling_frequency == 4096 from 0 to 64 and 2048 after that
+print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[0]), int(sys.argv[1]))],
+                sampling_frequency=int(sys.argv[2]))
+# print_evidences(subdirs=[str(subdir) for subdir in range(65, 130)], sampling_frequency=2048)
