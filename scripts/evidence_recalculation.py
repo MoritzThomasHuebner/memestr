@@ -144,6 +144,6 @@ def _calculate_log_weights(likelihood, posterior):
 
 
 # Use sampling_frequency == 4096 from 0 to 64 and 2048 after that
-print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[0]), int(sys.argv[1]))],
-                sampling_frequency=int(sys.argv[2]))
+print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
+                sampling_frequency=int(sys.argv[3]))
 # print_evidences(subdirs=[str(subdir) for subdir in range(65, 130)], sampling_frequency=2048)
