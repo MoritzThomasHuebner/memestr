@@ -14,7 +14,6 @@ outdir_memory = 'evidence_reweighing/IMR_mem_inj_mem_rec'
 outdir_non_memory = 'evidence_reweighing/IMR_mem_inj_non_mem_rec'
 
 logger = logging.getLogger('bilby')
-logger.disabled = True
 
 injection_bfs = []
 sampling_bfs = []
@@ -38,6 +37,7 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
         waveform_arguments=settings.waveform_arguments.__dict__,
         **settings.waveform_data.__dict__)
 
+    logger.disabled = True
     ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
         name=name,
         injection_polarizations=waveform_generator_memory.frequency_domain_strain(),
@@ -46,7 +46,7 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
         zero_noise=True,
         plot=False,
         **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
-
+    logger.disabled = False
     priors = dict(luminosity_distance=bb.gw.prior.UniformComovingVolume(name='luminosity_distance',
                                                                         minimum=10,
                                                                         maximum=2000))
@@ -72,13 +72,15 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
             sampling_bf = res_memory.log_evidence - res_non_memory.log_evidence
         except AttributeError:
             sampling_bf = np.nan
-        print('Sampling result log BF: \t' + str(sampling_bf))
+        logger.info('Parameter set: ' + str(subdir))
+        logger.info('Sampling result log BF: \t' + str(sampling_bf))
         sampling_bfs.append(sampling_bf)
 
         settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=subdir)
         waveform_generator_memory.parameters = settings.injection_parameters.__dict__
         waveform_generator_no_memory.parameters = settings.injection_parameters.__dict__
 
+        logger.disabled = True
         ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
             name=name,
             injection_polarizations=waveform_generator_memory.frequency_domain_strain(),
@@ -87,6 +89,7 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
             zero_noise=True,
             plot=False,
             **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
+        logger.disabled = False
 
         likelihood.interferometers = bb.gw.detector.InterferometerList(ifos)
         likelihood.parameters = settings.injection_parameters.__dict__
@@ -95,7 +98,7 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
         likelihood.waveform_generator = waveform_generator_no_memory
         evidence_non_memory = likelihood.log_likelihood()
 
-        print("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
+        logger.info("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
         injection_bfs.append(evidence_memory - evidence_non_memory)
 
         likelihood.waveform_generator = waveform_generator_memory
@@ -105,7 +108,7 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
                                                                log_weights) - res_non_memory.log_evidence
         except AttributeError:
             reweighed_log_bf = np.nan
-        print("Reweighed to memory log BF: \t" + str(reweighed_log_bf))
+        logger.info("Reweighed to memory log BF: \t" + str(reweighed_log_bf))
         reweighing_to_memory_bfs.append(reweighed_log_bf)
 
         likelihood.waveform_generator = waveform_generator_no_memory
@@ -115,13 +118,13 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
                                                                                          log_weights)
         except AttributeError:
             reweighed_log_bf = np.nan
-        print("Reweighed from memory log BF: \t" + str(reweighed_log_bf))
+        logger.info("Reweighed from memory log BF: \t" + str(reweighed_log_bf))
         reweighing_from_memory_bfs.append(reweighed_log_bf)
 
-    print(np.sum(injection_bfs))
-    print(np.sum(sampling_bfs))
-    print(np.sum(reweighing_to_memory_bfs))
-    print(np.sum(reweighing_from_memory_bfs))
+    logger.info(np.sum(injection_bfs))
+    logger.info(np.sum(sampling_bfs))
+    logger.info(np.sum(reweighing_to_memory_bfs))
+    logger.info(np.sum(reweighing_from_memory_bfs))
     res = pd.DataFrame.from_dict(dict(injection_bfs=injection_bfs,
                                       sampling_bfs=sampling_bfs,
                                       reweighing_to_memory_bfs=reweighing_to_memory_bfs,
