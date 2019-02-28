@@ -4,6 +4,6 @@
 #SBATCH --output=evidence_reweighing.txt
 #SBATCH --ntasks=1
 #SBATCH --time=24:00
-#SBATCH --mem-per-cpu=200
+#SBATCH --mem-per-cpu=2G
 
 srun python evidence_recalculation.py $1 $2 $3
