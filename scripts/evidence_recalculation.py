@@ -10,8 +10,12 @@ import logging
 import pandas as pd
 
 outdir = 'evidence_reweighing'
-outdir_memory = 'evidence_reweighing/IMR_mem_inj_mem_rec'
-outdir_non_memory = 'evidence_reweighing/IMR_mem_inj_non_mem_rec'
+# outdir_memory = 'evidence_reweighing/population_set/IMR_mem_inj_mem_rec'
+# outdir_non_memory = 'evidence_reweighing/population_set/IMR_mem_inj_non_mem_rec'
+
+outdir_memory = 'evidence_reweighing/parameter_set_99/IMR_mem_inj_mem_rec'
+outdir_non_memory = 'evidence_reweighing/parameter_set_99/IMR_mem_inj_non_mem_rec'
+
 
 logger = logging.getLogger('bilby')
 
@@ -149,4 +153,4 @@ def _calculate_log_weights(likelihood, posterior):
 # Use sampling_frequency == 4096 from 0 to 64 and 2048 after that
 print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
                 sampling_frequency=int(sys.argv[3]))
-# print_evidences(subdirs=[str(subdir) for subdir in range(65, 130)], sampling_frequency=2048)
+# print_evidences(subdirs=[str(subdir) for subdir in [127]], sampling_frequency=2048)
