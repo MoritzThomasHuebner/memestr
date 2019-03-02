@@ -64,23 +64,26 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
         try:
             res_memory = bb.result.read_in_result(outdir_memory + '/'
                                                   + subdir + '/' + 'IMR_mem_inj_mem_rec_result.h5')
-        except OSError:
+        except OSError as e:
+            logger.warning(e)
             res_memory = None
         try:
             res_non_memory = bb.result.read_in_result(outdir_non_memory + '/'
                                                       + subdir + '/' + 'IMR_mem_inj_non_mem_rec_result.h5')
-        except OSError:
+        except OSError as e:
+            logger.warning(e)
             res_non_memory = None
 
         try:
             sampling_bf = res_memory.log_evidence - res_non_memory.log_evidence
-        except AttributeError:
+        except AttributeError as e:
+            logger.warning(e)
             sampling_bf = np.nan
         logger.info('Parameter set: ' + str(subdir))
         logger.info('Sampling result log BF: \t' + str(sampling_bf))
         sampling_bfs.append(sampling_bf)
 
-        settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=subdir)
+        settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=99)
         waveform_generator_memory.parameters = settings.injection_parameters.__dict__
         waveform_generator_no_memory.parameters = settings.injection_parameters.__dict__
 
@@ -110,7 +113,8 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
             log_weights = _calculate_log_weights(likelihood, res_non_memory.posterior)
             reweighed_log_bf = reweigh_log_evidence_by_weights(res_non_memory.log_evidence,
                                                                log_weights) - res_non_memory.log_evidence
-        except AttributeError:
+        except AttributeError as e:
+            logger.warning(e)
             reweighed_log_bf = np.nan
         logger.info("Reweighed to memory log BF: \t" + str(reweighed_log_bf))
         reweighing_to_memory_bfs.append(reweighed_log_bf)
@@ -120,7 +124,8 @@ def print_evidences(subdirs, sampling_frequency=4096, duration=16, alpha=0.1):
             log_weights = _calculate_log_weights(likelihood, res_memory.posterior)
             reweighed_log_bf = res_memory.log_evidence - reweigh_log_evidence_by_weights(res_memory.log_evidence,
                                                                                          log_weights)
-        except AttributeError:
+        except AttributeError as e:
+            logger.warning(e)
             reweighed_log_bf = np.nan
         logger.info("Reweighed from memory log BF: \t" + str(reweighed_log_bf))
         reweighing_from_memory_bfs.append(reweighed_log_bf)
