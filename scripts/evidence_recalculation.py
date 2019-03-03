@@ -9,12 +9,12 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 import logging
 import pandas as pd
 
-outdir = 'evidence_reweighing'
+outdir = 'evidence_reweighing/parameter_set_99'
 # outdir_memory = 'evidence_reweighing/population_set/IMR_mem_inj_mem_rec'
 # outdir_non_memory = 'evidence_reweighing/population_set/IMR_mem_inj_non_mem_rec'
 
-outdir_memory = 'evidence_reweighing/parameter_set_99/IMR_mem_inj_mem_rec'
-outdir_non_memory = 'evidence_reweighing/parameter_set_99/IMR_mem_inj_non_mem_rec'
+outdir_memory = 'evidence_reweighing/parameter_set_99/003_IMR_mem_inj_mem_rec'
+outdir_non_memory = 'evidence_reweighing/parameter_set_99/003_IMR_mem_inj_non_mem_rec'
 
 
 logger = logging.getLogger('bilby')
