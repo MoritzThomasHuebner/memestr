@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-outdir = 'evidence_reweighing/'
-outfiles = ['0_31.json', '32_64.json', '65_96.json', '97_130.json']
+outdir = 'evidence_reweighing/parameter_set_99/'
+outfiles = ['0_12.json', '13_25.json']
 
 sampling_errors = np.array([])
 reweighing_to_memory_errors = np.array([])
@@ -30,6 +30,17 @@ reweighing_to_memory_errors = np.append(reweighing_to_memory_errors,
 combined_reweighing_errors = np.append(combined_reweighing_errors,
                                        np.abs(injection_bfs - 0.5 *
                                               (reweighing_to_memory_bfs + reweighing_from_memory_bfs)))
+
+print(sampling_errors)
+print(sampling_bfs)
+print(injection_bfs)
+print('Mean sampling log BF: \t' + str(np.mean(sampling_bfs[~np.isnan(sampling_bfs)])))
+print('Mean injection log BF: \t' + str(np.mean(injection_bfs[~np.isnan(injection_bfs)])))
+print('Mean reweighing from memory log BF: \t' + str(np.mean(reweighing_from_memory_bfs[~np.isnan(reweighing_from_memory_bfs)])))
+print('Mean reweighing to memory log BF: \t' + str(np.mean(reweighing_to_memory_bfs[~np.isnan(reweighing_to_memory_bfs)])))
+print('Mean combined log BF: \t' + str(np.mean(0.5*(reweighing_from_memory_bfs[~np.isnan(reweighing_from_memory_bfs)]
+                                               + reweighing_to_memory_bfs[~np.isnan(reweighing_to_memory_bfs)]))))
+
 
 print('Mean sampling error: \t' + str(np.mean(sampling_errors[~np.isnan(sampling_errors)])))
 print('Mean reweighing from memory error: \t' + str(np.mean(reweighing_from_memory_errors[~np.isnan(reweighing_from_memory_errors)])))

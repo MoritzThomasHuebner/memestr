@@ -17,7 +17,7 @@ RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_with_memory
 #PARAMS=\$(cat \$FILENAME)
 #srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
 
-FILENAME="./parameter_sets/99"
+FILENAME="./parameter_sets/8"
 PARAMS=\$(cat \$FILENAME)
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
 

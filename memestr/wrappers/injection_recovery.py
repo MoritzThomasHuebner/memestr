@@ -115,12 +115,11 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
     priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\iota$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.ra-0.6, 0),
-                                                  maximum=np.minimum(injection_parameters.ra+0.6, 2*np.pi),
-                                                  latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(minimum=np.maximum(injection_parameters.dec-0.7, -np.pi/2),
-                                                  maximum=np.minimum(injection_parameters.dec+0.7, np.pi/2),
-                                                  latex_label="$DEC$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.ra-0.6, 0),
+    #                                               maximum=np.minimum(injection_parameters.ra+0.6, 2*np.pi),
+    #                                               latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.phase - np.pi/4, 0),
                                                      maximum=np.minimum(injection_parameters.phase + np.pi/4, 2*np.pi),
                                                      latex_label="$\phi$")
