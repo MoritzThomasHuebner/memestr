@@ -154,7 +154,7 @@ class DetectorSettings(RunParameters):
         if zero_noise == 'True' or zero_noise is True:
             self._zero_noise = True
         else:
-            self.zero_noise = False
+            self._zero_noise = False
 
 
 class OtherSettings(RunParameters):
