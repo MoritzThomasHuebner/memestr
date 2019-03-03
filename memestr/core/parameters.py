@@ -140,13 +140,21 @@ class DetectorSettings(RunParameters):
 
     def __init__(self, zero_noise=False, *detectors):
         super(DetectorSettings, self).__init__()
-        if zero_noise == 'True':
-            self.zero_noise = True
-        else:
-            self.zero_noise = False
+        self.zero_noise = zero_noise
         self.detectors = list(detectors)
         if len(self.detectors) == 0:
             self.detectors = ['H1', 'L1', 'V1']
+
+    @property
+    def zero_noise(self):
+        return self._zero_noise
+
+    @zero_noise.setter
+    def zero_noise(self, zero_noise):
+        if zero_noise == 'True' or zero_noise is True:
+            self._zero_noise = True
+        else:
+            self.zero_noise = False
 
 
 class OtherSettings(RunParameters):

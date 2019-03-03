@@ -20,7 +20,7 @@ import memestr
 memestr.wrappers.injection_recovery.\
     run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
                                    recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
-                                   outdir='test', npoints=500, alpha=0.1, zero_noise=False, sampler='cpnest',
+                                   outdir='test', npoints=500, alpha=0.1, zero_noise='False', sampler='cpnest',
                                    distance_marginalization=False, total_mass=67.50750233481178, mass_ratio=0.8997655720194011,
                                    luminosity_distance=1066.6497927643275, dec=0.7381059359678579, ra=3.366755061569345,
                                    inc=1.8837639216967672, psi=0.8380103235163946, phase=3.906893790521278, geocent_time=1126259642.413,
