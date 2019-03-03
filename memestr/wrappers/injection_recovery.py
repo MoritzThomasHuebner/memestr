@@ -45,7 +45,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     logger.info('Sampler settings: ' + str(settings.sampler_settings))
     logger.info('Waveform data: ' + str(settings.waveform_data))
     logger.info("Log Likelihood at injected value: " + str(likelihood.log_likelihood_ratio()))
-
+    import time
+    seed = np.random.seed(time.time())
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
                                             injection_parameters=settings.injection_parameters.__dict__,
