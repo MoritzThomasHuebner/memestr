@@ -163,13 +163,21 @@ class OtherSettings(RunParameters):
                  distance_marginalization=False, phase_marginalization=False, random_seed=0):
         super(OtherSettings, self).__init__()
         self.random_seed = random_seed
-        if lionize == 'True':
-            self.lionize = True
-        else:
-            self.lionize = False
+        self.lionize = lionize
         self.phase_marginalization = phase_marginalization
         self.time_marginalization = time_marginalization
         self.distance_marginalization = distance_marginalization
+
+    @property
+    def lionize(self):
+        return self._lionize
+
+    @lionize.setter
+    def lionize(self, lionize):
+        if lionize == 'True' or lionize is True:
+            self._lionize = True
+        else:
+            self._lionize = False
 
     @property
     def distance_marginalization(self):
