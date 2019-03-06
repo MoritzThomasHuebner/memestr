@@ -7,7 +7,7 @@ sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} $
 #!/usr/bin/env bash
 JOB=run_basic_job.py
 SCRIPT=run_basic_injection_imr_phenom
-INJECTION_MODEL=time_domain_IMRPhenomD_waveform_with_memory
+INJECTION_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 
 #srun python \${JOB} ${OUTDIR} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} $@
@@ -25,4 +25,4 @@ srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MO
 #Distance vs evidence
 #NOISE_SEEDS=(36380 66957 81888 74796 60079 70495 19376 76630)
 #srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} random_seed=\${NOISE_SEEDS[\${SLURM_ARRAY_TASK_ID}]} $@
-EOF
+EOF#!/usr/bin/env bash
