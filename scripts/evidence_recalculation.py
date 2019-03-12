@@ -10,7 +10,7 @@ import logging
 import pandas as pd
 
 parameter_set = 0
-parameter_set_dir = 'parameter_set_' + str(parameter_set)
+parameter_set_dir = 'parameter_set_' + str(parameter_set) + '_noise'
 
 outdir = 'evidence_reweighing/' + parameter_set_dir
 
