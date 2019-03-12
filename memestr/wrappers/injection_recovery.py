@@ -1,6 +1,7 @@
 from __future__ import division
 
 import numpy as np
+import time
 import bilby
 import logging
 
@@ -45,8 +46,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     logger.info('Sampler settings: ' + str(settings.sampler_settings))
     logger.info('Waveform data: ' + str(settings.waveform_data))
     logger.info("Log Likelihood at injected value: " + str(likelihood.log_likelihood_ratio()))
-    import time
-    seed = np.random.seed(int(time.time()))
+    np.random.seed(int(time.time()))
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
                                             conversion_function=bilby.gw.conversion.generate_all_bbh_parameters,
