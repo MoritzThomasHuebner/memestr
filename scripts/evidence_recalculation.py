@@ -145,7 +145,7 @@ def _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec):
 
 def _load_result(outdir, subdir, label):
     try:
-        res = bb.result.read_in_result(outdir + '/' + subdir + '/' + label)
+        res = bb.result.read_in_result(outdir + '/' + subdir + '/' + label, extension='h5')
     except OSError as e:
         logger.warning(e)
         res = None
