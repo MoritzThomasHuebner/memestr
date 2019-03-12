@@ -9,24 +9,28 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 import logging
 import pandas as pd
 
-outdir = 'evidence_reweighing/parameter_set_0'
+parameter_set = 0
+parameter_set_dir = 'parameter_set_' + str(parameter_set)
 
-outdir_mem_inj_mem_rec = 'evidence_reweighing/parameter_set_0/IMR_mem_inj_mem_rec'
-outdir_mem_inj_non_mem_rec = 'evidence_reweighing/parameter_set_0/IMR_mem_inj_non_mem_rec'
-outdir_non_mem_inj_mem_rec = 'evidence_reweighing/parameter_set_0/IMR_non_mem_inj_mem_rec'
-outdir_non_mem_inj_non_mem_rec = 'evidence_reweighing/parameter_set_0/IMR_non_mem_inj_non_mem_rec'
+outdir = 'evidence_reweighing/' + parameter_set_dir
+
+outdir_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_mem_rec'
+outdir_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_non_mem_rec'
+outdir_non_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_mem_rec'
+outdir_non_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_non_mem_rec'
 
 logger = logging.getLogger('bilby')
 
 injection_bfs = []
-sampling_bfs = []
+sampling_bfs_mem_inj = []
+sampling_bfs_non_mem_inj = []
 reweighing_to_memory_bfs_mem_inj = []
 reweighing_to_memory_bfs_non_mem_inj = []
 reweighing_from_memory_bfs_mem_inj = []
 reweighing_from_memory_bfs_non_mem_inj = []
 
 
-def print_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
+def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(duration=duration,
                                                                     sampling_frequency=sampling_frequency,
                                                                     alpha=alpha)
@@ -65,19 +69,19 @@ def print_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
 
         res_mem_inj_mem_rec = _load_result(outdir_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         res_mem_inj_non_mem_rec = _load_result(outdir_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
-        res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_non_mem_inj_mem_rec_result.json')
-        res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_non_mem_inj_non_mem_rec_result.json')
+        res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
+        res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
 
-        try:
-            sampling_bf = res_mem_inj_mem_rec.log_evidence - res_mem_inj_non_mem_rec.log_evidence
-        except AttributeError as e:
-            logger.warning(e)
-            sampling_bf = np.nan
-        logger.info('Parameter set: ' + str(subdir))
-        logger.info('Sampling result log BF: \t' + str(sampling_bf))
-        sampling_bfs.append(sampling_bf)
+        sampling_bf_mem_inj = _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec)
+        sampling_bf_non_mem_inj = _get_sampling_bf(res_non_mem_inj_mem_rec, res_non_mem_inj_non_mem_rec)
+        logger.info('Run number: ' + str(subdir))
+        logger.info('Sampling result memory injected log BF: \t' + str(sampling_bf_mem_inj))
+        logger.info('Sampling result no memory injected log BF: \t' + str(sampling_bf_non_mem_inj))
 
-        settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=99)
+        sampling_bfs_mem_inj.append(sampling_bf_mem_inj)
+        sampling_bfs_non_mem_inj.append(sampling_bf_non_mem_inj)
+
+        settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=parameter_set)
         waveform_generator_memory.parameters = settings.injection_parameters.__dict__
         waveform_generator_no_memory.parameters = settings.injection_parameters.__dict__
 
@@ -102,65 +106,41 @@ def print_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         logger.info("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
         injection_bfs.append(evidence_memory - evidence_non_memory)
 
-        likelihood.waveform_generator = waveform_generator_memory
-        try:
-            log_weights = _calculate_log_weights(likelihood, res_mem_inj_non_mem_rec.posterior)
-            reweighed_log_bf = reweigh_log_evidence_by_weights(res_mem_inj_non_mem_rec.log_evidence,
-                                                               log_weights) - res_mem_inj_non_mem_rec.log_evidence
-        except AttributeError as e:
-            logger.warning(e)
-            reweighed_log_bf = np.nan
-        logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf))
-        reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf)
-
-        likelihood.waveform_generator = waveform_generator_no_memory
-        try:
-            log_weights = _calculate_log_weights(likelihood, res_mem_inj_mem_rec.posterior)
-            reweighed_log_bf = res_mem_inj_mem_rec.log_evidence - reweigh_log_evidence_by_weights(
-                res_mem_inj_mem_rec.log_evidence,
-                log_weights)
-        except AttributeError as e:
-            logger.warning(e)
-            reweighed_log_bf = np.nan
-        logger.info("Reweighed memory inj from memory log BF: \t" + str(reweighed_log_bf))
-        reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf)
-
-        likelihood.waveform_generator = waveform_generator_memory
-        try:
-            log_weights = _calculate_log_weights(likelihood, res_non_mem_inj_non_mem_rec.posterior)
-            reweighed_log_bf = reweigh_log_evidence_by_weights(res_non_mem_inj_non_mem_rec.log_evidence,
-                                                               log_weights) - res_non_mem_inj_non_mem_rec.log_evidence
-        except AttributeError as e:
-            logger.warning(e)
-            reweighed_log_bf = np.nan
-        logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf))
-        reweighing_to_memory_bfs_non_mem_inj.append(reweighed_log_bf)
-
-        likelihood.waveform_generator = waveform_generator_no_memory
-        try:
-            log_weights = _calculate_log_weights(likelihood, res_non_mem_inj_mem_rec.posterior)
-            reweighed_log_bf = res_non_mem_inj_mem_rec.log_evidence - reweigh_log_evidence_by_weights(
-                res_non_mem_inj_mem_rec.log_evidence,
-                log_weights)
-        except AttributeError as e:
-            logger.warning(e)
-            reweighed_log_bf = np.nan
-        logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf))
-        reweighing_from_memory_bfs_non_mem_inj.append(reweighed_log_bf)
+        reweighed_log_bf_mem_inj_to_mem = _reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_memory)
+        reweighed_log_bf_mem_inj_from_mem = -_reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_no_memory)
+        reweighed_log_bf_non_mem_inj_to_mem = _reweigh(likelihood, res_non_mem_inj_non_mem_rec, waveform_generator_memory)
+        reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
+        logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf_mem_inj_to_mem))
+        logger.info("Reweighed memory inj from memory log BF: \t" + str(reweighed_log_bf_mem_inj_from_mem))
+        logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
+        logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_from_mem))
+        reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem)
+        reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_from_mem)
+        reweighing_to_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_to_mem)
+        reweighing_from_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_from_mem)
 
     logger.info(np.sum(injection_bfs))
-    logger.info(np.sum(sampling_bfs))
+    logger.info(np.sum(sampling_bfs_mem_inj))
     logger.info(np.sum(reweighing_to_memory_bfs_mem_inj))
     logger.info(np.sum(reweighing_from_memory_bfs_mem_inj))
     logger.info(np.sum(reweighing_to_memory_bfs_non_mem_inj))
     logger.info(np.sum(reweighing_from_memory_bfs_non_mem_inj))
     res = pd.DataFrame.from_dict(dict(injection_bfs=injection_bfs,
-                                      sampling_bfs=sampling_bfs,
+                                      sampling_bfs=sampling_bfs_mem_inj,
                                       reweighing_to_memory_bfs_mem_inj=reweighing_to_memory_bfs_mem_inj,
                                       reweighing_from_memory_bfs_mem_inj=reweighing_from_memory_bfs_mem_inj,
                                       reweighing_to_memory_bfs_non_mem_inj=reweighing_to_memory_bfs_non_mem_inj,
                                       reweighing_from_memory_bfs_non_mem_inj=reweighing_from_memory_bfs_non_mem_inj))
     res.to_json('evidence_reweighing/' + str(subdirs[0]) + '_' + str(subdirs[-1]) + '.json')
+
+
+def _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec):
+    try:
+        sampling_bf_mem_inj = res_mem_inj_mem_rec.log_evidence - res_mem_inj_non_mem_rec.log_evidence
+    except AttributeError as e:
+        logger.warning(e)
+        sampling_bf_mem_inj = np.nan
+    return sampling_bf_mem_inj
 
 
 def _load_result(outdir, subdir, label):
@@ -172,7 +152,18 @@ def _load_result(outdir, subdir, label):
     return res
 
 
-def reweigh_log_evidence_by_weights(log_evidence, log_weights):
+def _reweigh(reweighing_likelihood, result, reweighing_waveform):
+    reweighing_likelihood.waveform_generator = reweighing_waveform
+    try:
+        log_weights = _calculate_log_weights(reweighing_likelihood, result.posterior)
+        reweighed_log_bf = _reweigh_log_evidence_by_weights(result.log_evidence, log_weights) - result.log_evidence
+    except AttributeError as e:
+        logger.warning(e)
+        reweighed_log_bf = np.nan
+    return reweighed_log_bf
+
+
+def _reweigh_log_evidence_by_weights(log_evidence, log_weights):
     return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
 
 
@@ -186,7 +177,7 @@ def _calculate_log_weights(likelihood, posterior):
     return weights
 
 
-# Use sampling_frequency == 4096 from 0 to 64 and 2048 after that
+# Use sampling_frequency == 4096 from 0 to 64 and 2048 after that for existing pop runs
 # print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
 #                 sampling_frequency=int(sys.argv[3]))
-print_evidences(subdirs=[str(subdir) for subdir in range(10)], sampling_frequency=2048)
+reweigh_evidences(subdirs=[str(subdir) for subdir in range(10)], sampling_frequency=2048)
