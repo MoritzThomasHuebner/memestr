@@ -116,11 +116,8 @@ class WaveformData(RunParameters):
 
 
 class CpnestSettings(RunParameters):
-    conversion_functions = dict(
-        convert_to_lal_binary_black_hole_parameters=bilby.gw.conversion.convert_to_lal_binary_black_hole_parameters
-    )
 
-    def __init__(self, sampler='cpnest', npoints=200, label='IMRPhenomD', conversion_function=None, clean=True,
+    def __init__(self, sampler='cpnest', npoints=200, label='IMRPhenomD', clean=True,
                  dlogz=0.1, maxmcmc=100, nthreads=1, resume=True):
         super(CpnestSettings, self).__init__()
         self.sampler = sampler
@@ -132,8 +129,6 @@ class CpnestSettings(RunParameters):
         self.maxmcmc = int(maxmcmc)
         self.conversion_function = None
         self.resume = resume
-        if conversion_function is not None:
-            self.conversion_function = self.conversion_functions[conversion_function]
 
 
 class DetectorSettings(RunParameters):
