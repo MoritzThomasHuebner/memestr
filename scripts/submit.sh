@@ -8,5 +8,5 @@
 bash IMR_mem_inj_mem_rec.sh                 npoints=2000 maxmcmc=1000 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_mem_inj_mem_rec
 bash IMR_mem_inj_non_mem_rec.sh             npoints=2000 maxmcmc=1000 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_mem_inj_non_mem_rec
 
-bash IMR_non_mem_inj_mem_rec.sh                 npoints=2000 maxmcmc=1200 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_mem_inj_mem_rec
-bash IMR_non_mem_inj_non_mem_rec.sh             npoints=2000 maxmcmc=1200 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_mem_inj_non_mem_rec
+bash IMR_non_mem_inj_mem_rec.sh                 npoints=2000 maxmcmc=1200 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_non_mem_inj_mem_rec
+bash IMR_non_mem_inj_non_mem_rec.sh             npoints=2000 maxmcmc=1200 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_non_mem_inj_non_mem_rec
