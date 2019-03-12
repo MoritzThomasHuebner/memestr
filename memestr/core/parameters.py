@@ -127,7 +127,6 @@ class CpnestSettings(RunParameters):
         self.nthreads = nthreads
         self.dlogz = dlogz
         self.maxmcmc = int(maxmcmc)
-        self.conversion_function = None
         self.resume = resume
 
 
