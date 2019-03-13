@@ -23,13 +23,9 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                                     **settings.waveform_data.__dict__)
 
     hf_signal = waveform_generator.frequency_domain_strain()
-    ifos = [bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
-        name,
-        injection_polarizations=hf_signal,
-        injection_parameters=settings.injection_parameters.__dict__,
-        outdir=outdir,
-        zero_noise=settings.detector_settings.zero_noise,
-        **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
+    ifos = [_get_ifo(hf_signal, name, outdir, settings, waveform_generator)
+            for name in settings.detector_settings.detectors]
+    ifos = bilby.gw.detector.InterferometerList(ifos)
 
     waveform_generator.time_domain_source_model = recovery_model
 
@@ -60,6 +56,30 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     logger.info(str(result))
     result.save_to_file()
     return result
+
+
+def _get_ifo(hf_signal, name, outdir, settings, waveform_generator):
+    if settings.waveform_data.start_time is None:
+        settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
+    interferometer = bilby.gw.detector.get_empty_interferometer(name)
+    if name in ['H1', 'L1']:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+    elif name in ['V1']:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
+            from_power_spectral_density_file('AdV_psd.txt')
+    if settings.detector_settings.zero_noise:
+        interferometer.set_strain_data_from_zero_noise(**settings.waveform_data.__dict__)
+    else:
+        interferometer.set_strain_data_from_power_spectral_density(**settings.waveform_data.__dict__)
+    injection_polarizations = interferometer.inject_signal(
+        parameters=settings.injection_parameters.__dict__,
+        injection_polarizations=hf_signal,
+        waveform_generator=waveform_generator)
+    signal = interferometer.get_detector_response(
+        injection_polarizations, settings.injection_parameters.__dict__)
+    interferometer.plot_data(signal=signal, outdir=outdir)
+    interferometer.save_data(outdir)
+    return interferometer
 
 
 def update_kwargs(default_kwargs, kwargs):
