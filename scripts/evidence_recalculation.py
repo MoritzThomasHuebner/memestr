@@ -1,6 +1,5 @@
 from scipy.misc import logsumexp
 import numpy as np
-import sys
 import bilby as bb
 import memestr
 from memestr.core.parameters import AllSettings
@@ -9,8 +8,8 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 import logging
 import pandas as pd
 
-parameter_set = 8
-parameter_set_dir = 'parameter_set_' + str(parameter_set) + '_zero_noise'
+parameter_set = 0
+parameter_set_dir = 'parameter_set_' + str(parameter_set)
 
 outdir = 'evidence_reweighing/' + parameter_set_dir
 
