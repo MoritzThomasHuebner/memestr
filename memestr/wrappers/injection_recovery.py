@@ -12,6 +12,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     logger = logging.getLogger('bilby')
 
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
+    settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
     np.random.seed(settings.other_settings.random_seed)
     logger.info("Random seed: " + str(settings.other_settings.random_seed))
 
@@ -59,8 +60,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
 
 
 def _get_ifo(hf_signal, name, outdir, settings, waveform_generator):
-    if settings.waveform_data.start_time is None:
-        settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
     interferometer = bilby.gw.detector.get_empty_interferometer(name)
     if name in ['H1', 'L1']:
         interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
@@ -136,14 +135,14 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                                                maximum=5000,
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\iota$")
+    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\theta_{jn}$")
     priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
     priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.phase - np.pi/4, 0),
-                                                     maximum=np.minimum(injection_parameters.phase + np.pi/4, 2*np.pi),
+    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
+                                                     maximum=2*np.pi,
                                                      latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.psi - np.pi/4, 0),
-                                                   maximum=np.minimum(injection_parameters.psi + np.pi/4, 2*np.pi),
+    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+                                                   maximum=np.pi,
                                                    latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
                                                             maximum=injection_parameters.geocent_time + 0.1,
