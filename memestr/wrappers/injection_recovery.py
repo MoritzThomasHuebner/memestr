@@ -46,7 +46,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
-                                            conversion_function=bilby.gw.conversion.generate_all_bbh_parameters,
                                             injection_parameters=settings.injection_parameters.__dict__,
                                             outdir=outdir,
                                             save=True,
