@@ -52,9 +52,9 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             verbose=True,
                                             random_seed=np.random.randint(0, 1000),
                                             **settings.sampler_settings.__dict__)
+    result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
     logger.info(str(result))
-    result.save_to_file()
     return result
 
 
