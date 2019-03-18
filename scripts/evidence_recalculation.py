@@ -8,17 +8,19 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 import logging
 import pandas as pd
 
-parameter_set = 0
-parameter_set_dir = 'parameter_set_' + str(parameter_set)
+# parameter_set = 0
+# parameter_set_dir = 'parameter_set_' + str(parameter_set)
+run_id = sys.argv[1]
+outdir = 'paper_production_run'
 
-outdir = 'evidence_reweighing/' + parameter_set_dir
+# outdir_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_mem_rec'
+# outdir_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_non_mem_rec'
+# outdir_non_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_mem_rec'
+# outdir_non_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_non_mem_rec'
+outdir_mem_inj_mem_rec = run_id + '_IMR_mem_inj_mem_rec/'
+outdir_mem_inj_non_mem_rec = run_id + '_IMR_mem_inj_non_mem_rec/'
 
-outdir_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_mem_rec'
-outdir_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_non_mem_rec'
-outdir_non_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_mem_rec'
-outdir_non_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_non_mem_rec'
-
-logger = logging.getLogger('bilby')
+logger = bb.utils.logger
 
 injection_bfs = []
 sampling_bfs_mem_inj = []
@@ -68,17 +70,17 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
 
         res_mem_inj_mem_rec = _load_result(outdir_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         res_mem_inj_non_mem_rec = _load_result(outdir_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
-        res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
-        res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
+        # res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
+        # res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
 
         sampling_bf_mem_inj = _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec)
-        sampling_bf_non_mem_inj = _get_sampling_bf(res_non_mem_inj_mem_rec, res_non_mem_inj_non_mem_rec)
+        # sampling_bf_non_mem_inj = _get_sampling_bf(res_non_mem_inj_mem_rec, res_non_mem_inj_non_mem_rec)
         logger.info('Run number: ' + str(subdir))
         logger.info('Sampling result memory injected log BF: \t' + str(sampling_bf_mem_inj))
-        logger.info('Sampling result no memory injected log BF: \t' + str(sampling_bf_non_mem_inj))
+        # logger.info('Sampling result no memory injected log BF: \t' + str(sampling_bf_non_mem_inj))
 
         sampling_bfs_mem_inj.append(sampling_bf_mem_inj)
-        sampling_bfs_non_mem_inj.append(sampling_bf_non_mem_inj)
+        # sampling_bfs_non_mem_inj.append(sampling_bf_non_mem_inj)
 
         settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=parameter_set)
         waveform_generator_memory.parameters = settings.injection_parameters.__dict__
@@ -107,16 +109,16 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
 
         reweighed_log_bf_mem_inj_to_mem = _reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_memory)
         reweighed_log_bf_mem_inj_from_mem = -_reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_no_memory)
-        reweighed_log_bf_non_mem_inj_to_mem = _reweigh(likelihood, res_non_mem_inj_non_mem_rec, waveform_generator_memory)
-        reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
+        # reweighed_log_bf_non_mem_inj_to_mem = _reweigh(likelihood, res_non_mem_inj_non_mem_rec, waveform_generator_memory)
+        # reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
         logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf_mem_inj_to_mem))
         logger.info("Reweighed memory inj from memory log BF: \t" + str(reweighed_log_bf_mem_inj_from_mem))
-        logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
-        logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_from_mem))
+        # logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
+        # logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_from_mem))
         reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem)
         reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_from_mem)
-        reweighing_to_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_to_mem)
-        reweighing_from_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_from_mem)
+        # reweighing_to_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_to_mem)
+        # reweighing_from_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_from_mem)
 
     logger.info(np.sum(injection_bfs))
     logger.info(np.sum(sampling_bfs_mem_inj))
@@ -144,7 +146,7 @@ def _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec):
 
 def _load_result(outdir, subdir, label):
     try:
-        res = bb.result.read_in_result(outdir + '/' + subdir + '/' + label, extension='h5')
+        res = bb.result.read_in_result(outdir + '/' + subdir + '/' + label, extension='json')
     except OSError as e:
         logger.warning(e)
         res = None
@@ -179,4 +181,4 @@ def _calculate_log_weights(likelihood, posterior):
 # Use sampling_frequency == 4096 from 0 to 64 and 2048 after that for existing pop runs
 # print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
 #                 sampling_frequency=int(sys.argv[3]))
-reweigh_evidences(subdirs=[str(subdir) for subdir in range(10)], sampling_frequency=2048)
+reweigh_evidences(subdirs=[str(subdir) for subdir in range(8)], sampling_frequency=2048)
