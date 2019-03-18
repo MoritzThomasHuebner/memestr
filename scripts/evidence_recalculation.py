@@ -5,14 +5,22 @@ import memestr
 from memestr.core.parameters import AllSettings
 from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, \
     time_domain_IMRPhenomD_waveform_without_memory
-import logging
+import sys
 import pandas as pd
 
 # parameter_set = 0
 # parameter_set_dir = 'parameter_set_' + str(parameter_set)
-run_id = sys.argv[1]
-outdir = 'paper_production_run'
+distances = dict(a000=200, a001=230, a002=262, a003=299, a004=342, a005=391, a006=448, a007=512, a008=586, a009=670,
+                 a010=766, a011=876, a012=1002, a013=1147, a014=1311, a015=1500)
 
+
+run_id = sys.argv[1]
+outdir = run_id + '_reweighing_result'
+bb.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
+
+parameters = dict(mass_ratio=0.8, total_mass=60.0, s11=0.0, s12=0.0, s13=0.0, s21=0.0, s22=0.0, s23=0.0,
+                  luminosity_distance=distances['a' + run_id], inc=np.pi / 2, phase=1.3, ra=1.54,
+                  dec=-0.7, psi=2.659, geocent_time=1126259642.413)
 # outdir_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_mem_rec'
 # outdir_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_non_mem_rec'
 # outdir_non_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_mem_rec'
@@ -64,12 +72,13 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_memory,
                                     priors=priors,
-                                    distance_marginalization=True)
+                                    distance_marginalization=True,
+                                    time_marginalization=True)
 
     for subdir in subdirs:
-
         res_mem_inj_mem_rec = _load_result(outdir_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
-        res_mem_inj_non_mem_rec = _load_result(outdir_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
+        res_mem_inj_non_mem_rec = _load_result(outdir_mem_inj_non_mem_rec, subdir,
+                                               'IMR_mem_inj_non_mem_rec_result.json')
         # res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         # res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
 
