@@ -17,9 +17,9 @@ RECOVERY_MODEL=time_domain_IMRPhenomD_waveform_without_memory
 #PARAMS=\$(cat \$FILENAME)
 #srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} random_seed=\${SLURM_ARRAY_TASK_ID} $@
 
-FILENAME="./parameter_sets/0"
-PARAMS=\$(cat \$FILENAME)
-srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
+#FILENAME="./parameter_sets/0"
+#PARAMS=\$(cat \$FILENAME)
+#srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} \${PARAMS} $@
 
 #Distance vs evidence
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${INJECTION_MODEL} \${RECOVERY_MODEL} $@
