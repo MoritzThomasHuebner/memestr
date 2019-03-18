@@ -6,6 +6,7 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
     time_domain_IMRPhenomD_waveform_without_memory
 import sys
 import pandas as pd
+from memestr.wrappers.injection_recovery import get_ifo
 
 # parameter_set = 0
 # parameter_set_dir = 'parameter_set_' + str(parameter_set)
@@ -42,6 +43,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(duration=duration,
                                                                     sampling_frequency=sampling_frequency,
                                                                     alpha=alpha)
+    settings.injection_parameters.__dict__ = parameters
     waveform_generator_memory = bb.gw.WaveformGenerator(
         time_domain_source_model=time_domain_IMRPhenomD_waveform_with_memory,
         parameters=settings.injection_parameters.__dict__,
@@ -55,14 +57,10 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         **settings.waveform_data.__dict__)
 
     logger.disabled = True
-    ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
-        name=name,
-        injection_polarizations=waveform_generator_memory.frequency_domain_strain(),
-        injection_parameters=settings.injection_parameters.__dict__,
-        outdir=outdir,
-        zero_noise=True,
-        plot=False,
-        **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
+    hf_signal = waveform_generator_memory.frequency_domain_strain()
+    ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator_memory)
+            for name in settings.detector_settings.detectors]
+    ifos = bb.gw.detector.InterferometerList(ifos)
     logger.disabled = False
     priors = dict(luminosity_distance=bb.gw.prior.UniformComovingVolume(name='luminosity_distance',
                                                                         minimum=10,
