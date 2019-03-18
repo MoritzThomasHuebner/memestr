@@ -64,7 +64,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     logger.disabled = False
     priors = dict(luminosity_distance=bb.gw.prior.UniformComovingVolume(name='luminosity_distance',
                                                                         minimum=10,
-                                                                        maximum=2000))
+                                                                        maximum=5000))
     likelihood = bb.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_memory,
