@@ -13,7 +13,6 @@ from memestr.wrappers.injection_recovery import get_ifo
 distances = dict(a000=200, a001=230, a002=262, a003=299, a004=342, a005=391, a006=448, a007=512, a008=586, a009=670,
                  a010=766, a011=876, a012=1002, a013=1147, a014=1311, a015=1500)
 
-
 run_id = sys.argv[1]
 outdir = run_id + '_reweighing_result'
 bb.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
@@ -64,7 +63,10 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     logger.disabled = False
     priors = dict(luminosity_distance=bb.gw.prior.UniformComovingVolume(name='luminosity_distance',
                                                                         minimum=10,
-                                                                        maximum=5000))
+                                                                        maximum=5000),
+                  geocent_time=bb.core.prior.Uniform(minimum=settings.injection_parameters.geocent_time - 0.1,
+                                                     maximum=settings.injection_parameters.geocent_time + 0.1,
+                                                     latex_label='$t_c$'))
     likelihood = bb.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_memory,
