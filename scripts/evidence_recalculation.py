@@ -1,7 +1,6 @@
 from scipy.misc import logsumexp
 import numpy as np
 import bilby as bb
-import memestr
 from memestr.core.parameters import AllSettings
 from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, \
     time_domain_IMRPhenomD_waveform_without_memory
@@ -91,7 +90,8 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         sampling_bfs_mem_inj.append(sampling_bf_mem_inj)
         # sampling_bfs_non_mem_inj.append(sampling_bf_non_mem_inj)
 
-        settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=parameter_set)
+        # settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=parameter_set)
+        settings.injection_parameters.__dict__ = parameters
         waveform_generator_memory.parameters = settings.injection_parameters.__dict__
         waveform_generator_no_memory.parameters = settings.injection_parameters.__dict__
 
