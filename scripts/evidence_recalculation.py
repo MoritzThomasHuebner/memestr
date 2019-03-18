@@ -116,6 +116,11 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         logger.info("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
         injection_bfs.append(evidence_memory - evidence_non_memory)
 
+        reweighed_debug_mem = _reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_memory)
+        reweighed_debug_non_mem = -_reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_no_memory)
+        logger.debug("Reweighed memory debug: \t" + str(reweighed_debug_mem))
+        logger.debug("Reweighed no memory debug: \t" + str(reweighed_debug_non_mem))
+
         reweighed_log_bf_mem_inj_to_mem = _reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_memory)
         reweighed_log_bf_mem_inj_from_mem = -_reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_no_memory)
         # reweighed_log_bf_non_mem_inj_to_mem = _reweigh(likelihood, res_non_mem_inj_non_mem_rec, waveform_generator_memory)
