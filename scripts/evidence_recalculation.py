@@ -96,14 +96,17 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         waveform_generator_no_memory.parameters = settings.injection_parameters.__dict__
 
         logger.disabled = True
-        ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
-            name=name,
-            injection_polarizations=waveform_generator_memory.frequency_domain_strain(),
-            injection_parameters=settings.injection_parameters.__dict__,
-            outdir=outdir,
-            zero_noise=True,
-            plot=False,
-            **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
+        # ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
+        #     name=name,
+        #     injection_polarizations=waveform_generator_memory.frequency_domain_strain(),
+        #     injection_parameters=settings.injection_parameters.__dict__,
+        #     outdir=outdir,
+        #     zero_noise=True,
+        #     plot=False,
+        #     **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
+        ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator_memory)
+                for name in settings.detector_settings.detectors]
+        ifos = bb.gw.detector.InterferometerList(ifos)
         logger.disabled = False
 
         likelihood.interferometers = bb.gw.detector.InterferometerList(ifos)
