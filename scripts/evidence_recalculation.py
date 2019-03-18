@@ -43,6 +43,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
                                                                     sampling_frequency=sampling_frequency,
                                                                     alpha=alpha)
     settings.injection_parameters.__dict__ = parameters
+    settings.detector_settings.zero_noise = True
     settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
     waveform_generator_memory = bb.gw.WaveformGenerator(
         time_domain_source_model=time_domain_IMRPhenomD_waveform_with_memory,
@@ -67,7 +68,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
                                                                         maximum=5000),
                   geocent_time=bb.core.prior.Uniform(minimum=settings.injection_parameters.geocent_time - 0.1,
                                                      maximum=settings.injection_parameters.geocent_time + 0.1,
-                                                     latex_label='$t_c$'))
+                                                     name='geocent_time'))
     likelihood = bb.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_memory,
@@ -111,6 +112,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
 
         likelihood.interferometers = bb.gw.detector.InterferometerList(ifos)
         likelihood.parameters = settings.injection_parameters.__dict__
+        likelihood.parameters['geocent_time'] = settings.waveform_data.start_time
         likelihood.waveform_generator = waveform_generator_memory
         evidence_memory = likelihood.log_likelihood()
         likelihood.waveform_generator = waveform_generator_no_memory
@@ -119,22 +121,19 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         logger.info("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
         injection_bfs.append(evidence_memory - evidence_non_memory)
 
-        reweighed_debug_mem = _reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_memory)
-        reweighed_debug_non_mem = -_reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_no_memory)
-        logger.info("Reweighed memory debug: \t" + str(reweighed_debug_mem))
-        logger.info("Reweighed no memory debug: \t" + str(reweighed_debug_non_mem))
-        logger.info(reweighed_debug_mem)
-        logger.info(reweighed_debug_non_mem)
+        # reweighed_debug_mem, _ = _reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_memory)
+        # logger.info("Reweighed memory debug: \t" + str(reweighed_debug_mem))
+        # reweighed_debug_non_mem = -_reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_no_memory)
+        # logger.info("Reweighed no memory debug: \t" + str(reweighed_debug_non_mem))
+
         reweighed_log_bf_mem_inj_to_mem = _reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_memory)
+        logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf_mem_inj_to_mem))
         reweighed_log_bf_mem_inj_from_mem = -_reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_no_memory)
-        res_mem_inj_mem_rec.plot_corner(weights=reweighed_log_bf_mem_inj_from_mem)
-        res_mem_inj_non_mem_rec.plot_corner(weights=reweighed_log_bf_mem_inj_to_mem)
+        logger.info("Reweighed memory inj from memory log BF: \t" + str(reweighed_log_bf_mem_inj_from_mem))
         logger.info(reweighed_log_bf_mem_inj_to_mem)
         logger.info(reweighed_log_bf_mem_inj_from_mem)
         # reweighed_log_bf_non_mem_inj_to_mem = _reweigh(likelihood, res_non_mem_inj_non_mem_rec, waveform_generator_memory)
         # reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
-        logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf_mem_inj_to_mem))
-        logger.info("Reweighed memory inj from memory log BF: \t" + str(reweighed_log_bf_mem_inj_from_mem))
         # logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
         # logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_from_mem))
         reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem)
@@ -183,6 +182,7 @@ def _reweigh(reweighing_likelihood, result, reweighing_waveform):
     except AttributeError as e:
         logger.warning(e)
         reweighed_log_bf = np.nan
+        log_weights = np.nan
     return reweighed_log_bf
 
 
@@ -203,4 +203,4 @@ def _calculate_log_weights(likelihood, posterior):
 # Use sampling_frequency == 4096 from 0 to 64 and 2048 after that for existing pop runs
 # print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
 #                 sampling_frequency=int(sys.argv[3]))
-reweigh_evidences(subdirs=[str(subdir) for subdir in range(8)], sampling_frequency=2048)
+reweigh_evidences(subdirs=[str(subdir) for subdir in range(8)])
