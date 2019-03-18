@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+sbatch evidence_reweighing_submit.sh 000
 sbatch evidence_reweighing_submit.sh 001
 sbatch evidence_reweighing_submit.sh 002
 sbatch evidence_reweighing_submit.sh 003
