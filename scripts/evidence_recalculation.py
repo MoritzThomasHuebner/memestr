@@ -5,6 +5,7 @@ from memestr.core.parameters import AllSettings
 from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, \
     time_domain_IMRPhenomD_waveform_without_memory
 import sys
+from copy import deepcopy
 import pandas as pd
 from memestr.wrappers.injection_recovery import get_ifo
 
@@ -42,7 +43,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(duration=duration,
                                                                     sampling_frequency=sampling_frequency,
                                                                     alpha=alpha)
-    settings.injection_parameters.__dict__ = parameters
+    settings.injection_parameters.__dict__ = deepcopy(parameters)
     settings.detector_settings.zero_noise = True
     settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
     waveform_generator_memory = bb.gw.WaveformGenerator(
@@ -93,9 +94,9 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         # sampling_bfs_non_mem_inj.append(sampling_bf_non_mem_inj)
 
         # settings.injection_parameters.__dict__ = memestr.core.submit.get_injection_parameter_set(id=parameter_set)
-        settings.injection_parameters.__dict__ = parameters
-        waveform_generator_memory.parameters = settings.injection_parameters.__dict__
-        waveform_generator_no_memory.parameters = settings.injection_parameters.__dict__
+        settings.injection_parameters.__dict__ = deepcopy(parameters)
+        waveform_generator_memory.parameters = deepcopy(parameters)
+        waveform_generator_no_memory.parameters = deepcopy(parameters)
 
         logger.disabled = True
         # ifos = [bb.gw.detector.get_interferometer_with_fake_noise_and_injection(
@@ -111,12 +112,13 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         logger.disabled = False
 
         likelihood.interferometers = bb.gw.detector.InterferometerList(ifos)
-        likelihood.parameters = settings.injection_parameters.__dict__
-        likelihood.parameters['geocent_time'] = settings.waveform_data.start_time
-        likelihood.waveform_generator = waveform_generator_memory
-        evidence_memory = likelihood.log_likelihood()
+        likelihood.parameters = deepcopy(parameters)
         likelihood.waveform_generator = waveform_generator_no_memory
-        evidence_non_memory = likelihood.log_likelihood()
+
+        evidence_non_memory = likelihood.log_likelihood_ratio()
+        likelihood.waveform_generator = waveform_generator_memory
+        evidence_memory = likelihood.log_likelihood_ratio()
+        logger.info(likelihood.log_likelihood_ratio())
 
         logger.info("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
         injection_bfs.append(evidence_memory - evidence_non_memory)
@@ -130,8 +132,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf_mem_inj_to_mem))
         reweighed_log_bf_mem_inj_from_mem = -_reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_no_memory)
         logger.info("Reweighed memory inj from memory log BF: \t" + str(reweighed_log_bf_mem_inj_from_mem))
-        logger.info(reweighed_log_bf_mem_inj_to_mem)
-        logger.info(reweighed_log_bf_mem_inj_from_mem)
+
         # reweighed_log_bf_non_mem_inj_to_mem = _reweigh(likelihood, res_non_mem_inj_non_mem_rec, waveform_generator_memory)
         # reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
         # logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
@@ -182,7 +183,6 @@ def _reweigh(reweighing_likelihood, result, reweighing_waveform):
     except AttributeError as e:
         logger.warning(e)
         reweighed_log_bf = np.nan
-        log_weights = np.nan
     return reweighed_log_bf
 
 
