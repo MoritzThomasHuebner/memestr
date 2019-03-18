@@ -43,6 +43,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
                                                                     sampling_frequency=sampling_frequency,
                                                                     alpha=alpha)
     settings.injection_parameters.__dict__ = parameters
+    settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
     waveform_generator_memory = bb.gw.WaveformGenerator(
         time_domain_source_model=time_domain_IMRPhenomD_waveform_with_memory,
         parameters=settings.injection_parameters.__dict__,
@@ -106,7 +107,6 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         #     **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
         ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator_memory)
                 for name in settings.detector_settings.detectors]
-        ifos = bb.gw.detector.InterferometerList(ifos)
         logger.disabled = False
 
         likelihood.interferometers = bb.gw.detector.InterferometerList(ifos)
