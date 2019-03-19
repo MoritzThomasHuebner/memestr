@@ -78,9 +78,15 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
                                     time_marginalization=True)
 
     for subdir in subdirs:
+        corner_params = dict(mass_ratio=0.8, total_mass=60.0,
+                             inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659)
         res_mem_inj_mem_rec = _load_result(outdir_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         res_mem_inj_non_mem_rec = _load_result(outdir_mem_inj_non_mem_rec, subdir,
                                                'IMR_mem_inj_non_mem_rec_result.json')
+
+        res_mem_inj_mem_rec.plot_corner(parameters=corner_params, outdir=outdir_mem_inj_mem_rec + '/' + subdir)
+        res_mem_inj_non_mem_rec.plot_corner(parameters=corner_params, outdir=outdir_mem_inj_mem_rec + '/' + subdir)
+
         # res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         # res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
 
