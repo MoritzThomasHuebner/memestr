@@ -4,6 +4,7 @@ import numpy as np
 import time
 import bilby
 import logging
+from copy import deepcopy
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 
@@ -39,14 +40,14 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
-    likelihood.parameters = settings.injection_parameters.__dict__
+    likelihood.parameters = deepcopy(settings.injection_parameters.__dict__)
     logger.info('Sampler settings: ' + str(settings.sampler_settings))
     logger.info('Waveform data: ' + str(settings.waveform_data))
     logger.info("Log Likelihood at injected value: " + str(likelihood.log_likelihood_ratio()))
     np.random.seed(int(time.time()))
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
-                                            injection_parameters=settings.injection_parameters.__dict__,
+                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
                                             outdir=outdir,
                                             save=True,
                                             verbose=True,
@@ -70,7 +71,7 @@ def get_ifo(hf_signal, name, outdir, settings, waveform_generator):
     else:
         interferometer.set_strain_data_from_power_spectral_density(**settings.waveform_data.__dict__)
     injection_polarizations = interferometer.inject_signal(
-        parameters=settings.injection_parameters.__dict__,
+        parameters=deepcopy(settings.injection_parameters.__dict__),
         injection_polarizations=hf_signal,
         waveform_generator=waveform_generator)
     signal = interferometer.get_detector_response(
