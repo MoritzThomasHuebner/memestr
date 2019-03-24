@@ -20,7 +20,7 @@ bb.core.utils.check_directory_exists_and_if_not_mkdir(outdir)
 
 parameters = dict(mass_ratio=0.8, total_mass=60.0, s11=0.0, s12=0.0, s13=0.0, s21=0.0, s22=0.0, s23=0.0,
                   luminosity_distance=distances['a' + run_id], inc=np.pi / 2, phase=1.3, ra=1.54,
-                  dec=-0.7, psi=2.659, geocent_time=1126259642.413)
+                  dec=-0.7, psi=0.9, geocent_time=1126259642.413)
 # outdir_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_mem_rec'
 # outdir_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_non_mem_rec'
 # outdir_non_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_mem_rec'
@@ -78,14 +78,9 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
                                     time_marginalization=True)
 
     for subdir in subdirs:
-        corner_params = dict(mass_ratio=0.8, total_mass=60.0,
-                             inc=np.pi / 2, phase=1.3, ra=1.54, dec=-0.7, psi=2.659)
         res_mem_inj_mem_rec = _load_result(outdir_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         res_mem_inj_non_mem_rec = _load_result(outdir_mem_inj_non_mem_rec, subdir,
                                                'IMR_mem_inj_non_mem_rec_result.json')
-
-        res_mem_inj_mem_rec.plot_corner(parameters=corner_params, outdir=outdir_mem_inj_mem_rec + '/' + subdir)
-        res_mem_inj_non_mem_rec.plot_corner(parameters=corner_params, outdir=outdir_mem_inj_mem_rec + '/' + subdir)
 
         # res_non_mem_inj_mem_rec = _load_result(outdir_non_mem_inj_mem_rec, subdir, 'IMR_mem_inj_mem_rec_result.json')
         # res_non_mem_inj_non_mem_rec = _load_result(outdir_non_mem_inj_non_mem_rec, subdir, 'IMR_mem_inj_non_mem_rec_result.json')
@@ -116,23 +111,21 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator_memory)
                 for name in settings.detector_settings.detectors]
         logger.disabled = False
-
         likelihood.interferometers = bb.gw.detector.InterferometerList(ifos)
         likelihood.parameters = deepcopy(parameters)
-        likelihood.waveform_generator = waveform_generator_no_memory
 
+        likelihood.waveform_generator = waveform_generator_no_memory
         evidence_non_memory = likelihood.log_likelihood_ratio()
+
         likelihood.waveform_generator = waveform_generator_memory
         evidence_memory = likelihood.log_likelihood_ratio()
-        logger.info(likelihood.log_likelihood_ratio())
-
         logger.info("Injected value log BF: \t" + str(evidence_memory - evidence_non_memory))
         injection_bfs.append(evidence_memory - evidence_non_memory)
 
-        # reweighed_debug_mem, _ = _reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_memory)
-        # logger.info("Reweighed memory debug: \t" + str(reweighed_debug_mem))
-        # reweighed_debug_non_mem = -_reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_no_memory)
-        # logger.info("Reweighed no memory debug: \t" + str(reweighed_debug_non_mem))
+        reweighed_log_bf_mem_to_self = _reweigh(likelihood, res_mem_inj_mem_rec, waveform_generator_memory)
+        logger.info("Reweighed memory to self: \t" + str(reweighed_log_bf_mem_to_self))
+        reweighed_log_bf_non_mem_to_self = -_reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_no_memory)
+        logger.info("Reweighed no memory to self: \t" + str(reweighed_log_bf_non_mem_to_self))
 
         reweighed_log_bf_mem_inj_to_mem = _reweigh(likelihood, res_mem_inj_non_mem_rec, waveform_generator_memory)
         logger.info("Reweighed memory inj to memory log BF: \t" + str(reweighed_log_bf_mem_inj_to_mem))
@@ -143,8 +136,9 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         # reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
         # logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
         # logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_from_mem))
-        reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem)
-        reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_from_mem)
+        reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem - reweighed_log_bf_non_mem_to_self)
+        reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_from_mem - reweighed_log_bf_mem_to_self)
+
         # reweighing_to_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_to_mem)
         # reweighing_from_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_from_mem)
 
@@ -202,11 +196,14 @@ def _calculate_log_weights(likelihood, posterior):
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'phase',
                           'ra', 'dec', 'psi']:
             likelihood.parameters[parameter] = posterior.iloc[i][parameter]
-        weights.append(likelihood.log_likelihood_ratio() - posterior.iloc[i]['log_likelihood'])
+        reweighed_likelihood = likelihood.log_likelihood()
+        original_likelihood = posterior.iloc[i]['log_likelihood']
+        weight = reweighed_likelihood - original_likelihood
+        weights.append(weight)
     return weights
 
 
 # Use sampling_frequency == 4096 from 0 to 64 and 2048 after that for existing pop runs
 # print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
 #                 sampling_frequency=int(sys.argv[3]))
-reweigh_evidences(subdirs=[str(subdir) for subdir in range(8)])
+reweigh_evidences(subdirs=[str(subdir) for subdir in range(1, 8)])
