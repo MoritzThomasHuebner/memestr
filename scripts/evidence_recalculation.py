@@ -136,8 +136,8 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
         # reweighed_log_bf_non_mem_inj_from_mem = -_reweigh(likelihood, res_non_mem_inj_mem_rec, waveform_generator_no_memory)
         # logger.info("Reweighed non memory inj to memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_to_mem))
         # logger.info("Reweighed non memory inj from memory log BF: \t" + str(reweighed_log_bf_non_mem_inj_from_mem))
-        reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem - reweighed_log_bf_non_mem_to_self)
-        reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_from_mem - reweighed_log_bf_mem_to_self)
+        reweighing_to_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_to_mem + reweighed_log_bf_non_mem_to_self)
+        reweighing_from_memory_bfs_mem_inj.append(reweighed_log_bf_mem_inj_from_mem + reweighed_log_bf_mem_to_self)
 
         # reweighing_to_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_to_mem)
         # reweighing_from_memory_bfs_non_mem_inj.append(reweighed_log_bf_non_mem_inj_from_mem)
