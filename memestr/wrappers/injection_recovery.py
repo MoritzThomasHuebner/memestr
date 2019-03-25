@@ -76,7 +76,7 @@ def get_ifo(hf_signal, name, outdir, settings, waveform_generator):
         waveform_generator=waveform_generator)
     signal = interferometer.get_detector_response(
         injection_polarizations, settings.injection_parameters.__dict__)
-    interferometer.plot_data(signal=signal, outdir=outdir)
+    # interferometer.plot_data(signal=signal, outdir=outdir)
     interferometer.save_data(outdir)
     return interferometer
 

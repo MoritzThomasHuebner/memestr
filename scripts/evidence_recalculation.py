@@ -146,14 +146,14 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     logger.info(np.sum(sampling_bfs_mem_inj))
     logger.info(np.sum(reweighing_to_memory_bfs_mem_inj))
     logger.info(np.sum(reweighing_from_memory_bfs_mem_inj))
-    logger.info(np.sum(reweighing_to_memory_bfs_non_mem_inj))
-    logger.info(np.sum(reweighing_from_memory_bfs_non_mem_inj))
+    # logger.info(np.sum(reweighing_to_memory_bfs_non_mem_inj))
+    # logger.info(np.sum(reweighing_from_memory_bfs_non_mem_inj))
     res = pd.DataFrame.from_dict(dict(injection_bfs=injection_bfs,
                                       sampling_bfs=sampling_bfs_mem_inj,
                                       reweighing_to_memory_bfs_mem_inj=reweighing_to_memory_bfs_mem_inj,
-                                      reweighing_from_memory_bfs_mem_inj=reweighing_from_memory_bfs_mem_inj,
-                                      reweighing_to_memory_bfs_non_mem_inj=reweighing_to_memory_bfs_non_mem_inj,
-                                      reweighing_from_memory_bfs_non_mem_inj=reweighing_from_memory_bfs_non_mem_inj))
+                                      reweighing_from_memory_bfs_mem_inj=reweighing_from_memory_bfs_mem_inj))
+                                      # reweighing_to_memory_bfs_non_mem_inj=reweighing_to_memory_bfs_non_mem_inj,
+                                      # reweighing_from_memory_bfs_non_mem_inj=reweighing_from_memory_bfs_non_mem_inj))
     res.to_json('evidence_reweighing/' + str(subdirs[0]) + '_' + str(subdirs[-1]) + '.json')
 
 
@@ -206,4 +206,4 @@ def _calculate_log_weights(likelihood, posterior):
 # Use sampling_frequency == 4096 from 0 to 64 and 2048 after that for existing pop runs
 # print_evidences(subdirs=[str(subdir) for subdir in range(int(sys.argv[1]), int(sys.argv[2]))],
 #                 sampling_frequency=int(sys.argv[3]))
-reweigh_evidences(subdirs=[str(subdir) for subdir in range(1, 8)])
+reweigh_evidences(subdirs=[str(subdir) for subdir in range(0, 8)])
