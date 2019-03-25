@@ -68,8 +68,10 @@ class RecoveryPriors(RunParameters):
                  s12=bilby.core.prior.Uniform(name='s12', minimum=0.0, maximum=0.8, latex_label='s12'),
                  s21=bilby.core.prior.Uniform(name='s21', minimum=0.0, maximum=0.8, latex_label='s21'),
                  s22=bilby.core.prior.Uniform(name='s22', minimum=0.0, maximum=0.8, latex_label='s22'),
-                 s13=bilby.core.prior.Uniform(name='s13', minimum=0.0, maximum=0.8, latex_label='s13'),
-                 s23=bilby.core.prior.Uniform(name='s23', minimum=0.0, maximum=0.8, latex_label='s23')):
+                 s13=bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0, 0.5),
+                                                latex_label='s13'),
+                 s23=bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0, 0.5),
+                                                latex_label='s23')):
         super(RecoveryPriors, self).__init__()
         self.prior_total_mass = total_mass
         self.prior_mass_ratio = mass_ratio
