@@ -146,6 +146,10 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
     logger.info(np.sum(sampling_bfs_mem_inj))
     logger.info(np.sum(reweighing_to_memory_bfs_mem_inj))
     logger.info(np.sum(reweighing_from_memory_bfs_mem_inj))
+    logger.info(str(injection_bfs))
+    logger.info(str(sampling_bfs_mem_inj))
+    logger.info(str(reweighing_to_memory_bfs_mem_inj))
+    logger.info(str(reweighing_from_memory_bfs_mem_inj))
     # logger.info(np.sum(reweighing_to_memory_bfs_non_mem_inj))
     # logger.info(np.sum(reweighing_from_memory_bfs_non_mem_inj))
     res = pd.DataFrame.from_dict(dict(injection_bfs=injection_bfs,
