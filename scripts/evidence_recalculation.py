@@ -158,7 +158,7 @@ def reweigh_evidences(subdirs, sampling_frequency=2048, duration=16, alpha=0.1):
                                       reweighing_from_memory_bfs_mem_inj=reweighing_from_memory_bfs_mem_inj))
                                       # reweighing_to_memory_bfs_non_mem_inj=reweighing_to_memory_bfs_non_mem_inj,
                                       # reweighing_from_memory_bfs_non_mem_inj=reweighing_from_memory_bfs_non_mem_inj))
-    res.to_json('evidence_reweighing/' + str(subdirs[0]) + '_' + str(subdirs[-1]) + '.json')
+    res.to_json(outdir + '/' + str(subdirs[0]) + '_' + str(subdirs[-1]) + '.json')
 
 
 def _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec):
