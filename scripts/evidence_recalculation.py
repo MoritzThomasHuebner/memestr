@@ -11,8 +11,8 @@ from memestr.wrappers.injection_recovery import get_ifo
 
 # parameter_set = 0
 # parameter_set_dir = 'parameter_set_' + str(parameter_set)
-distances = dict(a000=200, a001=230, a002=262, a003=299, a004=342, a005=391, a006=448, a007=512, a008=586, a009=670,
-                 a010=766, a011=876, a012=1002, a013=1147, a014=1311, a015=1500)
+distances = dict(a016=200, a017=230, a018=262, a019=299, a020=342, a021=391, a022=448, a023=512, a024=586, a025=670,
+                 a026=766, a027=876)#, a028=1002, a013=1147, a014=1311, a015=1500)
 
 run_id = sys.argv[1]
 outdir = run_id + '_reweighing_result'
