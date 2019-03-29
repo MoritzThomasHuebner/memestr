@@ -1,8 +1,11 @@
 import pandas as pd
 import numpy as np
+import sys
 
-outdir = 'evidence_reweighing/parameter_set_99/'
-outfiles = ['0_12.json', '13_25.json']
+id = sys.argv[1]
+
+outdir = id + '_reweighing_result/'
+outfiles = ['0_7.json']
 
 sampling_errors = np.array([])
 reweighing_to_memory_errors = np.array([])
