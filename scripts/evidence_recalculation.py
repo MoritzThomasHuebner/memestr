@@ -25,8 +25,8 @@ parameters = dict(mass_ratio=0.8, total_mass=60.0, s11=0.0, s12=0.0, s13=0.0, s2
 # outdir_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_mem_inj_non_mem_rec'
 # outdir_non_mem_inj_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_mem_rec'
 # outdir_non_mem_inj_non_mem_rec = 'evidence_reweighing/' + parameter_set_dir + '/IMR_non_mem_inj_non_mem_rec'
-outdir_mem_inj_mem_rec = run_id + '_IMR_mem_inj_mem_rec/'
-outdir_mem_inj_non_mem_rec = run_id + '_IMR_mem_inj_non_mem_rec/'
+outdir_mem_inj_mem_rec = run_id + '_IMR_mem_inj_mem_rec'
+outdir_mem_inj_non_mem_rec = run_id + '_IMR_mem_inj_non_mem_rec'
 
 logger = bb.utils.logger
 
