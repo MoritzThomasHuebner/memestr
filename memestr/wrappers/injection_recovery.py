@@ -5,6 +5,7 @@ import time
 import bilby
 import logging
 from copy import deepcopy
+import matplotlib.pyplot as plt
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 
@@ -170,22 +171,22 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
                                                           maximum=injection_parameters.total_mass + 30,
                                                           latex_label="$M_{tot}$")
-    # priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.4),
-    #                                                       maximum=1,
-    #                                                       latex_label="$q$")
-    # priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
-    #                                                                            maximum=5000,
-    #                                                                            latex_label="$L_D$",
-    #                                                                            name='luminosity_distance')
-    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    # priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.4),
+                                                          maximum=1,
+                                                          latex_label="$q$")
+    priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
+                                                                               maximum=5000,
+                                                                               latex_label="$L_D$",
+                                                                               name='luminosity_distance')
+    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=np.pi,
                                                      latex_label="$\phi$")
-    # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-    #                                                maximum=np.pi/2,
-    #                                                latex_label="$\psi$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+                                                   maximum=np.pi/2,
+                                                   latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
                                                             maximum=injection_parameters.geocent_time + 0.1,
                                                             latex_label='$t_c$')
