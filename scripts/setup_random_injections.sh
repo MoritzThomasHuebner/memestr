@@ -2,7 +2,7 @@
 
 LABEL="${1::-3}"
 PYTHON_COMMAND="import memestr; print(memestr.core.submit.find_unallocated_name(name=\"$LABEL\"))"
-OUTDIR="${2}"
+OUTDIR=(${2//outdir_base=/})
 #OUTDIR=`python -c "${PYTHON_COMMAND}"`
 mkdir - ${OUTDIR}
 JOB_NAME="--job-name=$LABEL"
