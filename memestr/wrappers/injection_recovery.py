@@ -30,8 +30,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     ifos = bilby.gw.detector.InterferometerList(ifos)
 
     waveform_generator_new = deepcopy(waveform_generator)
-    waveform_generator_new.frequency_domain_source_model = recovery_model
-    waveform_generator_new.time_domain_source_model = None
+    waveform_generator_new.time_domain_source_model = recovery_model
+    # waveform_generator_new.time_domain_source_model = None
     waveform_generator = waveform_generator_new
 
     priors = settings.recovery_priors.proper_dict()
