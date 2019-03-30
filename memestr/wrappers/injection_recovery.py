@@ -56,7 +56,14 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             save=True,
                                             verbose=True,
                                             random_seed=np.random.randint(0, 1000),
-                                            **settings.sampler_settings.__dict__)
+                                            sampler=settings.sampler_settings.sampler,
+                                            npoints=settings.sampler_settings.npoints,
+                                            label=settings.sampler_settings.label,
+                                            clean=settings.sampler_settings.clean,
+                                            nthreads=settings.sampler_settings.nthreads,
+                                            dlogz=settings.sampler_settings.dlogz,
+                                            maxmcmc=settings.sampler_settings.maxmcmc,
+                                            resume=settings.sampler_settings.resume)
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
     logger.info(str(result))
