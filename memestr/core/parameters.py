@@ -127,7 +127,7 @@ class WaveformData(RunParameters):
 
 class CpnestSettings(RunParameters):
 
-    def __init__(self, sampler='cpnest', npoints=200, label='IMRPhenomD', clean=True,
+    def __init__(self, sampler='cpnest', npoints=200, label='IMRPhenomD', clean=False,
                  dlogz=0.1, maxmcmc=100, nthreads=1, resume=True):
         super(CpnestSettings, self).__init__()
         self.sampler = sampler
