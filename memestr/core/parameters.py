@@ -131,6 +131,22 @@ class CpnestSettings(RunParameters):
         self.maxmcmc = int(maxmcmc)
         self.resume = resume
 
+    @property
+    def resume(self):
+        return self._resume
+
+    @resume.setter
+    def resume(self, resume):
+        self._resume = _set_bool_from_string(resume)
+
+    @property
+    def clean(self):
+        return self._clean
+
+    @clean.setter
+    def clean(self, clean):
+        self._clean = _set_bool_from_string(clean)
+
 
 class DetectorSettings(RunParameters):
 
@@ -147,10 +163,7 @@ class DetectorSettings(RunParameters):
 
     @zero_noise.setter
     def zero_noise(self, zero_noise):
-        if zero_noise == 'True' or zero_noise is True:
-            self._zero_noise = True
-        else:
-            self._zero_noise = False
+        self._zero_noise = _set_bool_from_string(zero_noise)
 
 
 class OtherSettings(RunParameters):
@@ -170,10 +183,7 @@ class OtherSettings(RunParameters):
 
     @lionize.setter
     def lionize(self, lionize):
-        if lionize == 'True' or lionize is True:
-            self._lionize = True
-        else:
-            self._lionize = False
+        self._lionize = _set_bool_from_string(lionize)
 
     @property
     def distance_marginalization(self):
@@ -181,10 +191,7 @@ class OtherSettings(RunParameters):
 
     @distance_marginalization.setter
     def distance_marginalization(self, distance_marginalization):
-        if distance_marginalization == 'True' or distance_marginalization is True:
-            self._distance_marginalization = True
-        else:
-            self._distance_marginalization = False
+        self._distance_marginalization = _set_bool_from_string(distance_marginalization)
 
     @property
     def time_marginalization(self):
@@ -192,10 +199,7 @@ class OtherSettings(RunParameters):
 
     @time_marginalization.setter
     def time_marginalization(self, time_marginalization):
-        if time_marginalization == 'True' or time_marginalization is True:
-            self._time_marginalization = True
-        else:
-            self._time_marginalization = False
+        self._time_marginalization = _set_bool_from_string(time_marginalization)
 
     @property
     def phase_marginalization(self):
@@ -203,10 +207,7 @@ class OtherSettings(RunParameters):
 
     @phase_marginalization.setter
     def phase_marginalization(self, phase_marginalization):
-        if phase_marginalization == 'True' or phase_marginalization is True:
-            self._phase_marginalization = True
-        else:
-            self._phase_marginalization = False
+        self._phase_marginalization = _set_bool_from_string(phase_marginalization)
 
 
 class AllSettings(object):
@@ -241,3 +242,11 @@ class AllSettings(object):
                    sampler_settings=CpnestSettings.init_with_updated_kwargs(**kwargs),
                    detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
                    other_settings=OtherSettings.init_with_updated_kwargs(**kwargs))
+
+
+def _set_bool_from_string(param):
+    if param == 'True' or param is True:
+        param = True
+    else:
+        param = False
+    return param
