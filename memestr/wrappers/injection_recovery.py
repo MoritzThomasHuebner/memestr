@@ -70,7 +70,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     return result
 
 
-def get_ifo(hf_signal, name, outdir, settings, waveform_generator, label=''):
+def get_ifo(hf_signal, name, outdir, settings, waveform_generator, label='', plot=True):
     interferometer = bilby.gw.detector.get_empty_interferometer(name)
     if name in ['H1', 'L1']:
         interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
@@ -87,7 +87,8 @@ def get_ifo(hf_signal, name, outdir, settings, waveform_generator, label=''):
         waveform_generator=waveform_generator)
     signal = interferometer.get_detector_response(
         injection_polarizations, settings.injection_parameters.__dict__)
-    plot_ifo(interferometer, signal=signal, outdir=outdir, label=label)
+    if plot:
+        plot_ifo(interferometer, signal=signal, outdir=outdir, label=label)
     interferometer.save_data(outdir)
     return interferometer
 
