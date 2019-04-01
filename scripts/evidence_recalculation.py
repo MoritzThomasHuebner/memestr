@@ -7,7 +7,7 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 import sys
 from copy import deepcopy
 import pandas as pd
-from memestr.wrappers.injection_recovery import get_ifo
+from memestr.core.utils import get_ifo
 
 # parameter_set = 0
 # parameter_set_dir = 'parameter_set_' + str(parameter_set)

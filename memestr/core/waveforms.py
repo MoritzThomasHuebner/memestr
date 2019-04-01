@@ -105,7 +105,6 @@ def time_domain_nr_sur_memory_waveform(times, mass_ratio, total_mass, s11, s12, 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
                                                         s11, s12, s13, s21, s22, s23, inc, phase,
                                                         **kwargs):
-    frequencies = copy.copy(frequencies)
     mass_1 = total_mass / (1 + mass_ratio)
     mass_2 = mass_1 * mass_ratio
     return lal_binary_black_hole(frequency_array=frequencies, mass_1=mass_1, mass_2=mass_2,
@@ -127,29 +126,34 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
     memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     alpha = _get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
-    res = dict()
+    waveform = dict()
     for mode in memory:
-        res[mode] = (memory[mode] + oscillatory[mode]) * window
-    return res
+        waveform[mode] = (memory[mode] + oscillatory[mode]) * window
+    return waveform
 
-def time_domain_IMRPhenomD_waveform_with_memory_open_data(times, mass_1, mass_2, luminosity_distance,
-                                                iota, phase, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl, **kwargs):
+def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
+                                                        s21, s22, s23, inc, phase, **kwargs):
     temp_times = copy.copy(times)
     wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
-                                          q=mass_1/mass_2,
-                                          MTot=mass_1+mass_2,
+                                          q=mass_ratio,
+                                          MTot=total_mass,
                                           distance=luminosity_distance,
-                                          S1=np.array([0.0, 0.0, 0.0]),
-                                          S2=np.array([0.0, 0.0, 0.0]),
+                                          S1=np.array([s11, s12, s13]),
+                                          S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    oscillatory = wave.time_domain_oscillatory(inc=iota, phase=phase)
-    memory, _ = wave.time_domain_memory(inc=iota, phase=phase, gamma_lmlm=gamma_lmlm)
+    oscillatory = wave.time_domain_oscillatory(inc=inc, phase=phase)
+    memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     alpha = _get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
-    res = dict()
+    waveform = dict()
     for mode in memory:
-        res[mode] = (memory[mode] + oscillatory[mode]) * window
-    return res
+        waveform[mode] = (memory[mode] + oscillatory[mode]) * window
+    max_index = np.argmax(np.abs(np.abs(waveform['plus']) + np.abs(waveform['cross'])))
+    max_index_fd_model = kwargs.get('max_index_fd_model', len(waveform['plus']))
+    waveform['plus'] = np.roll(waveform['plus'], shift=max_index_fd_model - max_index)
+    waveform['cross'] = np.roll(waveform['cross'], shift=max_index_fd_model - max_index)
+    return waveform
+
 
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
                                                    s21, s22, s23, inc, phase, **kwargs):
@@ -163,10 +167,10 @@ def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass
                                           times=temp_times)
     alpha = _get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
-    oscillatory = wave.time_domain_oscillatory(inc=inc, phase=phase)
-    for mode in oscillatory:
-        oscillatory[mode] *= window
-    return oscillatory
+    waveform = wave.time_domain_oscillatory(inc=inc, phase=phase)
+    for mode in waveform:
+        waveform[mode] *= window
+    return waveform
 
 
 def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance,
@@ -181,14 +185,14 @@ def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, to
                                           times=temp_times)
     alpha = _get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
-    oscillatory = wave.time_domain_oscillatory(inc=inc, phase=phase)
-    for mode in oscillatory:
-        oscillatory[mode] *= window
-    max_index = np.argmax(np.abs(np.abs(oscillatory['plus']) + np.abs(oscillatory['cross'])))
-    max_index_fd_model = kwargs.get('max_index_fd_model', len(oscillatory['plus']))
-    oscillatory['plus'] = np.roll(oscillatory['plus'], shift=max_index_fd_model - max_index)
-    oscillatory['cross'] = np.roll(oscillatory['cross'], shift=max_index_fd_model - max_index)
-    return oscillatory
+    waveform = wave.time_domain_oscillatory(inc=inc, phase=phase)
+    for mode in waveform:
+        waveform[mode] *= window
+    max_index = np.argmax(np.abs(np.abs(waveform['plus']) + np.abs(waveform['cross'])))
+    max_index_fd_model = kwargs.get('max_index_fd_model', len(waveform['plus']))
+    waveform['plus'] = np.roll(waveform['plus'], shift=max_index_fd_model - max_index)
+    waveform['cross'] = np.roll(waveform['cross'], shift=max_index_fd_model - max_index)
+    return waveform
 
 
 def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,

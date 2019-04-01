@@ -5,9 +5,10 @@ import time
 import bilby
 import logging
 from copy import deepcopy
-import matplotlib.pyplot as plt
 
+from memestr.core.postprocessing import adjust_phase_and_geocent_time
 from memestr.core.parameters import AllSettings, InjectionParameters
+from memestr.core.utils import get_ifo
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
@@ -30,8 +31,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     ifos = bilby.gw.detector.InterferometerList(ifos)
 
     waveform_generator_new = deepcopy(waveform_generator)
-    waveform_generator_new.time_domain_source_model = recovery_model
-    # waveform_generator_new.time_domain_source_model = None
+    waveform_generator_new.frequency_domain_source_model = recovery_model
+    waveform_generator_new.time_domain_source_model = None
     waveform_generator = waveform_generator_new
 
     priors = settings.recovery_priors.proper_dict()
@@ -66,66 +67,9 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             resume=settings.sampler_settings.resume)
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
+    adjust_phase_and_geocent_time(result, recovery_model, ifos[0])
     logger.info(str(result))
     return result
-
-
-def get_ifo(hf_signal, name, outdir, settings, waveform_generator, label='', plot=True):
-    interferometer = bilby.gw.detector.get_empty_interferometer(name)
-    if name in ['H1', 'L1']:
-        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
-    elif name in ['V1']:
-        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
-            from_power_spectral_density_file('AdV_psd.txt')
-    if settings.detector_settings.zero_noise:
-        interferometer.set_strain_data_from_zero_noise(**settings.waveform_data.__dict__)
-    else:
-        interferometer.set_strain_data_from_power_spectral_density(**settings.waveform_data.__dict__)
-    injection_polarizations = interferometer.inject_signal(
-        parameters=deepcopy(settings.injection_parameters.__dict__),
-        injection_polarizations=hf_signal,
-        waveform_generator=waveform_generator)
-    signal = interferometer.get_detector_response(
-        injection_polarizations, settings.injection_parameters.__dict__)
-    if plot:
-        plot_ifo(interferometer, signal=signal, outdir=outdir, label=label)
-    interferometer.save_data(outdir)
-    return interferometer
-
-
-def plot_ifo(ifo, signal=None, outdir='.', label=None):
-    from bilby import utils
-    import bilby.gw.utils as gwutils
-    if utils.command_line_args.test:
-        return
-    fig, ax = plt.subplots()
-    ax.loglog(ifo.frequency_array,
-              gwutils.asd_from_freq_series(freq_data=ifo.frequency_domain_strain,
-                                           df=(ifo.frequency_array[1] - ifo.frequency_array[0])),
-              color='C0', label=ifo.name)
-    ax.loglog(ifo.frequency_array,
-              ifo.amplitude_spectral_density_array,
-              color='C1', lw=0.5, label=ifo.name + ' ASD')
-    if signal is not None:
-        ax.loglog(ifo.frequency_array,
-                  gwutils.asd_from_freq_series(freq_data=signal,
-                                               df=(ifo.frequency_array[1] - ifo.frequency_array[0])),
-                  color='C2',
-                  label='Signal')
-    ax.grid(True)
-    ax.set_ylabel(r'strain [strain/$\sqrt{\rm Hz}$]')
-    ax.set_xlabel(r'frequency [Hz]')
-    ax.set_xlim(20, 2000)
-    ax.set_ylim(1e-33, 1e-21)
-    plt.tight_layout()
-    ax.legend(loc='best')
-    if label is None:
-        fig.savefig(
-            '{}/{}_frequency_domain_data.png'.format(outdir, ifo.name))
-    else:
-        fig.savefig(
-            '{}/{}_{}_frequency_domain_data.png'.format(
-                outdir, ifo.name, label))
 
 
 def update_kwargs(default_kwargs, kwargs):
@@ -176,9 +120,9 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     #                                                       maximum=120)
     # priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time + 2 - 16,
     #                                                         maximum=injection_parameters.geocent_time + 2)
-    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
-                                                          maximum=injection_parameters.total_mass + 30,
-                                                          latex_label="$M_{tot}$")
+    # priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
+    #                                                       maximum=injection_parameters.total_mass + 30,
+    #                                                       latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.4),
                                                           maximum=1,
                                                           latex_label="$q$")
@@ -186,18 +130,18 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                                                maximum=5000,
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
-                                                     maximum=np.pi,
-                                                     latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-                                                   maximum=np.pi/2,
-                                                   latex_label="$\psi$")
-    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
-                                                            maximum=injection_parameters.geocent_time + 0.1,
-                                                            latex_label='$t_c$')
+    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    # priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
+    #                                                  maximum=np.pi,
+    #                                                  latex_label="$\phi$")
+    # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+    #                                                maximum=np.pi/2,
+    #                                                latex_label="$\psi$")
+    # priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
+    #                                                         maximum=injection_parameters.geocent_time + 0.1,
+    #                                                         latex_label='$t_c$')
     # priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
     #                                                  latex_label='s13')
     # priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
