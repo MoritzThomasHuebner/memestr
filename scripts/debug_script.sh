@@ -4,4 +4,4 @@
 #SBATCH ntasks=1
 #SBATCH mem-per-cpu=1G
 #SBATCH cpus-per-task=4
-srun python debug_script.py
+python debug_script.py
