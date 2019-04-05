@@ -18,10 +18,10 @@ import memestr
 #     plt.clf()
 
 memestr.wrappers.injection_recovery.\
-    run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory_wrapped,
-                                   recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
+    run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
+                                   recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
                                    outdir='test', alpha=0.1, zero_noise=True, distance_marginalization=True,
-                                   time_marginalization=False, luminosity_distance=1200.0, nthreads=1, sampler='dynesty',
+                                   time_marginalization=False, luminosity_distance=1200.0, nthreads=16, sampler='cpnest',
                                    nlive=100, maxmcmc=1000, duration=16, random_seed=42, dlogz=10,
                                    sampling_frequency=2048, resume=True, clean=False)
 import cpnest.cpnest
