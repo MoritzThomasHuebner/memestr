@@ -1,405 +1,159 @@
 from __future__ import division
 
 import numpy as np
-from scipy.special import erf
-from scipy.stats import beta as beta_dist
-from scipy.stats import truncnorm
-from scipy.interpolate import interp1d
-
-
-def iid_spin(dataset, xi, sigma_spin, amax, alpha_chi, beta_chi):
-    """
-    Independently and identically distributed spins.
-    """
-    prior = iid_spin_orientation(dataset, xi, sigma_spin) *\
-        iid_spin_magnitude(dataset, amax, alpha_chi, beta_chi)
-    return prior
-
-
-def iid_spin_orientation(dataset, xi, sigma_spin):
-    """
-    Independently and identically distributed spin orientations.
-    """
-    return spin_orientation_likelihood(dataset, xi, sigma_spin, sigma_spin)
-
-
-def iid_spin_magnitude(dataset, amax=1, alpha_chi=1, beta_chi=1):
-    """
-    Independently and identically distributed spin magnitudes.
-    """
-    return spin_magnitude_beta_likelihood(
-        dataset, alpha_chi, alpha_chi, beta_chi, beta_chi, amax, amax)
-
-
-def spin_orientation_likelihood(dataset, xi, sigma_1, sigma_2):
-    """A mixture model of spin orientations with isotropic and normally
-    distributed components.
-
-    https://arxiv.org/abs/1704.08370 Eq. (4)
-
-    Parameters
-    ----------
-    dataset: dict
-        Dictionary of numpy arrays for 'costilt1' and 'costilt2'.
-    xi: float
-        Fraction of black holes in preferentially aligned component.
-    sigma_1: float
-        Width of preferentially aligned component for the more
-        massive black hole.
-    sigma_2: float
-        Width of preferentially aligned component for the less
-        massive black hole.
-    """
-    # prior = (1 - xi) / 4\
-    #     + xi * 2 / np.pi / sigma_1 / sigma_2\
-    #     * truncnorm_wrapper(dataset['costilt1'], 1, sigma_1, -1, 1)\
-    #     * truncnorm_wrapper(dataset['costilt2'], 1, sigma_2, -1, 1)
-    prior = (1 - xi) / 4\
-        + xi * 2 / np.pi / sigma_1 / sigma_2\
-        * np.exp(-(dataset['costilt1'] - 1)**2 / (2 * sigma_1**2))\
-        / erf(2**0.5 / sigma_1)\
-        * np.exp(-(dataset['costilt2'] - 1)**2 / (2 * sigma_2**2))\
-        / erf(2**0.5 / sigma_2)
-    prior *= (abs(dataset['costilt1']) <= 1) & (abs(dataset['costilt2']) <= 1)
-    return prior
-
-
-def truncnorm_wrapper(xx, mean, sigma, min_, max_):
-    """Wrapper to scipy truncnorm"""
-    aa = (min_ - mean) / sigma
-    bb = (max_ - mean) / sigma
-    return truncnorm.pdf(xx, aa, bb, loc=mean, scale=sigma)
-
-
-def spin_magnitude_beta_likelihood(dataset, alpha_1, alpha_2, beta_1, beta_2,
-                                   amax_1, amax_2):
-    """ Independent beta distributions for both spin magnitudes.
-
-    https://arxiv.org/abs/1805.06442 Eq. (10)
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.beta.html
-
-    Parameters
-    ----------
-    dataset: dict
-        Dictionary of numpy arrays containing 'a1' and 'a2'.
-    alpha_1, beta_1: float
-        Parameters of Beta distribution for more massive black hole.
-    alpha_2, beta_2: float
-        Parameters of Beta distribution for less massive black hole.
-    amax_1, amax_2: float
-        Maximum spin of the more/less massive black hole.
-    """
-    if alpha_1 < 0 or beta_1 < 0 or alpha_2 < 0 or beta_2 < 0:
-        return 0
-    prior = beta_dist.pdf(dataset['a1'], alpha_1, beta_1, scale=amax_1) *\
-        beta_dist.pdf(dataset['a2'], alpha_2, beta_2, scale=amax_2)
-    return prior
-
-
-def mass_distribution(dataset, alpha, mmin, mmax, lam, mpp, sigpp, beta,
-                      delta_m):
-    """ Powerlaw + peak model for two-dimensional mass distribution adjusted
-    for sensitive volume.
-
-    https://arxiv.org/abs/1801.02699 Eq. (11) (T&T18)
-
-    Parameters
-    ----------
-    dataset: dict
-        Dictionary of numpy arrays for 'm1_source' and 'm2_source', also
-        'arg_m1s'.
-    alpha: float
-        Powerlaw exponent for more massive black hole.
-    mmin: float
-        Minimum black hole mass.
-    mmax: float
-        Maximum mass in the powerlaw distributed component.
-    lam: float
-        Fraction of black holes in the Gaussian component.
-    mpp: float
-        Mean of the Gaussian component.
-    sigpp: float
-        Standard deviation fo the Gaussian component.
-    beta: float
-        Power law exponent of the mass ratio distribution.
-    delta_m: float
-        Rise length of the low end of the mass distribution.
-    """
-    parameters = [alpha, mmin, mmax, lam, mpp, sigpp, beta, delta_m]
-    probability = mass_distribution_no_vt(dataset, *parameters)
-    vt_fac = norm_vt(parameters)
-    probability /= vt_fac
-    return probability
-
-
-def mass_distribution_no_vt(dataset, alpha, mmin, mmax, lam, mpp, sigpp, beta,
-                            delta_m):
-    """ Powerlaw + peak model for two-dimensional mass distribution not adjusted
-    for sensitive volume.
-
-    https://arxiv.org/abs/1801.02699 Eq. (11) (T&T18)
-
-    Parameters
-    ----------
-    dataset: dict
-        Dictionary of numpy arrays for 'm1_source' and 'm2_source', also
-        'arg_m1s'.
-    alpha: float
-        Powerlaw exponent for more massive black hole.
-    mmin: float
-        Minimum black hole mass.
-    mmax: float
-        Maximum mass in the powerlaw distributed component.
-    lam: float
-        Fraction of black holes in the Gaussian component.
-    mpp: float
-        Mean of the Gaussian component.
-    sigpp: float
-        Standard deviation fo the Gaussian component.
-    beta: float
-        Power law exponent of the mass ratio distribution.
-    delta_m: float
-        Rise length of the low end of the mass distribution.
-
-    Notes
-    -----
-    The interpolation of the p(q) normalisation has a fill value of
-    the normalisation factor for m_1 = 100.
-    """
-    parameters = [alpha, mmin, mmax, lam, mpp, sigpp, beta, delta_m]
-    pow_norm, pp_norm, qnorms_ = norms(parameters)
-    qnorms = interp1d(m1s, qnorms_, bounds_error=False,
-                      fill_value=qnorms_[-1])(dataset['m1_source'])
-    probability = pmodel2d(dataset['m1_source'], dataset['q'], parameters,
-                           pow_norm, pp_norm, qnorms)
-    return probability
-
-
-def iid_mass(dataset, alpha, mmin, mmax, lam, mpp, sigpp, delta_m):
-    """
-    Identically and independently masses following p(m1) in T&T 2018
-
-    Parameters
-    ----------
-    dataset: dict
-        Dictionary containing NxM arrays, m1_source and m2_source
-    alpha, mmin, mmax, lam, mpp, sigpp, delta_m: see mass_distribution
-
-    Returns
-    -------
-    probability: array-like
-        Probability of m1, m2 in dataset, shape=(NxM)
-
-    Notes
-    -----
-    The factor of 2 comes from requiring m1>m2
-    """
-    parameters = dict(
-        alpha=alpha, mmin=mmin, mmax=mmax, lam=lam, mpp=mpp,
-        sigpp=sigpp, delta_m=delta_m, beta=0)
-    pow_norm = norm_ppow(parameters)
-    pp_norm = norm_pnorm(parameters)
-    probability = pmodel1d(dataset['m1_source'], parameters, pow_norm, pp_norm)
-    probability *= pmodel1d(dataset['m2_source'], parameters, pow_norm, pp_norm)
-    probability[dataset['m1_source'] < dataset['m2_source']] = 0
-    probability *= 2
-    return probability
-
-
-def norms(parameters):
-    """
-    Calculate normalisation factors for the model in T&T 2018.
-
-    Since our model doesn't have an anlaytic integral we must normalise
-    numerically. Every value of m_1 has a unique normalisation for q.
-
-    Parameters
-    ----------
-    parameters: array-like
-        Rescaled sample from the prior distribution.
-
-    Return
-    ------
-    pow_norm: float
-        Normalisation factor for the smoothed power law distribution.
-    pp_norm: float
-        Normalisation factor for the smoothed Gaussian distribution.
-    qnorms: array-like
-        Normalisation factor for each value of m1 in norm_array
-    """
-    pow_norm = norm_ppow(parameters)
-    pp_norm = norm_pnorm(parameters)
-    qnorms = norm_pq(parameters)
-    return [pow_norm, pp_norm, qnorms]
-
-
-def pmodel2d(ms, qs, parameters, pow_norm, pp_norm, qnorms, vt_fac=1.):
-    """
-    2d mass model from T&T 2018
-
-    Notes
-    -----
-    nan_to_num captures case when qnorms=0.
-    """
-    p_norm_no_vt = pmodel1d(ms, parameters, pow_norm, pp_norm) *\
-        pq(qs, ms, parameters) / qnorms
-    if not vt_fac == 1:
-        print('Providing vt_fac to pmodel2d is being deprecated.')
-    p_norm = p_norm_no_vt / vt_fac
-    return np.nan_to_num(p_norm)
-
-
-def pmodel1d(ms, parameters, pow_norm, pp_norm):
-    """normalised m1 pdf from T&T 2018"""
-    al, mn, mx, lam, mp, sp, bt, delta_m = extract_mass_parameters(parameters)
-    p_pow = ppow(ms, parameters) / pow_norm
-    p_norm = pnorm(ms, parameters) / pp_norm
-    return (1 - lam) * p_pow + lam * p_norm
-
-
-def ppow(ms, parameters):
-    """1d unnormalised powerlaw mass probability with smoothed low-mass end"""
-    al, mn, mx, lam, mp, sp, bt, delta_m = extract_mass_parameters(parameters)
-    return ms**(-al) * window(ms, mn, mx, delta_m)
-
-
-def norm_ppow(parameters):
-    """normalise ppow, requires m1s, an array of m values, and dm, the spacing of
-    that array"""
-    return np.trapz(ppow(m1s, parameters), m1s)
-
-
-def pnorm(ms, parameters):
-    """1d unnormalised normal distribution with low-mass smoothing"""
-    al, mn, mx, lam, mp, sp, bt, delta_m = extract_mass_parameters(parameters)
-    return np.exp(-(ms - mp)**2 / (2 * sp**2)) * window(ms, mn, 100., delta_m)
-
-
-def norm_pnorm(parameters):
-    """normalise pnorm, requires m1s, an array of m values, and dm, the spacing of
-    that array"""
-    return np.trapz(pnorm(m1s, parameters), m1s)
-
-
-def pq(qs, ms, parameters):
-    """unnormalised pdf for q, powerlaw + smoothing"""
-    al, mn, mx, lam, mp, sp, bt, delta_m = extract_mass_parameters(parameters)
-    return qs**(bt) * window(qs * ms, mn, 100., delta_m)
-
-
-def norm_vt(parameters):
-    """Calculate the total observed volume for a given set of parameters.
-
-    This is equivalent to Eq. 6 of https://arxiv.org/abs/1805.06442
-
-    """
-    pow_norm = norm_ppow(parameters)
-    pp_norm = norm_pnorm(parameters)
-    qnorms = np.einsum('i,j->ji', norm_pq(parameters), np.ones_like(qs))
-    qnorms[qnorms == 0] = 1.
-    p_norm_no_vt = pmodel1d(norm_array['m1'], parameters, pow_norm, pp_norm)\
-        * pq(norm_array['q'], norm_array['m1'], parameters) / qnorms
-    vt_fac = np.trapz(np.trapz(p_norm_no_vt * norm_array['vt'], m1s), qs)
-    return vt_fac
-
-
-def norm_pq(parameters):
-    """normalise pq, requires m1s, an array of m values, and dm, the spacing of
-    that array"""
-    norm = np.trapz(pq(norm_array['q'], norm_array['m1'], parameters),
-                    qs, axis=0)
-    return norm
-
-
-def window(ms, mn, mx, delta_m=0.):
-    """Apply a one sided window between mmin and mmin+dm to the mass pdf.
-
-    The upper cut off is a step function,
-    the lower cutoff is a logistic rise over delta_m solar masses.
-
-    See T&T18 Eq
-
-    """
-    dM = mx - mn
-    delta_m /= dM
-    # some versions of numpy can't deal with pandas columns indexing an array
-    ms_arr = np.array(ms)
-    sel_p = (ms_arr >= mn) & (ms_arr <= (mn + delta_m * dM))
-    ms_p = ms_arr[sel_p] - mn
-    Zp = np.nan_to_num(2 * delta_m * (1 / (2 * ms_p / dM) +
-                       1 / (2 * ms_p / dM - 2 * delta_m)))
-    window = np.ones_like(ms)
-    window[(ms_arr < mn) | (ms_arr > mx)] = 0
-    window[sel_p] = 1 / (np.exp(Zp) + 1)
-    return window
-
-
-def extract_mass_parameters(parameters):
-    """extract the parameters of the mass distribution hyperparameters used in
-    T&T18 from either a list or dictionary."""
-    if isinstance(parameters, list):
-        return parameters
-    elif isinstance(parameters, dict):
-        keys = ['alpha', 'mmin', 'mmax', 'lam', 'mpp',
-                'sigpp', 'beta', 'delta_m']
-        return [parameters[key] for key in keys]
-
-
-def set_vt(vt_array):
-    """
-    Set up normalisation arrays, including VT(m)
-
-    Parameters
-    ----------
-    vt_array: dict
-        Dictionary containing arrays in m1, q and VT to use for normalisation
-    """
-    global dm, dq, m1s, qs, norm_array
-    norm_array = vt_array
-    m1s = np.unique(norm_array['m1'])
-    qs = np.unique(norm_array['q'])
-    dm = m1s[1] - m1s[0]
-    dq = qs[1] - qs[0]
-
-
-# set up arrays for numerical normalisation
-# this doesn't include VT(m)
-m1s = np.linspace(3, 100, 1000)
-qs = np.linspace(0.1, 1, 500)
-dm = m1s[1] - m1s[0]
-dq = qs[1] - qs[0]
-
-norm_array = dict()
-norm_array['m1'] = np.einsum('i,j->ji', m1s, np.ones_like(qs))
-norm_array['q'] = np.einsum('i,j->ji', np.ones_like(m1s), qs)
-
-
-def mass_pdf(size, alpha=9, mmin=6.5, mmax=50, lam=0.4, mpp=30,
-             sigpp=5, beta=5.8, delta_m=4):
-    m_1 = np.linspace(6.5, 50, size)
-    qs = np.linspace(0.1, 1, size)
-
-    q_mesh, m_mesh = np.meshgrid(qs, m_1)
-    dataset = dict(m1_source=m_mesh, q=q_mesh)
-
-    probs = mass_distribution_no_vt(dataset=dataset, alpha=alpha,
-                                    mmin=mmin, mmax=mmax, lam=lam,
-                                    mpp=mpp, sigpp=sigpp, beta=beta,
-                                    delta_m=delta_m)
-    return qs, m_1, probs
-
-
-def mass_ratio_pdf(size, **kwargs):
-    qs, _, probs = mass_pdf(size, **kwargs)
-    q_probs = np.zeros(size)
-    for i, q in enumerate(q_probs):
-        q_probs[i] = np.sum(probs[:, i])
-    return qs, q_probs
-
-
-def primary_mass_pdf(size, **kwargs):
-    _, m_1, probs = mass_pdf(size, **kwargs)
-    m_1_probs = np.zeros(size)
-    for j, m in enumerate(m_1_probs):
-        m_1_probs[j] = np.sum(probs[j])
-    return m_1, m_1_probs
+from collections import namedtuple
+import random
+
+import bilby
+from bilby.gw import conversion
+import os
+import gwpopulation
+import matplotlib.pyplot as plt
+
+MassContainer = namedtuple('MassContainer', ['primary_masses', 'secondary_masses',
+                                             'mass_ratios', 'total_masses', 'chirp_masses'])
+SpinContainer = namedtuple('SpinContainer', ['s13', 's23'])
+ExtrinsicParameterContainer = namedtuple('ExtrinisicParamterContainer', ['inc', 'ra', 'dec',
+                                                                         'phase', 'psi', 'geocent_time',
+                                                                         'luminosity_distance'])
+AllParameterContainer = namedtuple('AllParameterContainer',
+                                   ['primary_masses', 'secondary_masses', 'mass_ratios', 'total_masses',
+                                    'chirp_masses', 's13', 's23', 'inc', 'ra', 'dec',
+                                    'phase', 'psi', 'geocent_time', 'luminosity_distance'])
+
+
+def generate_mass_parameters(size=10000, clean=False, alpha=1.5, mmin=8, mmax=45, beta=3, plot=False):
+    m1s = np.linspace(4, 45, size)
+    qs = np.linspace(0.01, 1, size)
+    q_mesh, m_mesh = np.meshgrid(qs, m1s)
+
+    outfile = 'pop_masses_{}.txt'.format(size)
+
+    if clean or not os.path.isfile(outfile):
+        primary_masses, mass_ratios = \
+            _generate_masses(m_mesh, q_mesh, size, alpha=alpha, m_min=mmin, m_max=mmax, beta=beta)
+        save = np.array((primary_masses, mass_ratios))
+        np.savetxt(outfile, save)
+    else:
+        pop_masses = np.loadtxt(outfile)
+        primary_masses = pop_masses[0]
+        mass_ratios = pop_masses[1]
+    secondary_masses = primary_masses * mass_ratios
+    total_masses = primary_masses + secondary_masses
+    chirp_masses = conversion.component_masses_to_chirp_mass(primary_masses, secondary_masses)
+    if plot:
+        mass_debug_plots(mass_ratios, primary_masses, secondary_masses, total_masses, chirp_masses)
+    return MassContainer(primary_masses=primary_masses, secondary_masses=secondary_masses,
+                         mass_ratios=mass_ratios, total_masses=total_masses, chirp_masses=chirp_masses)
+
+
+def _generate_masses(m_mesh, q_mesh, size, alpha, m_min, m_max, beta):
+    dataset = dict(mass_1=m_mesh, mass_ratio=q_mesh)
+    weights = gwpopulation.models.mass.power_law_primary_mass_ratio(dataset=dataset, alpha=alpha,
+                                                                    mmin=m_min, mmax=m_max, beta=beta)
+    norm_weights = weights / np.max(weights)
+    random_numbers = np.random.random(size=(size, size))
+    valid_samples = random_numbers < norm_weights
+    primary_masses_filtered = []
+    mass_ratios_filtered = []
+    for i in range(len(weights[0])):
+        for j in range(len(weights[:, 0])):
+            if valid_samples[i][j]:
+                primary_masses_filtered.append(m_mesh[i][j])
+                mass_ratios_filtered.append(q_mesh[i][j])
+    if len(primary_masses_filtered) > size:
+        primary_masses_filtered, mass_ratios_filtered = \
+            random.sample(zip(primary_masses_filtered, mass_ratios_filtered), size)
+    elif len(primary_masses_filtered) < size:
+        raise ValueError('Insufficient Samples.')
+
+    primary_masses_filtered = np.array(primary_masses_filtered)
+    mass_ratios_filtered = np.array(mass_ratios_filtered)
+    return np.array(primary_masses_filtered), np.array(mass_ratios_filtered)
+
+
+def mass_debug_plots(mass_ratios, primary_masses, secondary_masses, total_masses, chirp_masses):
+    plt.scatter(primary_masses, mass_ratios)
+    plt.xlabel('Primary mass')
+    plt.ylabel('Mass ratio')
+    plt.show()
+    plt.clf()
+
+    _debug_histogram(primary_masses, 'Primary mass')
+    _debug_histogram(secondary_masses, 'Secondary mass')
+    _debug_histogram(mass_ratios, 'Mass ratio')
+    _debug_histogram(total_masses, 'Total Mass')
+    _debug_histogram(chirp_masses, 'Chirp mass')
+
+
+def generate_spins(size=10000, plot=False):
+    prior = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5), latex_label='s13')
+    s13 = prior.sample(size)
+    s23 = prior.sample(size)
+    if plot:
+        spin_debug_plot(s13)
+    return SpinContainer(s13=np.array(s13), s23=np.array(s23))
+
+
+def spin_debug_plot(spins):
+    _debug_histogram(spins, 'Spin')
+
+
+def _debug_histogram(parameter, name, log=True):
+    plt.hist(parameter, bins=int(np.sqrt(len(parameter))))
+    if log:
+        plt.semilogy()
+    plt.xlabel(name)
+    plt.show()
+    plt.clf()
+
+
+def generate_extrinsic_parameters(size=10000, plot=False):
+    priors_inc = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    priors_ra = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi)
+    priors_dec = bilby.core.prior.Cosine()
+    priors_phase = bilby.core.prior.Uniform(minimum=0, maximum=np.pi)
+    priors_psi = bilby.core.prior.Uniform(minimum=0, maximum=np.pi/2)
+    priors_geocent_time = bilby.core.prior.Uniform(minimum=-0.1, maximum=0.1)
+    priors_luminosity_distance = bilby.gw.prior.UniformComovingVolume(minimum=10, maximum=5000,
+                                                                      name='luminosity_distance')
+    inc = priors_inc.sample(size=size)
+    ra = priors_ra.sample(size=size)
+    dec = priors_dec.sample(size=size)
+    phase = priors_phase.sample(size=size)
+    psi = priors_psi.sample(size=size)
+    geocent_time = priors_geocent_time.sample(size=size)
+    luminosity_distance = priors_luminosity_distance.sample(size=size)
+    if plot:
+        extrinsic_parameters_debug_plots(inc=inc, ra=ra, dec=dec, phase=phase, psi=psi,
+                                         geocent_time=geocent_time, luminosity_distance=luminosity_distance)
+    geocent_time = priors_geocent_time.sample(size=size)
+
+    return ExtrinsicParameterContainer(inc=inc, ra=ra, dec=dec, phase=phase, psi=psi,
+                                       geocent_time=geocent_time, luminosity_distance=luminosity_distance)
+
+
+def extrinsic_parameters_debug_plots(inc, ra, dec, phase, psi, geocent_time, luminosity_distance):
+    _debug_histogram(inc, 'Inclination', log=False)
+    _debug_histogram(ra, 'RA', log=False)
+    _debug_histogram(dec, 'DEC', log=False)
+    _debug_histogram(phase, '$\phi$', log=False)
+    _debug_histogram(psi, '$\psi$', log=False)
+    _debug_histogram(geocent_time, 'Time of Coalescence', log=False)
+    _debug_histogram(luminosity_distance, 'Luminosity_distance', log=True)
+
+
+def generate_all_parameters(size=10000, plot=False, **mass_kwargs):
+    mps = generate_mass_parameters(size=size, plot=plot, **mass_kwargs)
+    sps = generate_spins(size=size, plot=plot)
+    eps = generate_extrinsic_parameters(size=size, plot=plot)
+    return AllParameterContainer(primary_masses=mps.primary_masses, secondary_masses=mps.secondary_masses,
+                                 total_masses=mps.total_masses, mass_ratios=mps.mass_ratios,
+                                 chirp_masses=mps.chirp_masses, s13=sps.s13, s23=sps.s23,
+                                 inc=eps.inc, ra=eps.ra, dec=eps.dec,
+                                 psi=eps.psi, phase=eps.phase, geocent_time=eps.geocent_time,
+                                 luminosity_distance=eps.luminosity_distance)
+
+
+all_params = generate_all_parameters(size=10000, plot=True)
+print(all_params)
