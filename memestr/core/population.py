@@ -61,11 +61,11 @@ def _generate_masses(m_mesh, q_mesh, size, alpha, m_min, m_max, beta):
             if valid_samples[i][j]:
                 primary_masses_filtered.append(m_mesh[i][j])
                 mass_ratios_filtered.append(q_mesh[i][j])
-    if len(primary_masses_filtered) > size:
-        primary_masses_filtered, mass_ratios_filtered = \
-            random.sample(zip(primary_masses_filtered, mass_ratios_filtered), size)
-    elif len(primary_masses_filtered) < size:
-        raise ValueError('Insufficient Samples.')
+    # if len(primary_masses_filtered) > size:
+    #     primary_masses_filtered, mass_ratios_filtered = \
+    #         random.sample(zip(primary_masses_filtered, mass_ratios_filtered), size)
+    # elif len(primary_masses_filtered) < size:
+    #     raise ValueError('Insufficient Samples.')
 
     primary_masses_filtered = np.array(primary_masses_filtered)
     mass_ratios_filtered = np.array(mass_ratios_filtered)
@@ -96,7 +96,7 @@ def generate_spins(size=10000, plot=False):
 
 
 def spin_debug_plot(spins):
-    _debug_histogram(spins, 'Spin')
+    _debug_histogram(spins, 'Spin', log=False)
 
 
 def _debug_histogram(parameter, name, log=True):
@@ -153,7 +153,3 @@ def generate_all_parameters(size=10000, plot=False, **mass_kwargs):
                                  inc=eps.inc, ra=eps.ra, dec=eps.dec,
                                  psi=eps.psi, phase=eps.phase, geocent_time=eps.geocent_time,
                                  luminosity_distance=eps.luminosity_distance)
-
-
-all_params = generate_all_parameters(size=10000, plot=True)
-print(all_params)

@@ -1,11 +1,33 @@
 import numpy as np
 import gwmemory
 import copy
+# import gwsurrogate as gws
 from scipy.signal.windows import tukey
 from bilby.gw.source import lal_binary_black_hole
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 roll_off = 0.2
+
+
+def time_domain_nr_hyb_sur_waveform_with_memory(times, mass_ratio, total_mass, s13, s23,
+                                                luminosity_distance, inc, phase, **kwargs):
+    memory_generator = gwmemory.waveforms.HybridSurrogate(q=mass_ratio,
+                                                          name='',
+                                                          MTot=total_mass,
+                                                          S13=s13,
+                                                          S23=s23,
+                                                          LMax=kwargs['l_max'],
+                                                          times=times,
+                                                          distance=luminosity_distance
+                                                          )
+    oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase)
+    memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
+    alpha = _get_alpha(kwargs, times)
+    window = tukey(M=len(times), alpha=alpha)
+    waveform = dict()
+    for mode in memory:
+        waveform[mode] = (memory[mode] + oscillatory[mode]) * window
+    return waveform
 
 
 def time_domain_nr_sur_waveform_without_memory_base_modes(times, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
@@ -131,7 +153,9 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
         waveform[mode] = (memory[mode] + oscillatory[mode]) * window
     return waveform
 
-def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
+
+def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance, s11, s12,
+                                                        s13,
                                                         s21, s22, s23, inc, phase, **kwargs):
     temp_times = copy.copy(times)
     wave = gwmemory.waveforms.Approximant(name='IMRPhenomD',
