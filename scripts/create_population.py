@@ -101,6 +101,9 @@ import matplotlib.pyplot as plt
 
 
 plt.hist(network_snrs, bins=np.sqrt(len(network_snrs)))
-
+plt.xlabel('Network SNR')
+plt.ylabel('Counts')
+plt.savefig('network_snrs.png')
+plt.clf()
 # params = get_injection_parameter_set(id=10)
 # print(params)
