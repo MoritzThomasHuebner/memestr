@@ -104,6 +104,10 @@ import matplotlib.pyplot as plt
 def read_snr(filename):
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(filename) + '_H1L1V1.h5')
     print(filename)
+    best_snrs = [ifo.meta_data['matched_filter_SNR'].real for ifo in ifos]
+    best_snr = max(best_snrs)
+    network_snr = np.sqrt(np.sum([snr ** 2 for snr in best_snrs]))
+    network_snrs.append(network_snr)
     return ifos.meta_data['matched_filter_SNR']
 
 
