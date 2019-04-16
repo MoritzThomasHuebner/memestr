@@ -7,4 +7,4 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=END --mail-user=email@moritz-huebner.de
 
-srun python create_population.py
+srun python create_population.py $1 $2
