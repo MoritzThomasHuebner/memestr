@@ -95,8 +95,8 @@ def create_parameter_set(filename):
     ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
 
 
-for i in range(int(sys.argv[1]), int(sys.argv[2])):
-    create_parameter_set(i)
+# for i in range(int(sys.argv[1]), int(sys.argv[2])):
+#     create_parameter_set(i)
 
 import matplotlib.pyplot as plt
 
@@ -106,8 +106,8 @@ def read_snr(filename):
     return ifos.meta_data['matched_filter_SNR']
 
 
-# for i in range(0, 1000):
-#     network_snrs.append(read_snr(i))
+for i in range(0, 1000):
+    network_snrs.append(read_snr(i))
 
 
 plt.hist(network_snrs, bins=int(np.sqrt(len(network_snrs))))
