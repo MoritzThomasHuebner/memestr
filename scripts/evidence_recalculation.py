@@ -11,8 +11,8 @@ from memestr.core.utils import get_ifo
 
 # parameter_set = 0
 # parameter_set_dir = 'parameter_set_' + str(parameter_set)
-distances = dict(a016=200, a017=230, a018=262, a019=299, a020=342, a021=391, a022=448, a023=512, a024=586, a025=670,
-                 a026=766, a027=876, a028=1002, a013=1147, a014=1311, a015=1500)
+distances = dict(a032=200, a033=230, a034=262, a035=299, a036=342, a037=391, a038=448, a039=512, a040=586, a041=670,
+                 a042=766, a043=876, a044=1002, a045=1147, a046=1311, a047=1500)
 
 run_id = sys.argv[1]
 outdir = run_id + '_reweighing_result'
