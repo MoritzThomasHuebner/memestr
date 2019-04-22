@@ -16,19 +16,19 @@
 # sbatch evidence_reweighing_submit.sh 014
 # sbatch evidence_reweighing_submit.sh 015
 
-sbatch evidence_reweighing_submit.sh 016
-sbatch evidence_reweighing_submit.sh 017
-sbatch evidence_reweighing_submit.sh 018
-sbatch evidence_reweighing_submit.sh 019
-sbatch evidence_reweighing_submit.sh 020
-sbatch evidence_reweighing_submit.sh 021
-sbatch evidence_reweighing_submit.sh 022
-sbatch evidence_reweighing_submit.sh 023
-sbatch evidence_reweighing_submit.sh 024
-sbatch evidence_reweighing_submit.sh 025
-sbatch evidence_reweighing_submit.sh 026
-sbatch evidence_reweighing_submit.sh 027
-sbatch evidence_reweighing_submit.sh 028
-sbatch evidence_reweighing_submit.sh 029
-sbatch evidence_reweighing_submit.sh 030
-sbatch evidence_reweighing_submit.sh 031
+sbatch evidence_reweighing_submit.sh 032
+sbatch evidence_reweighing_submit.sh 033
+sbatch evidence_reweighing_submit.sh 034
+sbatch evidence_reweighing_submit.sh 035
+sbatch evidence_reweighing_submit.sh 036
+sbatch evidence_reweighing_submit.sh 037
+sbatch evidence_reweighing_submit.sh 038
+sbatch evidence_reweighing_submit.sh 039
+sbatch evidence_reweighing_submit.sh 040
+sbatch evidence_reweighing_submit.sh 041
+sbatch evidence_reweighing_submit.sh 042
+sbatch evidence_reweighing_submit.sh 043
+sbatch evidence_reweighing_submit.sh 044
+sbatch evidence_reweighing_submit.sh 045
+sbatch evidence_reweighing_submit.sh 046
+sbatch evidence_reweighing_submit.sh 047
