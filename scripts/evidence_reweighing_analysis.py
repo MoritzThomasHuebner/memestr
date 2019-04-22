@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 from memestr.core.utils import _get_matched_filter_snrs
 
-ids = ['016', '017', '018', '019', '020', '021', '022', '023', '024', '025', '026', '027']
-distances = [200, 230, 262, 299, 342, 391, 448, 512, 586, 670, 766, 876]
+ids = ['032', '033', '034', '035', '036', '037', '038', '039', '040', '041', '042', '043', '044', '045', '046', '047']
+distances = [200, 230, 262, 299, 342, 391, 448, 512, 586, 670, 766, 876, 1002, 1147, 1311, 1500]
 
 matched_filter_snrs = _get_matched_filter_snrs(distances)
 
