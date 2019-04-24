@@ -96,8 +96,8 @@ def create_parameter_set(filename):
     ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
 
 
-# for i in range(int(sys.argv[1]), int(sys.argv[2])):
-for i in range(100):
+for i in range(int(sys.argv[1]), int(sys.argv[2])):
+# for i in range(100):
     create_parameter_set(i)
 
 import matplotlib.pyplot as plt
