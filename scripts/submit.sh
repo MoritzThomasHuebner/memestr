@@ -6,7 +6,8 @@
 
 #Population run
 #bash IMR_mem_inj_mem_rec.sh                 npoints=2000 maxmcmc=2000 alpha=0.1 distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 filename_base=${0} label=IMR_mem_inj_mem_rec
-bash IMR_mem_inj_non_mem_rec.sh              outdir_base=${2} filename_base=${2} npoints=2000 maxmcmc=2000 alpha=0.1 distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 filename_base=${0} label=IMR_mem_inj_non_mem_rec
+echo ${1}
+bash IMR_mem_inj_non_mem_rec.sh              outdir_base=${1} filename_base=${1} npoints=2000 maxmcmc=2000 alpha=0.1 distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 filename_base=${0} label=IMR_mem_inj_non_mem_rec
 
 #bash IMR_non_mem_inj_mem_rec.sh                 npoints=2000 maxmcmc=1200 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_non_mem_inj_mem_rec
 #bash IMR_non_mem_inj_non_mem_rec.sh             npoints=2000 maxmcmc=1200 alpha=0.1 zero_noise=True distance_marginalization=True sampler=cpnest nthreads=4 duration=16 random_seed=42 sampling_frequency=2048 label=IMR_non_mem_inj_non_mem_rec
