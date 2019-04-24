@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 #source setup_distances_run.sh ${0}
-echo ${0}
-echo ${1}
 source setup_default.sh ${0} ${1}
 #source setup_random_injections.sh ${0} ${1}
-echo ${@}
 sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} ${ARRAY}<<EOF
 #!/usr/bin/env bash
 JOB=run_basic_job.py
