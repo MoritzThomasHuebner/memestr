@@ -99,13 +99,12 @@ print(population_reweighing_from_memory_log_bfs_uncertainties)
 plt.plot(matched_filter_snrs, average_injection_log_bfs, label='Log L at injected value')
 plt.errorbar(x=matched_filter_snrs, y=average_sampling_log_bfs, fmt='v',
              yerr=np.array(population_sampling_log_bfs_uncertainties), label='Sampling')
-plt.errorbar(x=matched_filter_snrs, y=average_reweighing_to_memory_log_bfs, fmt='s',
-             yerr=np.array(population_reweighing_to_memory_log_bfs_uncertainties),
-             label='Reweighing osc recovered')
-plt.errorbar(x=matched_filter_snrs, y=average_reweighing_from_memory_log_bfs, fmt='o',
-             yerr=np.array(population_reweighing_from_memory_log_bfs_uncertainties),
-             label='Reweighing osc+memory\n recovered')
+plt.plot(x=matched_filter_snrs, y=average_reweighing_to_memory_log_bfs, fmt='s',
+         label='Reweighing osc recovered')
+plt.plot(x=matched_filter_snrs, y=average_reweighing_from_memory_log_bfs, fmt='o',
+         label='Reweighing osc+memory\n recovered')
 plt.legend()
+plt.tight_layout()
 plt.xlabel('Matched filter SNR')
 plt.ylabel('log BF')
 plt.savefig('LogBFs vs SNR')
@@ -119,9 +118,10 @@ plt.plot(matched_filter_snrs, population_reweighing_to_memory_log_bfs_uncertaint
 plt.plot(matched_filter_snrs, population_reweighing_from_memory_log_bfs_uncertainties, 'o',
          label='Reweighing osc+memory \nstat. uncertainty')
 plt.semilogy()
+plt.tight_layout()
 plt.legend()
 plt.xlabel('Matched filter SNR')
-plt.ylabel('log BF')
+plt.ylabel('$\Delta$ log BF')
 plt.savefig('LogBFs errors vs SNR')
 plt.show()
 plt.clf()

@@ -4,14 +4,14 @@ import bilby
 import sys
 
 from memestr.core.population import generate_all_parameters
-from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_without_memory
+from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_with_memory_wrapped
 from memestr.core.parameters import AllSettings
 
 logger = logging.getLogger('bilby')
 logger.disabled = True
 
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
-all_params = generate_all_parameters(size=10000, clean=False, plot=True)
+all_params = generate_all_parameters(size=10000, clean=False, plot=False)
 
 network_snrs = []
 
@@ -26,8 +26,8 @@ def create_parameter_set(filename):
         if total_mass < 15:
             continue
         mass_ratio = all_params.mass_ratios[idx]
-        # if mass_ratio < 0.5:
-        #     continue
+        if mass_ratio < 0.5:
+            continue
         luminosity_distance = np.random.choice(all_params.luminosity_distance)
         dec = np.random.choice(all_params.dec)
         ra = np.random.choice(all_params.ra)
@@ -50,7 +50,7 @@ def create_parameter_set(filename):
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
         waveform_generator = \
-            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_IMRPhenomD_waveform_without_memory,
+            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
                                        parameters=settings.injection_parameters.__dict__,
                                        waveform_arguments=settings.waveform_arguments.__dict__,
                                        **settings.waveform_data.__dict__)
@@ -96,7 +96,8 @@ def create_parameter_set(filename):
 
 
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
-#     create_parameter_set(i)
+for i in range(100):
+    create_parameter_set(i)
 
 import matplotlib.pyplot as plt
 
@@ -110,14 +111,14 @@ def read_snr(filename):
     return network_snr
 
 
-for i in range(0, 1000):
-    network_snrs.append(read_snr(i))
+# for i in range(0, 1000):
+#     network_snrs.append(read_snr(i))
 
 
-plt.hist(network_snrs, bins=int(np.sqrt(len(network_snrs))))
-plt.xlabel('Network SNR')
-plt.ylabel('Counts')
-plt.savefig('network_snrs.png')
-plt.clf()
+# plt.hist(network_snrs, bins=int(np.sqrt(len(network_snrs))))
+# plt.xlabel('Network SNR')
+# plt.ylabel('Counts')
+# plt.savefig('network_snrs.png')
+# plt.clf()
 # params = get_injection_parameter_set(id=10)
 # print(params)
