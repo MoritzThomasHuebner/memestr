@@ -26,9 +26,14 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
     hf_signal = waveform_generator.frequency_domain_strain()
-    ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator, label='TD_model')
-            for name in settings.detector_settings.detectors]
-    ifos = bilby.gw.detector.InterferometerList(ifos)
+    if settings.detector_settings.filename_base is None:
+        ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator, label='TD_model')
+                for name in settings.detector_settings.detectors]
+        ifos = bilby.gw.detector.InterferometerList(ifos)
+    else:
+        ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
+                                                              str(settings.detector_settings.filename_base) +
+                                                              '_H1L1V1.h5')
 
     waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,

@@ -158,8 +158,9 @@ class CpnestSettings(RunParameters):
 
 class DetectorSettings(RunParameters):
 
-    def __init__(self, zero_noise=False, *detectors):
+    def __init__(self, zero_noise=False, filename_base=None, *detectors):
         super(DetectorSettings, self).__init__()
+        self.filename_base = filename_base
         self.zero_noise = zero_noise
         self.detectors = list(detectors)
         if len(self.detectors) == 0:
