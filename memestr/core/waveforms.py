@@ -22,8 +22,8 @@ def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total
     waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                           luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
                                           kwargs=kwargs)
-    waveform = _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
-    return _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    waveform = _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -51,8 +51,8 @@ def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total
     waveform = _evaluate_imr_phenom_d_with_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                                   luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                   s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform = _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
-    return _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    waveform = _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
 
 
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
@@ -68,8 +68,8 @@ def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, to
     waveform = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                                      luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform = _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
-    return _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    waveform = _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
 
 
 def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,

@@ -56,8 +56,9 @@ def create_parameter_set(filename):
                                        **settings.waveform_data.__dict__)
         try:
             hf_signal = waveform_generator.frequency_domain_strain()
-        except ValueError:
-            print(settings.injection_parameters)
+        except ValueError as e:
+            logger.warning(e)
+            logger.info(str(settings.injection_parameters))
             continue
         ifos = [bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
             name,
