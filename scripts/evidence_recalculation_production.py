@@ -71,6 +71,28 @@ def reweigh_evidences(data_dir, alpha=0.1, **kwargs):
                                       reweighing_to_memory_bfs_mem_inj=reweighed_log_bf_mem_inj_to_mem))
     res.to_json(data_dir + '/combined.json')
 
+    # for params in res.posterior:
+    #     phase_grid = np.linspace(priors['phase'].minimum, priors['phase'].maximum, 60)
+    #     dphi = (phase_grid[1] - phase_grid[0]) / len(phase_grid)
+    #     time_grid = np.linspace(priors['geocent_time'].minimum, priors['geocent_time'].maximum, 120)
+    #     dt_g = (time_grid[1] - time_grid[0]) / len(time_grid)
+    #     phase_grid, time_grid = np.meshgrid(phase_grid, time_grid)
+    #     phase_grid = phase_grid.flatten()
+    #     time_grid = time_grid.flatten()
+    #
+    #     matching_wf = frequency_domain_IMRPhenomD_waveform_without_memory(**params)
+    #     params_without_phase_and_time = deepcopy(params)
+    #     del params_without_phase_and_time['geocent_time']
+    #     del params_without_phase_and_time['phase']
+    #     full_wf = time_domain_nr_hyb_sur_waveform_with_memory_wrapped(phase=phase_grid, geocent_time=time_grid,
+    #                                                                   **params_without_phase_and_time)
+    #
+    #     overlap = _overlap(matching_wf, full_wf, interferometers[0].strain_data.frequency_array, interferometers[0])
+    #
+    #     max_nO = np.argmax(overlap)
+    #     time_shift = time_grid[max_nO]
+    #     phase_new = phase_grid[max_nO]
+
 
 def _get_sampling_bf(res_mem_inj_mem_rec, res_mem_inj_non_mem_rec):
     try:
@@ -118,5 +140,21 @@ def _calculate_log_weights(likelihood, posterior):
         weights.append(weight)
     return weights
 
+
+def _overlap(a, b, frequencies, ifo):
+    psd = ifo.power_spectral_density
+    psd_interp = psd.power_spectral_density_interpolated(frequencies)
+    duration = 1./(frequencies[1] - frequencies[0])
+
+    inner_a = bb.gw.utils.noise_weighted_inner_product(a, a, psd_interp, duration)
+    inner_b = _vec_inner_prod(b, b, psd_interp, duration)
+    inner_ab = _vec_inner_prod(a, b, psd_interp, duration)
+
+    return np.real(inner_ab/np.sqrt(inner_a*inner_b))
+
+
+def _vec_inner_prod(aa, bb, power_spectral_density, duration):
+    integrand = np.conj(aa) * bb / power_spectral_density
+    return np.real(4 / duration * np.sum(integrand, axis=1))
 
 reweigh_evidences(data_dir=str(run_id) + '_IMR_mem_inj_non_mem_rec')
