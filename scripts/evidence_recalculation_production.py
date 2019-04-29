@@ -19,7 +19,7 @@ logger = bb.core.utils.logger
 def reweigh_evidences(data_dir, alpha=0.1, **kwargs):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(alpha=alpha, **kwargs)
     result = _load_result(data_dir, 'IMR_mem_inj_non_mem_rec_result.json')
-    interferometers = bb.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(run_id) + 'H1L1V1.h5')
+    interferometers = bb.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(run_id) + '_H1L1V1.h5')
     for ifo in interferometers:
         logger.info(ifo.name + ' matched_filter_snr: ' + str(ifo.meta_data['matched_filter_SNR']))
     parameters = result.injection_parameters
