@@ -17,7 +17,7 @@ import memestr
 #     plt.show()
 #     plt.clf()
 
-for i in range(100, 132):
+for i in range(103, 132):
     try:
         memestr.wrappers.injection_recovery.\
             run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
