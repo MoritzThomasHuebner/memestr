@@ -78,12 +78,15 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             verbose=True,
                                             random_seed=np.random.randint(0, 1000),
                                             sampler=settings.sampler_settings.sampler,
-                                            npoints=settings.sampler_settings.npoints,
+                                            # npoints=settings.sampler_settings.npoints,
+                                            npoints=10000,
+                                            walks=110,
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
                                             nthreads=settings.sampler_settings.nthreads,
-                                            dlogz=settings.sampler_settings.dlogz,
-                                            maxmcmc=settings.sampler_settings.maxmcmc,
+                                            dlogz=0.1,
+                                            # dlogz=settings.sampler_settings.dlogz,
+                                            # maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume)
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
