@@ -80,7 +80,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             sampler=settings.sampler_settings.sampler,
                                             npoints=settings.sampler_settings.npoints,
                                             # npoints=10000,
-                                            walks=110,
+                                            # walks=110,
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
                                             nthreads=settings.sampler_settings.nthreads,
