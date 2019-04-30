@@ -5,6 +5,7 @@ sbatch create_population.sh 40 80
 sbatch create_population.sh 80 120
 sbatch create_population.sh 120 160
 sbatch create_population.sh 160 200
+sbatch create_population.sh 200 240
 sbatch create_population.sh 240 280
 sbatch create_population.sh 280 320
 sbatch create_population.sh 320 360
