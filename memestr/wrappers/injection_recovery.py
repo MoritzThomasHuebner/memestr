@@ -77,10 +77,11 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             save=True,
                                             verbose=True,
                                             random_seed=np.random.randint(0, 100000),
-                                            sampler=settings.sampler_settings.sampler,
-                                            npoints=settings.sampler_settings.npoints,
-                                            # npoints=10000,
-                                            # walks=110,
+                                            # sampler=settings.sampler_settings.sampler,
+                                            sampler='dynesty',
+                                            # npoints=settings.sampler_settings.npoints,
+                                            npoints=10000,
+                                            walks=100,
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
                                             nthreads=settings.sampler_settings.nthreads,
@@ -153,10 +154,10 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
     priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
-                                                     maximum=np.pi,
+                                                     maximum=2*np.pi,
                                                      latex_label="$\phi$")
     priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-                                                   maximum=np.pi/2,
+                                                   maximum=2*np.pi,
                                                    latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
                                                             maximum=injection_parameters.geocent_time + 0.1,
