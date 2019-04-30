@@ -17,19 +17,16 @@ import memestr
 #     plt.show()
 #     plt.clf()
 
-for i in range(103, 132):
-    try:
-        memestr.wrappers.injection_recovery.\
-            run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-                                           recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
-                                           outdir=str(i) + '_IMR_mem_inj_non_mem_rec', label='IMR_mem_inj_non_mem_rec',
-                                           alpha=0.1, zero_noise=True, distance_marginalization=True,
-                                           time_marginalization=False, luminosity_distance=1200.0, sampler='dynesty',
-                                           nlive=400, duration=16, random_seed=42, dlogz=0.1,
-                                           sampling_frequency=2048, resume=True, clean=False)
-    except Exception:
-        continue
-import cpnest.cpnest
+memestr.wrappers.injection_recovery.\
+    run_basic_injection_imr_phenom(injection_model=memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+                                   recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
+                                        filename_base=0,
+                                   outdir='test', label='IMR_mem_inj_non_mem_rec',
+                                   alpha=0.1, zero_noise=True, distance_marginalization=True,
+                                   time_marginalization=True, phase_marginalization=True,
+                                    luminosity_distance=1200.0, sampler='dynesty',
+                                   nlive=400, duration=16, random_seed=42, dlogz=0.1,
+                                   sampling_frequency=2048, resume=True, clean=False)
 
 # memestr.wrappers.wrappers.run_basic_injection_nrsur(injection_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
 #                                                     recovery_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
