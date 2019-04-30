@@ -157,7 +157,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
                                                      maximum=2*np.pi,
                                                      latex_label="$\phi$")
     priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-                                                   maximum=2*np.pi,
+                                                   maximum=np.pi,
                                                    latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
                                                             maximum=injection_parameters.geocent_time + 0.1,
