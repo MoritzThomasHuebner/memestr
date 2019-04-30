@@ -174,7 +174,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
 
-    filename_base = str(settings.detector_settings.filename_base).replace('dynesty', '')
+    filename_base = str(settings.detector_settings.filename_base).replace('_dynesty', '')
     filename_base = str(filename_base).replace('_cpnest', '')
     filename_base = str(filename_base).replace('_pypolychord', '')
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
