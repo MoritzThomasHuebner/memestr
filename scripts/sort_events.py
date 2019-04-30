@@ -27,7 +27,7 @@ for new_id, old_id in enumerate(data.ids):
     dst = 'parameter_sets/' + str(new_id) + '_new'
     copyfile(src, dst)
 
-for old_id in range(1000):
+for old_id in range(len(data.ids)):
     os.remove('parameter_sets/' + str(old_id))
     os.remove('parameter_sets/' + str(old_id) + '_H1L1V1.h5')
     os.rename('parameter_sets/' + str(old_id) + '_new', 'parameter_sets/' + str(old_id))

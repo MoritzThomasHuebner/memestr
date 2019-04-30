@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for i in {100..132}
+for i in {970..999}
 do
-    sbatch production_submit.sh ${i}
+    sbatch production_submit.sh ${i}_dynesty
 done

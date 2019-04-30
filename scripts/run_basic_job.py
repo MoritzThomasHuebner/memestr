@@ -19,7 +19,10 @@ for arg in sys.argv[5:]:
         if all(char.isdigit() for char in value):
             value = int(value)
         else:
-            value = float(value)
+            try:
+                value = float(value)
+            except Exception:
+                pass
     kwargs[key] = value
 print(kwargs)
 
