@@ -60,14 +60,28 @@ def create_parameter_set(filename):
             logger.warning(e)
             logger.info(str(settings.injection_parameters))
             continue
-        ifos = [bilby.gw.detector.get_interferometer_with_fake_noise_and_injection(
-            name,
-            injection_polarizations=hf_signal,
-            injection_parameters=settings.injection_parameters.__dict__,
-            zero_noise=False,
-            plot=False,
-            **settings.waveform_data.__dict__) for name in settings.detector_settings.detectors]
-        ifos = bilby.gw.detector.InterferometerList(ifos)
+
+        ifos = bilby.gw.detector.InterferometerList([])
+        for ifo in ['H1', 'L1', 'V1']:
+            start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
+            interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
+            if ifo in ['H1', 'L1']:
+                interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+            else:
+                interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.\
+                    from_power_spectral_density_file('AdV_psd.txt')
+            interferometer.set_strain_data_from_power_spectral_density(
+                sampling_frequency=settings.waveform_data.sampling_frequency,
+                duration=settings.waveform_data.duration,
+                start_time=start_time)
+
+            _ = interferometer.inject_signal(
+                parameters=settings.injection_parameters.__dict__,
+                injection_polarizations=hf_signal,
+                waveform_generator=waveform_generator)
+
+            ifos.append(interferometer)
+
         best_snrs = [ifo.meta_data['matched_filter_SNR'].real for ifo in ifos]
         best_snr = max(best_snrs)
         network_snr = np.sqrt(np.sum([snr ** 2 for snr in best_snrs]))
@@ -98,6 +112,7 @@ def create_parameter_set(filename):
 
 for i in range(int(sys.argv[1]), int(sys.argv[2])):
     create_parameter_set(i)
+# for i in range(0, 2):
 
 import matplotlib.pyplot as plt
 
