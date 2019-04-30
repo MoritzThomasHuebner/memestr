@@ -239,11 +239,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
                                             nthreads=settings.sampler_settings.nthreads,
-                                            # dlogz=0.1,
-                                            dlogz=settings.sampler_settings.dlogz,
+                                            dlogz=0.1,
+                                            # dlogz=settings.sampler_settings.dlogz,
                                             maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume,
-                                            conversion_function=bilby.gw.conversion.generate_all_bbh_parameters)
+                                            conversion_function=bilby.gw.conversion.generate_all_bbh_parameters,
+                                            save_bounds=False)
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
     logger.info(str(result))
