@@ -2,7 +2,6 @@ import bilby as bb
 import numpy as np
 import pandas as pd
 
-data = pd.DataFrame(['id', 'snr'])
 ids = []
 snrs = []
 
@@ -13,6 +12,6 @@ for i in range(5):
     ids.append(i)
     snrs.append(network_snr)
 
-data.id = ids
-data.snr = snrs
+data = pd.DataFrame({'id': ids, 'snr': snrs})
+
 print(data)
