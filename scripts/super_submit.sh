@@ -2,5 +2,5 @@
 
 for i in {100..132}
 do
-    sbatch submit.sh ${i}_dynesty
+    sbatch submit.sh ${i}_polychord
 done
