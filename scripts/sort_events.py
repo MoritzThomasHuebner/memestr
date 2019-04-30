@@ -13,5 +13,5 @@ for i in range(100):
     snrs.append(network_snr)
 
 data = pd.DataFrame({'id': ids, 'snr': snrs})
-data.sort_values(by='snr')
+data = data.sort_values(by='snr')
 print(data)
