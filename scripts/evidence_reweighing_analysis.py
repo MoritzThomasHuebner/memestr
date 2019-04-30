@@ -21,7 +21,7 @@ population_reweighing_from_memory_log_bfs_uncertainties = []
 
 
 for idx, distance in zip(ids, distances):
-    outdir = idx + '_reweighing_result/'
+    outdir = 'reweighing/' + idx + '_reweighing_result/'
     outfiles = ['0_7.json']
 
     sampling_errors = np.array([])
