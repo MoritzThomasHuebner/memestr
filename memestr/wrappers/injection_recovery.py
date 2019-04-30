@@ -6,7 +6,6 @@ import bilby
 import logging
 from copy import deepcopy
 
-from memestr.core.postprocessing import adjust_phase_and_geocent_time
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.utils import get_ifo
 
@@ -55,18 +54,6 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
     likelihood.parameters = deepcopy(settings.injection_parameters.__dict__)
-    # import time
-    # import sys
-    # tic = time.time()
-    # for i in range(1000):
-    #     likelihood.log_likelihood()
-        # print(i)
-    # toc = time.time()
-    # print(str(toc - tic))
-    # print(str((toc - tic)/1000))
-    # sys.exit(1)
-    # logger.info('Sampler settings: ' + str(settings.sampler_settings))
-    # logger.info('Waveform data: ' + str(settings.waveform_data))
     logger.info("Log Likelihood ratio at injected value: " + str(likelihood.log_likelihood_ratio()))
     logger.info("Log Likelihood at injected value: " + str(likelihood.log_likelihood()))
     np.random.seed(int(time.time()))
