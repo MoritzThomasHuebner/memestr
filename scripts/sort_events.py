@@ -1,6 +1,7 @@
 import bilby as bb
 import numpy as np
 import pandas as pd
+import os
 from shutil import copyfile
 
 
@@ -18,11 +19,13 @@ data = pd.DataFrame({'ids': ids, 'snr': snrs})
 data = data.sort_values(by='snr')
 print(data)
 
-for new_id, old_id in enumerate(data.id):
+for new_id, old_id in enumerate(data.ids):
     src = 'parameter_sets/' + str(old_id) + '_H1V1L1.h5'
     dst = 'parameter_sets/' + str(new_id) + '_H1V1L1_new.h5'
     copyfile(src, dst)
     src = 'parameter_sets/' + str(old_id)
-    dst = 'parameter_sets/' + str(new_id)
+    dst = 'parameter_sets/' + str(new_id) + '_new'
     copyfile(src, dst)
 
+# for old_id in range(1000):
+#     os.remove
