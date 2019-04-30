@@ -20,8 +20,8 @@ data = data.sort_values(by='snr')
 print(data)
 
 for new_id, old_id in enumerate(data.ids):
-    src = 'parameter_sets/' + str(old_id) + '_H1V1L1.h5'
-    dst = 'parameter_sets/' + str(new_id) + '_H1V1L1_new.h5'
+    src = 'parameter_sets/' + str(old_id) + '_H1L1V1.h5'
+    dst = 'parameter_sets/' + str(new_id) + '_H1L1V1_new.h5'
     copyfile(src, dst)
     src = 'parameter_sets/' + str(old_id)
     dst = 'parameter_sets/' + str(new_id) + '_new'
