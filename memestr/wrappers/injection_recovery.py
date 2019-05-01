@@ -8,6 +8,7 @@ from copy import deepcopy
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.utils import get_ifo
+from memestr.core.submit import get_injection_parameter_set
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
@@ -24,6 +25,18 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
+    # import matplotlib.pyplot as plt
+    # tds = waveform_generator.time_domain_strain(parameters=settings.injection_parameters.__dict__)['plus']
+    # fds = np.abs(np.sqrt(waveform_generator.frequency_domain_strain(parameters=settings.injection_parameters.__dict__)['plus']**2 + \
+    #       waveform_generator.frequency_domain_strain(parameters=settings.injection_parameters.__dict__)['cross']**2))
+    # plt.plot(waveform_generator.time_array, tds)
+    # plt.show()
+    # plt.clf()
+    # plt.loglog()
+    # plt.plot(waveform_generator.frequency_array, fds)
+    # plt.show()
+    # plt.clf()
+
     hf_signal = waveform_generator.frequency_domain_strain()
     ifos = [get_ifo(hf_signal, name, outdir, settings, waveform_generator, label='TD_model')
             for name in settings.detector_settings.detectors]
@@ -33,12 +46,16 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
-
-    # waveform_generator_new = deepcopy(waveform_generator)
-    # waveform_generator_new.frequency_domain_source_model = recovery_model
-    # waveform_generator_new.parameters = settings.injection_parameters.__dict__
-    # waveform_generator_new.frequency_domain_source_model = None
-    # waveform_generator = waveform_generator_new
+    # tds = waveform_generator.time_domain_strain(parameters=settings.injection_parameters.__dict__)['plus']
+    # fds = np.abs(np.sqrt(waveform_generator.frequency_domain_strain(parameters=settings.injection_parameters.__dict__)['plus']**2 + \
+    #       waveform_generator.frequency_domain_strain(parameters=settings.injection_parameters.__dict__)['cross']**2))
+    # plt.plot(waveform_generator.time_array, tds)
+    # plt.show()
+    # plt.clf()
+    # plt.loglog()
+    # plt.plot(waveform_generator.frequency_array, fds)
+    # plt.show()
+    # plt.clf()
 
     priors = settings.recovery_priors.proper_dict()
     likelihood = bilby.gw.likelihood \
@@ -60,10 +77,10 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             verbose=True,
                                             random_seed=np.random.randint(0, 100000),
                                             # sampler=settings.sampler_settings.sampler,
-                                            sampler='pypolychord',
-                                            # npoints=settings.sampler_settings.npoints,
-                                            npoints=3000,
-                                            walks=100,
+                                            sampler='dynesty',
+                                            npoints=settings.sampler_settings.npoints,
+                                            # npoints=3000,
+                                            walks=10,
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
                                             nthreads=settings.sampler_settings.nthreads,
@@ -93,29 +110,29 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
                                                           maximum=injection_parameters.total_mass + 30,
                                                           latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.4),
+    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.6),
                                                           maximum=1,
                                                           latex_label="$q$")
-    priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
-                                                                               maximum=5000,
-                                                                               latex_label="$L_D$",
-                                                                               name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    # priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
+    #                                                                            maximum=5000,
+    #                                                                            latex_label="$L_D$",
+    #                                                                            name='luminosity_distance')
+    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=2*np.pi,
                                                      latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-                                                   maximum=np.pi,
-                                                   latex_label="$\psi$")
-    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
-                                                            maximum=injection_parameters.geocent_time + 0.1,
+    # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+    #                                                maximum=np.pi,
+    #                                                latex_label="$\psi$")
+    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.5,
+                                                            maximum=injection_parameters.geocent_time + 0.5,
                                                             latex_label='$t_c$')
-    priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-                                                     latex_label='s13')
-    priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-                                                     latex_label='s23')
+    # priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+    #                                                  latex_label='s13')
+    # priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+    #                                                  latex_label='s23')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD'
@@ -128,36 +145,41 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 def run_production_injection_imr_phenom(injection_model, recovery_model, outdir, **kwargs):
     priors = dict()
-    injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
-    for key in injection_parameters.__dict__:
-        priors['prior_' + key] = injection_parameters.__dict__[key]
-    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
-                                                          maximum=injection_parameters.total_mass + 30,
+    filename_base = str(kwargs.get('filename_base', 0))
+    filename_base = filename_base.replace('_dynesty', '')
+    filename_base = filename_base.replace('_cpnest', '')
+    filename_base = filename_base.replace('_pypolychord', '')
+
+    injection_parameters = get_injection_parameter_set(filename_base)
+    for key in injection_parameters:
+        priors['prior_' + key] = injection_parameters[key]
+    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters['total_mass'] - 20, 15),
+                                                          maximum=injection_parameters['total_mass'] + 30,
                                                           latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.4),
+    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters['mass_ratio']-0.5, 0.4),
                                                           maximum=1,
                                                           latex_label="$q$")
-    priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
-                                                                               maximum=5000,
-                                                                               latex_label="$L_D$",
-                                                                               name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    # priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
+    #                                                                            maximum=5000,
+    #                                                                            latex_label="$L_D$",
+    #                                                                            name='luminosity_distance')
+    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=2*np.pi,
                                                      latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-                                                   maximum=np.pi,
-                                                   latex_label="$\psi$")
-    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.1,
-                                                            maximum=injection_parameters.geocent_time + 0.1,
+    # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+    #                                                maximum=np.pi,
+    #                                                latex_label="$\psi$")
+    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.5,
+                                                            maximum=injection_parameters['geocent_time'] + 0.5,
                                                             latex_label='$t_c$')
-    priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-                                                     latex_label='s13')
-    priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-                                                     latex_label='s23')
-
+    # priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+    #                                                  latex_label='s13')
+    # priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+    #                                                  latex_label='s23')
+    #
     imr_phenom_kwargs = dict(
         label='IMRPhenomD'
     )
@@ -173,13 +195,15 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
+    filename_base = str(kwargs.get('filename_base', 0))
+    filename_base = filename_base.replace('_dynesty', '')
+    filename_base = filename_base.replace('_cpnest', '')
+    filename_base = filename_base.replace('_pypolychord', '')
 
-    filename_base = str(settings.detector_settings.filename_base).replace('_dynesty', '')
-    filename_base = str(filename_base).replace('_cpnest', '')
-    filename_base = str(filename_base).replace('_pypolychord', '')
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
                                                           str(filename_base) +
                                                           '_H1L1V1.h5')
+    ifos.plot_data()
     waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,

@@ -75,10 +75,14 @@ def create_parameter_set(filename):
                 duration=settings.waveform_data.duration,
                 start_time=start_time)
 
-            _ = interferometer.inject_signal(
+            injection_polarizations = interferometer.inject_signal(
                 parameters=settings.injection_parameters.__dict__,
                 injection_polarizations=hf_signal,
                 waveform_generator=waveform_generator)
+            signal = interferometer.get_detector_response(
+                injection_polarizations, settings.injection_parameters.__dict__)
+
+            interferometer.plot_data(signal=signal, outdir='parameter_sets', label=str(filename))
 
             ifos.append(interferometer)
 
