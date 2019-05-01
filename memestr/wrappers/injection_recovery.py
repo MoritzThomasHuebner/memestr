@@ -223,6 +223,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     phase_marginalization=settings.other_settings.phase_marginalization)
     likelihood.parameters = deepcopy(settings.injection_parameters.__dict__)
     np.random.seed(int(time.time()))
+    logger.info('Injection Parameters')
+    logger.info(str(settings.injection_parameters))
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
                                             injection_parameters=deepcopy(settings.injection_parameters.__dict__),
