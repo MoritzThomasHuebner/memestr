@@ -188,7 +188,8 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
     )
     imr_phenom_kwargs.update(priors)
     imr_phenom_kwargs.update(kwargs)
-    return run_production_recovery(recovery_model=recovery_model, outdir=outdir, **imr_phenom_kwargs)
+    return run_production_recovery(recovery_model=recovery_model, outdir=outdir, **imr_phenom_kwargs,
+                                   **injection_parameters)
 
 
 def run_production_recovery(recovery_model, outdir, **kwargs):
