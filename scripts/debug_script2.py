@@ -10,5 +10,5 @@ memestr.wrappers.injection_recovery. \
         time_marginalization=False, phase_marginalization=False,
         sampler='dynesty',
         nlive=400, duration=16, random_seed=42, dlogz=0.1,
-        sampling_frequency=2048, resume=False, clean=True)
+        sampling_frequency=2048, resume=True, clean=False)
 
