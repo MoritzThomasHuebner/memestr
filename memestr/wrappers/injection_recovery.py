@@ -242,7 +242,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume,
                                             # conversion_function=bilby.gw.conversion.generate_all_bbh_parameters,
-                                            save_bounds=False)
+                                            save_bounds=False,
+                                            check_point_plot=True)
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
     logger.info(str(result))
