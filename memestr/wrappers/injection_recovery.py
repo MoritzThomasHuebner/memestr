@@ -155,23 +155,26 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
         priors['prior_' + key] = injection_parameters[key]
     priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters['total_mass'] - 20, 15),
                                                           maximum=injection_parameters['total_mass'] + 30,
-                                                          latex_label="$M_{tot}$")
+                                                          latex_label="$M_{tot}$",
+                                                          boundary='reflecting')
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters['mass_ratio']-0.5, 0.4),
                                                           maximum=1,
-                                                          latex_label="$q$")
+                                                          latex_label="$q$",
+                                                          boundary='reflecting')
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                                maximum=5000,
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$", boundary='reflecting')
+    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$", boundary='periodic')
+    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$", boundary='reflecting')
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=2*np.pi,
-                                                     latex_label="$\phi$")
+                                                     latex_label="$\phi$", boundary='periodic')
     priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
                                                    maximum=np.pi,
-                                                   latex_label="$\psi$")
+                                                   latex_label="$\psi$",
+                                                   boundary='periodic')
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.5,
                                                             maximum=injection_parameters['geocent_time'] + 0.5,
                                                             latex_label='$t_c$')
