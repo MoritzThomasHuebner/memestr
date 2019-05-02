@@ -233,7 +233,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             verbose=True,
                                             random_seed=np.random.randint(0, 100000),
                                             # sampler=settings.sampler_settings.sampler,
-                                            sampler='pypolychord',
+                                            sampler='cpnest',
                                             # npoints=settings.sampler_settings.npoints,
                                             npoints=500,
                                             # walks=100,
