@@ -4,7 +4,7 @@
 #do
 #    sbatch production_submit.sh ${i}_dynesty
 #done
-for i in {16..180}
+for i in {181..400}
 do
     sbatch production_submit.sh ${i}_dynesty
 done
