@@ -8,7 +8,7 @@ memestr.wrappers.injection_recovery. \
         outdir='test_production', label='IMR_mem_inj_non_mem_rec',
         alpha=0.1, distance_marginalization=False,
         time_marginalization=False, phase_marginalization=False,
-        sampler='dynesty',
+        sampler='cpnest', nthreads=2,
         nlive=400, duration=16, random_seed=42, dlogz=0.1,
-        sampling_frequency=2048, resume=True, clean=False)
+        sampling_frequency=2048, resume=False)
 
