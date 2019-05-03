@@ -4,7 +4,7 @@ import copy
 # import gwsurrogate as gws
 from scipy.signal.windows import tukey
 from bilby.gw.source import lal_binary_black_hole
-
+from bilby.gw.conversion import convert_to_lal_binary_black_hole_parameters
 gamma_lmlm = gwmemory.angles.load_gamma()
 roll_off = 0.2
 
@@ -27,13 +27,12 @@ def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
-                                                        s11, s12, s13, s21, s22, s23, inc, phase,
+                                                        s13, s23, inc, phase,
                                                         **kwargs):
-    mass_1 = total_mass / (1 + mass_ratio)
-    mass_2 = mass_1 * mass_ratio
-    return lal_binary_black_hole(frequency_array=frequencies, mass_1=mass_1, mass_2=mass_2,
-                                 luminosity_distance=luminosity_distance, theta_jn=inc, phase=phase, a_1=0,
-                                 a_2=0, tilt_1=0, tilt_2=0, phi_12=0, phi_jl=0, **kwargs)
+    parameters = dict(mass_ratio=mass_ratio, total_mass=total_mass, luminosity_distance=luminosity_distance,
+                      theta_jn=inc, phase=phase, chi_1=s13, chi_2=s23)
+    parameters, _ = convert_to_lal_binary_black_hole_parameters(parameters)
+    return lal_binary_black_hole(frequency_array=frequencies, **parameters, **kwargs)
 
 
 def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
