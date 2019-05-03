@@ -249,4 +249,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
     logger.info(str(result))
+    result.posterior = bilby.gw.conversion.\
+        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
+    result.save_to_file()
+    result.plot_corner(lionize=settings.other_settings.lionize)
+    logger.info(str(result))
     return result
