@@ -2,12 +2,14 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+import memestr
 from memestr.core.utils import _get_matched_filter_snrs
 
 ids = ['032', '033', '034', '035', '036', '037', '038', '039', '040', '041', '042', '043', '044', '045', '046', '047']
 distances = [200, 230, 262, 299, 342, 391, 448, 512, 586, 670, 766, 876, 1002, 1147, 1311, 1500]
 
-matched_filter_snrs = _get_matched_filter_snrs(distances)
+matched_filter_snrs = _get_matched_filter_snrs(distances,
+                                               memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory)
 
 average_injection_log_bfs = []
 
@@ -15,6 +17,9 @@ average_sampling_log_bfs = []
 average_reweighing_to_memory_log_bfs = []
 average_reweighing_from_memory_log_bfs = []
 
+sampling_log_bfs_uncertainties = []
+reweighing_to_memory_log_bfs_uncertainties = []
+reweighing_from_memory_log_bfs_uncertainties = []
 population_sampling_log_bfs_uncertainties = []
 population_reweighing_to_memory_log_bfs_uncertainties = []
 population_reweighing_from_memory_log_bfs_uncertainties = []
@@ -83,6 +88,9 @@ for idx, distance in zip(ids, distances):
     population_reweighing_to_memory_log_bfs_uncertainties.append(np.mean(np.std(reweighing_to_memory_log_bfs)) / np.sqrt(len(reweighing_to_memory_log_bfs)))
     population_reweighing_from_memory_log_bfs_uncertainties.append(np.mean(np.std(reweighing_from_memory_log_bfs)) / np.sqrt(len(reweighing_from_memory_log_bfs)))
 
+    sampling_log_bfs_uncertainties.append(np.mean(np.std(sampling_log_bfs)))
+    reweighing_to_memory_log_bfs_uncertainties.append(np.mean(np.std(reweighing_to_memory_log_bfs)))
+    reweighing_from_memory_log_bfs_uncertainties.append(np.mean(np.std(reweighing_from_memory_log_bfs)))
 
 print('\n')
 print(average_injection_log_bfs)
@@ -99,29 +107,30 @@ print(population_reweighing_from_memory_log_bfs_uncertainties)
 plt.plot(matched_filter_snrs, average_injection_log_bfs, label='Log L at injected value')
 plt.errorbar(x=matched_filter_snrs, y=average_sampling_log_bfs, fmt='v',
              yerr=np.array(population_sampling_log_bfs_uncertainties), label='Sampling')
-plt.plot(x=matched_filter_snrs, y=average_reweighing_to_memory_log_bfs, fmt='s',
+plt.plot(matched_filter_snrs, average_reweighing_to_memory_log_bfs, 's',
          label='Reweighing osc recovered')
-plt.plot(x=matched_filter_snrs, y=average_reweighing_from_memory_log_bfs, fmt='o',
+plt.plot(matched_filter_snrs, average_reweighing_from_memory_log_bfs, 'o',
          label='Reweighing osc+memory\n recovered')
+
 plt.legend()
 plt.tight_layout()
 plt.xlabel('Matched filter SNR')
 plt.ylabel('log BF')
-plt.savefig('LogBFs vs SNR')
+plt.savefig('reweighing/LogBFs vs SNR')
 plt.show()
 plt.clf()
 
-plt.plot(matched_filter_snrs, population_sampling_log_bfs_uncertainties, 'v',
+plt.plot(matched_filter_snrs, sampling_log_bfs_uncertainties, 'v',
          label='Sampling uncertainty')
-plt.plot(matched_filter_snrs, population_reweighing_to_memory_log_bfs_uncertainties, 's',
+plt.plot(matched_filter_snrs, reweighing_to_memory_log_bfs_uncertainties, 's',
          label='Reweighing osc stat. uncertainty')
-plt.plot(matched_filter_snrs, population_reweighing_from_memory_log_bfs_uncertainties, 'o',
+plt.plot(matched_filter_snrs, reweighing_from_memory_log_bfs_uncertainties, 'o',
          label='Reweighing osc+memory \nstat. uncertainty')
 plt.semilogy()
 plt.tight_layout()
 plt.legend()
 plt.xlabel('Matched filter SNR')
 plt.ylabel('$\Delta$ log BF')
-plt.savefig('LogBFs errors vs SNR')
+plt.savefig('reweighing/LogBFs errors vs SNR')
 plt.show()
 plt.clf()

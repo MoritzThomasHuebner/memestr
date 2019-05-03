@@ -9,7 +9,7 @@ import memestr
 from memestr.core.parameters import AllSettings
 
 
-def _get_matched_filter_snrs(distances):
+def _get_matched_filter_snrs(distances, model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory):
     matched_filter_snrs = []
     for distance in distances:
         logger = logging.getLogger('bilby')
@@ -21,7 +21,7 @@ def _get_matched_filter_snrs(distances):
         logger.info("Random seed: " + str(settings.other_settings.random_seed))
 
         waveform_generator = bilby.gw.WaveformGenerator(
-            time_domain_source_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+            time_domain_source_model=model,
             parameters=settings.injection_parameters.__dict__,
             waveform_arguments=settings.waveform_arguments.__dict__,
             **settings.waveform_data.__dict__)
