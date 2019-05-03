@@ -240,7 +240,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             nthreads=settings.sampler_settings.nthreads,
                                             maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume,
-                                            conversion_function=bilby.gw.conversion.generate_posterior_samples_from_marginalized_likelihood,
+                                            # conversion_function=bilby.gw.conversion.generate_posterior_samples_from_marginalized_likelihood,
                                             save_bounds=False,
                                             check_point_plot=True,
                                             n_check_point=1000)
