@@ -29,19 +29,22 @@ import memestr
 #         nlive=400, duration=16, random_seed=42, dlogz=0.1,
 #         sampling_frequency=2048, resume=True, clean=False)
 
-memestr.wrappers.injection_recovery. \
-    run_basic_injection_imr_phenom(
-        injection_model=memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-        recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
-        # filename_base=0,
-        outdir='test1', label='IMR_mem_inj_non_mem_rec',
-        alpha=0.1, zero_noise=False, distance_marginalization=False,
-        time_marginalization=False, phase_marginalization=False,
-        luminosity_distance=1200.0, sampler='dynesty',
-        nlive=400, duration=16, random_seed=42, dlogz=0.1,
-        sampling_frequency=2048, resume=False, clean=True)
+# memestr.wrappers.injection_recovery. \
+#     run_basic_injection_imr_phenom(
+#         injection_model=memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+#         recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
+        # outdir='test1', label='IMR_mem_inj_non_mem_rec',
+        # alpha=0.1, zero_noise=True, distance_marginalization=False,
+        # time_marginalization=True, phase_marginalization=True, s13=0.4,
+        # s23=0.3,
+        # luminosity_distance=1200.0, sampler='dynesty',
+        # nlive=300, duration=16, random_seed=42, dlogz=0.1,
+        # sampling_frequency=2048, resume=False, clean=True)
 
+import bilby as bb
 
+res = bb.result.read_in_result('test1/IMR_mem_inj_non_mem_rec_result.json')
+res.plot_corner(parameters=['s13', 's23', 'geocent_time', 'phase'])
 
 # memestr.wrappers.wrappers.run_basic_injection_nrsur(injection_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
 #                                                     recovery_model=memestr.core.waveforms.time_domain_nr_sur_waveform_with_memory,
