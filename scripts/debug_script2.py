@@ -9,6 +9,6 @@ memestr.wrappers.injection_recovery. \
         alpha=0.1, distance_marginalization=True,
         time_marginalization=True, phase_marginalization=True,
         sampler='pypolychord', nthreads=2,
-        npoints=400, duration=16, random_seed=42, dlogz=0.1,
+        npoints=500, duration=16, random_seed=42, dlogz=0.1,
         sampling_frequency=2048, resume=False)
 
