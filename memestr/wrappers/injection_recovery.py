@@ -248,8 +248,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #                                         check_point_plot=True,
     #                                         n_check_point=1000)
     # result.save_to_file()
-    result = bilby.result.read_in_result(
-        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
     result.posterior = bilby.gw.conversion.\
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
     result.save_to_file()
