@@ -252,6 +252,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.posterior = bilby.gw.conversion.\
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
     result.save_to_file()
+    params = deepcopy(settings.injection_parameters.__dict__)
+    del params['s11']
+    del params['s12']
+    del params['s21']
+    del params['s22']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=priors.keys())
     logger.info(str(result))
     return result
