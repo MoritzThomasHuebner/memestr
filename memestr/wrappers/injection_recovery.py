@@ -90,7 +90,10 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             resume=settings.sampler_settings.resume)
     result.save_to_file()
     result.plot_corner(lionize=settings.other_settings.lionize)
-    # adjust_phase_and_geocent_time(result, recovery_model, ifos[0])
+    logger.info(str(result))
+    result.posterior = bilby.gw.conversion.generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
+    result.save_to_file()
+    result.plot_corner(lionize=settings.other_settings.lionize)
     logger.info(str(result))
     return result
 
@@ -107,12 +110,12 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     injection_parameters = InjectionParameters.init_with_updated_kwargs(**kwargs)
     for key in injection_parameters.__dict__:
         priors['prior_' + key] = injection_parameters.__dict__[key]
-    priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
-                                                          maximum=injection_parameters.total_mass + 30,
-                                                          latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.6),
-                                                          maximum=1,
-                                                          latex_label="$q$")
+    # priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.total_mass - 20, 15),
+    #                                                       maximum=injection_parameters.total_mass + 30,
+    #                                                       latex_label="$M_{tot}$")
+    # priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters.mass_ratio-0.5, 0.6),
+    #                                                       maximum=1,
+    #                                                       latex_label="$q$")
     # priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
     #                                                                            maximum=5000,
     #                                                                            latex_label="$L_D$",
@@ -129,10 +132,10 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters.geocent_time - 0.5,
                                                             maximum=injection_parameters.geocent_time + 0.5,
                                                             latex_label='$t_c$')
-    # priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-    #                                                  latex_label='s13')
-    # priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-    #                                                  latex_label='s23')
+    priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+                                                     latex_label='s13')
+    priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+                                                     latex_label='s23')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD'
@@ -242,16 +245,15 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             nthreads=settings.sampler_settings.nthreads,
                                             maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume,
-                                            # conversion_function=bilby.gw.conversion.generate_posterior_samples_from_marginalized_likelihood,
+                                            conversion_function=bilby.gw.conversion.generate_all_bbh_parameters,
                                             save_bounds=False,
                                             check_point_plot=True,
                                             n_check_point=1000)
     result.save_to_file()
-    result.plot_corner(lionize=settings.other_settings.lionize)
-    logger.info(str(result))
     result.posterior = bilby.gw.conversion.\
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
     result.save_to_file()
-    result.plot_corner(lionize=settings.other_settings.lionize)
+    result.plot_corner(lionize=settings.other_settings.lionize, parameters=priors.keys())
     logger.info(str(result))
     return result
+
