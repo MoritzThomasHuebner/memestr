@@ -257,6 +257,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['s12']
     del params['s21']
     del params['s22']
+    del params['random_injection_parameters']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
     logger.info(str(result))
     return result
