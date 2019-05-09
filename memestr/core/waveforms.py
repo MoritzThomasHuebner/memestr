@@ -14,7 +14,7 @@ def time_domain_nr_hyb_sur_waveform_with_memory(times, mass_ratio, total_mass, s
     waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                           luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
                                           kwargs=kwargs)
-    return _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
 def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
@@ -22,8 +22,19 @@ def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total
     waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                           luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
                                           kwargs=kwargs)
-    waveform = _apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    return _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
+    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return wrap_at_maximum(waveform=waveform, kwargs=kwargs)
+
+
+def time_domain_nr_hyb_sur_waveform_with_memory_arbitrary_wrapped(times, mass_ratio, total_mass, s13, s23,
+                                                                  luminosity_distance, inc, phase, time_shift,
+                                                                  **kwargs):
+    waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                          luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
+                                          kwargs=kwargs)
+    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    waveform = wrap_at_maximum(waveform=waveform, kwargs=kwargs)
+    return wrap_by_time_shift(waveform=waveform, time_shift=time_shift, times=times)
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -41,7 +52,7 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
                                                   luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                   s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
 
-    return _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
 def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance, s11, s12,
@@ -50,8 +61,8 @@ def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total
     waveform = _evaluate_imr_phenom_d_with_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                                   luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                   s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform = _apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    return _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
+    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return wrap_at_maximum(waveform=waveform, kwargs=kwargs)
 
 
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
@@ -59,7 +70,7 @@ def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass
     waveform = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                                      luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    return _apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
 def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance,
@@ -67,8 +78,8 @@ def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, to
     waveform = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                                      luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform = _apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    return _wrap_at_maximum(waveform=waveform, kwargs=kwargs)
+    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return wrap_at_maximum(waveform=waveform, kwargs=kwargs)
 
 
 def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
@@ -81,7 +92,7 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
                                           S1=np.array([s11, s12, s13]),
                                           S2=np.array([s21, s22, s23]),
                                           times=temp_times)
-    alpha = _get_alpha(kwargs, times)
+    alpha = get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
     memory, _ = wave.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
     for mode in memory:
@@ -89,26 +100,57 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
     return memory
 
 
-def _get_alpha(kwargs, times):
+def get_alpha(kwargs, times):
     if 'alpha' in kwargs:
         if kwargs['alpha']:
             return kwargs['alpha']
     return roll_off / (times[-1] - times[0])
 
 
-def _apply_window(waveform, times, kwargs):
-    alpha = _get_alpha(kwargs, times)
+def apply_window(waveform, times, kwargs):
+    alpha = get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
-    for mode in waveform:
-        waveform[mode] *= window
+
+    if isinstance(waveform, dict):
+        for mode in waveform:
+            waveform[mode] *= window
+        return waveform
+    elif isinstance(waveform, list):
+        for i, wf in enumerate(waveform):
+            for mode in wf:
+                wf[mode] *= window
+            waveform[i] = wf
+        return waveform
+
+
+def wrap_at_maximum(waveform, kwargs):
+    if isinstance(waveform, dict):
+        max_index = np.argmax(np.abs(np.abs(waveform['plus']) + np.abs(waveform['cross'])))
+        max_index_fd_model = kwargs.get('max_index_fd_model', len(waveform['plus']))
+        shift = max_index_fd_model - max_index
+        waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
+        return waveform, shift
+    elif isinstance(waveform, list):
+        for i, wf in enumerate(waveform):
+            max_index = np.argmax(np.abs(np.abs(wf['plus']) + np.abs(wf['cross'])))
+            max_index_fd_model = kwargs.get('max_index_fd_model', len(wf['plus']))
+            shift = max_index_fd_model - max_index
+            waveform = wrap_by_n_indices(shift=shift, waveform=wf)
+            waveform[i] = wf
+        return waveform
+
+
+def wrap_by_n_indices(shift, waveform):
+    waveform['plus'] = np.roll(waveform['plus'], shift=shift)
+    waveform['cross'] = np.roll(waveform['cross'], shift=shift)
     return waveform
 
 
-def _wrap_at_maximum(waveform, kwargs):
-    max_index = np.argmax(np.abs(np.abs(waveform['plus']) + np.abs(waveform['cross'])))
-    max_index_fd_model = kwargs.get('max_index_fd_model', len(waveform['plus']))
-    waveform['plus'] = np.roll(waveform['plus'], shift=max_index_fd_model - max_index)
-    waveform['cross'] = np.roll(waveform['cross'], shift=max_index_fd_model - max_index)
+def wrap_by_time_shift(waveform, time_shift, times):
+    time_per_index = (times[-1] - times[0])/len(times)
+    index_shift = np.round(time_shift/time_per_index).astype(int)
+    waveform['plus'] = np.roll(waveform['plus'], shift=index_shift)
+    waveform['cross'] = np.roll(waveform['cross'], shift=index_shift)
     return waveform
 
 
@@ -125,10 +167,19 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
                                                           )
     oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase)
     memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
-    waveform = dict()
-    for mode in memory:
-        waveform[mode] = (memory[mode] + oscillatory[mode])
-    return waveform
+    if isinstance(oscillatory, dict):
+        waveform = dict()
+        for mode in memory:
+            waveform[mode] = (memory[mode] + oscillatory[mode])
+        return waveform
+    elif isinstance(oscillatory, list):
+        waveforms = list()
+        for memory_wf, oscillatory_wf in zip(memory, oscillatory):
+            waveform = dict()
+            for mode in memory[0]:
+                waveform[mode] = memory_wf[mode] + oscillatory_wf[mode]
+            waveforms.append(waveform)
+        return waveforms
 
 
 def _evaluate_imr_phenom_d_without_memory(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s11, s12, s13,
