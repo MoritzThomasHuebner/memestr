@@ -1,4 +1,5 @@
 from copy import deepcopy
+import logging
 
 import numpy as np
 import bilby.gw.utils as utils
@@ -8,9 +9,10 @@ import gwmemory
 from scipy.misc import logsumexp
 
 from memestr.core.waveforms import wrap_by_time_shift_continuous
-from scripts.production_evidence_recalculation import logger
 from .waveforms import wrap_at_maximum, apply_window, wrap_by_n_indices, \
     frequency_domain_IMRPhenomD_waveform_without_memory
+
+logger = logging.getLogger('bilby')
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 
