@@ -265,7 +265,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['random_injection_parameters']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
 
-    time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0])
+    time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0],
+                                                                                            verbose=True)
     time_and_phase_shifted_result.label = 'time_and_phase_shifted'
     time_and_phase_shifted_result.save_to_file()
     time_and_phase_shifted_result.plot_corner(parameters=params)
@@ -304,10 +305,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                   likelihood_memory=likelihood_memory,
                                                   likelihood_no_memory=likelihood_no_memory)
 
-    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                          waveform_generator_no_memory)
-
+    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
+    logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
+
+    try:
+        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights)
+    except Exception:
+        pass
 
     return time_and_phase_shifted_result
 

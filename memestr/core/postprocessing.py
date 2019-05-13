@@ -121,9 +121,9 @@ def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
         _plot_2d_overlap(rs_overlaps, time_grid_mesh, phase_grid_mesh)
 
     if verbose:
-        print('Maximum overlap: ' + str(overlaps[max_n0]))
-        print("Time shift:" + str(time_shift))
-        print("Phase shift:" + str(phase_shift))
+        logger.info('Maximum overlap: ' + str(overlaps[max_n0]))
+        logger.info("Time shift:" + str(time_shift))
+        logger.info("Phase shift:" + str(phase_shift))
 
     return time_shift, phase_shift
 
@@ -151,7 +151,7 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
         if new_result.posterior.phase.iloc[index] < 0:
             new_result.posterior.phase.iloc[index] += 2 * np.pi
         new_result.posterior.phase.iloc[index] %= 2 * np.pi
-        print("{:0.2f}".format(index / len(result.posterior) * 100) + "%")
+        logger.info(("{:0.2f}".format(index / len(result.posterior) * 100) + "%"))
     return new_result
 
 
