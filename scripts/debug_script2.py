@@ -1,7 +1,5 @@
 import bilby
 import memestr
-from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_with_memory_arbitrary_wrapped, \
-    frequency_domain_IMRPhenomD_waveform_without_memory
 
 
 # memestr.wrappers.injection_recovery. \
@@ -26,11 +24,9 @@ ifos = deepdish.io.load('parameter_sets/0_H1L1V1.h5')
 
 ifo = ifos[0]
 
-post_processed_result = memestr.core.postprocessing.\
-    adjust_phase_and_geocent_time(result=result,
-                                  injection_model=time_domain_nr_hyb_sur_waveform_with_memory_arbitrary_wrapped,
-                                  recovery_model=frequency_domain_IMRPhenomD_waveform_without_memory,
-                                  ifo=ifo)
-post_processed_result.label = 'post_processed'
-post_processed_result.save_to_file()
-post_processed_result.plot_corner(parameters=injected_params)
+time_and_phase_shifted_result = memestr.core.postprocessing.\
+    adjust_phase_and_geocent_time_complete_posterior_proper(result=result,
+                                                            ifo=ifo)
+time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+time_and_phase_shifted_result.save_to_file()
+time_and_phase_shifted_result.plot_corner(parameters=injected_params)

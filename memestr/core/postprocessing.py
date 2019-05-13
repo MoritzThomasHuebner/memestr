@@ -5,8 +5,10 @@ import bilby.gw.utils as utils
 import matplotlib.pyplot as plt
 import bilby
 import gwmemory
+from scipy.misc import logsumexp
 
 from memestr.core.waveforms import wrap_by_time_shift_continuous
+from scripts.production_evidence_recalculation import logger
 from .waveforms import wrap_at_maximum, apply_window, wrap_by_n_indices, \
     frequency_domain_IMRPhenomD_waveform_without_memory
 
@@ -173,3 +175,41 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
     plt.clf()
     return rs_overlaps
 
+
+def calculate_log_weights(likelihood, posterior):
+    weights = []
+    for i in range(len(posterior)):
+        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+            likelihood.parameters[parameter] = posterior.iloc[i][parameter]
+        reweighed_likelihood = likelihood.log_likelihood()
+        original_likelihood = posterior.iloc[i]['log_likelihood']
+        weight = reweighed_likelihood - original_likelihood
+        weights.append(weight)
+    return weights
+
+
+def reweigh_log_evidence_by_weights(log_evidence, log_weights):
+    return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
+
+
+def reweigh_by_likelihood(reweighing_likelihood, result):
+    try:
+        log_weights = calculate_log_weights(reweighing_likelihood, result.posterior)
+        reweighed_log_bf = reweigh_log_evidence_by_weights(result.log_evidence, log_weights) - result.log_evidence
+    except AttributeError as e:
+        logger.warning(e)
+        log_weights = np.nan
+        reweighed_log_bf = np.nan
+    return reweighed_log_bf, log_weights
+
+
+def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memory):
+    samples = []
+    for i in range(posterior):
+        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+            samples.append(posterior.iloc[i][parameter])
+    weights = [likelihood_memory.log_likelihood(samples[i])/likelihood_no_memory.log_likelihood(samples[i])
+               for i in range(posterior)]
+    return np.log(np.sum(weights))

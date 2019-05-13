@@ -12,17 +12,35 @@ roll_off = 0.2
 
 def time_domain_nr_hyb_sur_waveform_with_memory(times, mass_ratio, total_mass, s13, s23,
                                                 luminosity_distance, inc, phase, **kwargs):
-    waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
-                                          luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
-                                          kwargs=kwargs)
+    waveform, memory = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                                  luminosity_distance=luminosity_distance, phase=phase,
+                                                  s13=s13, s23=s23, kwargs=kwargs)
+    for mode in memory:
+        waveform[mode] += memory[mode]
     return apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
 def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
                                                         luminosity_distance, inc, phase, **kwargs):
+    waveform, memory = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                                  luminosity_distance=luminosity_distance, phase=phase,
+                                                  s13=s13, s23=s23, kwargs=kwargs)
+    # Do windowing and shifting separately without memory in order to be consistent with waveform without memory case
+    windowed_waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    _, shift = wrap_at_maximum(waveform=windowed_waveform, kwargs=kwargs)
+
+    for mode in memory:
+        waveform[mode] += memory[mode]
+
+    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return wrap_by_n_indices(shift=shift, waveform=waveform)
+
+
+def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
+                                                        luminosity_distance, inc, phase, **kwargs):
     waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                           luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
-                                          kwargs=kwargs)
+                                          kwargs=kwargs, fold_in_memory=False)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
     return wrap_at_maximum(waveform=waveform, kwargs=kwargs)
 
@@ -90,7 +108,8 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
     return memory
 
 
-def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s13, s23, kwargs):
+def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s13, s23, kwargs,
+                               fold_in_memory=True):
     memory_generator = gwmemory.waveforms.HybridSurrogate(q=mass_ratio,
                                                           total_mass=total_mass,
                                                           spin_1=s13,
@@ -103,10 +122,10 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
                                                           )
     oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase)
     memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
-    waveform = dict()
-    for mode in memory:
-        waveform[mode] = (memory[mode] + oscillatory[mode])
-    return waveform
+    if not fold_in_memory:
+        return oscillatory
+    else:
+        return oscillatory, memory
 
 
 def _evaluate_imr_phenom_d_without_memory(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s11, s12, s13,

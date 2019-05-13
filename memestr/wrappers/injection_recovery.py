@@ -5,13 +5,14 @@ import time
 import bilby
 import logging
 from copy import deepcopy
-import matplotlib.pyplot as plt
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.utils import get_ifo
 from memestr.core.submit import get_injection_parameter_set
-from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_posterior_proper
-
+from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_posterior_proper, \
+    reweigh_by_two_likelihoods, reweigh_by_likelihood
+from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_with_memory_wrapped, \
+    time_domain_nr_hyb_sur_waveform_without_memory_wrapped
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
     logger = logging.getLogger('bilby')
@@ -221,18 +222,18 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                     **settings.waveform_data.__dict__)
 
     priors = settings.recovery_priors.proper_dict()
-    likelihood = bilby.gw.likelihood \
+    likelihood_imr_phenom = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
                                     priors=priors,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
-    likelihood.parameters = deepcopy(settings.injection_parameters.__dict__)
+    likelihood_imr_phenom.parameters = deepcopy(settings.injection_parameters.__dict__)
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    result = bilby.core.sampler.run_sampler(likelihood=likelihood,
+    result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
                                             priors=priors,
                                             injection_parameters=deepcopy(settings.injection_parameters.__dict__),
                                             outdir=outdir,
@@ -254,7 +255,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info(str(result))
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
     result.posterior = bilby.gw.conversion.\
-        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
+        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.save_to_file()
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
@@ -268,6 +269,45 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     time_and_phase_shifted_result.label = 'time_and_phase_shifted'
     time_and_phase_shifted_result.save_to_file()
     time_and_phase_shifted_result.plot_corner(parameters=params)
+
+    priors = settings.recovery_priors.proper_dict()
+
+    waveform_generator_memory = bilby.gw.WaveformGenerator(
+        time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+        parameters=settings.injection_parameters.__dict__,
+        waveform_arguments=settings.waveform_arguments.__dict__,
+        **settings.waveform_data.__dict__)
+
+    waveform_generator_no_memory = bilby.gw.WaveformGenerator(
+        time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped,
+        parameters=settings.injection_parameters.__dict__,
+        waveform_arguments=settings.waveform_arguments.__dict__,
+        **settings.waveform_data.__dict__)
+
+    likelihood_memory = bilby.gw.likelihood \
+        .GravitationalWaveTransient(interferometers=ifos,
+                                    waveform_generator=waveform_generator_memory,
+                                    priors=priors,
+                                    time_marginalization=settings.other_settings.time_marginalization,
+                                    distance_marginalization=settings.other_settings.distance_marginalization,
+                                    phase_marginalization=settings.other_settings.phase_marginalization)
+
+    likelihood_no_memory = bilby.gw.likelihood \
+        .GravitationalWaveTransient(interferometers=ifos,
+                                    waveform_generator=waveform_generator_no_memory,
+                                    priors=priors,
+                                    time_marginalization=settings.other_settings.time_marginalization,
+                                    distance_marginalization=settings.other_settings.distance_marginalization,
+                                    phase_marginalization=settings.other_settings.phase_marginalization)
+
+    reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
+                                                  likelihood_memory=likelihood_memory,
+                                                  likelihood_no_memory=likelihood_no_memory)
+
+    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
+                                                          waveform_generator_no_memory)
+
+    logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
 
     return time_and_phase_shifted_result
 
