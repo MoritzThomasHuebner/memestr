@@ -129,48 +129,41 @@ def time_domain_nr_hyb_sur_waveform_with_memory_arbitrary_wrapped_debug(memory_g
 
 def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
                        frequency_array, power_spectral_density, **kwargs):
+
     times = memory_generator.times
     kwargs['alpha'] = 0.1
 
     overlaps = np.zeros(len(phases) * len(time_shifts))
-    waveforms_grid = [dict(plus=None, cross=None)] * len(time_shifts) * len(phases)
-    waveforms = [dict(plus=None, cross=None)] * len(phases)
-
-    # generate basic waveform
-    for i in range(len(phases)):
-        waveforms[i] = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phases[i])
-        waveforms[i] = apply_window(waveform=waveforms[i], times=times, kwargs=kwargs)
-        waveforms[i] = wrap_by_n_indices(shift=kwargs.get('shift'), waveform=waveforms[i])
-
-    for i in range(0, len(waveforms_grid)):
-        waveforms_grid[i] = deepcopy(waveforms[i % len(waveforms)])
 
     for j in range(len(phases)):
+        # generate basic phase shifted waveform
+        phase_shifted_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phases[j])
+        phase_shifted_waveform = apply_window(waveform=phase_shifted_waveform, times=times, kwargs=kwargs)
+        phase_shifted_waveform = wrap_by_n_indices(shift=kwargs.get('shift'), waveform=phase_shifted_waveform)
+
         for i in range(len(time_shifts)):
             target_index = i * len(phases) + j
-            print(target_index)
+            time_shifted_wf = dict()
             for mode in ['plus', 'cross']:
-                waveforms_grid[target_index][mode] = wrap_by_time_shift_continuous(
+                time_shifted_wf[mode] = wrap_by_time_shift_continuous(
                     times=memory_generator.times,
-                    waveform=waveforms_grid[target_index][mode],
+                    waveform=phase_shifted_waveform[mode],
                     time_shift=time_shifts[i])
-                waveforms_grid[target_index][mode], _ = bilby.core.utils.nfft(waveforms_grid[target_index][mode],
-                                                                              memory_generator.sampling_frequency)
-            overlaps[target_index] = overlap_function(full_wf, waveforms_grid[target_index],
+                time_shifted_wf[mode], _ = bilby.core.utils.nfft(time_shifted_wf[mode],
+                                                                 memory_generator.sampling_frequency)
+            overlaps[target_index] = overlap_function(full_wf, time_shifted_wf,
                                                       frequency_array, power_spectral_density)
+        print(str(j/len(phases)*100) + "%")
 
-    # overlaps = np.array([])
-    # for i, matching_wf in enumerate(waveforms_grid):
-    #     overlaps = np.append(overlaps, overlap_function(full_wf, matching_wf, frequency_array, power_spectral_density))
     return overlaps
 
 
 def adjust_phase_and_geocent_time(result, injection_model, recovery_model, ifo):
-    parameters = result.posterior.iloc[-2].to_dict()
+    parameters = result.posterior.iloc[-1].to_dict()
     print(parameters)
     print(result.injection_parameters)
-    phase_grid_init = np.linspace(-1, -0.5, 15)
-    time_grid_init = np.linspace(-0.01, 0.00, 30)
+    phase_grid_init = np.linspace(0, np.pi, 120)
+    time_grid_init = np.linspace(-0.01, -0.0, 60)
     # phase_grid_init = np.array([-0.7014326992696138, -0.7014326992696138+1])
     # phase_grid_init = np.array([0])
     # time_grid_init = np.array([-0.004363938949701662, 0, +0.004363938949701661])
@@ -205,9 +198,9 @@ def adjust_phase_and_geocent_time(result, injection_model, recovery_model, ifo):
 
     phases = (phase_grid_init + parameters['phase']) % (2 * np.pi)
 
-    matching_wfs, frequency_array = time_domain_nr_hyb_sur_waveform_arbitrary_wrapped_pp(
-        memory_generator=memory_generator, inc=parameters['inc'],
-        phases=phases, time_shifts=time_grid_init, shift=shift)
+    # matching_wfs, frequency_array = time_domain_nr_hyb_sur_waveform_arbitrary_wrapped_pp(
+    #     memory_generator=memory_generator, inc=parameters['inc'],
+    #     phases=phases, time_shifts=time_grid_init, shift=shift)
 
     # for matching_wf in matching_wfs:
     #     plt.xlim(20, 1000)
@@ -224,10 +217,10 @@ def adjust_phase_and_geocent_time(result, injection_model, recovery_model, ifo):
     # plt.show()
     # plt.clf()
 
-    overlaps = np.array([])
-    for matching_wf in matching_wfs:
-        overlaps = np.append(overlaps, overlap_function(full_wf, matching_wf, recovery_wg.frequency_array,
-                                                        ifo.power_spectral_density))
+    # overlaps = np.array([])
+    # for matching_wf in matching_wfs:
+    #     overlaps = np.append(overlaps, overlap_function(full_wf, matching_wf, recovery_wg.frequency_array,
+    #                                                     ifo.power_spectral_density))
 
     overlaps = calculate_overlaps(full_wf=full_wf, memory_generator=memory_generator, inc=parameters['inc'],
                                   phases=phases, time_shifts=time_grid_init, shift=shift,
