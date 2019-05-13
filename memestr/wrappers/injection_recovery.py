@@ -159,26 +159,23 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
         priors['prior_' + key] = injection_parameters[key]
     priors['prior_total_mass'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters['total_mass'] - 20, 15),
                                                           maximum=injection_parameters['total_mass'] + 30,
-                                                          latex_label="$M_{tot}$",
-                                                          boundary='reflective')
+                                                          latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(minimum=np.maximum(injection_parameters['mass_ratio']-0.5, 0.4),
                                                           maximum=1,
-                                                          latex_label="$q$",
-                                                          boundary='reflective')
+                                                          latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                                maximum=5000,
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$", boundary='reflective')
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$", boundary='periodic')
-    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$", boundary='reflective')
+    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi, latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=2*np.pi,
-                                                     latex_label="$\phi$", boundary='periodic')
+                                                     latex_label="$\phi$")
     priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
                                                    maximum=np.pi,
-                                                   latex_label="$\psi$",
-                                                   boundary='periodic')
+                                                   latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.5,
                                                             maximum=injection_parameters['geocent_time'] + 0.5,
                                                             latex_label='$t_c$')
@@ -211,7 +208,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
                                                           str(filename_base) +
                                                           '_H1L1V1.h5')
-    ifos.plot_data()
+    # import deepdish
+    # ifos = deepdish.io.load('parameter_sets/' + str(filename_base) + '_H1L1V1.h5')
+    # for i, ifo in enumerate(ifos):
+    #     ifos[i].strain_data = ifo._strain_data
+    # ifos = bilby.gw.detector.InterferometerList(ifos)
+    # # ifos.plot_data()
     waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
@@ -229,29 +231,29 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    # result = bilby.core.sampler.run_sampler(likelihood=likelihood,
-    #                                         priors=priors,
-    #                                         injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-    #                                         outdir=outdir,
-    #                                         save=True,
-    #                                         verbose=True,
-    #                                         random_seed=np.random.randint(0, 100000),
-    #                                         sampler=settings.sampler_settings.sampler,
-    #                                         npoints=settings.sampler_settings.npoints,
-    #                                         walks=100,
-    #                                         label=settings.sampler_settings.label,
-    #                                         clean=settings.sampler_settings.clean,
-    #                                         nthreads=settings.sampler_settings.nthreads,
-    #                                         maxmcmc=settings.sampler_settings.maxmcmc,
-    #                                         resume=settings.sampler_settings.resume,
-                                            # save_bounds=False,
-                                            # check_point_plot=True,
-                                            # n_check_point=1000)
-    # result.save_to_file()
-    result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    # result.posterior = bilby.gw.conversion.\
-    #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
-    # result.save_to_file()
+    result = bilby.core.sampler.run_sampler(likelihood=likelihood,
+                                            priors=priors,
+                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
+                                            outdir=outdir,
+                                            save=True,
+                                            verbose=True,
+                                            random_seed=np.random.randint(0, 100000),
+                                            sampler=settings.sampler_settings.sampler,
+                                            npoints=settings.sampler_settings.npoints,
+                                            walks=100,
+                                            label=settings.sampler_settings.label,
+                                            clean=settings.sampler_settings.clean,
+                                            nthreads=settings.sampler_settings.nthreads,
+                                            maxmcmc=settings.sampler_settings.maxmcmc,
+                                            resume=settings.sampler_settings.resume,
+                                            save_bounds=False,
+                                            check_point_plot=True,
+                                            n_check_point=1000)
+    result.save_to_file()
+    # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+    result.posterior = bilby.gw.conversion.\
+        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
+    result.save_to_file()
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
     del params['s12']

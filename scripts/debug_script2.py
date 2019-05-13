@@ -15,7 +15,7 @@ from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_with_memory_a
 #         sampler='dynesty', nthreads=2,
 #         npoints=200, duration=16, random_seed=42, dlogz=0.1,
 #         sampling_frequency=2048, resume=True, clean=False, n_check_point=100)
-
+#
 result = bilby.result.read_in_result('test_production/IMR_mem_inj_non_mem_rec_result.json')
 print(result)
 injected_params = dict(phase=1.4315882007303862, geocent_time=6.92720234665083)
@@ -24,7 +24,6 @@ result.plot_corner(parameters=injected_params)
 import deepdish
 ifos = deepdish.io.load('parameter_sets/0_H1L1V1.h5')
 
-# ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/0_H1L1V1.h5')
 ifo = ifos[0]
 
 post_processed_result = memestr.core.postprocessing.\
