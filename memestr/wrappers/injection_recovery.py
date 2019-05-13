@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.utils import get_ifo
 from memestr.core.submit import get_injection_parameter_set
+from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_posterior_proper
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
@@ -250,6 +251,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             check_point_plot=True,
                                             n_check_point=1000)
     result.save_to_file()
+    logger.info(str(result))
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
     result.posterior = bilby.gw.conversion.\
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood)
@@ -261,7 +263,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['s22']
     del params['random_injection_parameters']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
-    plt.close('all')
-    logger.info(str(result))
-    return result
+
+    time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0])
+    time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+    time_and_phase_shifted_result.save_to_file()
+    time_and_phase_shifted_result.plot_corner(parameters=params)
+
+    return time_and_phase_shifted_result
 

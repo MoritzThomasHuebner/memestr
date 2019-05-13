@@ -67,18 +67,14 @@ def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
                                                                        memory_generator.sampling_frequency)
             overlaps[target_index] = overlap_function(full_wf, time_shifted_waveform,
                                                       frequency_array, power_spectral_density)
-        print("{:0.2f}".format(j/len(phases)*100) + "%")
+        # print("{:0.2f}".format(j/len(phases)*100) + "%")
 
     return overlaps
 
 
-def adjust_phase_and_geocent_time(result, ifo):
-    parameters = result.posterior.iloc[-1].to_dict()
-    print(parameters)
-    print(result.injection_parameters)
-    print(len(result.posterior))
-    phase_grid_init = np.linspace(0, np.pi, 120)
-    time_grid_init = np.linspace(-0.01, -0.0, 60)
+def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
+    phase_grid_init = np.linspace(0, np.pi, 30)
+    time_grid_init = np.linspace(-0.01, -0.0, 30)
 
     phase_grid_mesh, time_grid_mesh = np.meshgrid(phase_grid_init, time_grid_init)
 
@@ -117,13 +113,22 @@ def adjust_phase_and_geocent_time(result, ifo):
     time_shift = time_grid[max_n0]
     phase_shift = phase_grid[max_n0]
 
-    _plot_time_shifts(overlaps, phase_grid_init, time_grid_init)
-    _plot_2d_overlap(overlaps, time_grid_mesh, phase_grid_mesh, time_grid_init, phase_grid_init)
+    rs_overlaps = np.reshape(overlaps, (len(time_grid_init), len(phase_grid_init)))
+    if plot:
+        _plot_time_shifts(overlaps, phase_grid_init, time_grid_init)
+        _plot_2d_overlap(rs_overlaps, time_grid_mesh, phase_grid_mesh)
 
-    print('Maximum overlap: ' + str(overlaps[max_n0]))
-    print("Time shift:" + str(time_shift))
-    print("Phase shift:" + str(phase_shift))
+    if verbose:
+        print('Maximum overlap: ' + str(overlaps[max_n0]))
+        print("Time shift:" + str(time_shift))
+        print("Phase shift:" + str(phase_shift))
 
+    return time_shift, phase_shift
+
+
+def adjust_phase_and_geocent_time_complete_posterior_quick(result, ifo, index=-1, verbose=True, plot=True):
+    parameters = result.posterior.iloc[index].to_dict()
+    time_shift, phase_shift = get_time_and_phase_shift(parameters, ifo, verbose=verbose, plot=plot)
     new_result = deepcopy(result)
     for i in range(len(new_result.posterior['geocent_time'])):
         new_result.posterior.geocent_time.iloc[i] += time_shift
@@ -134,9 +139,22 @@ def adjust_phase_and_geocent_time(result, ifo):
     return new_result
 
 
-def _plot_2d_overlap(overlaps, time_grid_mesh, phase_grid_mesh, time_grid_init, phase_grid_init):
-    rs_overlaps = np.reshape(overlaps, (len(time_grid_init), len(phase_grid_init)))
-    plt.contourf(time_grid_mesh, phase_grid_mesh, rs_overlaps)
+def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose=False, plot=False):
+    new_result = deepcopy(result)
+    for index in range(len(result.posterior)):
+        parameters = result.posterior.iloc[index].to_dict()
+        time_shift, phase_shift = get_time_and_phase_shift(parameters, ifo, verbose=verbose, plot=plot)
+        new_result.posterior.geocent_time.iloc[index] += time_shift
+        new_result.posterior.phase.iloc[index] += phase_shift
+        if new_result.posterior.phase.iloc[index] < 0:
+            new_result.posterior.phase.iloc[index] += 2 * np.pi
+        new_result.posterior.phase.iloc[index] %= 2 * np.pi
+        print("{:0.2f}".format(index / len(result.posterior) * 100) + "%")
+    return new_result
+
+
+def _plot_2d_overlap(reshaped_overlaps, time_grid_mesh, phase_grid_mesh):
+    plt.contourf(time_grid_mesh, phase_grid_mesh, reshaped_overlaps)
     plt.xlabel('Time shift')
     plt.ylabel('Phase shift')
     plt.colorbar()
