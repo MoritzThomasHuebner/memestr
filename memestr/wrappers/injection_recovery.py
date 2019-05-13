@@ -5,6 +5,7 @@ import time
 import bilby
 import logging
 from copy import deepcopy
+import matplotlib.pyplot as plt
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.utils import get_ifo
@@ -258,6 +259,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['s22']
     del params['random_injection_parameters']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
+    plt.close('all')
     logger.info(str(result))
     return result
 
