@@ -53,9 +53,9 @@ def wrap_by_time_shift(waveforms, time_shifts, time_per_index):
     return waveforms
 
 
-def wrap_by_time_shift_continuous(times, waveforms, time_shifts):
-    waveform_interpolants = CubicSpline(times, waveforms, extrapolate='periodic')
-    new_times = times - time_shifts
+def wrap_by_time_shift_continuous(times, waveform, time_shift):
+    waveform_interpolants = CubicSpline(times, waveform, extrapolate='periodic')
+    new_times = times - time_shift
     return waveform_interpolants(new_times)
 
 
@@ -85,14 +85,14 @@ def time_domain_nr_hyb_sur_waveform_arbitrary_wrapped_pp(memory_generator, inc, 
             waveforms_plus[i + j * len(time_shifts)] = \
                 wrap_by_time_shift_continuous(
                     times=memory_generator.times,
-                    waveforms=waveforms_plus[i + j * len(time_shifts)],
-                    time_shifts=time_shifts[i])
+                    waveform=waveforms_plus[i + j * len(time_shifts)],
+                    time_shift=time_shifts[i])
             # time_per_index=(times[-1]-times[0])/len(times))
             waveforms_cross[i + j * len(time_shifts)] = \
                 wrap_by_time_shift_continuous(
                     times=memory_generator.times,
-                    waveforms=waveforms_cross[i + j * len(time_shifts)],
-                    time_shifts=time_shifts[i])
+                    waveform=waveforms_cross[i + j * len(time_shifts)],
+                    time_shift=time_shifts[i])
             # time_per_index=(times[-1]-times[0])/len(times))
 
     for i in range(len(waveforms_grid)):
@@ -132,8 +132,7 @@ def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
     times = memory_generator.times
     kwargs['alpha'] = 0.1
 
-    overlaps = np.zeros(shape=(len(phases), len(time_shifts)))
-
+    overlaps = np.zeros(len(phases) * len(time_shifts))
     waveforms_grid = [dict(plus=None, cross=None)] * len(time_shifts) * len(phases)
     waveforms = [dict(plus=None, cross=None)] * len(phases)
 
@@ -142,51 +141,37 @@ def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
         waveforms[i] = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phases[i])
         waveforms[i] = apply_window(waveform=waveforms[i], times=times, kwargs=kwargs)
         waveforms[i] = wrap_by_n_indices(shift=kwargs.get('shift'), waveform=waveforms[i])
-        waveforms_grid[i] = waveforms[i]
 
-    for i in range(len(waveforms), len(waveforms_grid)):
-        waveforms_grid[i] = deepcopy(waveforms_grid[i % len(waveforms)])
-
-    waveforms_plus = np.array([waveform['plus'] for waveform in waveforms_grid])
-    waveforms_cross = np.array([waveform['plus'] for waveform in waveforms_grid])
+    for i in range(0, len(waveforms_grid)):
+        waveforms_grid[i] = deepcopy(waveforms[i % len(waveforms)])
 
     for j in range(len(phases)):
         for i in range(len(time_shifts)):
-            waveforms_plus[i + j * len(time_shifts)] = \
-                wrap_by_time_shift_continuous(
+            target_index = i * len(phases) + j
+            print(target_index)
+            for mode in ['plus', 'cross']:
+                waveforms_grid[target_index][mode] = wrap_by_time_shift_continuous(
                     times=memory_generator.times,
-                    waveforms=waveforms_plus[i + j * len(time_shifts)],
-                    time_shifts=time_shifts[i])
+                    waveform=waveforms_grid[target_index][mode],
+                    time_shift=time_shifts[i])
+                waveforms_grid[target_index][mode], _ = bilby.core.utils.nfft(waveforms_grid[target_index][mode],
+                                                                              memory_generator.sampling_frequency)
+            overlaps[target_index] = overlap_function(full_wf, waveforms_grid[target_index],
+                                                      frequency_array, power_spectral_density)
 
-            waveforms_cross[i + j * len(time_shifts)] = \
-                wrap_by_time_shift_continuous(
-                    times=memory_generator.times,
-                    waveforms=waveforms_cross[i + j * len(time_shifts)],
-                    time_shifts=time_shifts[i])
-
-    for i in range(len(waveforms_grid)):
-        waveforms_grid[i]['plus'] = waveforms_plus[i]
-        waveforms_grid[i]['cross'] = waveforms_cross[i]
-
-    for i, waveform in enumerate(waveforms_grid):
-        waveform['cross'], _ = bilby.core.utils.nfft(waveform['cross'],
-                                                     memory_generator.sampling_frequency)
-        waveform['plus'], _ = bilby.core.utils.nfft(waveform['plus'], memory_generator.sampling_frequency)
-        waveforms_grid[i] = waveform
-
-    overlaps = np.array([])
-    for matching_wf in waveforms_grid:
-        overlaps = np.append(overlaps, overlap_function(full_wf, matching_wf, frequency_array,
-                                                        power_spectral_density))
+    # overlaps = np.array([])
+    # for i, matching_wf in enumerate(waveforms_grid):
+    #     overlaps = np.append(overlaps, overlap_function(full_wf, matching_wf, frequency_array, power_spectral_density))
     return overlaps
 
 
 def adjust_phase_and_geocent_time(result, injection_model, recovery_model, ifo):
     parameters = result.posterior.iloc[-2].to_dict()
     print(parameters)
-    # phase_grid_init = np.linspace(0, np.pi, 11)
-    time_grid_init = np.linspace(-0.01, 0.00, 120)
-    phase_grid_init = np.array([-0.7014326992696138, -0.7014326992696138+1])
+    print(result.injection_parameters)
+    phase_grid_init = np.linspace(-1, -0.5, 15)
+    time_grid_init = np.linspace(-0.01, 0.00, 30)
+    # phase_grid_init = np.array([-0.7014326992696138, -0.7014326992696138+1])
     # phase_grid_init = np.array([0])
     # time_grid_init = np.array([-0.004363938949701662, 0, +0.004363938949701661])
     # time_grid_init = np.array([-6.9315664109380615+6.92720234665083])
