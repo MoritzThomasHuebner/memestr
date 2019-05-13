@@ -2,6 +2,7 @@ import numpy as np
 import gwmemory
 import copy
 # import gwsurrogate as gws
+from scipy.interpolate import CubicSpline
 from scipy.signal.windows import tukey
 from bilby.gw.source import lal_binary_black_hole
 from bilby.gw.conversion import convert_to_lal_binary_black_hole_parameters
@@ -24,17 +25,6 @@ def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total
                                           kwargs=kwargs)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
     return wrap_at_maximum(waveform=waveform, kwargs=kwargs)
-
-
-def time_domain_nr_hyb_sur_waveform_with_memory_arbitrary_wrapped(times, mass_ratio, total_mass, s13, s23,
-                                                                  luminosity_distance, inc, phase, time_shift,
-                                                                  **kwargs):
-    waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
-                                          luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
-                                          kwargs=kwargs)
-    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    waveform = wrap_at_maximum(waveform=waveform, kwargs=kwargs)
-    return wrap_by_time_shift(waveform=waveform, time_shift=time_shift, times=times)
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -100,60 +90,6 @@ def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, lumino
     return memory
 
 
-def get_alpha(kwargs, times):
-    if 'alpha' in kwargs:
-        if kwargs['alpha']:
-            return kwargs['alpha']
-    return roll_off / (times[-1] - times[0])
-
-
-def apply_window(waveform, times, kwargs):
-    alpha = get_alpha(kwargs, times)
-    window = tukey(M=len(times), alpha=alpha)
-
-    if isinstance(waveform, dict):
-        for mode in waveform:
-            waveform[mode] *= window
-        return waveform
-    elif isinstance(waveform, list):
-        for i, wf in enumerate(waveform):
-            for mode in wf:
-                wf[mode] *= window
-            waveform[i] = wf
-        return waveform
-
-
-def wrap_at_maximum(waveform, kwargs):
-    if isinstance(waveform, dict):
-        max_index = np.argmax(np.abs(np.abs(waveform['plus']) + np.abs(waveform['cross'])))
-        max_index_fd_model = kwargs.get('max_index_fd_model', len(waveform['plus']))
-        shift = max_index_fd_model - max_index
-        waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
-        return waveform, shift
-    elif isinstance(waveform, list):
-        for i, wf in enumerate(waveform):
-            max_index = np.argmax(np.abs(np.abs(wf['plus']) + np.abs(wf['cross'])))
-            max_index_fd_model = kwargs.get('max_index_fd_model', len(wf['plus']))
-            shift = max_index_fd_model - max_index
-            waveform = wrap_by_n_indices(shift=shift, waveform=wf)
-            waveform[i] = wf
-        return waveform
-
-
-def wrap_by_n_indices(shift, waveform):
-    waveform['plus'] = np.roll(waveform['plus'], shift=shift)
-    waveform['cross'] = np.roll(waveform['cross'], shift=shift)
-    return waveform
-
-
-def wrap_by_time_shift(waveform, time_shift, times):
-    time_per_index = (times[-1] - times[0])/len(times)
-    index_shift = np.round(time_shift/time_per_index).astype(int)
-    waveform['plus'] = np.roll(waveform['plus'], shift=index_shift)
-    waveform['cross'] = np.roll(waveform['cross'], shift=index_shift)
-    return waveform
-
-
 def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s13, s23, kwargs):
     memory_generator = gwmemory.waveforms.HybridSurrogate(q=mass_ratio,
                                                           total_mass=total_mass,
@@ -167,19 +103,10 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
                                                           )
     oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase)
     memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
-    if isinstance(oscillatory, dict):
-        waveform = dict()
-        for mode in memory:
-            waveform[mode] = (memory[mode] + oscillatory[mode])
-        return waveform
-    elif isinstance(oscillatory, list):
-        waveforms = list()
-        for memory_wf, oscillatory_wf in zip(memory, oscillatory):
-            waveform = dict()
-            for mode in memory[0]:
-                waveform[mode] = memory_wf[mode] + oscillatory_wf[mode]
-            waveforms.append(waveform)
-        return waveforms
+    waveform = dict()
+    for mode in memory:
+        waveform[mode] = (memory[mode] + oscillatory[mode])
+    return waveform
 
 
 def _evaluate_imr_phenom_d_without_memory(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s11, s12, s13,
@@ -213,3 +140,43 @@ def _evaluate_imr_phenom_d_with_memory(times, total_mass, mass_ratio, inc, lumin
         waveform[mode] = (memory[mode] + oscillatory[mode])
     return waveform
 
+
+def get_alpha(kwargs, times):
+    if 'alpha' in kwargs:
+        if kwargs['alpha']:
+            return kwargs['alpha']
+    return roll_off / (times[-1] - times[0])
+
+
+def apply_window(waveform, times, kwargs):
+    alpha = get_alpha(kwargs, times)
+    window = tukey(M=len(times), alpha=alpha)
+
+    for mode in waveform:
+        waveform[mode] *= window
+    return waveform
+
+
+def wrap_at_maximum(waveform, kwargs):
+    max_index = np.argmax(np.abs(np.abs(waveform['plus']) + np.abs(waveform['cross'])))
+    max_index_fd_model = kwargs.get('max_index_fd_model', len(waveform['plus']))
+    shift = max_index_fd_model - max_index
+    waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
+    return waveform, shift
+
+
+def wrap_by_n_indices(shift, waveform):
+    waveform['plus'] = np.roll(waveform['plus'], shift=shift)
+    waveform['cross'] = np.roll(waveform['cross'], shift=shift)
+    return waveform
+
+
+def wrap_by_time_shift(waveforms, time_shifts, time_per_index):
+    index_shifts = np.round(time_shifts / time_per_index).astype(int)
+    return np.roll(waveforms, shift=index_shifts)
+
+
+def wrap_by_time_shift_continuous(times, waveform, time_shift):
+    waveform_interpolants = CubicSpline(times, waveform, extrapolate='periodic')
+    new_times = times - time_shift
+    return waveform_interpolants(new_times)
