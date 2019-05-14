@@ -211,8 +211,8 @@ def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memor
         sample = dict()
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            likelihood_memory[parameter] = posterior.iloc[i][parameter]
-            likelihood_no_memory[parameter] = posterior.iloc[i][parameter]
+            likelihood_memory.parameters[parameter] = posterior.iloc[i][parameter]
+            likelihood_no_memory.parameters[parameter] = posterior.iloc[i][parameter]
         weight = likelihood_memory.log_likelihood() - likelihood_no_memory.log_likelihood()
         weights.append(weight)
     return logsumexp(weights)
