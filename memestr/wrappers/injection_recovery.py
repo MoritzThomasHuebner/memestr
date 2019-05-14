@@ -256,12 +256,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.posterior = bilby.gw.conversion.\
     #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     # result.save_to_file()
-    # params = deepcopy(settings.injection_parameters.__dict__)
-    # del params['s11']
-    # del params['s12']
-    # del params['s21']
-    # del params['s22']
-    # del params['random_injection_parameters']
+    params = deepcopy(settings.injection_parameters.__dict__)
+    del params['s11']
+    del params['s12']
+    del params['s21']
+    del params['s22']
+    del params['random_injection_parameters']
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
     #
     # time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0],
@@ -271,6 +271,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.plot_corner(parameters=params)
 
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+    time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
@@ -316,6 +317,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights)
     except Exception:
         pass
-
+    bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy], parameters=params)
     return time_and_phase_shifted_result
 
