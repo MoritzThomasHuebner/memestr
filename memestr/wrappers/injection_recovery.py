@@ -305,11 +305,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
+    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
     reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
                                                   likelihood_memory=likelihood_memory,
                                                   likelihood_no_memory=likelihood_no_memory)
 
-    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
     logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
 
