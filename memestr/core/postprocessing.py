@@ -214,6 +214,6 @@ def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memor
             sample[parameter] = posterior.iloc[i][parameter]
         likelihood_memory.parameters = sample
         likelihood_no_memory.parameters = sample
-        weight = likelihood_memory.log_likelihood(sample) - likelihood_no_memory.log_likelihood(sample)
+        weight = likelihood_memory.log_likelihood() - likelihood_no_memory.log_likelihood()
         weights.append(weight)
     return logsumexp(weights)
