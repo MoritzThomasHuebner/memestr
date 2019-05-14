@@ -270,6 +270,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner(parameters=params)
 
+    original_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
     time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
     # time_and_phase_shifted_result = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
@@ -305,6 +306,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
+
+    for i in range(len(original_result.posterior)):
+        logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
+        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+            likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
+        time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = likelihood_imr_phenom.log_likelihood()
 
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
     try:
