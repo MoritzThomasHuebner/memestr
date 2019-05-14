@@ -212,5 +212,5 @@ def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memor
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             samples.append(posterior.iloc[i][parameter])
     weights = [likelihood_memory.log_likelihood(samples[i])/likelihood_no_memory.log_likelihood(samples[i])
-               for i in range(posterior)]
+               for i in range(len(posterior))]
     return np.log(np.sum(weights))
