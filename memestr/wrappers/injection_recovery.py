@@ -221,7 +221,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
 
-    priors = settings.recovery_priors.proper_dict()
+    priors = deepcopy(settings.recovery_priors.proper_dict())
     likelihood_imr_phenom = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
@@ -233,45 +233,44 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
-                                            priors=priors,
-                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-                                            outdir=outdir,
-                                            save=True,
-                                            verbose=True,
-                                            random_seed=np.random.randint(0, 100000),
-                                            sampler=settings.sampler_settings.sampler,
-                                            npoints=settings.sampler_settings.npoints,
-                                            walks=100,
-                                            label=settings.sampler_settings.label,
-                                            clean=settings.sampler_settings.clean,
-                                            nthreads=settings.sampler_settings.nthreads,
-                                            maxmcmc=settings.sampler_settings.maxmcmc,
-                                            resume=settings.sampler_settings.resume,
-                                            save_bounds=False,
-                                            check_point_plot=True,
-                                            n_check_point=1000)
-    result.save_to_file()
-    logger.info(str(result))
-    # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    result.posterior = bilby.gw.conversion.\
-        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-    result.save_to_file()
-    params = deepcopy(settings.injection_parameters.__dict__)
-    del params['s11']
-    del params['s12']
-    del params['s21']
-    del params['s22']
-    del params['random_injection_parameters']
-    result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
+    # result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
+    #                                         priors=priors,
+    #                                         injection_parameters=deepcopy(settings.injection_parameters.__dict__),
+    #                                         outdir=outdir,
+    #                                         save=True,
+    #                                         verbose=True,
+    #                                         random_seed=np.random.randint(0, 100000),
+    #                                         sampler=settings.sampler_settings.sampler,
+    #                                         npoints=settings.sampler_settings.npoints,
+    #                                         walks=100,
+    #                                         label=settings.sampler_settings.label,
+    #                                         clean=settings.sampler_settings.clean,
+    #                                         nthreads=settings.sampler_settings.nthreads,
+    #                                         maxmcmc=settings.sampler_settings.maxmcmc,
+    #                                         resume=settings.sampler_settings.resume,
+    #                                         save_bounds=False,
+    #                                         check_point_plot=True,
+    #                                         n_check_point=1000)
+    # result.save_to_file()
+    # logger.info(str(result))
+    # result.posterior = bilby.gw.conversion.\
+    #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+    # result.save_to_file()
+    # params = deepcopy(settings.injection_parameters.__dict__)
+    # del params['s11']
+    # del params['s12']
+    # del params['s21']
+    # del params['s22']
+    # del params['random_injection_parameters']
+    # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
+    #
+    # time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0],
+    #                                                                                         verbose=True)
+    # time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+    # time_and_phase_shifted_result.save_to_file()
+    # time_and_phase_shifted_result.plot_corner(parameters=params)
 
-    time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0],
-                                                                                            verbose=True)
-    time_and_phase_shifted_result.label = 'time_and_phase_shifted'
-    time_and_phase_shifted_result.save_to_file()
-    time_and_phase_shifted_result.plot_corner(parameters=params)
-
-    priors = settings.recovery_priors.proper_dict()
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
@@ -285,10 +284,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         waveform_arguments=settings.waveform_arguments.__dict__,
         **settings.waveform_data.__dict__)
 
+
+    priors_memory = deepcopy(settings.recovery_priors.proper_dict())
+    priors_no_memory = deepcopy(settings.recovery_priors.proper_dict())
+
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_memory,
-                                    priors=priors,
+                                    priors=priors_memory,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
@@ -296,7 +299,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_no_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_no_memory,
-                                    priors=priors,
+                                    priors=priors_no_memory,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
