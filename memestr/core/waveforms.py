@@ -1,7 +1,6 @@
 import numpy as np
 import gwmemory
 import copy
-# import gwsurrogate as gws
 from scipy.interpolate import CubicSpline
 from scipy.signal.windows import tukey
 from bilby.gw.source import lal_binary_black_hole
@@ -43,6 +42,13 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, to
                                           kwargs=kwargs, fold_in_memory=False)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
     return wrap_at_maximum(waveform=waveform, kwargs=kwargs)
+
+
+def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times, mass_ratio, total_mass, s13, s23,
+                                                        luminosity_distance, inc, phase, **kwargs):
+    waveform, _ = time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
+                                                                         luminosity_distance, inc, phase, **kwargs)
+    return waveform
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
