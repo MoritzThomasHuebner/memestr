@@ -307,6 +307,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
+    try:
+        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights)
+    except Exception:
+        pass
+
     reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
                                                   likelihood_memory=likelihood_memory,
                                                   likelihood_no_memory=likelihood_no_memory)
@@ -314,10 +319,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
 
-    try:
-        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights)
-    except Exception:
-        pass
     bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy], parameters=params)
     return time_and_phase_shifted_result
 
