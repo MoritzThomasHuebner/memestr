@@ -270,10 +270,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner(parameters=params)
 
-    # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-    # time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-    time_and_phase_shifted_result = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
-    time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
+    time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+    time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+    # time_and_phase_shifted_result = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
+    # time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
