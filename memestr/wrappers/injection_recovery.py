@@ -322,7 +322,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #     print(time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'])
 
     test_weights = [1.0] * len(time_and_phase_shifted_result.posterior)
-    time_and_phase_shifted_result.plot_corner(label='test_reweighed', weights=test_weights, parameters=params)
+    time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
+                                              weights=test_weights, parameters=params)
 
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
 
@@ -330,7 +331,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info(str(debug_evidence))
 
     try:
-        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights,
+        time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighed',
+                                                  weights=debug_weights,
                                                   parameters=params)
     except Exception as e:
         print(e)
