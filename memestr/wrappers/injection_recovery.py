@@ -327,8 +327,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     try:
         test_weights = [0] * len(time_and_phase_shifted_result.posterior)
         time_and_phase_shifted_result.plot_corner(label='reweighed', weights=test_weights,
-                                                  parameters=dict(geocent_time=settings.injection_parameters.geocent_time,
-                                                                  phase=settings.injection_parameters.phase))
+                                                  parameters=params)
     except Exception as e:
         print(e)
 
@@ -337,8 +336,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     try:
         time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights,
-                                                  parameters=dict(geocent_time=settings.injection_parameters.geocent_time,
-                                                                  phase=settings.injection_parameters.phase))
+                                                  parameters=params)
     except Exception as e:
         print(e)
 
