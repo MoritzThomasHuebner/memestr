@@ -324,7 +324,17 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #     time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = likelihood_imr_phenom.log_likelihood()
     #     print(time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'])
 
+    try:
+        test_weights = [0] * len(time_and_phase_shifted_result.posterior)
+        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=test_weights,
+                                                  parameters=dict(geocent_time=settings.injection_parameters.geocent_time,
+                                                                  phase=settings.injection_parameters.phase))
+    except Exception as e:
+        print(e)
+
+
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
+
     try:
         time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights,
                                                   parameters=dict(geocent_time=settings.injection_parameters.geocent_time,
