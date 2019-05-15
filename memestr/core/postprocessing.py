@@ -183,7 +183,7 @@ def calculate_log_weights(likelihood, posterior):
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood.parameters[parameter] = posterior.iloc[i][parameter]
         reweighed_likelihood = likelihood.log_likelihood()
-        original_likelihood = posterior.iloc[i]['log_likelihood']
+        original_likelihood = -0.5 * posterior.iloc[i]['log_likelihood']
         weight = reweighed_likelihood - original_likelihood
         weights.append(weight)
         logger.info("Weight: " + str(weight))
