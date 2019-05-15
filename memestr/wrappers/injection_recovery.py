@@ -290,7 +290,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
-        log_l_ratio = likelihood_imr_phenom.log_likelihood_ratio()
+        log_l_ratio = 1.0
+        # log_l_ratio = likelihood_imr_phenom.log_likelihood_ratio()
         # log_l = likelihood_imr_phenom.log_likelihood()
         # print(log_l_ratio)
         original_result.posterior.iloc[i]['log_likelihood'] = log_l_ratio
@@ -336,7 +337,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # test_weights = [1.0] * len(time_and_phase_shifted_result.posterior)
     # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
     #                                           weights=test_weights, parameters=params)
-
+    logger.info(time_and_phase_shifted_result.posterior.log_likelihood)
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, time_and_phase_shifted_result)
     # debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
 
