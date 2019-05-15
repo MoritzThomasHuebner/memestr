@@ -300,7 +300,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     original_result.posterior.log_likelihood = log_l_ratios
     time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
     time_and_phase_shifted_result_copy.posterior.log_likelihood = log_l_ratios
-
+    # time_and_phase_shifted_result.save_to_file()
 
     # original_result.posterior.log_likelihood = log_likelihoods
     # time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
@@ -341,7 +341,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
     #                                           weights=test_weights, parameters=params)
     logger.info(time_and_phase_shifted_result.posterior.log_likelihood)
-    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, time_and_phase_shifted_result)
+    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
     # debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
 
     logger.info(str(debug_weights))
