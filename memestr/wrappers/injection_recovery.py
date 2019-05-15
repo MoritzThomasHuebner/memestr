@@ -178,8 +178,8 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
     priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
                                                    maximum=np.pi,
                                                    latex_label="$\psi$")
-    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.5,
-                                                            maximum=injection_parameters['geocent_time'] + 0.5,
+    priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.1,
+                                                            maximum=injection_parameters['geocent_time'] + 0.1,
                                                             latex_label='$t_c$')
     priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
                                                      latex_label='s13')
@@ -242,7 +242,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #                                         random_seed=np.random.randint(0, 100000),
     #                                         sampler=settings.sampler_settings.sampler,
     #                                         npoints=settings.sampler_settings.npoints,
-    #                                         walks=100,
     #                                         label=settings.sampler_settings.label,
     #                                         clean=settings.sampler_settings.clean,
     #                                         nthreads=settings.sampler_settings.nthreads,
@@ -262,8 +261,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['s21']
     del params['s22']
     del params['random_injection_parameters']
+    # params = dict(phase=0.6674848916080516, geocent_time=13.567036458124411)
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
-    #
+
     # time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0],
     #                                                                                         verbose=True)
     # time_and_phase_shifted_result.label = 'time_and_phase_shifted'
@@ -271,10 +271,19 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.plot_corner(parameters=params)
 
     original_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json'
+    samples = np.loadtxt(sample_file)
+    log_likelihoods = samples[:, 1]  # extract second column
+    original_result.samples['log_likelihood'] = log_likelihoods
+    original_result.posterior['log_likelihood'] = log_likelihoods
+
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
     time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-    # time_and_phase_shifted_result = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
-    # time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename='test_production/post_processed_result.json')
+
+    time_and_phase_shifted_result.samples['log_likelihood'] = log_likelihoods
+    time_and_phase_shifted_result.posterior['log_likelihood'] = log_likelihoods
+    time_and_phase_shifted_result_copy.samples['log_likelihood'] = log_likelihoods
+    time_and_phase_shifted_result_copy.posterior['log_likelihood'] = log_likelihoods
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
@@ -307,18 +316,21 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
 
-    for i in range(len(original_result.posterior)):
-        logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
-        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
-        time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = likelihood_imr_phenom.log_likelihood()
+    # for i in range(len(original_result.posterior)):
+    #     logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
+    #     for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+    #                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+    #         likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
+    #     time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = likelihood_imr_phenom.log_likelihood()
+    #     print(time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'])
 
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
     try:
-        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights)
-    except Exception:
-        pass
+        time_and_phase_shifted_result.plot_corner(label='reweighed', weights=debug_weights,
+                                                  parameters=dict(geocent_time=settings.injection_parameters.geocent_time,
+                                                                  phase=settings.injection_parameters.phase))
+    except Exception as e:
+        print(e)
 
     reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
                                                   likelihood_memory=likelihood_memory,
