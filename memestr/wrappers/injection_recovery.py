@@ -271,19 +271,16 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.plot_corner(parameters=params)
 
     original_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
-    samples = np.loadtxt(sample_file)
-    log_likelihoods = samples[:, 1]  # extract second column
-    original_result.samples.log_likelihood = log_likelihoods
-    original_result.posterior.log_likelihood = log_likelihoods
-
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
     time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
 
-    time_and_phase_shifted_result.samples['log_likelihood'] = log_likelihoods
-    time_and_phase_shifted_result.posterior['log_likelihood'] = log_likelihoods
-    time_and_phase_shifted_result_copy.samples['log_likelihood'] = log_likelihoods
-    time_and_phase_shifted_result_copy.posterior['log_likelihood'] = log_likelihoods
+    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
+    samples = np.loadtxt(sample_file)
+    log_likelihoods = samples[:, 1]  # extract second column
+    original_result.posterior.log_likelihood = log_likelihoods
+
+    time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
+    time_and_phase_shifted_result_copy.posterior.log_likelihood = log_likelihoods
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
