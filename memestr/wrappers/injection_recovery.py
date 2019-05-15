@@ -285,6 +285,20 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length samples original: ' + str(len(original_result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
 
+    for i in range(len(original_result.posterior)):
+        logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
+        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+            likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
+        log_l_ratio = likelihood_imr_phenom.log_likelihood_ratio()
+        log_l = likelihood_imr_phenom.log_likelihood()
+        print(log_l_ratio)
+        print(log_l)
+        original_result.posterior.iloc[i]['log_likelihood'] = log_l_ratio
+        time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = log_l_ratio
+        time_and_phase_shifted_result_copy.posterior.iloc[i]['log_likelihood'] = log_l_ratio
+
+
     # original_result.posterior.log_likelihood = log_likelihoods
     # time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
     # time_and_phase_shifted_result_copy.posterior.log_likelihood = log_likelihoods
@@ -319,17 +333,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
-
-    for i in range(len(original_result.posterior)):
-        logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
-        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
-        log_l_ratio = likelihood_imr_phenom.log_likelihood_ratio()
-        original_result.posterior.iloc[i]['log_likelihood'] = log_l_ratio
-        time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = log_l_ratio
-        time_and_phase_shifted_result_copy.posterior.iloc[i]['log_likelihood'] = log_l_ratio
-        print(time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'])
 
     # test_weights = [1.0] * len(time_and_phase_shifted_result.posterior)
     # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
