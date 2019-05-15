@@ -282,6 +282,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length log likelihoods: ' + str(len(log_likelihoods)))
     logger.info('Length posterior original: ' + str(len(original_result.posterior)))
     logger.info('Length posterior shifted: ' + str(len(time_and_phase_shifted_result.posterior)))
+    logger.info('Length samples original: ' + str(len(original_result.samples)))
+    logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
+
     original_result.posterior.log_likelihood = log_likelihoods
     time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
     time_and_phase_shifted_result_copy.posterior.log_likelihood = log_likelihoods
