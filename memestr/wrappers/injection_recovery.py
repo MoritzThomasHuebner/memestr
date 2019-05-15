@@ -277,13 +277,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
     samples = np.loadtxt(sample_file)
     log_likelihoods = 0.5 * samples[:, 1]  # extract second column
-    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_likelihoods.txt', log_likelihoods)
-    logger.info('Filename base: ' + str(filename_base))
-    logger.info('Length log likelihoods: ' + str(len(log_likelihoods)))
-    logger.info('Length posterior original: ' + str(len(original_result.posterior)))
-    logger.info('Length posterior shifted: ' + str(len(time_and_phase_shifted_result.posterior)))
-    logger.info('Length samples original: ' + str(len(original_result.samples)))
-    logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
+    # np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt', log_likelihoods)
+
 
     original_result.posterior.log_likelihood = log_likelihoods
     time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
