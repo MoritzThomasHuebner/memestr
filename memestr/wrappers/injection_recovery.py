@@ -325,7 +325,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
                                               weights=test_weights, parameters=params)
 
-    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
+    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, time_and_phase_shifted_result)
+    # debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
 
     logger.info(str(debug_weights))
     logger.info(str(debug_evidence))
