@@ -186,6 +186,7 @@ def calculate_log_weights(likelihood, posterior):
         original_likelihood = posterior.iloc[i]['log_likelihood']
         weight = reweighed_likelihood - original_likelihood
         weights.append(weight)
+        logger.info("Weight: " + str(weight))
     return weights
 
 
