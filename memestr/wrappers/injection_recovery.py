@@ -288,12 +288,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     log_l_ratios = []
     for i in range(len(original_result.posterior)):
         logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
-        # for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-        #                   'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-        #     likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
-        log_l_ratios.append(1.0)
+        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+            likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
+        # log_l_ratios.append(1.0)
 
-        # log_l_ratio = likelihood_imr_phenom.log_likelihood_ratio()
+        log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
         # log_l = likelihood_imr_phenom.log_likelihood()
         # logger.info(log_l_ratio)
 
