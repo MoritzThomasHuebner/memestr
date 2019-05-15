@@ -178,7 +178,8 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
 def calculate_log_weights(likelihood, posterior):
     weights = []
     for i in range(len(posterior)):
-        logger.info("{:0.2f}".format(i/len(posterior)*100) + "%")
+        if i % 100 == 0:
+            logger.info("{:0.2f}".format(i/len(posterior)*100) + "%")
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood.parameters[parameter] = posterior.iloc[i][parameter]
