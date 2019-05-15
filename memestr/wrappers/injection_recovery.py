@@ -277,6 +277,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
     samples = np.loadtxt(sample_file)
     log_likelihoods = 0.5 * samples[:, 1]  # extract second column
+    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt', log_likelihoods)
+
 
     original_result.posterior.log_likelihood = log_likelihoods
     time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
@@ -321,9 +323,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #     time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'] = likelihood_imr_phenom.log_likelihood()
     #     print(time_and_phase_shifted_result.posterior.iloc[i]['log_likelihood'])
 
-    test_weights = [1.0] * len(time_and_phase_shifted_result.posterior)
-    time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
-                                              weights=test_weights, parameters=params)
+    # test_weights = [1.0] * len(time_and_phase_shifted_result.posterior)
+    # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
+    #                                           weights=test_weights, parameters=params)
 
     debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, time_and_phase_shifted_result)
     # debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
