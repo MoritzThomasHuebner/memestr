@@ -182,7 +182,7 @@ def calculate_log_weights(likelihood, posterior):
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood.parameters[parameter] = posterior.iloc[i][parameter]
-        reweighted_likelihood = likelihood.log_likelihood()
+        reweighted_likelihood = likelihood.log_likelihood_ratio()
         original_likelihood = posterior.iloc[i]['log_likelihood']
         weight = reweighted_likelihood - original_likelihood
         weights.append(weight)
