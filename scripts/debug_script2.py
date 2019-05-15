@@ -11,7 +11,7 @@ memestr.wrappers.injection_recovery. \
         alpha=0.1, distance_marginalization=False,
         time_marginalization=False, phase_marginalization=True,
         sampler='dynesty', nthreads=2,
-        npoints=200, duration=16, random_seed=42, dlogz=0.1,
+        npoints=400, duration=16, random_seed=42, dlogz=0.1,
         sampling_frequency=2048, resume=True, clean=False, n_check_point=100)
 
 # result = bilby.result.read_in_result('test_production/IMR_mem_inj_non_mem_rec_result.json')
