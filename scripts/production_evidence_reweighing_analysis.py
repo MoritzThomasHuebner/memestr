@@ -104,26 +104,26 @@ print('\n')
 print(average_reweighing_from_memory_log_bfs)
 print(population_reweighing_from_memory_log_bfs_uncertainties)
 
-plt.plot(matched_filter_snrs, average_injection_log_bfs, label='Log L at injected value')
 plt.errorbar(x=matched_filter_snrs, y=average_sampling_log_bfs, fmt='v',
              yerr=np.array(population_sampling_log_bfs_uncertainties), label='Sampling')
 plt.plot(matched_filter_snrs, average_reweighing_to_memory_log_bfs, 's',
-         label='Reweighing osc recovered')
+         label='Reweighting')
+plt.plot(matched_filter_snrs, average_injection_log_bfs, label='Log L at injected value')
 # plt.plot(matched_filter_snrs, average_reweighing_from_memory_log_bfs, 'o',
 #          label='Reweighing osc+memory\n recovered')
 
 plt.legend()
 plt.xlabel('Matched filter SNR')
 plt.ylabel('log BF')
-plt.savefig('reweighing/LogBFs vs SNR')
 plt.tight_layout()
+plt.savefig('reweighing/LogBFsVsSNR')
 plt.show()
 plt.clf()
 
 plt.plot(matched_filter_snrs, sampling_log_bfs_uncertainties, 'v',
-         label='Sampling uncertainty')
+         label='Sampling stat. uncertainty')
 plt.plot(matched_filter_snrs, reweighing_to_memory_log_bfs_uncertainties, 's',
-         label='Reweighing osc stat. uncertainty')
+         label='Reweighting stat. uncertainty')
 # plt.plot(matched_filter_snrs, reweighing_from_memory_log_bfs_uncertainties, 'o',
 #          label='Reweighing osc+memory \nstat. uncertainty')
 plt.semilogy()
@@ -131,6 +131,6 @@ plt.legend()
 plt.xlabel('Matched filter SNR')
 plt.ylabel('$\Delta$ log BF')
 plt.tight_layout()
-plt.savefig('reweighing/LogBFs errors vs SNR')
+plt.savefig('reweighing/LogBFsErrorsVsSNR')
 plt.show()
 plt.clf()
