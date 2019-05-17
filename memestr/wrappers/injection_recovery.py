@@ -343,9 +343,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
     #                                           weights=test_weights, parameters=params)
     logger.info(time_and_phase_shifted_result.posterior.log_likelihood)
-    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, original_result)
-    logger.info("Debug:" + str(debug_weights))
-    logger.info("Debug:" + str(debug_evidence))
+    # debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, original_result)
+    # logger.info("Debug:" + str(debug_weights))
+    # logger.info("Debug:" + str(debug_evidence))
 
     proper_evidence, proper_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
 
@@ -363,7 +363,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                   likelihood_memory=likelihood_memory,
                                                   likelihood_no_memory=likelihood_no_memory)
 
-    logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
+    # logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
 
     bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy], parameters=params)
