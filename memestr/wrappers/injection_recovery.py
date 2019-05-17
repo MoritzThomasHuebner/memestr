@@ -275,9 +275,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.label = 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
         time_and_phase_shifted_result.plot_corner(parameters=params)
-    else:
-        import sys
-        sys.exit(69)
+    # else:
+    #     import sys
+    #     sys.exit(69)
 
     time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
     original_result = result
