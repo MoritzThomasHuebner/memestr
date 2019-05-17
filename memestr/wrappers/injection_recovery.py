@@ -294,19 +294,20 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length samples original: ' + str(len(original_result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
 
-    log_l_ratios = []
-    for i in range(len(original_result.posterior)):
-        if i % 100 == 0:
-            logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
-        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
-        log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
+    if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
+        log_l_ratios = []
+        for i in range(len(original_result.posterior)):
+            if i % 100 == 0:
+                logger.info("{:0.2f}".format(i/len(original_result.posterior)*100) + "%")
+            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+                likelihood_imr_phenom.parameters[parameter] = original_result.posterior.iloc[i][parameter]
+            log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
 
-    original_result.posterior.log_likelihood = log_l_ratios
-    time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
-    time_and_phase_shifted_result_copy.posterior.log_likelihood = log_l_ratios
-    time_and_phase_shifted_result.save_to_file()
+        original_result.posterior.log_likelihood = log_l_ratios
+        time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
+        time_and_phase_shifted_result_copy.posterior.log_likelihood = log_l_ratios
+        time_and_phase_shifted_result.save_to_file()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
