@@ -252,7 +252,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             n_check_point=1000)
     result.save_to_file()
     logger.info(str(result))
-    result.posterior = bilby.gw.conversion.\
+    result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.save_to_file()
     params = deepcopy(settings.injection_parameters.__dict__)
@@ -263,21 +263,26 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['random_injection_parameters']
     # params = dict(phase=0.6674848916080516, geocent_time=13.567036458124411)
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
+    try:
+        time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+    except OSError:
+        time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result,
+                                                                                                ifo=ifos[0],
+                                                                                                verbose=True)
+        time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+        time_and_phase_shifted_result.save_to_file()
+        time_and_phase_shifted_result.plot_corner(parameters=params)
+    else:
+        import sys
+        sys.exit(69)
 
-    time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_proper(result=result, ifo=ifos[0],
-                                                                                            verbose=True)
-    time_and_phase_shifted_result.label = 'time_and_phase_shifted'
-    time_and_phase_shifted_result.save_to_file()
-    time_and_phase_shifted_result.plot_corner(parameters=params)
-
-    original_result = result
-    # original_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
     time_and_phase_shifted_result_copy = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
+    original_result = result
 
+    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
     samples = np.loadtxt(sample_file)
     log_likelihoods = 0.5 * samples[:, 1]  # extract second column
+
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_likelihoods.txt', log_likelihoods)
     logger.info('Filename base: ' + str(filename_base))
     logger.info('Length log likelihoods: ' + str(len(log_likelihoods)))
@@ -298,11 +303,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     original_result.posterior.log_likelihood = log_l_ratios
     time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
     time_and_phase_shifted_result_copy.posterior.log_likelihood = log_l_ratios
-    # time_and_phase_shifted_result.save_to_file()
-
-    # original_result.posterior.log_likelihood = log_likelihoods
-    # time_and_phase_shifted_result.posterior.log_likelihood = log_likelihoods
-    # time_and_phase_shifted_result_copy.posterior.log_likelihood = log_likelihoods
+    time_and_phase_shifted_result.save_to_file()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
@@ -339,14 +340,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
     #                                           weights=test_weights, parameters=params)
     logger.info(time_and_phase_shifted_result.posterior.log_likelihood)
-    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, time_and_phase_shifted_result)
-    logger.info(str("Debug:" + debug_weights))
-    logger.info(str("Debug:" + debug_evidence))
+    debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, original_result)
+    logger.info("Debug:" + str(debug_weights))
+    logger.info("Debug:" + str(debug_evidence))
 
     proper_evidence, proper_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
 
-    logger.info(str("Proper:" + debug_weights))
-    logger.info(str("Proper:" + debug_evidence))
+    logger.info("Proper:" + str(proper_weights))
+    logger.info("Proper:" + str(proper_evidence))
 
     try:
         time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighed',
