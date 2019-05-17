@@ -74,8 +74,11 @@ def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
 
 
 def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
+    injected_total_mass = ifo.injection_parameters['total_mass']
+    time_limit = 50 / injected_total_mass / gwmemory.utils.solar_mass / gwmemory.utils.GG * gwmemory.utils.cc ** 2
+
     phase_grid_init = np.linspace(0, np.pi, 30)
-    time_grid_init = np.linspace(-0.01, -0.0, 30)
+    time_grid_init = np.linspace(-time_limit, -0.0, 30)
 
     phase_grid_mesh, time_grid_mesh = np.meshgrid(phase_grid_init, time_grid_init)
 
