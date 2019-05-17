@@ -348,7 +348,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # logger.info("Debug:" + str(debug_evidence))
 
     proper_evidence, proper_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result)
-
+    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', proper_weights)
     logger.info("Proper:" + str(proper_weights))
     logger.info("Proper:" + str(proper_evidence))
 
