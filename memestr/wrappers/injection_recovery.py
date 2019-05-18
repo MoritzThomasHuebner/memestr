@@ -355,33 +355,28 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
+    likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
+    likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
-    # test_weights = [1.0] * len(time_and_phase_shifted_result.posterior)
-    # time_and_phase_shifted_result.plot_corner(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighed',
-    #                                           weights=test_weights, parameters=params)
-    # logger.info(time_and_phase_shifted_result.posterior.log_likelihood)
-    # debug_evidence, debug_weights = reweigh_by_likelihood(likelihood_imr_phenom, original_result)
-    # logger.info("Debug:" + str(debug_weights))
-    # logger.info("Debug:" + str(debug_evidence))
 
     try:
-        proper_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
+        hom_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
     except OSError:
-        proper_evidence, proper_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
+        hom_log_bf, hom_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
                                                                 shifts=shifts
                                                                 )
-        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', proper_weights)
-        logger.info("Proper weights:" + str(proper_weights))
-        logger.info("Proper LOG BF:" + str(proper_evidence))
+        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_weights)
+        logger.info("Proper weights:" + str(hom_weights))
+        logger.info("HOM LOG BF:" + str(hom_log_bf))
 
-    plt.scatter(proper_weights, maximum_overlaps)
+    plt.scatter(hom_weights, maximum_overlaps)
     plt.xlabel('log weights')
     plt.ylabel('max overlaps')
     plt.tight_layout()
     plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
     plt.clf()
 
-    norm_weights = np.exp(proper_weights)
+    norm_weights = np.exp(hom_weights)
     try:
         time_and_phase_shifted_result.plot_corner(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
@@ -403,7 +398,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                   shifts=shifts
                                                   )
 
-    # logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
 
     return time_and_phase_shifted_result
