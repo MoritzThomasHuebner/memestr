@@ -117,7 +117,7 @@ def calculate_overlaps_vectorized(full_wf, memory_generator, inc, phases, time_s
 def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
     time_limit = parameters['total_mass'] * 0.00025
     phase_grid_init = np.linspace(0, np.pi, 30)
-    time_grid_init = np.linspace(-time_limit, 0.0, 30)
+    time_grid_init = np.linspace(-time_limit, 0.0, 90)
 
     phase_grid_mesh, time_grid_mesh = np.meshgrid(phase_grid_init, time_grid_init)
 
@@ -161,18 +161,17 @@ def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
     time_shift = time_grid[max_n0]
     phase_shift = phase_grid[max_n0]
 
-    # test_wf = time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(
-    #     times=memory_generator.times, mass_ratio=memory_generator.q, total_mass=memory_generator.MTot,
-    #     s13=memory_generator.chi_1, s23=memory_generator.chi_2, luminosity_distance=memory_generator.distance,
-    #     inc=parameters['inc'], phase=parameters['phase'] + phase_shift)
-    # test_wf = wrap_by_n_indices(shift, test_wf)
-    # test_wf = wrap_by_time_shift_continuous(memory_generator.times, test_wf, time_shift)
-    #
+    test_wf = time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(
+        times=memory_generator.times, mass_ratio=memory_generator.q, total_mass=memory_generator.MTot,
+        s13=memory_generator.chi_1, s23=memory_generator.chi_2, luminosity_distance=memory_generator.distance,
+        inc=parameters['inc'], phase=parameters['phase'] + phase_shift, shift=shift)
+
+    test_wf = wrap_by_time_shift_continuous(memory_generator.times, test_wf, time_shift)
+
     # plt.plot(memory_generator.times, max_overlap_waveform['plus'])
     # plt.plot(memory_generator.times, test_wf['plus'])
     # plt.show()
     # plt.clf()
-    #
     #
     # plt.plot(memory_generator.times, max_overlap_waveform['plus'])
     # plt.plot(memory_generator.times, test_wf['plus'])
