@@ -66,6 +66,7 @@ def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
     time_shifted_waveform_fd = dict()
     for j in range(len(phases)):
         phase_shifted_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phases[j])
+
         # memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phases[j], gamma_lmlm=gamma_lmlm)
         # for mode in memory:
         #     phase_shifted_waveform[mode] += memory[mode]
@@ -82,6 +83,8 @@ def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
             for mode in ['plus', 'cross']:
                 time_shifted_waveform_fd[mode], _ = bilby.core.utils.nfft(time_shifted_waveform[mode],
                                                                           memory_generator.sampling_frequency)
+                indexes = np.where(frequency_array < 20)
+                time_shifted_waveform_fd[mode][indexes] = 0
             overlaps[target_index] = overlap_function(full_wf, time_shifted_waveform_fd,
                                                       frequency_array, power_spectral_density)
             if overlaps[target_index] == np.max(overlaps):
@@ -136,6 +139,7 @@ def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
                                                           sampling_frequency=2048,
                                                           units='mks',
                                                           )
+
     wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
     wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
 
