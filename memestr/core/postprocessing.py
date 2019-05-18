@@ -264,7 +264,7 @@ def calculate_log_weights(likelihood, posterior, **kwargs):
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood.parameters[parameter] = posterior.iloc[i][parameter]
-            if shifts:
+            if shifts is not None:
                 likelihood.waveform_generator.waveform_arguments['shift'] = shifts[i]
         reweighted_likelihood = likelihood.log_likelihood_ratio()
         original_likelihood = posterior.iloc[i]['log_likelihood']
@@ -301,7 +301,7 @@ def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memor
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood_memory.parameters[parameter] = posterior.iloc[i][parameter]
             likelihood_no_memory.parameters[parameter] = posterior.iloc[i][parameter]
-            if shifts:
+            if shifts is not None:
                 likelihood_memory.waveform_generator.waveform_arguments['shift'] = shifts[i]
                 likelihood_no_memory.waveform_generator.waveform_arguments['shift'] = shifts[i]
 
