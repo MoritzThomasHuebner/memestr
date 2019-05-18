@@ -292,7 +292,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
         time_and_phase_shifted_result.label = 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
-        time_and_phase_shifted_result.plot_corner(parameters=params)
+        time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params))
 
     time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
 
@@ -368,11 +368,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         proper_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
     except OSError:
         proper_evidence, proper_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                                # shifts=shifts
+                                                                shifts=shifts
                                                                 )
         np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', proper_weights)
-        logger.info("Proper:" + str(proper_weights))
-        logger.info("Proper:" + str(proper_evidence))
+        logger.info("Proper weights:" + str(proper_weights))
+        logger.info("Proper LOG BF:" + str(proper_evidence))
 
     plt.scatter(proper_weights, maximum_overlaps)
     plt.xlabel('log weights')
@@ -384,21 +384,26 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     norm_weights = np.exp(proper_weights)
     try:
         time_and_phase_shifted_result.plot_corner(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighed',
+            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
             weights=norm_weights,
-            parameters=params)
+            parameters=deepcopy(params))
+    except Exception as e:
+        print(e)
+
+    try:
+        bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy],
+                                        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted_multiple',
+                                        parameters=deepcopy(params))
     except Exception as e:
         print(e)
 
     reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
                                                   likelihood_memory=likelihood_memory,
                                                   likelihood_no_memory=likelihood_no_memory,
-                                                  # shifts=shifts
+                                                  shifts=shifts
                                                   )
 
     # logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
 
-    bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy],
-                                    parameters=params)
     return time_and_phase_shifted_result
