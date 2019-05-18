@@ -327,14 +327,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-        parameters=settings.injection_parameters.__dict__,
-        waveform_arguments=settings.waveform_arguments.__dict__,
+        parameters=deepcopy(settings.injection_parameters.__dict__),
+        waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
         time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-        parameters=settings.injection_parameters.__dict__,
-        waveform_arguments=settings.waveform_arguments.__dict__,
+        parameters=deepcopy(settings.injection_parameters.__dict__),
+        waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     priors_memory = deepcopy(settings.recovery_priors.proper_dict())
