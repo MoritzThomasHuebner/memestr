@@ -278,6 +278,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
         maximum_overlaps = np.loadtxt(
             str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
+        shifts = np.loadtxt(
+            str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
     except Exception as e:
         logger.warning(e)
         time_and_phase_shifted_result, shifts, overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
