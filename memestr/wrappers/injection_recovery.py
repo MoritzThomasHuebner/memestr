@@ -307,7 +307,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length samples original: ' + str(len(result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
 
-    if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
+    # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
+    if True:
         log_l_ratios = []
         for i in range(len(result.posterior)):
             if i % 100 == 0:
@@ -365,7 +366,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         proper_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
     except OSError:
         proper_evidence, proper_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                                # shifts=shifts
+                                                                shifts=shifts
                                                                 )
         np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', proper_weights)
         logger.info("Proper:" + str(proper_weights))
@@ -390,7 +391,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
                                                   likelihood_memory=likelihood_memory,
                                                   likelihood_no_memory=likelihood_no_memory,
-                                                  # shifts=shifts
+                                                  shifts=shifts
                                                   )
 
     # logger.info("NR Sur LOG BF: " + str(debug_evidence - time_and_phase_shifted_result.log_evidence))
