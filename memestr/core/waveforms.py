@@ -34,7 +34,7 @@ def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total
         waveform[mode] += memory[mode]
 
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    return wrap_by_n_indices(shift=shift, waveform=waveform)
+    return wrap_by_n_indices(shift=int(shift), waveform=waveform)
 
 
 def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
@@ -55,7 +55,7 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times
     waveform = apply_window(waveform, times, kwargs)
     shift = kwargs.get('shift', None)
     if shift:
-        return wrap_by_n_indices(shift=shift, waveform=waveform)
+        return wrap_by_n_indices(shift=int(shift), waveform=waveform)
     else:
         return wrap_at_maximum(waveform)
 
