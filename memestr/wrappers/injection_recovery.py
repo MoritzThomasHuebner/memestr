@@ -275,7 +275,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     try:
         time_and_phase_shifted_result = bilby.result.read_in_result(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-        shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+        np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
         maximum_overlaps = np.loadtxt(
             str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
     except Exception as e:
@@ -284,7 +284,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
             result=result,
             ifo=ifos[0],
             verbose=True)
-        shifts = np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
+        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
         maximum_overlaps = np.savetxt(
             str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', overlaps)
 

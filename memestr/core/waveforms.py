@@ -57,7 +57,8 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times
     if shift:
         return wrap_by_n_indices(shift=int(shift), waveform=waveform)
     else:
-        return wrap_at_maximum(waveform)
+        waveform, _ = wrap_at_maximum(waveform)
+        return waveform
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
