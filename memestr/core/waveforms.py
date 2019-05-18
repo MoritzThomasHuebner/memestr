@@ -49,8 +49,9 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, to
 
 def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times, mass_ratio, total_mass, s13, s23,
                                                                            luminosity_distance, inc, phase, **kwargs):
-    waveform = _evaluate_hybrid_surrogate(times, mass_ratio, total_mass, s13, s23,
-                                          luminosity_distance, inc, phase, fold_in_memory=False, kwargs=kwargs)
+    waveform = _evaluate_hybrid_surrogate(times=times, mass_ratio=mass_ratio, total_mass=total_mass, s13=s13, s23=s23,
+                                          luminosity_distance=luminosity_distance, inc=inc, phase=phase,
+                                          fold_in_memory=False, kwargs=kwargs)
     waveform = apply_window(waveform, times, kwargs)
     shift = kwargs.get('shift', None)
     if shift:
