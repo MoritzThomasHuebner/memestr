@@ -358,7 +358,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
-
     try:
         hom_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
     except OSError:
