@@ -305,6 +305,8 @@ def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memor
                 likelihood_memory.waveform_generator.waveform_arguments['shift'] = shifts[i]
                 likelihood_no_memory.waveform_generator.waveform_arguments['shift'] = shifts[i]
 
-            weight = likelihood_memory.log_likelihood() - likelihood_no_memory.log_likelihood()
+            weight_1 = likelihood_memory.log_likelihood()
+            weight_2 = likelihood_no_memory.log_likelihood()
+            weight = weight_1 - weight_2
         weights.append(weight)
     return logsumexp(weights)
