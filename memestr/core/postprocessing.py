@@ -9,7 +9,7 @@ from scipy.misc import logsumexp
 from scipy.optimize import minimize
 
 from memestr.core.waveforms import apply_time_shift_frequency_domain, nfft_vectorizable
-from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory
+from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory, wrap_by_n_indices
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 
@@ -56,18 +56,16 @@ def calculate_overlaps_optimizable(new_params, *args):
 
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-
+    waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
     duration = memory_generator.times[-1] - memory_generator.times[0]
-    delta_t = memory_generator.times[1] - memory_generator.times[0]
-    absolute_shift = delta_t * shift
 
     waveform_fd = dict()
     for mode in ['plus', 'cross']:
         waveform_fd[mode], frequency_array = bilby.core.utils.nfft(waveform[mode], memory_generator.sampling_frequency)
         indexes = np.where(frequency_array < 20)
         waveform_fd[mode][indexes] = 0
-    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequency_array, duration=duration,
-                                                    shift=time_shift+absolute_shift)
+    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequency_array,
+                                                    duration=duration, shift=time_shift)
 
     return -overlap_function(a=full_wf, b=waveform_fd, frequency=frequency_array,
                              psd=power_spectral_density)

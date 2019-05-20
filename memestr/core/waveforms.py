@@ -38,6 +38,30 @@ def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total
     return wrap_by_n_indices(shift=int(shift), waveform=waveform)
 
 
+def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
+                                                             luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+
+    waveform, memory = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                                  luminosity_distance=luminosity_distance, phase=phase,
+                                                  s13=s13, s23=s23, kwargs=kwargs)
+    shift = kwargs.get('shift', None)
+    if not shift:
+        # Do windowing and shifting separately without memory in order to be consistent with waveform without memory case
+        _, shift = wrap_at_maximum(waveform=waveform)
+
+    for mode in memory:
+        waveform[mode] += memory[mode]
+
+    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
+    time_shift = shift * (series.time_array[1] - series.time_array[0])
+
+    waveform_fd = nfft_vectorizable(waveform, series.sampling_frequency)
+    return apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequencies,
+                                             duration=series.duration, shift=time_shift)
+
+
 def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
                                                            luminosity_distance, inc, phase, **kwargs):
     waveform = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
@@ -78,8 +102,8 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times
         return waveform
 
 
-def frequencies_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(frequencies, mass_ratio, total_mass, s13, s23,
-                                                                                  luminosity_distance, inc, phase, **kwargs):
+def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(frequencies, mass_ratio, total_mass, s13, s23,
+                                                                                luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     waveform = _evaluate_hybrid_surrogate(times=series.time_array, mass_ratio=mass_ratio, total_mass=total_mass, s13=s13, s23=s23,
