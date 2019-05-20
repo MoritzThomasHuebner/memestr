@@ -272,27 +272,27 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['random_injection_parameters']
     # params = dict(phase=0.6674848916080516, geocent_time=13.567036458124411)
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
-    try:
-        time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-        np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
-        maximum_overlaps = np.loadtxt(
-            str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
-        shifts = np.loadtxt(
-            str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
-    except Exception as e:
-        logger.warning(e)
-        time_and_phase_shifted_result, shifts, overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
-            result=result,
-            ifo=ifos[0],
-            verbose=True)
-        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
-        maximum_overlaps = np.savetxt(
-            str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', overlaps)
 
-        time_and_phase_shifted_result.label = 'time_and_phase_shifted'
-        time_and_phase_shifted_result.save_to_file()
-        time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params))
+    # try:
+    #     time_and_phase_shifted_result = bilby.result.read_in_result(
+    #         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+    #     np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+    #     maximum_overlaps = np.loadtxt(
+    #         str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
+    #     shifts = np.loadtxt(
+    #         str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+    # except Exception as e:
+    #     logger.warning(e)
+    time_and_phase_shifted_result, shifts, overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
+        result=result,
+        ifo=ifos[0],
+        verbose=True)
+    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
+    maximum_overlaps = np.savetxt(
+        str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', overlaps)
+    time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+    time_and_phase_shifted_result.save_to_file()
+    time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params))
 
     time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
 
@@ -308,7 +308,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length posterior shifted: ' + str(len(time_and_phase_shifted_result.posterior)))
     logger.info('Length samples original: ' + str(len(result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
-
+    import sys
+    sys.exit(0)
     # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
     if True:
         log_l_ratios = []
