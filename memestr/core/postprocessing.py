@@ -146,16 +146,29 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                           duration=16, sampling_frequency=2048,
                           waveform_arguments=dict(alpha=0.1))
 
-    memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
-                                                          total_mass=parameters['total_mass'],
-                                                          spin_1=parameters['s13'],
-                                                          spin_2=parameters['s23'],
-                                                          times=recovery_wg.time_array,
-                                                          distance=parameters['luminosity_distance'],
-                                                          minimum_frequency=10,
-                                                          sampling_frequency=2048,
-                                                          units='mks',
-                                                          )
+    try:
+        memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
+                                                              total_mass=parameters['total_mass'],
+                                                              spin_1=parameters['s13'],
+                                                              spin_2=parameters['s23'],
+                                                              times=recovery_wg.time_array,
+                                                              distance=parameters['luminosity_distance'],
+                                                              minimum_frequency=10,
+                                                              sampling_frequency=2048,
+                                                              units='mks',
+                                                              )
+    except ValueError as e:
+        logger.warning(e)
+        memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
+                                                              total_mass=parameters['total_mass'],
+                                                              spin_1=parameters['s13'],
+                                                              spin_2=parameters['s23'],
+                                                              times=recovery_wg.time_array,
+                                                              distance=parameters['luminosity_distance'],
+                                                              minimum_frequency=20,
+                                                              sampling_frequency=2048,
+                                                              units='mks',
+                                                              )
 
     wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
     wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
@@ -169,17 +182,20 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     iterations = 0
     args = (full_wf, memory_generator, parameters['inc'],
             recovery_wg.frequency_array, ifo.power_spectral_density, shift, 0.1)
+    init_guess_time = -0.5 * time_limit
+    init_guess_phase = np.pi * 0.5
+    x0 = np.array([init_guess_time, init_guess_phase])
+    bounds = [(-time_limit, 0.), (0, 2 * np.pi)]
 
     while maximum_overlap < 0.95:
-        init_guess_time = -np.random.random() * time_limit
-        init_guess_phase = np.pi*np.random.random()
-        x0 = np.array([init_guess_time, init_guess_phase])
-        bounds = [(-time_limit, 0.), (0, 2 * np.pi)]
         res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                        tol=0.00001)
         time_shift, phase_shift = res.x[0], res.x[1]
         maximum_overlap = -res.fun
         iterations = res.nit
+        init_guess_time = -np.random.random() * time_limit
+        init_guess_phase = np.pi*np.random.random()
+        x0 = np.array([init_guess_time, init_guess_phase])
         counter += 1
         if counter > 99:
             break
