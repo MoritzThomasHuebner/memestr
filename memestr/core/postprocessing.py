@@ -120,11 +120,11 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
 
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
-    counter = 0
-    maximum_overlap = 0
-    time_shift = 0
-    phase_shift = 0
-    iterations = 0
+    counter = 0.
+    maximum_overlap = 0.
+    time_shift = 0.
+    phase_shift = 0.
+    iterations = 0.
     alpha = 0.1
     args = (full_wf, memory_generator, parameters['inc'],
             recovery_wg.frequency_array, ifo.power_spectral_density, shift, alpha)
@@ -146,77 +146,75 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         if counter > 20:
             break
 
-    test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
-    test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
-    test_waveform_fd = dict()
+    # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
+    # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
+    # test_waveform_fd = dict()
 
-    for mode in ['plus', 'cross']:
-        test_waveform_fd[mode], frequency_array = bilby.core.utils.nfft(test_waveform[mode], memory_generator.sampling_frequency)
-        indexes = np.where(frequency_array < 20)
-        test_waveform_fd[mode][indexes] = 0
-    duration = memory_generator.times[-1] - memory_generator.times[0]
-    delta_t = memory_generator.times[1] - memory_generator.times[0]
-    absolute_shift = delta_t * shift
-    test_waveform_fd['plus'] = test_waveform_fd['plus']*np.exp(-2j * np.pi * (duration + time_shift + absolute_shift) * frequency_array)
-    test_waveform_fd['cross'] = test_waveform_fd['cross']*np.exp(-2j * np.pi * (duration + time_shift + absolute_shift) * frequency_array)
-
-    test_waveform['plus'] = bilby.core.utils.infft(test_waveform_fd['plus'], sampling_frequency=2048)
-    test_waveform['cross'] = bilby.core.utils.infft(test_waveform_fd['cross'], sampling_frequency=2048)
-    plt.plot(test_waveform['plus'])
-    plt.show()
-    plt.clf()
-
-    print(overlap_function(test_waveform_fd, full_wf, recovery_wg.frequency_array, ifo.power_spectral_density))
-
-    plt.loglog()
-    plt.xlim(20, 1024)
-    plt.plot(recovery_wg.frequency_array, np.abs(full_wf['plus']))
-    plt.plot(recovery_wg.frequency_array, np.abs(test_waveform_fd['plus']))
-    plt.show()
-    plt.clf()
-
-    plt.loglog()
-    plt.xlim(20, 1024)
-    plt.plot(recovery_wg.frequency_array, np.abs(full_wf['cross']))
-    plt.plot(recovery_wg.frequency_array, np.abs(test_waveform_fd['cross']))
-    plt.show()
-    plt.clf()
-
-    psd_interp = ifo.power_spectral_density.power_spectral_density_interpolated(recovery_wg.frequency_array)
-
-    plt.loglog()
-    plt.xlim(20, 1024)
-    plt.plot(recovery_wg.frequency_array, np.abs(full_wf['plus'] - test_waveform_fd['plus'])/np.sqrt(psd_interp))
-    plt.show()
-    plt.clf()
-
-    plt.loglog()
-    plt.xlim(20, 1024)
-    plt.plot(recovery_wg.frequency_array, np.abs(full_wf['cross'] - test_waveform_fd['cross'])/np.sqrt(psd_interp))
-    plt.show()
-    plt.clf()
-
-    plt.semilogx()
-    plt.xlim(20, 1024)
-    plt.plot(recovery_wg.frequency_array, np.angle(full_wf['plus']))
-    plt.plot(recovery_wg.frequency_array, np.angle(test_waveform_fd['plus']))
-    plt.show()
-    plt.clf()
-
-    plt.semilogx()
-    plt.xlim(20, 1024)
-    plt.plot(recovery_wg.frequency_array, np.angle(full_wf['cross']))
-    plt.plot(recovery_wg.frequency_array, np.angle(test_waveform_fd['cross']))
-    plt.show()
-    plt.clf()
-
+    # for mode in ['plus', 'cross']:
+    #     test_waveform_fd[mode], frequency_array = bilby.core.utils.nfft(test_waveform[mode], memory_generator.sampling_frequency)
+    #     indexes = np.where(frequency_array < 20)
+    #     test_waveform_fd[mode][indexes] = 0
+    # duration = memory_generator.times[-1] - memory_generator.times[0]
+    # delta_t = memory_generator.times[1] - memory_generator.times[0]
+    # absolute_shift = delta_t * shift
+    # test_waveform_fd['plus'] = test_waveform_fd['plus']*np.exp(-2j * np.pi * (duration + time_shift + absolute_shift) * frequency_array)
+    # test_waveform_fd['cross'] = test_waveform_fd['cross']*np.exp(-2j * np.pi * (duration + time_shift + absolute_shift) * frequency_array)
+    #
+    # test_waveform['plus'] = bilby.core.utils.infft(test_waveform_fd['plus'], sampling_frequency=2048)
+    # test_waveform['cross'] = bilby.core.utils.infft(test_waveform_fd['cross'], sampling_frequency=2048)
+    # plt.plot(test_waveform['plus'])
+    # plt.show()
+    # plt.clf()
+    #
+    # print(overlap_function(test_waveform_fd, full_wf, recovery_wg.frequency_array, ifo.power_spectral_density))
+    #
+    # plt.loglog()
+    # plt.xlim(20, 1024)
+    # plt.plot(recovery_wg.frequency_array, np.abs(full_wf['plus']))
+    # plt.plot(recovery_wg.frequency_array, np.abs(test_waveform_fd['plus']))
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.loglog()
+    # plt.xlim(20, 1024)
+    # plt.plot(recovery_wg.frequency_array, np.abs(full_wf['cross']))
+    # plt.plot(recovery_wg.frequency_array, np.abs(test_waveform_fd['cross']))
+    # plt.show()
+    # plt.clf()
+    #
+    # psd_interp = ifo.power_spectral_density.power_spectral_density_interpolated(recovery_wg.frequency_array)
+    #
+    # plt.loglog()
+    # plt.xlim(20, 1024)
+    # plt.plot(recovery_wg.frequency_array, np.abs(full_wf['plus'] - test_waveform_fd['plus'])/np.sqrt(psd_interp))
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.loglog()
+    # plt.xlim(20, 1024)
+    # plt.plot(recovery_wg.frequency_array, np.abs(full_wf['cross'] - test_waveform_fd['cross'])/np.sqrt(psd_interp))
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.semilogx()
+    # plt.xlim(20, 1024)
+    # plt.plot(recovery_wg.frequency_array, np.angle(full_wf['plus']))
+    # plt.plot(recovery_wg.frequency_array, np.angle(test_waveform_fd['plus']))
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.semilogx()
+    # plt.xlim(20, 1024)
+    # plt.plot(recovery_wg.frequency_array, np.angle(full_wf['cross']))
+    # plt.plot(recovery_wg.frequency_array, np.angle(test_waveform_fd['cross']))
+    # plt.show()
+    # plt.clf()
+    #
     if verbose:
         logger.info("Maximum overlap: " + str(maximum_overlap))
         logger.info("Iterations " + str(iterations))
         logger.info("Time shift:" + str(time_shift))
         logger.info("Phase shift:" + str(phase_shift))
-    import sys
-    sys.exit(0)
 
     return time_shift, phase_shift, shift, maximum_overlap
 
