@@ -276,11 +276,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # try:
     #     time_and_phase_shifted_result = bilby.result.read_in_result(
     #         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-    #     np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
-    #     maximum_overlaps = np.loadtxt(
-    #         str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
-    #     shifts = np.loadtxt(
-    #         str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+    #     maximum_overlaps = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
+    #     shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
     # except Exception as e:
     #     logger.warning(e)
     time_and_phase_shifted_result, shifts, overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
@@ -288,8 +285,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         ifo=ifos[0],
         verbose=True)
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
-    maximum_overlaps = np.savetxt(
-        str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', overlaps)
+    maximum_overlaps = np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', overlaps)
     time_and_phase_shifted_result.label = 'time_and_phase_shifted'
     time_and_phase_shifted_result.save_to_file()
     time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params))
@@ -308,8 +304,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length posterior shifted: ' + str(len(time_and_phase_shifted_result.posterior)))
     logger.info('Length samples original: ' + str(len(result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
-    import sys
-    sys.exit(0)
+
     # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
     if True:
         log_l_ratios = []
@@ -359,15 +354,17 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
-    try:
-        hom_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
-    except OSError:
-        hom_log_bf, hom_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                                shifts=shifts
-                                                                )
-        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_weights)
-        logger.info("Proper weights:" + str(hom_weights))
-        logger.info("HOM LOG BF:" + str(hom_log_bf))
+    # try:
+    #     hom_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
+    # except OSError:
+    hom_log_bf, hom_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
+                                                            shifts=shifts
+                                                            )
+    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_weights)
+    logger.info("Proper weights:" + str(hom_weights))
+    logger.info("HOM LOG BF:" + str(hom_log_bf))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
+               X=np.array([hom_log_bf]))
 
     plt.scatter(hom_weights, maximum_overlaps)
     plt.xlabel('log weights')
@@ -399,5 +396,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                   )
 
     logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
+               X=np.array([reweighed_log_bf]))
 
     return time_and_phase_shifted_result
