@@ -1,3 +1,4 @@
+import bilby
 import numpy as np
 import gwmemory
 import copy
@@ -47,6 +48,22 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, to
     return waveform, shift
 
 
+def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
+                                                                luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+    waveform = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                          luminosity_distance=luminosity_distance, phase=phase, s13=s13, s23=s23,
+                                          kwargs=kwargs, fold_in_memory=False)
+    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
+    _, shift = wrap_at_maximum(waveform)
+    time_shift = shift * (series.time_array[1] - series.time_array[0])
+    waveform_fd = nfft_vectorizable(waveform, series.sampling_frequency)
+    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
+                                                    duration=series.duration, shift=time_shift)
+    return waveform_fd, shift
+
+
 def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times, mass_ratio, total_mass, s13, s23,
                                                                            luminosity_distance, inc, phase, **kwargs):
     waveform = _evaluate_hybrid_surrogate(times=times, mass_ratio=mass_ratio, total_mass=total_mass, s13=s13, s23=s23,
@@ -59,6 +76,27 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(times
     else:
         waveform, _ = wrap_at_maximum(waveform)
         return waveform
+
+
+def frequencies_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(frequencies, mass_ratio, total_mass, s13, s23,
+                                                                                  luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+    waveform = _evaluate_hybrid_surrogate(times=series.time_array, mass_ratio=mass_ratio, total_mass=total_mass, s13=s13, s23=s23,
+                                          luminosity_distance=luminosity_distance, inc=inc, phase=phase,
+                                          fold_in_memory=False, kwargs=kwargs)
+    waveform = apply_window(waveform, series.time_array, kwargs)
+    waveform_fd = nfft_vectorizable(waveform, series.sampling_frequency)
+    shift = kwargs.get('shift', None)
+    if shift is not None:
+        time_shift = shift * (series.time_array[1] - series.time_array[0])
+    else:
+        _, shift = wrap_at_maximum(waveform)
+        time_shift = shift * (series.time_array[1] - series.time_array[0])
+    return apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
+                                             duration=series.duration, shift=time_shift)
+
+
 
 
 def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -233,3 +271,17 @@ wrap_by_time_shift_continuous_vectorized = np.vectorize(pyfunc=wrap_by_time_shif
                                                         excluded=['times', 'time_shift'],
                                                         otypes=[np.ndarray])
 _get_new_times_vectorized = np.vectorize(pyfunc=_get_new_times, excluded=['times'])
+
+
+def apply_time_shift_frequency_domain(waveform, frequency_array, duration, shift):
+    for mode in waveform:
+        waveform[mode] = waveform[mode] * np.exp(-2j * np.pi * (duration + shift) * frequency_array)
+    return waveform
+
+
+def nfft_vectorizable(time_domain_strain, sampling_frequency):
+    frequency_domain_strain = dict()
+    for mode in time_domain_strain:
+        frequency_domain_strain[mode] = np.fft.rfft(time_domain_strain[mode])
+        frequency_domain_strain[mode] /= sampling_frequency
+    return frequency_domain_strain

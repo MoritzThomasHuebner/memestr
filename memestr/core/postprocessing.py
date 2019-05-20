@@ -1,18 +1,15 @@
 from copy import deepcopy
-import time
 
-import numpy as np
-import bilby.gw.utils as utils
-import matplotlib.pyplot as plt
 import bilby
+import bilby.gw.utils as utils
 import gwmemory
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy.misc import logsumexp
 from scipy.optimize import minimize
 
-from memestr.core.waveforms import wrap_by_time_shift_continuous, wrap_by_time_shift_continuous_vectorized
-from .waveforms import wrap_at_maximum, apply_window, wrap_by_n_indices, apply_window_vectorized, \
-    wrap_by_n_indices_vectorized, time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return, \
-    frequency_domain_IMRPhenomD_waveform_without_memory
+from memestr.core.waveforms import apply_time_shift_frequency_domain, nfft_vectorizable
+from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 
@@ -46,14 +43,6 @@ def overlap_function(a, b, frequency, psd):
     return overlap.real
 
 
-def nfft_vectorizable(time_domain_strain, sampling_frequency):
-    frequency_domain_strain = dict()
-    for mode in time_domain_strain:
-        frequency_domain_strain[mode] = np.fft.rfft(time_domain_strain[mode])
-        frequency_domain_strain[mode] /= sampling_frequency
-    return frequency_domain_strain
-
-
 overlap_function_vectorized = np.vectorize(pyfunc=overlap_function, excluded=['a', 'frequency', 'psd'])
 nfft_vectorized = np.vectorize(pyfunc=nfft_vectorizable, excluded=['sampling_frequency'])
 
@@ -68,16 +57,17 @@ def calculate_overlaps_optimizable(new_params, *args):
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
+    duration = memory_generator.times[-1] - memory_generator.times[0]
+    delta_t = memory_generator.times[1] - memory_generator.times[0]
+    absolute_shift = delta_t * shift
+
     waveform_fd = dict()
     for mode in ['plus', 'cross']:
         waveform_fd[mode], frequency_array = bilby.core.utils.nfft(waveform[mode], memory_generator.sampling_frequency)
         indexes = np.where(frequency_array < 20)
         waveform_fd[mode][indexes] = 0
-    duration = memory_generator.times[-1] - memory_generator.times[0]
-    delta_t = memory_generator.times[1] - memory_generator.times[0]
-    absolute_shift = delta_t * shift
-    waveform_fd['plus'] = waveform_fd['plus']*np.exp(-2j * np.pi * (duration + time_shift + absolute_shift) * frequency_array)
-    waveform_fd['cross'] = waveform_fd['cross']*np.exp(-2j * np.pi * (duration + time_shift + absolute_shift) * frequency_array)
+    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequency_array, duration=duration,
+                                                    shift=time_shift+absolute_shift)
 
     return -overlap_function(a=full_wf, b=waveform_fd, frequency=frequency_array,
                              psd=power_spectral_density)
@@ -131,7 +121,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     init_guess_time = -0.5 * time_limit
     init_guess_phase = np.pi * 0.5
     x0 = np.array([init_guess_time, init_guess_phase])
-    bounds = [(-time_limit, 0.), (0, 2 * np.pi)]
+    bounds = [(-time_limit, 0), (0, 2 * np.pi)]
 
     while maximum_overlap < 0.98:
         res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
