@@ -178,7 +178,7 @@ def _evaluate_imr_phenom_d_with_memory(times, total_mass, mass_ratio, inc, lumin
 
 def get_alpha(kwargs, times):
     if 'alpha' in kwargs:
-        if kwargs['alpha']:
+        if kwargs['alpha'] is not None:
             return kwargs['alpha']
     return roll_off / (times[-1] - times[0])
 
