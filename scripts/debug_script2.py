@@ -26,9 +26,7 @@ ifo = ifos[0]
 
 time_and_phase_shifted_result = memestr.core.postprocessing.\
     adjust_phase_and_geocent_time_complete_posterior_proper(result=result,
-                                                            ifo=ifo,
-                                                            plot=True,
-                                                            verbose=True)
+                                                            ifo=ifo)
 time_and_phase_shifted_result.label = 'time_and_phase_shifted'
 time_and_phase_shifted_result.save_to_file()
 time_and_phase_shifted_result.plot_corner(parameters=injected_params)

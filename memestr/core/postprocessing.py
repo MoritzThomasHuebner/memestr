@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import bilby
 import gwmemory
 from scipy.misc import logsumexp
+from scipy.optimize import minimize
 
 from memestr.core.waveforms import wrap_by_time_shift_continuous, wrap_by_time_shift_continuous_vectorized
 from .waveforms import wrap_at_maximum, apply_window, wrap_by_n_indices, apply_window_vectorized, \
@@ -57,72 +58,88 @@ overlap_function_vectorized = np.vectorize(pyfunc=overlap_function, excluded=['a
 nfft_vectorized = np.vectorize(pyfunc=nfft_vectorizable, excluded=['sampling_frequency'])
 
 
-def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
-                       frequency_array, power_spectral_density, shift, **kwargs):
+# def calculate_overlaps(full_wf, memory_generator, inc, phases, time_shifts,
+#                        frequency_array, power_spectral_density, shift, **kwargs):
+#     times = memory_generator.times
+#     kwargs['alpha'] = 0.1
+#     overlaps = np.zeros(len(phases) * len(time_shifts))
+#     max_overlap_wf = None
+#     time_shifted_waveform_fd = dict()
+#     for j in range(len(phases)):
+#         phase_shifted_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phases[j])
+#         phase_shifted_waveform = apply_window(waveform=phase_shifted_waveform, times=times, kwargs=kwargs)
+#         phase_shifted_waveform = wrap_by_n_indices(shift=shift, waveform=phase_shifted_waveform)
+#
+#         for i in range(len(time_shifts)):
+#             target_index = i * len(phases) + j
+#             time_shifted_waveform = wrap_by_time_shift_continuous(
+#                 times=memory_generator.times,
+#                 waveform=phase_shifted_waveform,
+#                 time_shift=time_shifts[i])
+#
+#             for mode in ['plus', 'cross']:
+#                 time_shifted_waveform_fd[mode], _ = bilby.core.utils.nfft(time_shifted_waveform[mode],
+#                                                                           memory_generator.sampling_frequency)
+#                 indexes = np.where(frequency_array < 20)
+#                 time_shifted_waveform_fd[mode][indexes] = 0
+#             overlaps[target_index] = overlap_function(full_wf, time_shifted_waveform_fd,
+#                                                       frequency_array, power_spectral_density)
+#             if overlaps[target_index] == np.max(overlaps):
+#                 max_overlap_wf = time_shifted_waveform
+#     return overlaps, max_overlap_wf
+
+
+# def calculate_overlaps_vectorized(full_wf, memory_generator, inc, phases, time_shifts,
+#                                   frequency_array, power_spectral_density, shift, **kwargs):
+#     times = memory_generator.times
+#     kwargs['alpha'] = 0.1
+#
+#     phase_shifted_waveform = gwmemory.waveforms.combine_modes_vectorized(memory_generator.h_lm, inc, phases)
+#     phase_shifted_waveform = apply_window_vectorized(waveform=phase_shifted_waveform, times=times, kwargs=kwargs)
+#     phase_shifted_waveform = wrap_by_n_indices_vectorized(shift=shift, waveform=phase_shifted_waveform)
+#
+#     time_shifted_waveform = np.array([])
+#     for ts in time_shifts:
+#         time_shifted_waveform = np.append(time_shifted_waveform, wrap_by_time_shift_continuous_vectorized(
+#             times=memory_generator.times,
+#             waveform=phase_shifted_waveform,
+#             time_shift=ts))
+#
+#     time_shifted_waveform = nfft_vectorized(time_shifted_waveform, memory_generator.sampling_frequency)
+#
+#     return overlap_function_vectorized(a=full_wf, b=time_shifted_waveform, frequency=frequency_array,
+#                                        psd=power_spectral_density)
+#
+
+def calculate_overlaps_optimizable(new_params, *args):
+    time_shift = new_params[0]
+    phase = new_params[1]
+    full_wf, memory_generator, inc, frequency_array, power_spectral_density, shift, alpha = args
     times = memory_generator.times
-    kwargs['alpha'] = 0.1
-    overlaps = np.zeros(len(phases) * len(time_shifts))
-    max_overlap_wf = None
-    time_shifted_waveform_fd = dict()
-    for j in range(len(phases)):
-        phase_shifted_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phases[j])
+    kwargs = dict(alpha=alpha)
 
-        # memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phases[j], gamma_lmlm=gamma_lmlm)
-        # for mode in memory:
-        #     phase_shifted_waveform[mode] += memory[mode]
-        phase_shifted_waveform = apply_window(waveform=phase_shifted_waveform, times=times, kwargs=kwargs)
-        phase_shifted_waveform = wrap_by_n_indices(shift=shift, waveform=phase_shifted_waveform)
+    phase_shifted_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
+    phase_shifted_waveform = apply_window(waveform=phase_shifted_waveform, times=times, kwargs=kwargs)
+    phase_shifted_waveform = wrap_by_n_indices(shift=shift, waveform=phase_shifted_waveform)
 
-        for i in range(len(time_shifts)):
-            target_index = i * len(phases) + j
-            time_shifted_waveform = wrap_by_time_shift_continuous(
-                times=memory_generator.times,
-                waveform=phase_shifted_waveform,
-                time_shift=time_shifts[i])
-
-            for mode in ['plus', 'cross']:
-                time_shifted_waveform_fd[mode], _ = bilby.core.utils.nfft(time_shifted_waveform[mode],
-                                                                          memory_generator.sampling_frequency)
-                indexes = np.where(frequency_array < 20)
-                time_shifted_waveform_fd[mode][indexes] = 0
-            overlaps[target_index] = overlap_function(full_wf, time_shifted_waveform_fd,
-                                                      frequency_array, power_spectral_density)
-            if overlaps[target_index] == np.max(overlaps):
-                max_overlap_wf = time_shifted_waveform
-    return overlaps, max_overlap_wf
-
-
-def calculate_overlaps_vectorized(full_wf, memory_generator, inc, phases, time_shifts,
-                                  frequency_array, power_spectral_density, shift, **kwargs):
-    times = memory_generator.times
-    kwargs['alpha'] = 0.1
-
-    phase_shifted_waveform = gwmemory.waveforms.combine_modes_vectorized(memory_generator.h_lm, inc, phases)
-    phase_shifted_waveform = apply_window_vectorized(waveform=phase_shifted_waveform, times=times, kwargs=kwargs)
-    phase_shifted_waveform = wrap_by_n_indices_vectorized(shift=shift, waveform=phase_shifted_waveform)
-
-    time_shifted_waveform = np.array([])
-    for ts in time_shifts:
-        time_shifted_waveform = np.append(time_shifted_waveform, wrap_by_time_shift_continuous_vectorized(
+    time_shifted_waveform = wrap_by_time_shift_continuous(
             times=memory_generator.times,
             waveform=phase_shifted_waveform,
-            time_shift=ts))
+            time_shift=time_shift)
 
-    time_shifted_waveform = nfft_vectorized(time_shifted_waveform, memory_generator.sampling_frequency)
+    time_shifted_waveform_fd = nfft_vectorizable(time_shifted_waveform, memory_generator.sampling_frequency)
+    for mode in ['plus', 'cross']:
+        time_shifted_waveform_fd[mode], _ = bilby.core.utils.nfft(time_shifted_waveform[mode],
+                                                                  memory_generator.sampling_frequency)
+        indexes = np.where(frequency_array < 20)
+        time_shifted_waveform_fd[mode][indexes] = 0
 
-    return overlap_function_vectorized(a=full_wf, b=time_shifted_waveform, frequency=frequency_array,
-                                       psd=power_spectral_density)
+    return -overlap_function(a=full_wf, b=time_shifted_waveform_fd, frequency=frequency_array,
+                             psd=power_spectral_density)
 
 
-def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
+def get_time_and_phase_shift(parameters, ifo, verbose=False):
     time_limit = parameters['total_mass'] * 0.00025
-    phase_grid_init = np.linspace(0, np.pi, 30)
-    time_grid_init = np.linspace(-time_limit, 0.0, 90)
-
-    phase_grid_mesh, time_grid_mesh = np.meshgrid(phase_grid_init, time_grid_init)
-
-    phase_grid = phase_grid_mesh.flatten()
-    time_grid = time_grid_mesh.flatten()
 
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
@@ -145,59 +162,31 @@ def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
 
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
-    phases = (phase_grid_init + parameters['phase']) % (2 * np.pi)
-    # import time
-    # tic = time.time()
-    overlaps, max_overlap_waveform = calculate_overlaps(full_wf=full_wf, memory_generator=memory_generator,
-                                                        inc=parameters['inc'],
-                                                        phases=phases, time_shifts=time_grid_init, shift=shift,
-                                                        frequency_array=recovery_wg.frequency_array,
-                                                        power_spectral_density=ifo.power_spectral_density)
-    # toc = time.time()
-    # print(toc - tic)
-    overlaps = np.nan_to_num(overlaps)
-    max_n0 = np.argmax(overlaps)
-    maximum_overlap = overlaps[max_n0]
-    time_shift = time_grid[max_n0]
-    phase_shift = phase_grid[max_n0]
+    counter = 0
+    maximum_overlap = 0
+    time_shift = 0
+    phase_shift = 0
+    iterations = 0
+    args = (full_wf, memory_generator, parameters['inc'],
+            recovery_wg.frequency_array, ifo.power_spectral_density, shift, 0.1)
 
-    test_wf = time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(
-        times=memory_generator.times, mass_ratio=memory_generator.q, total_mass=memory_generator.MTot,
-        s13=memory_generator.chi_1, s23=memory_generator.chi_2, luminosity_distance=memory_generator.distance,
-        inc=parameters['inc'], phase=parameters['phase'] + phase_shift, shift=shift)
-
-    test_wf = wrap_by_time_shift_continuous(memory_generator.times, test_wf, time_shift)
-
-    # plt.plot(memory_generator.times, max_overlap_waveform['plus'])
-    # plt.plot(memory_generator.times, test_wf['plus'])
-    # plt.show()
-    # plt.clf()
-    #
-    # plt.plot(memory_generator.times, max_overlap_waveform['plus'])
-    # plt.plot(memory_generator.times, test_wf['plus'])
-    # plt.xlim(15.9, 16)
-    # plt.show()
-    # plt.clf()
-    #
-    # plt.plot(memory_generator.times, max_overlap_waveform['plus'])
-    # plt.plot(memory_generator.times, test_wf['plus'])
-    # plt.xlim(0, 0.02)
-    # plt.show()
-    # plt.clf()
-
-    # test_wf_fd = nfft_vectorizable(test_wf, sampling_frequency=recovery_wg.sampling_frequency)
-    # max_overlap_waveform_fd = nfft_vectorizable(max_overlap_waveform, recovery_wg.sampling_frequency)
-    #
-    # print(overlap_function(test_wf_fd, max_overlap_waveform_fd, frequency=recovery_wg.frequency_array,
-    #                        psd=ifo.power_spectral_density))
-    #
-    rs_overlaps = np.reshape(overlaps, (len(time_grid_init), len(phase_grid_init)))
-    if plot:
-        _plot_time_shifts(overlaps, phase_grid_init, time_grid_init)
-        _plot_2d_overlap(rs_overlaps, time_grid_mesh, phase_grid_mesh)
+    while maximum_overlap < 0.95:
+        init_guess_time = -np.random.random() * time_limit
+        init_guess_phase = np.pi*np.random.random()
+        x0 = np.array([init_guess_time, init_guess_phase])
+        bounds = [(-time_limit, 0.), (0, 2 * np.pi)]
+        res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
+                       tol=0.00001)
+        time_shift, phase_shift = res.x[0], res.x[1]
+        maximum_overlap = -res.fun
+        iterations = res.nit
+        counter += 1
+        if counter > 99:
+            break
 
     if verbose:
-        logger.info('Maximum overlap: ' + str(maximum_overlap))
+        logger.info("Maximum overlap: " + str(maximum_overlap))
+        logger.info("Iterations " + str(iterations))
         logger.info("Time shift:" + str(time_shift))
         logger.info("Phase shift:" + str(phase_shift))
 
@@ -206,7 +195,7 @@ def get_time_and_phase_shift(parameters, ifo, plot=False, verbose=False):
 
 def adjust_phase_and_geocent_time_complete_posterior_quick(result, ifo, index=-1, verbose=True, plot=True):
     parameters = result.posterior.iloc[index].to_dict()
-    time_shift, phase_shift, shift, overlaps = get_time_and_phase_shift(parameters, ifo, verbose=verbose, plot=plot)
+    time_shift, phase_shift, shift, overlaps = get_time_and_phase_shift(parameters, ifo, verbose=verbose)
     new_result = deepcopy(result)
     for i in range(len(new_result.posterior['geocent_time'])):
         new_result.posterior.geocent_time.iloc[i] += time_shift
@@ -224,7 +213,7 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
     for index in range(len(result.posterior)):
         parameters = result.posterior.iloc[index].to_dict()
         time_shift, phase_shift, shift, maximum_overlap = \
-            get_time_and_phase_shift(parameters, ifo, verbose=verbose, plot=plot)
+            get_time_and_phase_shift(parameters, ifo, verbose=verbose)
         maximum_overlaps.append(maximum_overlap)
         shifts.append(shift)
         new_result.posterior.geocent_time.iloc[index] += time_shift
