@@ -317,6 +317,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                               'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
                 likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
             log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
+            print(str(log_l_ratios[i] - log_likelihoods[i]))
 
         result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios

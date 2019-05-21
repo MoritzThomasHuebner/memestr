@@ -263,20 +263,20 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
     return rs_overlaps
 
 
-def calculate_log_weights(likelihood, posterior, **kwargs):
+def calculate_log_weights(likelihood, result, **kwargs):
     log_weights = []
     shifts = kwargs.get('shifts')
 
-    for i in range(len(posterior)):
+    for i in range(len(result.posterior)):
         if i % 100 == 0:
-            logger.info("{:0.2f}".format(i / len(posterior) * 100) + "%")
+            logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            likelihood.parameters[parameter] = posterior.iloc[i][parameter]
+            likelihood.parameters[parameter] = result.posterior.iloc[i][parameter]
             if shifts is not None:
                 likelihood.waveform_generator.waveform_arguments['shift'] = shifts[i]
         reweighted_likelihood = likelihood.log_likelihood_ratio()
-        original_likelihood = posterior.iloc[i]['log_likelihood']
+        original_likelihood = result.posterior.iloc[i]['log_likelihood']
         weight = reweighted_likelihood - original_likelihood
         log_weights.append(weight)
         logger.info("Original Likelihood: " + str(original_likelihood))
@@ -291,7 +291,7 @@ def reweigh_log_evidence_by_weights(log_evidence, log_weights):
 
 def reweigh_by_likelihood(reweighing_likelihood, result, **kwargs):
     try:
-        log_weights = calculate_log_weights(reweighing_likelihood, result.posterior, **kwargs)
+        log_weights = calculate_log_weights(reweighing_likelihood, result, **kwargs)
         reweighed_log_bf = reweigh_log_evidence_by_weights(result.log_evidence, log_weights) - result.log_evidence
     except AttributeError as e:
         logger.warning(e)
