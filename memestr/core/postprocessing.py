@@ -261,7 +261,7 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
 
 
 def calculate_log_weights(likelihood, posterior, **kwargs):
-    weights = []
+    log_weights = []
     shifts = kwargs.get('shifts')
 
     for i in range(len(posterior)):
@@ -275,11 +275,11 @@ def calculate_log_weights(likelihood, posterior, **kwargs):
         reweighted_likelihood = likelihood.log_likelihood_ratio()
         original_likelihood = posterior.iloc[i]['log_likelihood']
         weight = reweighted_likelihood - original_likelihood
-        weights.append(weight)
+        log_weights.append(weight)
         logger.info("Original Likelihood: " + str(original_likelihood))
         logger.info("Reweighted Likelihood: " + str(reweighted_likelihood))
-        logger.info("Weight: " + str(weight))
-    return weights
+        logger.info("Log weight: " + str(weight))
+    return log_weights
 
 
 def reweigh_log_evidence_by_weights(log_evidence, log_weights):

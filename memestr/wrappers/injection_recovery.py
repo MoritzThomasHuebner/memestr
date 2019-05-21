@@ -355,22 +355,24 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     # try:
-    #     hom_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
+    #     hom_log_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
     #     hom_log_bf = np.loadtxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf')
     # except OSError:
-    hom_log_bf, hom_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
+    hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
                                                     shifts=shifts
                                                     )
-    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_weights)
+    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
                X=np.array([hom_log_bf]))
 
+    hom_weights = np.exp(hom_log_weights)
     logger.info("HOM LOG BF:" + str(hom_log_bf))
-    logger.info("Number of weights weights:" + str(len(hom_weights)))
+    logger.info("Number of weights:" + str(len(hom_log_weights)))
     logger.info("Number of overlaps:" + str(len(maximum_overlaps)))
+    logger.info("Number of effetive samples:" + str(np.sum(hom_weights)**2/np.sum(hom_weights**2)))
 
     try:
-        plt.scatter(hom_weights, maximum_overlaps)
+        plt.scatter(hom_log_weights, maximum_overlaps)
         plt.xlabel('log weights')
         plt.ylabel('max overlaps')
         plt.tight_layout()
@@ -379,7 +381,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     except Exception as e:
         logger.warning(e)
 
-    norm_weights = np.exp(hom_weights)
+    norm_weights = np.exp(hom_log_weights)
     try:
         time_and_phase_shifted_result.plot_corner(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
