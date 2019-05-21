@@ -132,8 +132,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         init_guess_phase = np.pi*np.random.random()
         x0 = np.array([init_guess_time, init_guess_phase])
         counter += 1
-        print(counter)
-        print(maximum_overlap)
         if counter > 20:
             break
 
