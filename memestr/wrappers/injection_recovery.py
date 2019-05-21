@@ -338,6 +338,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     priors_memory = deepcopy(settings.recovery_priors.proper_dict())
     priors_no_memory = deepcopy(settings.recovery_priors.proper_dict())
 
+    for ifo in ifos:
+        ifo.minimum_frequency = 20.
+
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_memory,
