@@ -354,7 +354,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     waveform_generator=waveform_generator_no_memory,
                                     priors=deepcopy(settings.recovery_priors.proper_dict()),
                                     time_marginalization=False,
-                                    distance_marginalization=False,
+                                    distance_marginalization=True,
                                     phase_marginalization=False)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
