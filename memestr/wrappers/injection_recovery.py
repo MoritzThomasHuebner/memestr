@@ -231,6 +231,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator)
+    likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     likelihood_imr_phenom = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
@@ -320,7 +321,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                 logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
             for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                               'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-                likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
+                likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
             log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
             print(log_l_ratios[i])
 
