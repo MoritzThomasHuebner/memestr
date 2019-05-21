@@ -365,7 +365,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # except OSError:
 
     shifts = None
-    hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_imr_phenom, time_and_phase_shifted_result,
+    hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_imr_phenom, result,
                                                         shifts=shifts
                                                         )
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
