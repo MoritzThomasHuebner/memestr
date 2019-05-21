@@ -13,8 +13,8 @@ from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_p
     reweigh_by_two_likelihoods, reweigh_by_likelihood
 from memestr.core.submit import get_injection_parameter_set
 from memestr.core.utils import get_ifo
-from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_with_memory_wrapped
-from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped
+from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
@@ -274,7 +274,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
 
     try:
-        raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
         maximum_overlaps = np.loadtxt(
@@ -325,13 +324,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.save_to_file()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
-        time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
-        time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)

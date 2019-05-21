@@ -9,7 +9,8 @@ from scipy.misc import logsumexp
 from scipy.optimize import minimize
 
 from memestr.core.waveforms import apply_time_shift_frequency_domain, nfft_vectorizable
-from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory, wrap_by_n_indices
+from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory, wrap_by_n_indices,\
+    frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 
@@ -72,7 +73,7 @@ def calculate_overlaps_optimizable(new_params, *args):
 
 
 def get_time_and_phase_shift(parameters, ifo, verbose=False):
-    time_limit = parameters['total_mass'] * 0.00025
+    time_limit = parameters['total_mass'] * 0.00030
 
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
@@ -121,7 +122,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     x0 = np.array([init_guess_time, init_guess_phase])
     bounds = [(-time_limit, 0), (0, 2 * np.pi)]
 
-    while maximum_overlap < 0.98:
+    while maximum_overlap < 0.97:
         res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                        tol=0.00001)
         time_shift, phase_shift = res.x[0], res.x[1]
@@ -131,13 +132,15 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         init_guess_phase = np.pi*np.random.random()
         x0 = np.array([init_guess_time, init_guess_phase])
         counter += 1
+        print(counter)
+        print(maximum_overlap)
         if counter > 20:
             break
 
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
-
+    #
     # for mode in ['plus', 'cross']:
     #     test_waveform_fd[mode], frequency_array = bilby.core.utils.nfft(test_waveform[mode], memory_generator.sampling_frequency)
     #     indexes = np.where(frequency_array < 20)

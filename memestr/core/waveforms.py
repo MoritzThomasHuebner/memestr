@@ -58,6 +58,10 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
     time_shift = shift * (series.time_array[1] - series.time_array[0])
 
     waveform_fd = nfft_vectorizable(waveform, series.sampling_frequency)
+    for mode in ['plus', 'cross']:
+        waveform_fd[mode], frequency_array = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        indexes = np.where(frequency_array < 20)
+        waveform_fd[mode][indexes] = 0
     return apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequencies,
                                              duration=series.duration, shift=time_shift)
 
@@ -85,6 +89,10 @@ def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mas
     waveform_fd = nfft_vectorizable(waveform, series.sampling_frequency)
     waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
                                                     duration=series.duration, shift=time_shift)
+    for mode in ['plus', 'cross']:
+        waveform_fd[mode], frequency_array = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        indexes = np.where(frequency_array < 20)
+        waveform_fd[mode][indexes] = 0
     return waveform_fd, shift
 
 
@@ -112,11 +120,13 @@ def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return(
     waveform = apply_window(waveform, series.time_array, kwargs)
     waveform_fd = nfft_vectorizable(waveform, series.sampling_frequency)
     shift = kwargs.get('shift', None)
-    if shift is not None:
-        time_shift = shift * (series.time_array[1] - series.time_array[0])
-    else:
+    if shift is None:
         _, shift = wrap_at_maximum(waveform)
-        time_shift = shift * (series.time_array[1] - series.time_array[0])
+    time_shift = shift * (series.time_array[1] - series.time_array[0])
+    for mode in ['plus', 'cross']:
+        waveform_fd[mode], frequency_array = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        indexes = np.where(frequency_array < 20)
+        waveform_fd[mode][indexes] = 0
     return apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
                                              duration=series.duration, shift=time_shift)
 
