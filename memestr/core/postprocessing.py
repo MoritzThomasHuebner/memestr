@@ -266,8 +266,8 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
 def calculate_log_weights(likelihood, result, **kwargs):
     log_weights = []
     shifts = kwargs.get('shifts')
-    # test_original_likelihood = kwargs.get('test_original_likelihood')
-    # test_original_result = kwargs.get('test_original_result')
+    test_original_likelihood = kwargs.get('test_original_likelihood')
+    test_original_result = kwargs.get('test_original_result')
 
     for i in range(len(result.posterior)):
         if i % 100 == 0:
@@ -277,20 +277,20 @@ def calculate_log_weights(likelihood, result, **kwargs):
             likelihood.parameters[parameter] = result.posterior.iloc[i][parameter]
             if shifts is not None:
                 likelihood.waveform_generator.waveform_arguments['shift'] = shifts[i]
-            # if test_original_likelihood is not None:
-            #     test_original_likelihood.parameters[parameter] = test_original_result.posterior.iloc[i][parameter]
+            if test_original_likelihood is not None:
+                test_original_likelihood.parameters[parameter] = test_original_result.posterior.iloc[i][parameter]
 
         reweighted_likelihood = likelihood.log_likelihood_ratio()
         original_likelihood = result.posterior.iloc[i]['log_likelihood']
         weight = reweighted_likelihood - original_likelihood
         log_weights.append(weight)
         logger.info("Parameters Likelihood: " + str(likelihood.parameters))
-        # if test_original_likelihood is not None:
-        #     logger.info("Original Parameters Likelihood: " + str(test_original_likelihood.parameters))
+        if test_original_likelihood is not None:
+            logger.info("Original Parameters Likelihood: " + str(test_original_likelihood.parameters))
 
         logger.info("Original Likelihood: " + str(original_likelihood))
-        # if test_original_likelihood is not None:
-        #     logger.info("Original Likelihood Test: " + str(test_original_likelihood.log_likelihood_ratio()))
+        if test_original_likelihood is not None:
+            logger.info("Original Likelihood Test: " + str(test_original_likelihood.log_likelihood_ratio()))
         logger.info("Reweighted Likelihood: " + str(reweighted_likelihood))
         logger.info("Log weight: " + str(weight))
         logger.info("")
