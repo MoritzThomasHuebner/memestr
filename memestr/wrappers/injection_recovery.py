@@ -15,6 +15,8 @@ from memestr.core.submit import get_injection_parameter_set
 from memestr.core.utils import get_ifo
 from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped
 from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_with_memory_wrapped
+from memestr.core.waveforms import time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
@@ -331,13 +333,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.save_to_file()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+        time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+        time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
@@ -354,7 +356,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     waveform_generator=waveform_generator_no_memory,
                                     priors=deepcopy(settings.recovery_priors.proper_dict()),
                                     time_marginalization=False,
-                                    distance_marginalization=True,
+                                    distance_marginalization=False,
                                     phase_marginalization=False)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
