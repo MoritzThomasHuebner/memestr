@@ -309,15 +309,18 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     if True:
         # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
+
         log_l_ratios = []
         for i in range(len(result.posterior)):
-            if i % 100 == 0:
-                logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-                likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
-            log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
-            print(str(log_l_ratios[i] - log_likelihoods[i]))
+            log_l_ratios.append(log_likelihoods[i])
+        #     if i % 100 == 0:
+        #         logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
+        #     for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+        #                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+        #         likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
+        #     log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
+        #     print(str(log_l_ratios[i] - log_likelihoods[i]))
+        #
 
         result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
