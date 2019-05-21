@@ -312,8 +312,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length samples original: ' + str(len(result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
 
-    if True:
-        # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
+    # if True:
+    if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
 
         log_l_ratios = []
         for i in range(len(result.posterior)):
@@ -342,8 +342,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
-    for ifo in ifos:
-        ifo.minimum_frequency = 20.
+    # for ifo in ifos:
+    #     ifo.minimum_frequency = 20.
 
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
@@ -353,9 +353,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator_no_memory,
                                     priors=deepcopy(settings.recovery_priors.proper_dict()),
-                                    time_marginalization=settings.other_settings.time_marginalization,
-                                    distance_marginalization=settings.other_settings.distance_marginalization,
-                                    phase_marginalization=settings.other_settings.phase_marginalization)
+                                    time_marginalization=False,
+                                    distance_marginalization=False,
+                                    phase_marginalization=False)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
