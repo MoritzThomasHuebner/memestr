@@ -286,7 +286,6 @@ def calculate_log_weights(likelihood, result, **kwargs):
         log_weights.append(weight)
         logger.info("Parameters Likelihood: " + str(likelihood.parameters))
         if test_original_likelihood is not None:
-            original_likelihood_test = test_original_likelihood.log_likelihood_ratio()
             logger.info("Original Parameters Likelihood: " + str(original_likelihood.parameters))
 
         logger.info("Original Likelihood: " + str(original_likelihood))
