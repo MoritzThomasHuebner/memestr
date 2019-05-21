@@ -278,7 +278,7 @@ def calculate_log_weights(likelihood, result, **kwargs):
             if shifts is not None:
                 likelihood.waveform_generator.waveform_arguments['shift'] = shifts[i]
             if test_original_likelihood is not None:
-                test_original_likelihood.parameters[parameter] = test_original_likelihood.posterior.iloc[i][parameter]
+                test_original_likelihood.parameters[parameter] = test_original_result.posterior.iloc[i][parameter]
 
         reweighted_likelihood = likelihood.log_likelihood_ratio()
         original_likelihood = result.posterior.iloc[i]['log_likelihood']
