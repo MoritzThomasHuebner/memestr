@@ -279,9 +279,11 @@ def calculate_log_weights(likelihood, result, **kwargs):
         original_likelihood = result.posterior.iloc[i]['log_likelihood']
         weight = reweighted_likelihood - original_likelihood
         log_weights.append(weight)
+        logger.info("Parameters Likelihood: " + str(likelihood.parameters))
         logger.info("Original Likelihood: " + str(original_likelihood))
         logger.info("Reweighted Likelihood: " + str(reweighted_likelihood))
         logger.info("Log weight: " + str(weight))
+        logger.info("")
     return log_weights
 
 
