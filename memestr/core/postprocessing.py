@@ -55,6 +55,7 @@ def calculate_overlaps_optimizable(new_params, *args):
     times = memory_generator.times
     kwargs = dict(alpha=alpha)
 
+    phase %= 2*np.pi
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
     waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
@@ -112,20 +113,20 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     counter = 0.
     maximum_overlap = 0.
     time_shift = 0.
-    phase_shift = 0.
+    new_phase = 0.
     iterations = 0.
     alpha = 0.1
     args = (full_wf, memory_generator, parameters['inc'],
             recovery_wg.frequency_array, ifo.power_spectral_density, shift, alpha)
     init_guess_time = -0.5 * time_limit
-    init_guess_phase = np.pi * 0.5
+    init_guess_phase = parameters['phase']
     x0 = np.array([init_guess_time, init_guess_phase])
-    bounds = [(-time_limit, 0), (0, 2 * np.pi)]
+    bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
     while maximum_overlap < 0.97:
         res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                        tol=0.00001)
-        time_shift, phase_shift = res.x[0], res.x[1]
+        time_shift, new_phase = res.x[0], res.x[1]
         maximum_overlap = -res.fun
         iterations = res.nit
         init_guess_time = -np.random.random() * time_limit
@@ -203,9 +204,10 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         logger.info("Maximum overlap: " + str(maximum_overlap))
         logger.info("Iterations " + str(iterations))
         logger.info("Time shift:" + str(time_shift))
-        logger.info("Phase shift:" + str(phase_shift))
+        logger.info("New Phase:" + str(new_phase))
+        logger.info("Counter:" + str(counter))
 
-    return time_shift, phase_shift, shift, maximum_overlap
+    return time_shift, new_phase, shift, maximum_overlap
 
 
 def adjust_phase_and_geocent_time_complete_posterior_quick(result, ifo, index=-1, verbose=True):

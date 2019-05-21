@@ -368,7 +368,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # except OSError:
 
     hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                        shifts=shifts, test_original_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                        shifts=shifts,
+                                                        test_original_likelihood=likelihood_imr_phenom_unmarginalized,
                                                         test_original_result=result
                                                         )
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
@@ -379,7 +380,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info("HOM LOG BF:" + str(hom_log_bf))
     logger.info("Number of weights:" + str(len(hom_log_weights)))
     logger.info("Number of overlaps:" + str(len(maximum_overlaps)))
-    logger.info("Number of effetive samples:" + str(np.sum(hom_weights) ** 2 / np.sum(hom_weights ** 2)))
+    logger.info("Number of effective samples:" + str(np.sum(hom_weights) ** 2 / np.sum(hom_weights ** 2)))
 
     try:
         plt.scatter(hom_log_weights, maximum_overlaps)
