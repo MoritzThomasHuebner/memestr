@@ -228,6 +228,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                     **settings.waveform_data.__dict__)
 
     priors = deepcopy(settings.recovery_priors.proper_dict())
+    likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
+        .GravitationalWaveTransient(interferometers=ifos,
+                                    waveform_generator=waveform_generator)
+
     likelihood_imr_phenom = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
                                     waveform_generator=waveform_generator,
@@ -312,15 +316,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
         log_l_ratios = []
         for i in range(len(result.posterior)):
-            log_l_ratios.append(log_likelihoods[i])
-        #     if i % 100 == 0:
-        #         logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-        #     for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-        #                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-        #         likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
-        #     log_l_ratios.append(likelihood_imr_phenom.log_likelihood_ratio())
-        #     print(str(log_l_ratios[i] - log_likelihoods[i]))
-        #
+            if i % 100 == 0:
+                logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
+            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+                likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
+            log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
 
         result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
@@ -339,27 +340,16 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
-    priors_memory = deepcopy(settings.recovery_priors.proper_dict())
-    priors_no_memory = deepcopy(settings.recovery_priors.proper_dict())
-
     for ifo in ifos:
         ifo.minimum_frequency = 20.
 
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
-                                    waveform_generator=waveform_generator_memory,
-                                    priors=priors_memory,
-                                    time_marginalization=False,
-                                    distance_marginalization=False,
-                                    phase_marginalization=False)
+                                    waveform_generator=waveform_generator_memory)
 
     likelihood_no_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
-                                    waveform_generator=waveform_generator_no_memory,
-                                    priors=priors_no_memory,
-                                    time_marginalization=False,
-                                    distance_marginalization=False,
-                                    phase_marginalization=False)
+                                    waveform_generator=waveform_generator_no_memory)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
