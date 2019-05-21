@@ -212,11 +212,11 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
 
 def adjust_phase_and_geocent_time_complete_posterior_quick(result, ifo, index=-1, verbose=True):
     parameters = result.posterior.iloc[index].to_dict()
-    time_shift, phase_shift, shift, overlaps = get_time_and_phase_shift(parameters, ifo, verbose=verbose)
+    time_shift, new_phase, shift, overlaps = get_time_and_phase_shift(parameters, ifo, verbose=verbose)
     new_result = deepcopy(result)
     for i in range(len(new_result.posterior['geocent_time'])):
         new_result.posterior.geocent_time.iloc[i] += time_shift
-        new_result.posterior.phase.iloc[i] = phase_shift
+        new_result.posterior.phase.iloc[i] = new_phase
         # if new_result.posterior.phase.iloc[i] < 0:
         #     new_result.posterior.phase.iloc[i] += 2 * np.pi
         # new_result.posterior.phase.iloc[i] %= 2 * np.pi
@@ -229,12 +229,12 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
     shifts = []
     for index in range(len(result.posterior)):
         parameters = result.posterior.iloc[index].to_dict()
-        time_shift, phase_shift, shift, maximum_overlap = \
+        time_shift, new_phase, shift, maximum_overlap = \
             get_time_and_phase_shift(parameters, ifo, verbose=verbose)
         maximum_overlaps.append(maximum_overlap)
         shifts.append(shift)
         new_result.posterior.geocent_time.iloc[index] += time_shift
-        new_result.posterior.phase.iloc[index] = phase_shift
+        new_result.posterior.phase.iloc[index] = new_phase
         # if new_result.posterior.phase.iloc[index] < 0:
         #     new_result.posterior.phase.iloc[index] += 2 * np.pi
         # new_result.posterior.phase.iloc[index] %= 2 * np.pi
