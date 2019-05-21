@@ -351,7 +351,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     likelihood_no_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
-                                    waveform_generator=waveform_generator_no_memory)
+                                    waveform_generator=waveform_generator_no_memory,
+                                    priors=deepcopy(settings.recovery_priors.proper_dict()),
+                                    time_marginalization=settings.other_settings.time_marginalization,
+                                    distance_marginalization=settings.other_settings.distance_marginalization,
+                                    phase_marginalization=settings.other_settings.phase_marginalization)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
