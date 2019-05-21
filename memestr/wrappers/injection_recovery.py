@@ -281,7 +281,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
 
     try:
-        # raise Exception
+        raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
         maximum_overlaps = np.loadtxt(
