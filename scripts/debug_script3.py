@@ -4,8 +4,8 @@ memestr.wrappers.injection_recovery. \
     run_production_injection_imr_phenom(
         injection_model=memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
-        filename_base=500,
-        outdir='500_pypolychord', label='IMR_mem_inj_non_mem_rec',
+        filename_base=311,
+        outdir='311_pypolychord', label='IMR_mem_inj_non_mem_rec',
         alpha=0.1, distance_marginalization=False,
         time_marginalization=False, phase_marginalization=True,
         sampler='pypolychord', nthreads=2,
