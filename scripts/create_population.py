@@ -115,9 +115,8 @@ def create_parameter_set(filename):
 
 
 for i in range(int(sys.argv[1]), int(sys.argv[2])):
-    pass
+    create_parameter_set(i)
 # for i in range(0, 2):
-#     create_parameter_set(i)
 
 import matplotlib.pyplot as plt
 
