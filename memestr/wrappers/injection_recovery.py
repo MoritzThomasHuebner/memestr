@@ -281,10 +281,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, result, shifts=None)
     norm_test_weights = np.exp(test_log_weights)/np.sum(np.exp(test_log_weights))
-    new_posterior_samples = resample_equal(samples=result.posterior, weights=norm_test_weights)
+    new_posterior_samples = resample_equal(samples=result.posterior.values, weights=norm_test_weights)
 
     new_result = deepcopy(result)
-    new_result.posterior = new_posterior_samples
+    new_result.posterior.values = new_posterior_samples
     new_result.label = 'resampled_original_result'
     new_result.save_to_file('resampled_original_result')
 
