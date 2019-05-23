@@ -104,7 +104,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                                                               sampling_frequency=2048,
                                                               units='mks',
                                                               )
-    logger.info(memory_generator.refernce_frequency)
+    logger.info(memory_generator.reference_frequency)
 
     # wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
     # wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
