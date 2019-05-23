@@ -246,30 +246,30 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
-                                            priors=priors,
-                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-                                            outdir=outdir,
-                                            save=True,
-                                            verbose=True,
-                                            random_seed=np.random.randint(0, 100000),
-                                            sampler=settings.sampler_settings.sampler,
-                                            npoints=settings.sampler_settings.npoints,
-                                            label=settings.sampler_settings.label,
-                                            clean=settings.sampler_settings.clean,
-                                            nthreads=settings.sampler_settings.nthreads,
-                                            maxmcmc=settings.sampler_settings.maxmcmc,
-                                            resume=settings.sampler_settings.resume,
-                                            save_bounds=False,
-                                            check_point_plot=True,
-                                            n_check_point=1000)
-    result.save_to_file()
+    # result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
+    #                                         priors=priors,
+    #                                         injection_parameters=deepcopy(settings.injection_parameters.__dict__),
+    #                                         outdir=outdir,
+    #                                         save=True,
+    #                                         verbose=True,
+    #                                         random_seed=np.random.randint(0, 100000),
+    #                                         sampler=settings.sampler_settings.sampler,
+    #                                         npoints=settings.sampler_settings.npoints,
+    #                                         label=settings.sampler_settings.label,
+    #                                         clean=settings.sampler_settings.clean,
+    #                                         nthreads=settings.sampler_settings.nthreads,
+    #                                         maxmcmc=settings.sampler_settings.maxmcmc,
+    #                                         resume=settings.sampler_settings.resume,
+    #                                         save_bounds=False,
+    #                                         check_point_plot=True,
+    #                                         n_check_point=1000)
+    # result.save_to_file()
     # logger.info(str(result))
     # result.posterior = bilby.gw.conversion. \
     #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     # result.save_to_file()
-    # result = bilby.result.read_in_result(
-    #     filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+    result = bilby.result.read_in_result(
+        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
 
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
@@ -363,56 +363,62 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #     hom_log_bf = np.loadtxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf')
     # except OSError:
 
-    hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                        shifts=shifts,
-                                                        test_original_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                        test_original_result=result
-                                                        )
-    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
-    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
-               X=np.array([hom_log_bf]))
+    # hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
+    #                                                     shifts=shifts,
+    #                                                     test_original_likelihood=likelihood_imr_phenom_unmarginalized,
+    #                                                     test_original_result=result
+    #                                                     )
+    # np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
+    # np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
+    #            X=np.array([hom_log_bf]))
+    #
+    # hom_weights = np.exp(hom_log_weights)
+    # logger.info("HOM LOG BF:" + str(hom_log_bf))
+    # logger.info("Number of weights:" + str(len(hom_log_weights)))
+    # logger.info("Number of overlaps:" + str(len(maximum_overlaps)))
+    # logger.info("Number of effective samples:" + str(np.sum(hom_weights) ** 2 / np.sum(hom_weights ** 2)))
+    test_log_bf, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, result, shifts=None)
+    norm_weights = np.exp(test_log_weights)
+    result.plot_corner(
+        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighted_unmarginalized',
+        weights=norm_weights,
+        parameters=deepcopy(params))
 
-    hom_weights = np.exp(hom_log_weights)
-    logger.info("HOM LOG BF:" + str(hom_log_bf))
-    logger.info("Number of weights:" + str(len(hom_log_weights)))
-    logger.info("Number of overlaps:" + str(len(maximum_overlaps)))
-    logger.info("Number of effective samples:" + str(np.sum(hom_weights) ** 2 / np.sum(hom_weights ** 2)))
+    # try:
+    #     plt.scatter(hom_log_weights, maximum_overlaps)
+    #     plt.xlabel('log weights')
+    #     plt.ylabel('max overlaps')
+    #     plt.tight_layout()
+    #     plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
+    #     plt.clf()
+    # except Exception as e:
+    #     logger.warning(e)
+    #
+    # norm_weights = np.exp(hom_log_weights)
+    # try:
+    #     time_and_phase_shifted_result.plot_corner(
+    #         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
+    #         weights=norm_weights,
+    #         parameters=deepcopy(params))
+    # except Exception as e:
+    #     logger.warning(e)
+    #
+    # try:
+    #     bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy],
+    #                                     filename=str(
+    #                                         filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted_multiple',
+    #                                     parameters=deepcopy(params))
+    # except Exception as e:
+    #     logger.warning(e)
 
-    try:
-        plt.scatter(hom_log_weights, maximum_overlaps)
-        plt.xlabel('log weights')
-        plt.ylabel('max overlaps')
-        plt.tight_layout()
-        plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
-        plt.clf()
-    except Exception as e:
-        logger.warning(e)
-
-    norm_weights = np.exp(hom_log_weights)
-    try:
-        time_and_phase_shifted_result.plot_corner(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
-            weights=norm_weights,
-            parameters=deepcopy(params))
-    except Exception as e:
-        logger.warning(e)
-
-    try:
-        bilby.core.result.plot_multiple([time_and_phase_shifted_result, time_and_phase_shifted_result_copy],
-                                        filename=str(
-                                            filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted_multiple',
-                                        parameters=deepcopy(params))
-    except Exception as e:
-        logger.warning(e)
-
-    reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
-                                                  likelihood_memory=likelihood_memory,
-                                                  likelihood_no_memory=likelihood_no_memory,
-                                                  shifts=shifts
-                                                  )
-
-    logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
-    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
-               X=np.array([reweighed_log_bf]))
-
-    return time_and_phase_shifted_result
+    # reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
+    #                                               likelihood_memory=likelihood_memory,
+    #                                               likelihood_no_memory=likelihood_no_memory,
+    #                                               shifts=shifts
+    #                                               )
+    #
+    # logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
+    # np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
+    #            X=np.array([reweighed_log_bf]))
+    #
+    # return time_and_phase_shifted_result

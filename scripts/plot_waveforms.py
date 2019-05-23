@@ -3,6 +3,8 @@ import bilby
 import matplotlib.pyplot as plt
 import numpy as np
 
+from memestr.core.waveforms import time_domain_IMRPhenomD_memory_waveform, apply_window, time_domain_IMRPhenomD_waveform_without_memory
+
 settings = memestr.core.parameters.AllSettings()
 # models = [memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
 #           memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
@@ -10,38 +12,96 @@ settings = memestr.core.parameters.AllSettings()
 models = [memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
           memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory]
 print(settings.injection_parameters)
-
+logger = bilby.core.utils.logger
 
 def plot_waveform(td_model, mass_ratio):
     settings.waveform_arguments.alpha = 0.1
     settings.waveform_data.duration = 16
-    settings.waveform_data.sampling_frequency = 2048
-    settings.injection_parameters.total_mass = 65
+    settings.waveform_data.sampling_frequency = 4096
     settings.injection_parameters.mass_ratio = mass_ratio
     settings.injection_parameters.inc = np.pi/2
-    waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
-                                                    parameters=settings.injection_parameters.__dict__,
-                                                    waveform_arguments=settings.waveform_arguments.__dict__,
-                                                    **settings.waveform_data.__dict__)
-    psd = bilby.gw.detector.PowerSpectralDensity.from_aligo()
-    waveform_generator.time_domain_source_model = memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped
-    plt.plot(waveform_generator.frequency_array, np.abs(waveform_generator.frequency_domain_strain()['plus']),
-             label='Oscillatory + Memory')
+    for mode in ['plus', 'cross']:
+        snrs = []
+        masses = []
+        for total_mass in range(15, 240, 5):
+            settings.injection_parameters.total_mass = total_mass
+
+            waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_IMRPhenomD_waveform_without_memory,
+                                                            parameters=settings.injection_parameters.__dict__,
+                                                            waveform_arguments=settings.waveform_arguments.__dict__,
+                                                            **settings.waveform_data.__dict__)
+
+            snr = 0
+            # while snr < 11.9 or snr > 12.2:
+            #     waveform_generator.parameters = settings.injection_parameters.__dict__
+            #     time_domain_strain = waveform_generator.time_domain_strain()
+            #     time_domain_strain = apply_window(time_domain_strain, waveform_generator.time_array, dict(alpha=0.1))
+            #     frequency_domain_strain = dict()
+            #     frequency_domain_strain[mode], frequency_array = bilby.core.utils.nfft(time_domain_strain[mode],
+            #                                                                          waveform_generator.sampling_frequency)
+            #     ifo = bilby.gw.detector.get_empty_interferometer('H1')
+            #     ifo.set_strain_data_from_zero_noise(settings.waveform_data.sampling_frequency, settings.waveform_data.duration)
+            #     logger.disabled = True
+            #     ifo.inject_signal(parameters=settings.injection_parameters.__dict__, injection_polarizations=frequency_domain_strain)
+            #     logger.disabled = False
+            #     snr = ifo.meta_data['optimal_SNR'].real
+            #     logger.info(str(snr))
+            #     if snr < 12:
+            #         settings.injection_parameters.luminosity_distance -= 5.0
+            #     elif snr > 12.2:
+            #         settings.injection_parameters.luminosity_distance += 5.0
+
+            waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=td_model,
+                                                            parameters=settings.injection_parameters.__dict__,
+                                                            waveform_arguments=settings.waveform_arguments.__dict__,
+                                                            **settings.waveform_data.__dict__)
+            time_domain_strain = waveform_generator.time_domain_strain()
+            time_domain_strain = apply_window(time_domain_strain, waveform_generator.time_array, dict(alpha=0.1))
+            frequency_domain_strain, frequency_array = bilby.core.utils.nfft(time_domain_strain[mode],
+                                                                             waveform_generator.sampling_frequency)
+            ifo = bilby.gw.detector.get_empty_interferometer('H1')
+            ifo.set_strain_data_from_zero_noise(settings.waveform_data.sampling_frequency,
+                                                settings.waveform_data.duration)
+            logger.disabled = True
+            ifo.inject_signal(parameters=settings.injection_parameters.__dict__,
+                              injection_polarizations=dict(plus=frequency_domain_strain))
+            logger.disabled = False
+            snrs.append(ifo.meta_data['optimal_SNR'].real)
+            masses.append(total_mass)
+            # plt.loglog()
+            # plt.plot(frequency_array, np.abs(frequency_domain_strain), label=str(total_mass) + " M_sun")
+            # plt.xlim(20, 2048)
+        # plt.plot(frequency_array, np.sqrt(bilby.gw.detector.PowerSpectralDensity.from_aligo().power_spectral_density_interpolated(frequency_array)), label='aLigo ASD')
+        # plt.xlabel("frequency [Hz]")
+        # plt.ylabel("h")
+        # plt.ylim(1e-32, 1e-22)
+        # plt.legend()
+        # plt.title(mode)
+        plt.plot(masses, snrs)
+        plt.xlabel('Total mass')
+        plt.ylabel('Memory SNR')
+        plt.show()
+        plt.clf()
+
+    # psd = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+    # waveform_generator.time_domain_source_model = td_model
+    # plt.plot(waveform_generator.frequency_array, np.abs(waveform_generator.frequency_domain_strain()['plus']),
+    #          label='Oscillatory + Memory')
     # waveform_generator.time_domain_source_model = memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform
 
     # plt.plot(waveform_generator.frequency_array, np.abs(waveform_generator.frequency_domain_strain()['plus']), label='Memory')
-    plt.plot(psd.frequency_array, psd.asd_array, label='aLIGO ASD')
-    plt.title('alpha = ' + str(settings.waveform_arguments.alpha))
-    plt.xlabel('frequency [Hz]')
-    plt.ylabel('h')
-    plt.xlim(10, 1000)
-    plt.ylim(1e-30, 4e-19)
-    plt.loglog()
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig('waveforms/memory_frequency_domain')
-    plt.show()
-    plt.clf()
+    # plt.plot(psd.frequency_array, psd.asd_array, label='aLIGO ASD')
+    # plt.title('alpha = ' + str(settings.waveform_arguments.alpha))
+    # plt.xlabel('frequency [Hz]')
+    # plt.ylabel('h')
+    # plt.xlim(10, 1000)
+    # plt.ylim(1e-30, 4e-19)
+    # plt.loglog()
+    # plt.legend()
+    # plt.tight_layout()
+    # plt.savefig('waveforms/memory_frequency_domain')
+    # plt.show()
+    # plt.clf()
     # plt.ylim(-0.8e-21, 0.8e-21)
     # plt.plot(waveform_generator.time_array, waveform_generator.time_domain_strain()['plus'], color='black')
     # plt.plot(waveform_generator.time_array, memestr.core.waveforms.tukey(M=len(waveform_generator.time_array), alpha=settings.waveform_arguments.alpha)*1.5e-22, color='blue')
@@ -77,7 +137,7 @@ def plot_waveform(td_model, mass_ratio):
 
 network_snrs = []
 for mass_ratio in [1]:  # , 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]:
-    network_snrs.append(plot_waveform(memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+    network_snrs.append(plot_waveform(time_domain_IMRPhenomD_memory_waveform,
                                       mass_ratio))
 plt.show()
 
