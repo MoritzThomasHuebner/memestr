@@ -325,13 +325,18 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info('Length samples original: ' + str(len(new_result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
 
-    # norm_weights = np.exp(test_log_weights)
-    # result.plot_corner(
-    #     filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighted_unmarginalized',
-    #     weights=norm_weights,
-    #     parameters=deepcopy(params))
-    # logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(np.array(test_log_weights) ** 2)))
 
+    # Test
+
+    _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, new_result, shifts=None)
+    norm_weights = np.exp(test_log_weights)
+    result.plot_corner(
+        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighted_unmarginalized',
+        weights=norm_weights,
+        parameters=deepcopy(params))
+    logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(np.array(test_log_weights) ** 2)))
+
+    # End test
 
     if True:
     # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
