@@ -267,7 +267,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.save_to_file()
     # logger.info(str(result))
     result = bilby.result.read_in_result(
-        filename='test_production/IMR_mem_inj_non_mem_rec_result.json')
+        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.save_to_file()
