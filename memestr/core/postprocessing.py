@@ -105,8 +105,11 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                                                               units='mks',
                                                               )
 
-    wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
-    wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
+    # wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
+    # wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
+
+    max_index = np.argmax(np.abs(memory_generator.h_lm[(2, 2)]))
+    shift = len(memory_generator.h_lm[(2, 2)]) - max_index
 
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
