@@ -268,9 +268,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # logger.info(str(result))
     result = bilby.result.read_in_result(
         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    result.posterior = bilby.gw.conversion. \
-        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-    result.save_to_file()
+    # result.posterior = bilby.gw.conversion. \
+    #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+    # result.save_to_file()
 
     sample_file = str(
         filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
@@ -280,11 +280,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.posterior.log_likelihood = log_likelihoods
 
     _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, result, shifts=None)
-    new_posterior_samples = resample_equal(samples=result.posterior, weights=np.exp(test_log_weights))
+    norm_test_weights = np.exp(test_log_weights)/np.sum(np.exp(test_log_weights))
+    new_posterior_samples = resample_equal(samples=result.posterior, weights=norm_test_weights)
 
     new_result = deepcopy(result)
     new_result.posterior = new_posterior_samples
-
+    new_result.label = 'resampled_original_result'
+    new_result.save_to_file('resampled_original_result')
 
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
 
