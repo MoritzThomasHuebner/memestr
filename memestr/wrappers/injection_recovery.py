@@ -267,26 +267,17 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.save_to_file()
     # logger.info(str(result))
     result = bilby.result.read_in_result(
-        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    # result.posterior = bilby.gw.conversion. \
-    #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-    # result.save_to_file()
-
-    sample_file = str(
-        filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
-    samples = np.loadtxt(sample_file)
-    log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
-
-    result.posterior.log_likelihood = log_likelihoods
+        filename='test_production/IMR_mem_inj_non_mem_rec_result.json')
+    result.posterior = bilby.gw.conversion. \
+        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+    result.save_to_file()
 
     _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, result, shifts=None)
-    norm_test_weights = np.exp(test_log_weights)/np.sum(np.exp(test_log_weights))
-    new_posterior_samples = resample_equal(samples=result.posterior.values, weights=norm_test_weights)
+    new_posterior_samples = resample_equal(samples=result.posterior, weights=np.exp(test_log_weights))
 
     new_result = deepcopy(result)
-    new_result.posterior.values = new_posterior_samples
-    new_result.label = 'resampled_original_result'
-    new_result.save_to_file('resampled_original_result')
+    new_result.posterior = new_posterior_samples
+
 
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
 
@@ -309,7 +300,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     except Exception as e:
         logger.warning(e)
         time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
-            result=new_result,
+            result=result,
             ifo=ifos[0],
             verbose=True)
         np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
@@ -321,42 +312,41 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
 
+    sample_file = str(
+        filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
+    samples = np.loadtxt(sample_file)
+    log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
 
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_likelihoods.txt', log_likelihoods)
     logger.info('Filename base: ' + str(filename_base))
     logger.info('Length log likelihoods: ' + str(len(log_likelihoods)))
-    logger.info('Length posterior original: ' + str(len(new_result.posterior)))
+    logger.info('Length posterior original: ' + str(len(result.posterior)))
     logger.info('Length posterior shifted: ' + str(len(time_and_phase_shifted_result.posterior)))
-    logger.info('Length samples original: ' + str(len(new_result.samples)))
+    logger.info('Length samples original: ' + str(len(result.samples)))
     logger.info('Length samples shifted: ' + str(len(time_and_phase_shifted_result.samples)))
 
+    # norm_weights = np.exp(test_log_weights)
+    # result.plot_corner(
+    #     filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighted_unmarginalized',
+    #     weights=norm_weights,
+    #     parameters=deepcopy(params))
+    # logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(np.array(test_log_weights) ** 2)))
 
-    # Test
-
-    _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, new_result, shifts=None)
-    norm_weights = np.exp(test_log_weights)
-    result.plot_corner(
-        filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighted_unmarginalized',
-        weights=norm_weights,
-        parameters=deepcopy(params))
-    logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(np.array(test_log_weights) ** 2)))
-
-    # End test
 
     if True:
     # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
 
         log_l_ratios = []
-        for i in range(len(new_result.posterior)):
+        for i in range(len(result.posterior)):
             if i % 100 == 0:
-                logger.info("{:0.2f}".format(i / len(new_result.posterior) * 100) + "%")
+                logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
             for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                               'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
                 likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
             log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
             print(log_l_ratios[i] - log_likelihoods[i])
 
-        new_result.posterior.log_likelihood = log_l_ratios
+        result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result_copy.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.save_to_file()
@@ -391,7 +381,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
                                                         shifts=shifts,
                                                         test_original_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                        test_original_result=new_result
+                                                        test_original_result=result
                                                         )
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
