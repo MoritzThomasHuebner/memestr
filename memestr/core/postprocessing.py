@@ -121,7 +121,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     init_guess_time = -0.5 * time_limit
     init_guess_phase = parameters['phase']
     x0 = np.array([init_guess_time, init_guess_phase])
-    bounds = [(-time_limit, 0), (parameters['phase']-np.pi, parameters['phase']+np.pi)]
+    bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
     while maximum_overlap < 0.97:
         res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
