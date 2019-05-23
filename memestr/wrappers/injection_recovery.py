@@ -219,22 +219,17 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
                                                           str(filename_base) +
                                                           '_H1L1V1.h5')
-    # import deepdish
-    # ifos = deepdish.io.load('parameter_sets/' + str(filename_base) + '_H1L1V1.h5')
-    # for i, ifo in enumerate(ifos):
-    #     ifos[i].strain_data = ifo._strain_data
-    # ifos = bilby.gw.detector.InterferometerList(ifos)
-    # # ifos.plot_data()
+
     waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
 
     priors = deepcopy(settings.recovery_priors.proper_dict())
-    likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=ifos,
-                                    waveform_generator=waveform_generator)
-    likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
+    # likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
+    #     .GravitationalWaveTransient(interferometers=ifos,
+    #                                 waveform_generator=waveform_generator)
+    # likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     likelihood_imr_phenom = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
@@ -247,39 +242,29 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    # result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
-    #                                         priors=priors,
-    #                                         injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-    #                                         outdir=outdir,
-    #                                         save=True,
-    #                                         verbose=True,
-    #                                         random_seed=np.random.randint(0, 100000),
-    #                                         sampler=settings.sampler_settings.sampler,
-    #                                         npoints=settings.sampler_settings.npoints,
-    #                                         label=settings.sampler_settings.label,
-    #                                         clean=settings.sampler_settings.clean,
-    #                                         nthreads=settings.sampler_settings.nthreads,
-    #                                         maxmcmc=settings.sampler_settings.maxmcmc,
-    #                                         resume=settings.sampler_settings.resume,
-    #                                         save_bounds=False,
-    #                                         check_point_plot=True,
-    #                                         n_check_point=1000)
-    # result.save_to_file()
-    # logger.info(str(result))
-    result = bilby.result.read_in_result(
-        filename='test_production/IMR_mem_inj_non_mem_rec_result.json')
-    result.posterior = bilby.gw.conversion. \
-        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+    result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
+                                            priors=priors,
+                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
+                                            outdir=outdir,
+                                            save=True,
+                                            verbose=True,
+                                            random_seed=np.random.randint(0, 100000),
+                                            sampler=settings.sampler_settings.sampler,
+                                            npoints=settings.sampler_settings.npoints,
+                                            label=settings.sampler_settings.label,
+                                            clean=settings.sampler_settings.clean,
+                                            nthreads=settings.sampler_settings.nthreads,
+                                            maxmcmc=settings.sampler_settings.maxmcmc,
+                                            resume=settings.sampler_settings.resume,
+                                            save_bounds=False,
+                                            check_point_plot=True,
+                                            n_check_point=1000)
     result.save_to_file()
-
-    _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, result, shifts=None)
-    new_posterior_samples = resample_equal(samples=result.posterior, weights=np.exp(test_log_weights))
-
-    new_result = deepcopy(result)
-    new_result.posterior = new_posterior_samples
-
-
+    logger.info(str(result))
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+    # result.posterior = bilby.gw.conversion. \
+    #     generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+    result.save_to_file()
 
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
@@ -334,17 +319,18 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
 
     if True:
-    # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
+        # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
 
         log_l_ratios = []
-        for i in range(len(result.posterior)):
-            if i % 100 == 0:
-                logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-                likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
-            log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
-            print(log_l_ratios[i] - log_likelihoods[i])
+        # for i in range(len(result.posterior)):
+            # if i % 100 == 0:
+            #     logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
+            # for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+            #                   'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+            #     likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
+            # log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
+            # print(log_l_ratios[i] - log_likelihoods[i])
+        log_l_ratios = log_likelihoods
 
         result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
