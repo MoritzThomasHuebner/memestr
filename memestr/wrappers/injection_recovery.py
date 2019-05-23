@@ -384,7 +384,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/test_reweighted_unmarginalized',
         weights=norm_weights,
         parameters=deepcopy(params))
-    logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(test_log_weights ** 2)))
+    logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(np.array(test_log_weights) ** 2)))
 
     # try:
     #     plt.scatter(hom_log_weights, maximum_overlaps)
