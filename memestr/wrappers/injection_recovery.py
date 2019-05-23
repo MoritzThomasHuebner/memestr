@@ -272,6 +272,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.save_to_file()
 
+    sample_file = str(
+        filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
+    samples = np.loadtxt(sample_file)
+    log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
+
+    result.posterior.log_likelihood = log_likelihoods
+
     _, test_log_weights = reweigh_by_likelihood(likelihood_imr_phenom_unmarginalized, result, shifts=None)
     new_posterior_samples = resample_equal(samples=result.posterior, weights=np.exp(test_log_weights))
 
@@ -312,10 +319,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
 
-    sample_file = str(
-        filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
-    samples = np.loadtxt(sample_file)
-    log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
 
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_likelihoods.txt', log_likelihoods)
     logger.info('Filename base: ' + str(filename_base))
