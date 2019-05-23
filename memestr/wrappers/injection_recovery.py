@@ -226,10 +226,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                     **settings.waveform_data.__dict__)
 
     priors = deepcopy(settings.recovery_priors.proper_dict())
-    # likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
-    #     .GravitationalWaveTransient(interferometers=ifos,
-    #                                 waveform_generator=waveform_generator)
-    # likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
+    likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
+        .GravitationalWaveTransient(interferometers=ifos,
+                                    waveform_generator=waveform_generator)
+    likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     likelihood_imr_phenom = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=ifos,
@@ -322,14 +322,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
 
         log_l_ratios = []
-        # for i in range(len(result.posterior)):
-            # if i % 100 == 0:
-            #     logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-            # for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-            #                   'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            #     likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
-            # log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
-            # print(log_l_ratios[i] - log_likelihoods[i])
+        for i in range(len(result.posterior)):
+            if i % 100 == 0:
+                logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
+            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+                likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
+            log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
+            print(log_l_ratios[i] - log_likelihoods[i])
         log_l_ratios = log_likelihoods
 
         result.posterior.log_likelihood = log_l_ratios
