@@ -134,7 +134,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         maximum_overlap = -res.fun
         iterations = res.nit
         init_guess_time = -np.random.random() * time_limit
-        init_guess_phase = 2*np.pi*(np.random.random() - 0.5) + parameters['phase']
+        init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
         x0 = np.array([init_guess_time, init_guess_phase])
         counter += 1
         if counter > 20:
