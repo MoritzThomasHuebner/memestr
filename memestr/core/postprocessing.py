@@ -145,6 +145,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                 break
         time_shifts.append(time_shift)
         phases.append(new_phase)
+        logger.info(i)
     logger.info(str(time_shifts))
     logger.info(str(phases))
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
