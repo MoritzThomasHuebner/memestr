@@ -122,33 +122,24 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     alpha = 0.1
     args = (full_wf, memory_generator, parameters['inc'],
             recovery_wg.frequency_array, ifo.power_spectral_density, shift, alpha)
-    # init_guess_time = -0.5 * time_limit
-    # init_guess_phase = parameters['phase']
-    init_guess_time = -np.random.random() * time_limit
-    init_guess_phase = np.pi * (np.random.random() - 0.5) + parameters['phase']
+    init_guess_time = -0.5 * time_limit
+    init_guess_phase = parameters['phase']
     x0 = np.array([init_guess_time, init_guess_phase])
     bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
-    for i in range(9):
-        maximum_overlap = 0
-        while maximum_overlap < 0.98:
-            # logger.info("Initial guess: " + str(x0))
-            res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
-                           tol=0.00001)
-            time_shift, new_phase = res.x[0], res.x[1]
-            # new_phase %= 2*np.pi
-            maximum_overlap = -res.fun
-            iterations = res.nit
-            init_guess_time = -np.random.random() * time_limit
-            init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
-            x0 = np.array([init_guess_time, init_guess_phase])
-            counter += 1
-            if counter > 20:
-                break
-        logger.info(i)
-        logger.info("Time shift: " + str(time_shift))
-        logger.info("Phase shift: " + str(new_phase))
-        logger.info("Max overlap: " + str(maximum_overlap))
+    while maximum_overlap < 0.98:
+        res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
+                       tol=0.00001)
+        time_shift, new_phase = res.x[0], res.x[1]
+        # new_phase %= 2*np.pi
+        maximum_overlap = -res.fun
+        iterations = res.nit
+        init_guess_time = -np.random.random() * time_limit
+        init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
+        x0 = np.array([init_guess_time, init_guess_phase])
+        counter += 1
+        if counter > 20:
+            break
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
