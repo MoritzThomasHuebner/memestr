@@ -128,8 +128,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
     for i in range(10):
-        time_shifts = []
-        phases = []
         while maximum_overlap < 0.98:
             res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                            tol=0.00001)
@@ -143,11 +141,9 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
             counter += 1
             if counter > 20:
                 break
-        time_shifts.append(time_shift)
-        phases.append(new_phase)
         logger.info(i)
-    logger.info(str(time_shifts))
-    logger.info(str(phases))
+        logger.info(time_shift)
+        logger.info(new_phase)
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
