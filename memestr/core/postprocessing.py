@@ -57,7 +57,8 @@ def calculate_overlaps_optimizable(new_params, *args):
 
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
+    delta_t = memory_generator.times[1] - memory_generator.times[0]
+    # waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
     duration = memory_generator.times[-1] - memory_generator.times[0]
 
     waveform_fd = dict()
@@ -66,7 +67,7 @@ def calculate_overlaps_optimizable(new_params, *args):
         indexes = np.where(frequency_array < 20)
         waveform_fd[mode][indexes] = 0
     waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequency_array,
-                                                    duration=duration, shift=time_shift)
+                                                    duration=duration, shift=time_shift+delta_t*shift)
 
     return -overlap_function(a=full_wf, b=waveform_fd, frequency=frequency_array,
                              psd=power_spectral_density)
@@ -126,7 +127,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     x0 = np.array([init_guess_time, init_guess_phase])
     bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
-    while maximum_overlap < 0.99:
+    while maximum_overlap < 0.98:
         res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                        tol=0.00001)
         time_shift, new_phase = res.x[0], res.x[1]
