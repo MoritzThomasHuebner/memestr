@@ -239,6 +239,7 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
         maximum_overlaps.append(maximum_overlap)
         shifts.append(shift)
         new_result.posterior.geocent_time.iloc[index] += time_shift
+        new_phase %= 2*np.pi
         new_result.posterior.phase.iloc[index] = new_phase
         # if new_result.posterior.phase.iloc[index] < 0:
         #     new_result.posterior.phase.iloc[index] += 2 * np.pi
