@@ -145,8 +145,9 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
             if counter > 20:
                 break
         logger.info(i)
-        logger.info(time_shift)
-        logger.info(new_phase)
+        logger.info("Time shift: " + str(time_shift))
+        logger.info("Phase shift: " + str(new_phase))
+        logger.info("Max overlap: " + str(maximum_overlap))
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
