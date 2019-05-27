@@ -271,7 +271,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         likelihood_imr_phenom_unmarginalized.parameters = result.posterior.iloc[0].to_dict()
         likelihood_imr_phenom_unmarginalized.parameters['luminosity_distance'] = settings.injection_parameters.luminosity_distance
         likelihood_imr_phenom_unmarginalized.parameters['phase'] = i*2*np.pi/60
-        logger.info(likelihood_imr_phenom.log_likelihood_ratio())
+        logger.info(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
 
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
