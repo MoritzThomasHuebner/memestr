@@ -268,7 +268,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         result.posterior.phase.iloc[i] = 0.
 
     for i in range(60):
-        likelihood_imr_phenom.parameters = result.posterior.iloc[0].to_dict()
+        likelihood_imr_phenom_unmarginalized.parameters = result.posterior.iloc[0].to_dict()
+        likelihood_imr_phenom_unmarginalized.parameters['luminosity_distance'] = settings.injection_parameters.luminosity_distance
+        likelihood_imr_phenom_unmarginalized.parameters['phase'] = i*2*np.pi/60
         logger.info(likelihood_imr_phenom.log_likelihood_ratio())
 
     result.posterior = bilby.gw.conversion. \
