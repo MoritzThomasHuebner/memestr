@@ -269,7 +269,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-    result.save_to_file()
+    # result.save_to_file()
 
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
