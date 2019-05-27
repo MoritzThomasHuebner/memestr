@@ -262,9 +262,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.save_to_file()
     # logger.info(str(result))
     result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    for i in range(len(result.posterior)):
+    for i in range(1):
+    # for i in range(len(result.posterior)):
         result.posterior.luminosity_distance.iloc[i] = 10.
         result.posterior.phase.iloc[i] = 0.
+
+    for i in range(60):
+        likelihood_imr_phenom.parameters = result.posterior.iloc[0].to_dict()
+        logger.info(likelihood_imr_phenom.log_likelihood_ratio())
 
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
