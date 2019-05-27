@@ -263,8 +263,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.save_to_file()
     # logger.info(str(result))
     result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    logger.info(result.posterior.labels)
-    result.posterior.drop(labels=['luminosity_distance', 'phase'])
+    logger.info(result.posterior.columns.values)
+    result.posterior.columns.drop(labels=['luminosity_distance', 'phase'])
     result.posterior['luminosity_distance'] = pd.Series(np.ones(len(result.posterior)) * 10.)
     result.posterior['phase'] = pd.Series(np.zeros(len(result.posterior)))
     # for i in range(len(result.posterior)):
