@@ -267,9 +267,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.posterior.columns.drop(labels=['luminosity_distance', 'phase'])
     result.posterior['luminosity_distance'] = pd.Series(np.ones(len(result.posterior)) * 10.)
     result.posterior['phase'] = pd.Series(np.zeros(len(result.posterior)))
-    # for i in range(len(result.posterior)):
-    #     result.posterior.luminosity_distance.iloc[i] = 10.
-    #     result.posterior.phase.iloc[i] = 0.
 
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
