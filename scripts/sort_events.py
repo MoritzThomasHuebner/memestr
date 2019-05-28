@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 from shutil import copyfile
-
+import matplotlib.pyplot as plt
 
 ids = []
 snrs = []
@@ -19,16 +19,21 @@ data = pd.DataFrame({'ids': ids, 'snr': snrs})
 data = data.sort_values(by='snr')
 print(data)
 
-for new_id, old_id in enumerate(data.ids):
-    src = 'parameter_sets/' + str(old_id) + '_H1L1V1.h5'
-    dst = 'parameter_sets/' + str(new_id) + '_H1L1V1_new.h5'
-    copyfile(src, dst)
-    src = 'parameter_sets/' + str(old_id)
-    dst = 'parameter_sets/' + str(new_id) + '_new'
-    copyfile(src, dst)
+plt.hist(snrs, bins=32)
+plt.savefig('snrs')
+plt.clf('snrs')
 
-for old_id in range(len(data.ids)):
-    os.remove('parameter_sets/' + str(old_id))
-    os.remove('parameter_sets/' + str(old_id) + '_H1L1V1.h5')
-    os.rename('parameter_sets/' + str(old_id) + '_new', 'parameter_sets/' + str(old_id))
-    os.rename('parameter_sets/' + str(old_id) + '_H1L1V1_new.h5', 'parameter_sets/' + str(old_id) + '_H1L1V1.h5')
+# for new_id, old_id in enumerate(data.ids):
+#     src = 'parameter_sets/' + str(old_id) + '_H1L1V1.h5'
+#     dst = 'parameter_sets/' + str(new_id) + '_H1L1V1_new.h5'
+#     copyfile(src, dst)
+#     src = 'parameter_sets/' + str(old_id)
+#     dst = 'parameter_sets/' + str(new_id) + '_new'
+#     copyfile(src, dst)
+#
+# for old_id in range(len(data.ids)):
+#     os.remove('parameter_sets/' + str(old_id))
+#     os.remove('parameter_sets/' + str(old_id) + '_H1L1V1.h5')
+#     os.rename('parameter_sets/' + str(old_id) + '_new', 'parameter_sets/' + str(old_id))
+#     os.rename('parameter_sets/' + str(old_id) + '_H1L1V1_new.h5', 'parameter_sets/' + str(old_id) + '_H1L1V1.h5')
+#
