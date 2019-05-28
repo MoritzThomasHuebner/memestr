@@ -17,7 +17,7 @@ for i in range(1000):
 
 data = pd.DataFrame({'ids': ids, 'snr': snrs})
 data = data.sort_values(by='snr')
-print(data)
+np.save('snrs.txt', data.values)
 
 plt.hist(snrs, bins=32)
 plt.savefig('snrs')
