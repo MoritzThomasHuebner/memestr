@@ -21,7 +21,7 @@ print(data)
 
 plt.hist(snrs, bins=32)
 plt.savefig('snrs')
-plt.clf('snrs')
+plt.clf()
 
 # for new_id, old_id in enumerate(data.ids):
 #     src = 'parameter_sets/' + str(old_id) + '_H1L1V1.h5'
