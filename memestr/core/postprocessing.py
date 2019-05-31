@@ -12,10 +12,8 @@ from .waveforms.phenom import frequency_domain_IMRPhenomD_waveform_without_memor
 from .waveforms.surrogate import convert_to_frequency_domain
 from .waveforms.utils import nfft
 
-gamma_lmlm = gwmemory.angles.load_gamma()
-
 logger = bilby.core.utils.logger
-
+gamma_lmlm = gwmemory.angles.load_gamma()
 roll_off = 0.2
 
 
