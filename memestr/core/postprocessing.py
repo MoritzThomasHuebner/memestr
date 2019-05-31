@@ -98,8 +98,8 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     # wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
     # wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
 
-    max_index = np.argmax(np.abs(memory_generator.h_lm[(2, 2)]))
-    shift = len(memory_generator.h_lm[(2, 2)]) - max_index
+    # max_index = np.argmax(np.abs(memory_generator.h_lm[(2, 2)]))
+    # shift = len(memory_generator.h_lm[(2, 2)]) - max_index
 
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
@@ -200,24 +200,24 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         logger.info("New Phase:" + str(new_phase))
         logger.info("Counter:" + str(counter))
 
-    return time_shift, new_phase, shift, maximum_overlap
+    return time_shift, new_phase, maximum_overlap
 
 
 def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose=False):
     new_result = deepcopy(result)
     maximum_overlaps = []
-    shifts = []
+    time_shifts = []
     for index in range(len(result.posterior)):
         parameters = result.posterior.iloc[index].to_dict()
-        time_shift, new_phase, shift, maximum_overlap = \
+        time_shift, new_phase, maximum_overlap = \
             get_time_and_phase_shift(parameters, ifo, verbose=verbose)
         new_phase %= 2*np.pi
         maximum_overlaps.append(maximum_overlap)
-        shifts.append(shift)
+        time_shifts.append(time_shift)
         new_result.posterior.geocent_time.iloc[index] += time_shift
         new_result.posterior.phase.iloc[index] = new_phase
         logger.info(("{:0.2f}".format(index / len(result.posterior) * 100) + "%"))
-    return new_result, shifts, maximum_overlaps
+    return new_result, time_shifts, maximum_overlaps
 
 
 def _plot_2d_overlap(reshaped_overlaps, time_grid_mesh, phase_grid_mesh):
@@ -254,7 +254,7 @@ def calculate_log_weights(likelihood, result, **kwargs):
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood.parameters[parameter] = result.posterior.iloc[i][parameter]
             if shifts is not None:
-                likelihood.waveform_generator.waveform_arguments['shift'] = shifts[i]
+                likelihood.waveform_generator.waveform_arguments['time_shift'] = shifts[i]
             if test_original_likelihood is not None:
                 test_original_likelihood.parameters[parameter] = test_original_result.posterior.iloc[i][parameter]
 
