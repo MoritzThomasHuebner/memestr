@@ -3,14 +3,15 @@ import bilby
 import matplotlib.pyplot as plt
 import numpy as np
 
+import memestr.core.waveforms.surrogate
 from memestr.core.waveforms import time_domain_IMRPhenomD_memory_waveform, apply_window, time_domain_IMRPhenomD_waveform_without_memory
 
 settings = memestr.core.parameters.AllSettings()
 # models = [memestr.core.waveforms.time_domain_IMRPhenomD_memory_waveform,
 #           memestr.core.waveforms.time_domain_IMRPhenomD_waveform_without_memory,
 #           memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory]
-models = [memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-          memestr.core.waveforms.time_domain_nr_hyb_sur_waveform_with_memory]
+models = [memestr.core.waveforms.surrogate.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+          memestr.core.waveforms.surrogate.time_domain_nr_hyb_sur_waveform_with_memory]
 print(settings.injection_parameters)
 logger = bilby.core.utils.logger
 
