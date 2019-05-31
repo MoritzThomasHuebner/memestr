@@ -243,7 +243,7 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
 
 def calculate_log_weights(likelihood, result, **kwargs):
     log_weights = []
-    shifts = kwargs.get('shifts')
+    # shifts = kwargs.get('shifts')
     test_original_likelihood = kwargs.get('test_original_likelihood')
     test_original_result = kwargs.get('test_original_result')
 
@@ -253,8 +253,11 @@ def calculate_log_weights(likelihood, result, **kwargs):
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood.parameters[parameter] = result.posterior.iloc[i][parameter]
-            if shifts is not None:
-                likelihood.waveform_generator.waveform_arguments['time_shift'] = shifts[i]
+            # if shifts is not None:
+            #     pass # Do this to check the overlap
+                # likelihood.waveform_generator.waveform_arguments['time_shift'] = shifts[i]
+                # likelihood.waveform_generator.waveform_arguments['time_shift'] = \
+                #      result.posterior.iloc[i]['geocent_time'] - test_original_result.posterior.iloc[i]['geocent_time']
             if test_original_likelihood is not None:
                 test_original_likelihood.parameters[parameter] = test_original_result.posterior.iloc[i][parameter]
 
@@ -262,16 +265,74 @@ def calculate_log_weights(likelihood, result, **kwargs):
         original_likelihood = result.posterior.iloc[i]['log_likelihood']
         weight = reweighted_likelihood - original_likelihood
         log_weights.append(weight)
-        logger.info("Parameters Likelihood: " + str(likelihood.parameters))
-        if test_original_likelihood is not None:
-            logger.info("Original Parameters Likelihood: " + str(test_original_likelihood.parameters))
+        # logger.info("Parameters Likelihood: " + str(likelihood.parameters))
+        # if test_original_likelihood is not None:
+        #     logger.info("Original Parameters Likelihood: " + str(test_original_likelihood.parameters))
 
         logger.info("Original Likelihood: " + str(original_likelihood))
-        if test_original_likelihood is not None:
-            logger.info("Original Likelihood Test: " + str(test_original_likelihood.log_likelihood_ratio()))
+        # if test_original_likelihood is not None:
+            # logger.info("Original Likelihood Test: " + str(test_original_likelihood.log_likelihood_ratio()))
         logger.info("Reweighted Likelihood: " + str(reweighted_likelihood))
         logger.info("Log weight: " + str(weight))
-        logger.info("")
+        # full_wf = test_original_likelihood.waveform_generator.frequency_domain_strain(test_original_likelihood.parameters)
+        # matching_wf = likelihood.waveform_generator.frequency_domain_strain(likelihood.parameters)
+        # overlap = overlap_function(full_wf, matching_wf, likelihood.waveform_generator.frequency_array,
+        #                            likelihood.interferometers[0].power_spectral_density)
+        # logger.info("Test Overlap: " + str(overlap))
+        # logger.info("")
+
+
+        # import matplotlib.pyplot as plt
+        # plt.plot(test_original_likelihood.waveform_generator.time_array,
+        #          test_original_likelihood.waveform_generator.time_domain_strain(test_original_likelihood.parameters)['plus'])
+        # plt.plot(test_original_likelihood.waveform_generator.time_array,
+        #          likelihood.waveform_generator.time_domain_strain(likelihood.parameters)['plus'])
+        # plt.xlim(6, 7.1)
+        # plt.show()
+        # plt.clf()
+        #
+        # plt.plot(test_original_likelihood.waveform_generator.time_array,
+        #          test_original_likelihood.waveform_generator.time_domain_strain(test_original_likelihood.parameters)['cross'])
+        # plt.plot(test_original_likelihood.waveform_generator.time_array,
+        #          likelihood.waveform_generator.time_domain_strain(likelihood.parameters)['cross'])
+        # plt.xlim(6, 7.1)
+        # plt.show()
+        # plt.clf()
+        #
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array,
+        #          np.abs(full_wf['plus']))
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array,
+        #          np.abs(matching_wf['plus']))
+        # plt.loglog()
+        # plt.xlim(20, 1024)
+        # plt.show()
+        # plt.clf()
+
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array,
+        #          np.abs(full_wf['cross']))
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array,
+        #          np.abs(matching_wf['cross']))
+        # plt.loglog()
+        # plt.xlim(20, 1024)
+        # plt.show()
+        # plt.clf()
+
+        # plt.semilogx()
+        # plt.xlim(20, 1024)
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array, np.angle(full_wf['plus']))
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array, np.angle(matching_wf['plus']))
+        # plt.show()
+        # plt.clf()
+
+        # plt.semilogx()
+        # plt.xlim(20, 1024)
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array, np.angle(full_wf['cross']))
+        # plt.plot(test_original_likelihood.waveform_generator.frequency_array, np.angle(matching_wf['cross']))
+        # plt.show()
+        # plt.clf()
+        # import sys
+        # sys.exit(0)
+
     return log_weights
 
 
@@ -308,4 +369,4 @@ def reweigh_by_two_likelihoods(posterior, likelihood_memory, likelihood_no_memor
             weight_1 = likelihood_memory.log_likelihood_ratio()
             weight = weight_1 - weight_2
         weights.append(weight)
-    return logsumexp(weights)
+    return logsumexp(weights), weights

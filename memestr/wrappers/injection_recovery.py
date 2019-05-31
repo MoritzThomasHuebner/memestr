@@ -228,12 +228,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     priors = deepcopy(settings.recovery_priors.proper_dict())
     likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=ifos,
+        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator)
     likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     likelihood_imr_phenom = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=ifos,
+        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator,
                                     priors=priors,
                                     time_marginalization=settings.other_settings.time_marginalization,
@@ -243,30 +243,30 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
-                                            priors=priors,
-                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-                                            outdir=outdir,
-                                            save=True,
-                                            verbose=True,
-                                            random_seed=np.random.randint(0, 100000),
-                                            sampler=settings.sampler_settings.sampler,
-                                            npoints=settings.sampler_settings.npoints,
-                                            label=settings.sampler_settings.label,
-                                            clean=settings.sampler_settings.clean,
-                                            nthreads=settings.sampler_settings.nthreads,
-                                            maxmcmc=settings.sampler_settings.maxmcmc,
-                                            resume=settings.sampler_settings.resume,
-                                            save_bounds=False,
-                                            check_point_plot=True,
-                                            n_check_point=1000)
-    result.save_to_file()
-    logger.info(str(result))
-    import sys
-    sys.exit(0)
-    # result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    result = bilby.result.read_in_result('0_dynesty/IMR_mem_inj_non_mem_rec_result.json')
-    logger.info(result.posterior.columns.values)
+    # result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
+    #                                         priors=priors,
+    #                                         injection_parameters=deepcopy(settings.injection_parameters.__dict__),
+    #                                         outdir=outdir,
+    #                                         save=True,
+    #                                         verbose=True,
+    #                                         random_seed=np.random.randint(0, 100000),
+    #                                         sampler=settings.sampler_settings.sampler,
+    #                                         npoints=settings.sampler_settings.npoints,
+    #                                         label=settings.sampler_settings.label,
+    #                                         clean=settings.sampler_settings.clean,
+    #                                         nthreads=settings.sampler_settings.nthreads,
+    #                                         maxmcmc=settings.sampler_settings.maxmcmc,
+    #                                         resume=settings.sampler_settings.resume,
+    #                                         save_bounds=False,
+    #                                         check_point_plot=True,
+    #                                         n_check_point=1000)
+    # result.save_to_file()
+    # logger.info(str(result))
+    # import sys
+    # sys.exit(0)
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+    # result = bilby.result.read_in_result('3_dynesty/IMR_mem_inj_non_mem_rec_result.json')
+    # logger.info(result.posterior.columns.values)
     result.posterior.columns.drop(labels=['luminosity_distance', 'phase'])
     result.posterior['luminosity_distance'] = pd.Series(np.ones(len(result.posterior)) * 10.)
     result.posterior['phase'] = pd.Series(np.zeros(len(result.posterior)))
@@ -276,45 +276,52 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.label = 'reconstructed_result'
     result.save_to_file()
 
+    # result = bilby.result.read_in_result('3_dynesty/reconstructed_result_result.json')
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
     del params['s12']
     del params['s21']
     del params['s22']
-    del params['mass_ratio']
-    del params['inc']
-    del params['ra']
-    del params['dec']
-    del params['psi']
-    del params['s13']
-    del params['s23']
+    # del params['mass_ratio']
+    # del params['inc']
+    # del params['ra']
+    # del params['dec']
+    # del params['psi']
+    # del params['s13']
+    # del params['s23']
     del params['random_injection_parameters']
     # params = dict(phase=0.6674848916080516, geocent_time=13.567036458124411)
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
 
     try:
         raise Exception
+        # time_and_phase_shifted_result = bilby.result.read_in_result(
+        #     filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+        # maximum_overlaps = np.loadtxt(
+        #     str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
+        # shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+
         time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-        maximum_overlaps = np.loadtxt(
-            str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
-        shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+            filename='3_dynesty/time_and_phase_shifted_result.json')
+        shifts = np.loadtxt('3_dynesty/shifts.txt')
+        maximum_overlaps = np.loadtxt('3_dynesty/maximum_overlaps.txt')
     except Exception as e:
         logger.warning(e)
         time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
             result=result,
             ifo=ifos[0],
-            verbose=False)
-        # np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
-        # np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', maximum_overlaps)
-        np.savetxt('0_dynesty/shifts.txt', shifts)
-        np.savetxt('0_dynesty/maximum_overlaps.txt', maximum_overlaps)
+            verbose=True)
+        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
+        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', maximum_overlaps)
+        # np.savetxt('3_dynesty/shifts.txt', shifts)
+        # np.savetxt('3_dynesty/maximum_overlaps.txt', maximum_overlaps)
         time_and_phase_shifted_result.label = 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
         time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params))
 
-    time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
-
+    # time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
+    # import sys
+    # sys.exit(0)
     # sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
     # samples = np.loadtxt(sample_file)
     # log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
@@ -344,8 +351,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                               'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
                 likelihood_imr_phenom_unmarginalized.parameters[parameter] = result.posterior.iloc[i][parameter]
             log_l_ratios.append(likelihood_imr_phenom_unmarginalized.log_likelihood_ratio())
-            # print(log_l_ratios[i] - log_likelihoods[i])
-        # log_l_ratios = log_likelihoods
 
         result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
@@ -353,23 +358,23 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.save_to_file()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
-        time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
-        time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     likelihood_memory = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=ifos,
+        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_memory)
 
     likelihood_no_memory = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=ifos,
+        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_no_memory)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
@@ -384,9 +389,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                         test_original_likelihood=likelihood_imr_phenom_unmarginalized,
                                                         test_original_result=result
                                                         )
+    # np.savetxt('3_dynesty/weights.txt', hom_log_weights)
+    # np.savetxt(fname='3_dynesty/memory_log_bf', X=np.array([hom_log_bf]))
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
-    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
-               X=np.array([hom_log_bf]))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf', X=np.array([hom_log_bf]))
 
     hom_weights = np.exp(hom_log_weights)
     logger.info("HOM LOG BF:" + str(hom_log_bf))
@@ -400,6 +406,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         plt.ylabel('max overlaps')
         plt.tight_layout()
         plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
+        # plt.savefig('3_dynesty/log_weights_vs_max_overlaps')
         plt.clf()
     except Exception as e:
         logger.warning(e)
@@ -408,6 +415,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     try:
         time_and_phase_shifted_result.plot_corner(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
+            # filename='3_dynesty/reweighted',
             weights=norm_weights,
             parameters=deepcopy(params))
     except Exception as e:
@@ -421,14 +429,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # except Exception as e:
     #     logger.warning(e)
 
-    # reweighed_log_bf = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
-    #                                               likelihood_memory=likelihood_memory,
-    #                                               likelihood_no_memory=likelihood_no_memory,
-    #                                               shifts=shifts
-    #                                               )
-    #
-    # logger.info("MEMORY LOG BF: " + str(reweighed_log_bf))
-    # np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
-    #            X=np.array([reweighed_log_bf]))
-    #
-    # return time_and_phase_shifted_result
+    memory_log_bf, memory_weights = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
+                                                               likelihood_memory=likelihood_memory,
+                                                               likelihood_no_memory=likelihood_no_memory,
+                                                               shifts=shifts
+                                                               )
+
+    logger.info("MEMORY LOG BF: " + str(memory_log_bf))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
+               X=np.array([memory_log_bf]))
+
+    return time_and_phase_shifted_result
