@@ -47,10 +47,8 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
 
 def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
-    shift = kwargs.get('shift', None)
-    if not shift:
-        _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
-    time_shift = kwargs.get('shift', 0.)
+    _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
+    time_shift = kwargs.get('time_shift', 0.)
     time_shift += shift * (series.time_array[1] - series.time_array[0])
     waveform_fd = nfft(waveform, series.sampling_frequency)
     for mode in ['plus', 'cross']:
