@@ -8,7 +8,7 @@ import numpy as np
 from scipy.misc import logsumexp
 from scipy.optimize import minimize
 
-from memestr.core.waveforms import apply_time_shift_frequency_domain, nfft_vectorizable
+from memestr.core.waveforms import apply_time_shift_frequency_domain, nfft
 from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory, wrap_by_n_indices,\
     frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
 
@@ -45,7 +45,7 @@ def overlap_function(a, b, frequency, psd):
 
 
 overlap_function_vectorized = np.vectorize(pyfunc=overlap_function, excluded=['a', 'frequency', 'psd'])
-nfft_vectorized = np.vectorize(pyfunc=nfft_vectorizable, excluded=['sampling_frequency'])
+nfft_vectorized = np.vectorize(pyfunc=nfft, excluded=['sampling_frequency'])
 
 
 def calculate_overlaps_optimizable(new_params, *args):
