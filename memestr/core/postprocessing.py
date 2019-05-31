@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 
 from memestr.core.waveforms import apply_time_shift_frequency_domain, nfft
 from .waveforms import wrap_at_maximum, apply_window, frequency_domain_IMRPhenomD_waveform_without_memory, wrap_by_n_indices,\
-    frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+    frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return, wrap_at_maximum_from_2_2_mode, convert_to_frequency_domain
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 
@@ -51,24 +51,13 @@ nfft_vectorized = np.vectorize(pyfunc=nfft, excluded=['sampling_frequency'])
 def calculate_overlaps_optimizable(new_params, *args):
     time_shift = new_params[0]
     phase = new_params[1]
-    full_wf, memory_generator, inc, frequency_array, power_spectral_density, shift, alpha = args
-    times = memory_generator.times
-    kwargs = dict(alpha=alpha)
+    full_wf, memory_generator, inc, frequency_array, power_spectral_density, alpha = args
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.time_array = memory_generator.times
 
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
-    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    delta_t = memory_generator.times[1] - memory_generator.times[0]
-    # waveform = wrap_by_n_indices(shift=shift, waveform=waveform)
-    duration = memory_generator.times[-1] - memory_generator.times[0]
-
-    waveform_fd = dict()
-    for mode in ['plus', 'cross']:
-        waveform_fd[mode], frequency_array = bilby.core.utils.nfft(waveform[mode], memory_generator.sampling_frequency)
-        indexes = np.where(frequency_array < 20)
-        waveform_fd[mode][indexes] = 0
-    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=frequency_array,
-                                                    duration=duration, shift=time_shift+delta_t*shift)
-
+    waveform_fd, _ = convert_to_frequency_domain(memory_generator=memory_generator, series=series,
+                                                 waveform=waveform, alpha=alpha, time_shift=time_shift)
     return -overlap_function(a=full_wf, b=waveform_fd, frequency=frequency_array,
                              psd=power_spectral_density)
 
@@ -121,7 +110,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     iterations = 0.
     alpha = 0.1
     args = (full_wf, memory_generator, parameters['inc'],
-            recovery_wg.frequency_array, ifo.power_spectral_density, shift, alpha)
+            recovery_wg.frequency_array, ifo.power_spectral_density, alpha)
     init_guess_time = -0.5 * time_limit
     init_guess_phase = parameters['phase']
     x0 = np.array([init_guess_time, init_guess_phase])
@@ -214,19 +203,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     return time_shift, new_phase, shift, maximum_overlap
 
 
-def adjust_phase_and_geocent_time_complete_posterior_quick(result, ifo, index=-1, verbose=True):
-    parameters = result.posterior.iloc[index].to_dict()
-    time_shift, new_phase, shift, overlaps = get_time_and_phase_shift(parameters, ifo, verbose=verbose)
-    new_result = deepcopy(result)
-    for i in range(len(new_result.posterior['geocent_time'])):
-        new_result.posterior.geocent_time.iloc[i] += time_shift
-        new_result.posterior.phase.iloc[i] = new_phase
-        # if new_result.posterior.phase.iloc[i] < 0:
-        #     new_result.posterior.phase.iloc[i] += 2 * np.pi
-        # new_result.posterior.phase.iloc[i] %= 2 * np.pi
-    return new_result
-
-
 def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose=False):
     new_result = deepcopy(result)
     maximum_overlaps = []
@@ -235,14 +211,11 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
         parameters = result.posterior.iloc[index].to_dict()
         time_shift, new_phase, shift, maximum_overlap = \
             get_time_and_phase_shift(parameters, ifo, verbose=verbose)
+        new_phase %= 2*np.pi
         maximum_overlaps.append(maximum_overlap)
         shifts.append(shift)
         new_result.posterior.geocent_time.iloc[index] += time_shift
-        new_phase %= 2*np.pi
         new_result.posterior.phase.iloc[index] = new_phase
-        # if new_result.posterior.phase.iloc[index] < 0:
-        #     new_result.posterior.phase.iloc[index] += 2 * np.pi
-        # new_result.posterior.phase.iloc[index] %= 2 * np.pi
         logger.info(("{:0.2f}".format(index / len(result.posterior) * 100) + "%"))
     return new_result, shifts, maximum_overlaps
 

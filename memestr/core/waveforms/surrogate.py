@@ -14,7 +14,7 @@ def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mas
                                                             mass_ratio=mass_ratio, inc=inc,
                                                             luminosity_distance=luminosity_distance, phase=phase,
                                                             s13=s13, s23=s23, kwargs=kwargs, fold_in_memory=False)
-    waveform_fd, shift = _convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+    waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
     return waveform_fd, shift
 
 
@@ -41,16 +41,17 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
     for mode in memory:
         waveform[mode] += memory[mode]
 
-    waveform_fd, shift = _convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+    waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
     return waveform_fd, shift
 
 
-def _convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
+def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     shift = kwargs.get('shift', None)
+    time_shift = kwargs.get('shift', 0.)
     if not shift:
         _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
-    time_shift = shift * (series.time_array[1] - series.time_array[0])
+    time_shift += shift * (series.time_array[1] - series.time_array[0])
     waveform_fd = nfft(waveform, series.sampling_frequency)
     for mode in ['plus', 'cross']:
         indexes = np.where(series.frequency_array < 20)
