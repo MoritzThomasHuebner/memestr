@@ -8,7 +8,9 @@ import numpy as np
 from scipy.misc import logsumexp
 from scipy.optimize import minimize
 
-from .waveforms import frequency_domain_IMRPhenomD_waveform_without_memory, convert_to_frequency_domain, nfft
+from .waveforms.phenom import frequency_domain_IMRPhenomD_waveform_without_memory, \
+from .waveforms.surrogate import convert_to_frequency_domain
+from .waveforms.utils import nfft
 
 gamma_lmlm = gwmemory.angles.load_gamma()
 
