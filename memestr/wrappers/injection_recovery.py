@@ -171,30 +171,30 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
         minimum=np.maximum(injection_parameters['total_mass'] - 20, 15),
         maximum=injection_parameters['total_mass'] + 30,
         latex_label="$M_{tot}$")
-    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(
-        minimum=np.maximum(injection_parameters['mass_ratio'] - 0.5, 0.4),
-        maximum=1,
-        latex_label="$q$")
+    # priors['prior_mass_ratio'] = bilby.core.prior.Uniform(
+    #     minimum=np.maximum(injection_parameters['mass_ratio'] - 0.5, 0.4),
+    #     maximum=1,
+    #     latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                                maximum=5000,
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
-    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    # priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=2 * np.pi,
                                                      latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-                                                   maximum=np.pi,
-                                                   latex_label="$\psi$")
+    # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+    #                                                maximum=np.pi,
+    #                                                latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.1,
                                                             maximum=injection_parameters['geocent_time'] + 0.1,
                                                             latex_label='$t_c$')
-    priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-                                                     latex_label='s13')
-    priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-                                                     latex_label='s23')
+    # priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+    #                                                  latex_label='s13')
+    # priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+    #                                                  latex_label='s23')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD'
@@ -274,7 +274,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     samples = np.loadtxt(sample_file)
     log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
 
-
     for i in range(len(result.posterior)):
         if i % 100 == 0:
             logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
@@ -282,6 +281,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
         logger.info("Original Log Likelihood: " + str(log_likelihoods[i]))
+        # logger.info("Original Log Likelihood: " + str(result.posterior.iloc[i]['log_likelihood']))
         logger.info("New Log Likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
 
     result.posterior = bilby.gw.conversion. \
