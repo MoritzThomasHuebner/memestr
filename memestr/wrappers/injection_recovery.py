@@ -275,7 +275,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.label = 'reconstructed_result'
     result.save_to_file()
-
+    import sys
+    sys.exit(0)
     # result = bilby.result.read_in_result('3_dynesty/reconstructed_result_result.json')
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
