@@ -258,7 +258,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume,
                                             save_bounds=False,
-                                            check_point_plot=True,
+                                            check_point_plot=False,
                                             n_check_point=1000)
     result.save_to_file()
     logger.info(str(result))
