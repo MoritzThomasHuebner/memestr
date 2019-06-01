@@ -384,7 +384,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # np.savetxt('3_dynesty/weights.txt', hom_log_weights)
     # np.savetxt(fname='3_dynesty/memory_log_bf', X=np.array([hom_log_bf]))
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
-    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt', X=np.array([hom_log_bf]))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt', X=np.array([hom_log_bf]))
 
     hom_weights = np.exp(hom_log_weights)
     logger.info("HOM LOG BF:" + str(hom_log_bf))
