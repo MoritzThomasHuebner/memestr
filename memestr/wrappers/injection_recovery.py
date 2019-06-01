@@ -207,7 +207,6 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
 
 def run_production_recovery(recovery_model, outdir, **kwargs):
     logger = logging.getLogger('bilby')
-
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
     settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
 
@@ -216,6 +215,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     filename_base = filename_base.replace('_dynesty', '')
     filename_base = filename_base.replace('_cpnest', '')
     filename_base = filename_base.replace('_pypolychord', '')
+    logger.info("Parameter Set: " + str(filename_base))
 
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
                                                           str(filename_base) +
@@ -294,17 +294,17 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
 
     try:
-        raise Exception
-        # time_and_phase_shifted_result = bilby.result.read_in_result(
-        #     filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-        # maximum_overlaps = np.loadtxt(
-        #     str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
-        # shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
-
+        # raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename='3_dynesty/time_and_phase_shifted_result.json')
-        shifts = np.loadtxt('3_dynesty/shifts.txt')
-        maximum_overlaps = np.loadtxt('3_dynesty/maximum_overlaps.txt')
+            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+        maximum_overlaps = np.loadtxt(
+            str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
+        shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+        #
+        # time_and_phase_shifted_result = bilby.result.read_in_result(
+        #     filename='3_dynesty/time_and_phase_shifted_result.json')
+        # shifts = np.loadtxt('3_dynesty/shifts.txt')
+        # maximum_overlaps = np.loadtxt('3_dynesty/maximum_overlaps.txt')
     except Exception as e:
         logger.warning(e)
         time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
@@ -354,7 +354,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
         result.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.posterior.log_likelihood = log_l_ratios
-        time_and_phase_shifted_result_copy.posterior.log_likelihood = log_l_ratios
         time_and_phase_shifted_result.save_to_file()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
@@ -392,7 +391,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # np.savetxt('3_dynesty/weights.txt', hom_log_weights)
     # np.savetxt(fname='3_dynesty/memory_log_bf', X=np.array([hom_log_bf]))
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
-    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf', X=np.array([hom_log_bf]))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt', X=np.array([hom_log_bf]))
 
     hom_weights = np.exp(hom_log_weights)
     logger.info("HOM LOG BF:" + str(hom_log_bf))
@@ -436,7 +435,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                                )
 
     logger.info("MEMORY LOG BF: " + str(memory_log_bf))
-    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf',
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt',
                X=np.array([memory_log_bf]))
 
     return time_and_phase_shifted_result
