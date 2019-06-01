@@ -61,7 +61,7 @@ def calculate_overlaps_optimizable(new_params, *args):
 
 
 def get_time_and_phase_shift(parameters, ifo, verbose=False):
-    time_limit = parameters['total_mass'] * 0.00060
+    time_limit = parameters['total_mass'] * 0.00080
 
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
@@ -92,13 +92,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                                                               units='mks',
                                                               )
     logger.info(memory_generator.reference_frequency)
-
-    # wrap_check_wf = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], parameters['phase'])
-    # wrap_check_wf, shift = wrap_at_maximum(wrap_check_wf)
-
-    # max_index = np.argmax(np.abs(memory_generator.h_lm[(2, 2)]))
-    # shift = len(memory_generator.h_lm[(2, 2)]) - max_index
-
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
     counter = 0.
