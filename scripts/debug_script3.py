@@ -1,5 +1,8 @@
+import matplotlib
+matplotlib.use('Agg')
 import memestr
 import memestr.core.waveforms.surrogate
+
 
 memestr.wrappers.injection_recovery. \
     run_production_injection_imr_phenom(
