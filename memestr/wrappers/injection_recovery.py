@@ -270,6 +270,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.posterior.columns.drop(labels=['luminosity_distance', 'phase'])
     # result.posterior['luminosity_distance'] = pd.Series(np.ones(len(result.posterior)) * 10.)
     # result.posterior['phase'] = pd.Series(np.zeros(len(result.posterior)))
+    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
+    samples = np.loadtxt(sample_file)
+    log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
+
 
     for i in range(len(result.posterior)):
         if i % 100 == 0:
@@ -277,7 +281,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
-        logger.info("Original Log Likelihood: " + str(result.posterior.iloc[i]['log_likelihood']))
+        logger.info("Original Log Likelihood: " + str(log_likelihoods[i]))
         logger.info("New Log Likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
 
     result.posterior = bilby.gw.conversion. \
@@ -331,9 +335,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # time_and_phase_shifted_result_copy = deepcopy(time_and_phase_shifted_result)
     # import sys
     # sys.exit(0)
-    # sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
-    # samples = np.loadtxt(sample_file)
-    # log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
 
     # np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_likelihoods.txt', log_likelihoods)
     # logger.info('Filename base: ' + str(filename_base))
