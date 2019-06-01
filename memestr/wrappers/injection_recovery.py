@@ -275,8 +275,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.label = 'reconstructed_result'
     result.save_to_file()
-    import sys
-    sys.exit(0)
     # result = bilby.result.read_in_result('3_dynesty/reconstructed_result_result.json')
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
@@ -293,6 +291,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['random_injection_parameters']
     # params = dict(phase=0.6674848916080516, geocent_time=13.567036458124411)
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
+    import sys
+    sys.exit(0)
 
     try:
         # raise Exception
