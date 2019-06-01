@@ -61,7 +61,7 @@ def calculate_overlaps_optimizable(new_params, *args):
 
 
 def get_time_and_phase_shift(parameters, ifo, verbose=False):
-    time_limit = parameters['total_mass'] * 0.00080
+    time_limit = parameters['total_mass'] * 0.00080 * 2.0
 
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,

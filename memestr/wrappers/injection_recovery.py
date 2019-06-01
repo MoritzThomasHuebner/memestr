@@ -243,30 +243,26 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.random.seed(int(time.time()))
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    try:
-        result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
-    except Exception:
-        result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
-                                                priors=priors,
-                                                injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-                                                outdir=outdir,
-                                                save=True,
-                                                verbose=True,
-                                                random_seed=np.random.randint(0, 100000),
-                                                sampler=settings.sampler_settings.sampler,
-                                                npoints=settings.sampler_settings.npoints,
-                                                label=settings.sampler_settings.label,
-                                                clean=settings.sampler_settings.clean,
-                                                nthreads=settings.sampler_settings.nthreads,
-                                                maxmcmc=settings.sampler_settings.maxmcmc,
-                                                resume=settings.sampler_settings.resume,
-                                                save_bounds=False,
-                                                check_point_plot=False,
-                                                walks=55,
-                                                n_check_point=1000)
-        result.save_to_file()
-        logger.info(str(result))
+    result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
+                                            priors=priors,
+                                            injection_parameters=deepcopy(settings.injection_parameters.__dict__),
+                                            outdir=outdir,
+                                            save=True,
+                                            verbose=True,
+                                            random_seed=np.random.randint(0, 100000),
+                                            sampler=settings.sampler_settings.sampler,
+                                            npoints=settings.sampler_settings.npoints,
+                                            label=settings.sampler_settings.label,
+                                            clean=settings.sampler_settings.clean,
+                                            nthreads=settings.sampler_settings.nthreads,
+                                            maxmcmc=settings.sampler_settings.maxmcmc,
+                                            resume=settings.sampler_settings.resume,
+                                            save_bounds=False,
+                                            check_point_plot=False,
+                                            walks=55,
+                                            n_check_point=1000)
+    result.save_to_file()
+    logger.info(str(result))
     # import sys
     # sys.exit(0)
     # result = bilby.result.read_in_result('3_dynesty/IMR_mem_inj_non_mem_rec_result.json')
@@ -277,11 +273,14 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
     # samples = np.loadtxt(sample_file)
     # log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
-
-    result.posterior = bilby.gw.conversion. \
-        generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-    result.label = 'reconstructed_result'
-    result.save_to_file()
+    try:
+        result = bilby.result.read_in_result(
+            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reconstructed_result_result.json')
+    except Exception:
+        result.posterior = bilby.gw.conversion. \
+            generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+        result.label = 'reconstructed_result'
+        result.save_to_file()
     # result = bilby.result.read_in_result('3_dynesty/reconstructed_result_result.json')
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
