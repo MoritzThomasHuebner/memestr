@@ -270,19 +270,19 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.posterior.columns.drop(labels=['luminosity_distance', 'phase'])
     # result.posterior['luminosity_distance'] = pd.Series(np.ones(len(result.posterior)) * 10.)
     # result.posterior['phase'] = pd.Series(np.zeros(len(result.posterior)))
-    sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
-    samples = np.loadtxt(sample_file)
-    log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
+    # sample_file = str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_equal_weights.txt'
+    # samples = np.loadtxt(sample_file)
+    # log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
 
     for i in range(len(result.posterior)):
         if i % 100 == 0:
             logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
-        logger.info("Original Log Likelihood: " + str(log_likelihoods[i]))
-        # logger.info("Original Log Likelihood: " + str(result.posterior.iloc[i]['log_likelihood']))
-        logger.info("New Log Likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
+            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+                likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
+            # logger.info("Original Log Likelihood: " + str(log_likelihoods[i]))
+            logger.info("Original Log Likelihood: " + str(result.posterior.iloc[i]['log_likelihood']))
+            logger.info("New Log Likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
 
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
@@ -303,8 +303,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # del params['s23']
     del params['random_injection_parameters']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
-    import sys
-    sys.exit(0)
+    # import sys
+    # sys.exit(0)
 
     try:
         # raise Exception
