@@ -258,7 +258,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                             maxmcmc=settings.sampler_settings.maxmcmc,
                                             resume=settings.sampler_settings.resume,
                                             save_bounds=False,
-                                            check_point_plot=False,
+                                            check_point_plot=True,
+                                            walks=55,
                                             n_check_point=1000)
     result.save_to_file()
     logger.info(str(result))
@@ -274,16 +275,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # samples = np.loadtxt(sample_file)
     # log_likelihoods = - 0.5 * samples[:, 1]  # extract second column
 
-    for i in range(len(result.posterior)):
-        if i % 100 == 0:
-            logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-            for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                              'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-                likelihood_imr_phenom.parameters[parameter] = result.posterior.iloc[i][parameter]
-            # logger.info("Original Log Likelihood: " + str(log_likelihoods[i]))
-            logger.info("Original Log Likelihood: " + str(result.posterior.iloc[i]['log_likelihood']))
-            logger.info("New Log Likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
-
     result.posterior = bilby.gw.conversion. \
         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
     result.label = 'reconstructed_result'
@@ -294,13 +285,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['s12']
     del params['s21']
     del params['s22']
-    # del params['mass_ratio']
-    # del params['inc']
-    # del params['ra']
-    # del params['dec']
-    # del params['psi']
-    # del params['s13']
-    # del params['s23']
     del params['random_injection_parameters']
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
     # import sys
