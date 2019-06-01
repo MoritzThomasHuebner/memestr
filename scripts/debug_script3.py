@@ -9,6 +9,6 @@ memestr.wrappers.injection_recovery. \
         outdir='900_pypolychord_production_IMR_non_mem_rec', label='IMR_mem_inj_non_mem_rec',
         alpha=0.1, distance_marginalization=True,
         time_marginalization=False, phase_marginalization=True,
-        sampler='dynesty', nthreads=1,
+        sampler='pypolychord', nthreads=1,
         npoints=2000, duration=16, random_seed=42, dlogz=0.1,
         sampling_frequency=2048, resume=False, clean=False, n_check_point=100)
