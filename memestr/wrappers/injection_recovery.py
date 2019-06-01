@@ -171,30 +171,30 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
         minimum=np.maximum(injection_parameters['total_mass'] - 20, 15),
         maximum=injection_parameters['total_mass'] + 30,
         latex_label="$M_{tot}$")
-    # priors['prior_mass_ratio'] = bilby.core.prior.Uniform(
-    #     minimum=np.maximum(injection_parameters['mass_ratio'] - 0.5, 0.4),
-    #     maximum=1,
-    #     latex_label="$q$")
+    priors['prior_mass_ratio'] = bilby.core.prior.Uniform(
+        minimum=np.maximum(injection_parameters['mass_ratio'] - 0.5, 0.4),
+        maximum=1,
+        latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                                maximum=5000,
                                                                                latex_label="$L_D$",
                                                                                name='luminosity_distance')
-    # priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    # priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2 * np.pi, latex_label="$RA$")
-    # priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
+    priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+    priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+    priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
     priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                      maximum=2 * np.pi,
                                                      latex_label="$\phi$")
-    # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
-    #                                                maximum=np.pi,
-    #                                                latex_label="$\psi$")
+    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+                                                   maximum=np.pi,
+                                                   latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.1,
                                                             maximum=injection_parameters['geocent_time'] + 0.1,
                                                             latex_label='$t_c$')
-    # priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-    #                                                  latex_label='s13')
-    # priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
-    #                                                  latex_label='s23')
+    priors['prior_s13'] = bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+                                                     latex_label='s13')
+    priors['prior_s23'] = bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0.0, 0.5),
+                                                     latex_label='s23')
 
     imr_phenom_kwargs = dict(
         label='IMRPhenomD'
@@ -394,7 +394,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # except OSError:
 
     hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                        shifts=shifts,
                                                         test_original_likelihood=likelihood_imr_phenom_unmarginalized,
                                                         test_original_result=result
                                                         )
@@ -438,11 +437,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # except Exception as e:
     #     logger.warning(e)
 
-    memory_log_bf, memory_weights = reweigh_by_two_likelihoods(posterior=time_and_phase_shifted_result.posterior,
-                                                               likelihood_memory=likelihood_memory,
-                                                               likelihood_no_memory=likelihood_no_memory,
-                                                               shifts=shifts
-                                                               )
+    memory_log_bf, memory_weights = reweigh_by_likelihood(reweighing_likelihood=likelihood_memory,
+                                                          result=time_and_phase_shifted_result,
+                                                           test_original_likelihood=likelihood_no_memory,
+                                                           test_original_result=time_and_phase_shifted_result)
 
     logger.info("MEMORY LOG BF: " + str(memory_log_bf))
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt',
