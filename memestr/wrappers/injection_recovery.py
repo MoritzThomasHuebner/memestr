@@ -375,7 +375,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     try:
-        hom_log_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
+        hom_log_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/hom_weights.txt')
         hom_log_bf = np.loadtxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt')
     except OSError as e:
         logger.warning(e)
@@ -385,7 +385,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                             )
     # np.savetxt('3_dynesty/weights.txt', hom_log_weights)
     # np.savetxt(fname='3_dynesty/memory_log_bf', X=np.array([hom_log_bf]))
-    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
+    np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/hom_weights.txt', hom_log_weights)
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt', X=np.array([hom_log_bf]))
 
     hom_weights = np.exp(hom_log_weights)
@@ -427,9 +427,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                           result=time_and_phase_shifted_result,
                                                           test_original_likelihood=likelihood_no_memory,
                                                           test_original_result=time_and_phase_shifted_result)
+    memory_log_bf -= hom_log_bf
 
     logger.info("MEMORY LOG BF: " + str(memory_log_bf))
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt',
                X=np.array([memory_log_bf]))
+    np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_weights.txt',
+               X=np.array(memory_weights))
+
 
     return time_and_phase_shifted_result
