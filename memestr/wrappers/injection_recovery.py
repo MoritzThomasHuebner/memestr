@@ -298,7 +298,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
         maximum_overlaps = np.loadtxt(
             str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt')
-        shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
+        # shifts = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt')
         #
         # time_and_phase_shifted_result = bilby.result.read_in_result(
         #     filename='3_dynesty/time_and_phase_shifted_result.json')
@@ -310,7 +310,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
             result=result,
             ifo=ifos[0],
             verbose=True)
-        np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
+        # np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/shifts.txt', shifts)
         np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/maximum_overlaps.txt', maximum_overlaps)
         # np.savetxt('3_dynesty/shifts.txt', shifts)
         # np.savetxt('3_dynesty/maximum_overlaps.txt', maximum_overlaps)
