@@ -10,8 +10,10 @@ for i in range(1000, 2000):
     try:
         memory_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt')
         hom_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt')
-        memory_log_bfs.append(memory_log_bf[0])
-        hom_log_bfs.append(hom_log_bf[0])
+        if memory_log_bf < 20:
+            memory_log_bfs.append(memory_log_bf)
+        if hom_log_bf < 200:
+            hom_log_bfs.append(hom_log_bf)
     except OSError as e:
         print(e)
         continue
