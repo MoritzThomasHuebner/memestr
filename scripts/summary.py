@@ -12,7 +12,7 @@ for i in range(1000, 2000):
         hom_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt')
         if memory_log_bf > 1:
             print(i)
-        if memory_log_bf < 20:
+        if memory_log_bf < 1:
             memory_log_bfs.append(memory_log_bf)
         if hom_log_bf < 20:
             hom_log_bfs.append(hom_log_bf)
