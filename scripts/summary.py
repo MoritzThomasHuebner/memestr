@@ -16,6 +16,7 @@ for i in range(1000, 2000):
         print(e)
         continue
 
+print(memory_log_bfs)
 memory_log_bfs = np.array(memory_log_bfs)
 np.random.shuffle(memory_log_bfs)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
