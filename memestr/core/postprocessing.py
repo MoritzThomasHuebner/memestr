@@ -62,10 +62,6 @@ def calculate_overlaps_optimizable(new_params, *args):
 
 def get_time_and_phase_shift(parameters, ifo, verbose=False):
     time_limit = parameters['total_mass'] * 0.00080
-    if parameters['luminosity_distance'] < 500:
-        time_limit = parameters['total_mass'] * 0.00160
-    if parameters['luminosity_distance'] < 300:
-        time_limit = parameters['total_mass'] * 0.00240
 
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
@@ -113,11 +109,13 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
 
     time_limit_start = time_limit
     for i in range(10):
-        while maximum_overlap < 0.98:
+        while maximum_overlap < 0.95:
             res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                            tol=0.00001)
             time_shift, new_phase = res.x[0], res.x[1]
             new_phase %= 2*np.pi
+            if -res.fun < maximum_overlap:
+                continue
             maximum_overlap = -res.fun
             iterations = res.nit
             init_guess_time = -np.random.random() * time_limit
@@ -126,6 +124,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
             counter += 1
             if counter > 8:
                 break
+        counter = 0
         time_limit = time_limit_start * i
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
