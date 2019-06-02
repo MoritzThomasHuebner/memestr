@@ -61,7 +61,11 @@ def calculate_overlaps_optimizable(new_params, *args):
 
 
 def get_time_and_phase_shift(parameters, ifo, verbose=False):
-    time_limit = parameters['total_mass'] * 0.00080 * 2.0
+    time_limit = parameters['total_mass'] * 0.00080
+    if parameters['luminosity_distance'] < 500:
+        time_limit = parameters['total_mass'] * 0.00160
+    if parameters['luminosity_distance'] < 300:
+        time_limit = parameters['total_mass'] * 0.00240
 
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
@@ -107,19 +111,22 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     x0 = np.array([init_guess_time, init_guess_phase])
     bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
-    while maximum_overlap < 0.98:
-        res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
-                       tol=0.00001)
-        time_shift, new_phase = res.x[0], res.x[1]
-        new_phase %= 2*np.pi
-        maximum_overlap = -res.fun
-        iterations = res.nit
-        init_guess_time = -np.random.random() * time_limit
-        init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
-        x0 = np.array([init_guess_time, init_guess_phase])
-        counter += 1
-        if counter > 20:
-            break
+    time_limit_start = time_limit
+    for i in range(10):
+        while maximum_overlap < 0.98:
+            res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
+                           tol=0.00001)
+            time_shift, new_phase = res.x[0], res.x[1]
+            new_phase %= 2*np.pi
+            maximum_overlap = -res.fun
+            iterations = res.nit
+            init_guess_time = -np.random.random() * time_limit
+            init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
+            x0 = np.array([init_guess_time, init_guess_phase])
+            counter += 1
+            if counter > 8:
+                break
+        time_limit = time_limit_start * i
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
@@ -261,11 +268,11 @@ def calculate_log_weights(likelihood, result, **kwargs):
         # if test_original_likelihood is not None:
         #     logger.info("Original Parameters Likelihood: " + str(test_original_likelihood.parameters))
 
-        logger.info("Original Likelihood: " + str(original_likelihood))
+        # logger.info("Original Likelihood: " + str(original_likelihood))
         # if test_original_likelihood is not None:
             # logger.info("Original Likelihood Test: " + str(test_original_likelihood.log_likelihood_ratio()))
-        logger.info("Reweighted Likelihood: " + str(reweighted_likelihood))
-        logger.info("Log weight: " + str(weight))
+        # logger.info("Reweighted Likelihood: " + str(reweighted_likelihood))
+        # logger.info("Log weight: " + str(weight))
         # full_wf = test_original_likelihood.waveform_generator.frequency_domain_strain(test_original_likelihood.parameters)
         # matching_wf = likelihood.waveform_generator.frequency_domain_strain(likelihood.parameters)
         # overlap = overlap_function(full_wf, matching_wf, likelihood.waveform_generator.frequency_array,
