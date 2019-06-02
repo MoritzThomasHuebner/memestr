@@ -337,7 +337,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #     parameters=deepcopy(params))
     # logger.info("Number of effective samples:" + str(np.sum(test_log_weights) ** 2 / np.sum(np.array(test_log_weights) ** 2)))
 
-    if True:
+    if False:
         # if time_and_phase_shifted_result.posterior['log_likelihood'].iloc[0] is None:
         log_l_ratios = []
         for i in range(len(result.posterior)):
