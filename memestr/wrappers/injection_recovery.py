@@ -374,15 +374,15 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
-    # try:
-    #     hom_log_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
-    #     hom_log_bf = np.loadtxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf')
-    # except OSError:
+    try:
+        hom_log_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
+        hom_log_bf = np.loadtxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf')
+    except OSError:
 
-    hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
-                                                        test_original_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                        test_original_result=result
-                                                        )
+        hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
+                                                            test_original_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                            test_original_result=result
+                                                            )
     # np.savetxt('3_dynesty/weights.txt', hom_log_weights)
     # np.savetxt(fname='3_dynesty/memory_log_bf', X=np.array([hom_log_bf]))
     np.savetxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt', hom_log_weights)
@@ -425,8 +425,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     memory_log_bf, memory_weights = reweigh_by_likelihood(reweighing_likelihood=likelihood_memory,
                                                           result=time_and_phase_shifted_result,
-                                                           test_original_likelihood=likelihood_no_memory,
-                                                           test_original_result=time_and_phase_shifted_result)
+                                                          test_original_likelihood=likelihood_no_memory,
+                                                          test_original_result=time_and_phase_shifted_result)
 
     logger.info("MEMORY LOG BF: " + str(memory_log_bf))
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt',
