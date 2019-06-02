@@ -42,7 +42,7 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
         waveform[mode] += memory[mode]
 
     waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
-    return waveform_fd, shift
+    return waveform_fd
 
 
 def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
