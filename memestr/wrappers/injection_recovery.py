@@ -434,5 +434,4 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_weights.txt',
                X=np.array(memory_weights))
 
-
     return time_and_phase_shifted_result
