@@ -377,8 +377,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     try:
         hom_log_weights = np.loadtxt(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/weights.txt')
         hom_log_bf = np.loadtxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf')
-    except OSError:
-
+    except OSError as e:
+        logger.warning(e)
         hom_log_bf, hom_log_weights = reweigh_by_likelihood(likelihood_no_memory, time_and_phase_shifted_result,
                                                             test_original_likelihood=likelihood_imr_phenom_unmarginalized,
                                                             test_original_result=result
