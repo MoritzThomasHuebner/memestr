@@ -427,7 +427,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                           result=time_and_phase_shifted_result,
                                                           test_original_likelihood=likelihood_no_memory,
                                                           test_original_result=time_and_phase_shifted_result)
-    memory_log_bf -= hom_log_bf
 
     logger.info("MEMORY LOG BF: " + str(memory_log_bf))
     np.savetxt(fname=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt',
