@@ -108,7 +108,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
     time_limit_start = time_limit
-    for i in range(10):
+    for i in range(4):
         while maximum_overlap < 0.95:
             res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
                            tol=0.00001)
