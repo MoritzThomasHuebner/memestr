@@ -56,7 +56,9 @@ for i in range(1000, 2000):
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     memory_log_bfs_injected.append(a - b)
-    print(memory_log_bfs_injected)
+    memory_log_bfs.append(memory_log_bf)
+    hom_log_bfs.append(hom_log_bf)
+    # print(memory_log_bfs_injected)
 
 memory_log_bfs = np.array(memory_log_bfs)
 memory_log_bfs_injected = np.array(memory_log_bfs_injected)
