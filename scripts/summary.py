@@ -45,10 +45,10 @@ for i in range(1000, 2000):
     likelihood_no_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_no_memory)
-    likelihood_no_memory.parameters = injection_parameters
-    likelihood_memory.parameters = injection_parameters
-    likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
-    likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
+    for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
+                      'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
+        likelihood_no_memory.parameters[parameter] = injection_parameters[parameter]
+        likelihood_memory.parameters[parameter] = injection_parameters[parameter]
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     print(a)
