@@ -16,7 +16,7 @@ hom_log_bfs = []
 
 for i in range(1000, 2000):
     injection_parameters = get_injection_parameter_set(str(i))
-    ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + 'H1L1V1.h5')
+    ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
     try:
         memory_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt')
         hom_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt')
