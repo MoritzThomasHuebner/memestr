@@ -15,7 +15,7 @@ logger.disabled = True
 settings = AllSettings.from_defaults_with_some_specified_kwargs(alpha=0.1, duration=16, sampling_frequency=2048)
 
 memory_log_bfs = []
-memory_log_bfs_injected_bfs = []
+memory_log_bfs_injected = []
 hom_log_bfs = []
 
 for i in range(1000, 2000):
@@ -55,18 +55,19 @@ for i in range(1000, 2000):
         likelihood_memory.parameters[parameter] = injection_parameters[parameter]
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
-    memory_log_bfs_injected_bfs.append(a - b)
-    print(memory_log_bfs_injected_bfs)
+    memory_log_bfs_injected.append(a - b)
+    print(memory_log_bfs_injected)
 
 memory_log_bfs = np.array(memory_log_bfs)
-memory_log_bfs_injected_bfs = np.array(memory_log_bfs_injected_bfs)
+memory_log_bfs_injected = np.array(memory_log_bfs_injected)
 np.random.seed(42)
 np.random.shuffle(memory_log_bfs)
 np.random.seed(42)
-np.random.shuffle(memory_log_bfs_injected_bfs)
+np.random.shuffle(memory_log_bfs_injected)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
-memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected_bfs)
-
+memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
+np.savetxt('summary_log_bfs.txt', memory_log_bfs)
+np.savetxt('summary_log_bfs_injected.txt', memory_log_bfs_injected)
 hom_log_bfs = np.array(hom_log_bfs)
 
 # plt.hist(hom_log_bfs, bins=30)
@@ -84,7 +85,7 @@ plt.tight_layout()
 plt.savefig('summary_memory_hist')
 plt.clf()
 
-plt.hist(memory_log_bfs_injected_bfs, bins=30)
+plt.hist(memory_log_bfs_injected, bins=30)
 plt.xlabel('log BFs')
 plt.ylabel('count')
 plt.title('Memory log BFs injected')
@@ -93,7 +94,7 @@ plt.savefig('summary_memory_hist_injected')
 plt.clf()
 
 
-plt.plot(memory_log_bfs_injected_cumsum, label='injected')
+plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
 plt.plot(memory_log_bfs_cumsum, label='sampled')
 plt.xlabel('Event ID')
 plt.ylabel('Cummulative log BF')
