@@ -50,7 +50,7 @@ for i in range(1000, 2000):
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     a = likelihood_memory.log_likelihood_ratio()
-    b = likelihood_memory.log_likelihood_ratio()
+    b = likelihood_no_memory.log_likelihood_ratio()
     print(a)
     print(b)
     memory_log_bfs_injected_bfs.append(a - b)
