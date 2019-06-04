@@ -8,6 +8,10 @@ from memestr.core.parameters import AllSettings
 from memestr.core.submit import get_injection_parameter_set
 import bilby
 
+logger = bilby.core.utils.logger
+
+logger.disabled = True
+
 settings = AllSettings.from_defaults_with_some_specified_kwargs(alpha=0.1, duration=16, sampling_frequency=2048)
 
 memory_log_bfs = []
@@ -51,9 +55,8 @@ for i in range(1000, 2000):
         likelihood_memory.parameters[parameter] = injection_parameters[parameter]
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
-    print(a)
-    print(b)
     memory_log_bfs_injected_bfs.append(a - b)
+    print(i)
 
 memory_log_bfs = np.array(memory_log_bfs)
 memory_log_bfs_injected_bfs = np.array(memory_log_bfs_injected_bfs)
