@@ -94,29 +94,29 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                           duration=16, sampling_frequency=2048,
                           waveform_arguments=dict(alpha=0.1))
 
-    try:
-        memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
-                                                              total_mass=parameters['total_mass'],
-                                                              spin_1=parameters['s13'],
-                                                              spin_2=parameters['s23'],
-                                                              times=recovery_wg.time_array,
-                                                              distance=parameters['luminosity_distance'],
-                                                              minimum_frequency=10,
-                                                              sampling_frequency=2048,
-                                                              units='mks',
-                                                              )
-    except ValueError as e:
-        logger.warning(e)
-        memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
-                                                              total_mass=parameters['total_mass'],
-                                                              spin_1=parameters['s13'],
-                                                              spin_2=parameters['s23'],
-                                                              times=recovery_wg.time_array,
-                                                              distance=parameters['luminosity_distance'],
-                                                              minimum_frequency=20,
-                                                              sampling_frequency=2048,
-                                                              units='mks',
-                                                              )
+    # try:
+    #     memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
+    #                                                           total_mass=parameters['total_mass'],
+    #                                                           spin_1=parameters['s13'],
+    #                                                           spin_2=parameters['s23'],
+    #                                                           times=recovery_wg.time_array,
+    #                                                           distance=parameters['luminosity_distance'],
+    #                                                           minimum_frequency=10,
+    #                                                           sampling_frequency=2048,
+    #                                                           units='mks',
+    #                                                           )
+    # except ValueError as e:
+    #     logger.warning(e)
+    memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
+                                                          total_mass=parameters['total_mass'],
+                                                          spin_1=parameters['s13'],
+                                                          spin_2=parameters['s23'],
+                                                          times=recovery_wg.time_array,
+                                                          distance=parameters['luminosity_distance'],
+                                                          minimum_frequency=20,
+                                                          sampling_frequency=2048,
+                                                          units='mks',
+                                                          )
     logger.info(memory_generator.reference_frequency)
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
