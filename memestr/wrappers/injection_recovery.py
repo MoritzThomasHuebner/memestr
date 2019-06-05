@@ -307,11 +307,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
-    try:
-        hom_weights = pp_result.hom_weights
-        hom_log_bf = pp_result.hom_log_bf
-    except OSError as e:
-        logger.warning(e)
+    if True:
         hom_log_bf, hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_no_memory,
                                                         new_result=time_and_phase_shifted_result,
                                                         reference_likelihood=likelihood_imr_phenom_unmarginalized,
