@@ -132,9 +132,9 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     time_limit_start = time_limit
     time_limit_expansion = 0
 
-    for time_limit_expansion in range(1, 5):
+    for time_limit_expansion in range(1, 2):
         time_limit = time_limit_start * time_limit_expansion
-        while maximum_overlap < 0.95 and counter < 11:
+        while maximum_overlap < 0.95 and counter < 15:
             if counter == 0:
                 init_guess_time = -0.5 * time_limit
                 init_guess_phase = parameters['phase']
