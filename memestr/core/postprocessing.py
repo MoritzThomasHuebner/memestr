@@ -42,6 +42,10 @@ class PostprocessingResult(object):
                    memory_log_bf=data['memory_log_bf'], memory_weights=data['memory_weights'],
                    hom_log_bf=data['hom_log_bf'], hom_weights=data['hom_weights'])
 
+    @property
+    def effective_samples(self):
+        return np.sum(self.hom_weights) ** 2 / np.sum(np.array(self.hom_weights) ** 2)
+
 
 def overlap_function(a, b, frequency, psd):
     psd_interp = psd.power_spectral_density_interpolated(frequency)

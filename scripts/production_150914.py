@@ -22,6 +22,7 @@ for name, ifo in zip(['H1', 'L1'], ifos):
     strain = strain[:, 1] + 1j*strain[:, 2]
     ifo.set_strain_data_from_frequency_domain_strain(strain, sampling_frequency=sampling_frequency,
                                                      duration=duration, start_time=start_time)
+    ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
 hom_result = bilby.result.read_in_result(filename='GW150914/corrected_result.json')
 base_result = bilby.result.read_in_result(filename='GW150914/22_pe_result.json')
@@ -82,7 +83,7 @@ for i in range(len(posterior_dict_22)):
         s13=posterior_dict_hom['chi_1'][i], s23=posterior_dict_hom['chi_2'][i],
         luminosity_distance=posterior_dict_hom['luminosity_distance'][i],
         inc=posterior_dict_hom['theta_jn'][i], psi=posterior_dict_hom['psi'][i],
-        phase=posterior_dict_hom['phase'][i],
+        phase=posterior_dict_hom['phase'][i]+np.pi/2.,
         geocent_time=posterior_dict_hom['geocent_time'][i],
         ra=posterior_dict_hom['ra'][i], dec=posterior_dict_hom['dec'][i])
 
@@ -94,7 +95,7 @@ for i in range(len(posterior_dict_22)):
     logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
     logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
     logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
-    logger.info("Memory log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
+    logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
     logger.info("")
 
     # likelihood_with_hom = likelihood_hom.log_likelihood_ratio()

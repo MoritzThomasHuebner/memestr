@@ -316,14 +316,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         pp_result.hom_log_bf = hom_log_bf
         pp_result.to_json()
 
-    hom_weights = np.exp(hom_weights)
-    logger.info("HOM LOG BF:" + str(hom_log_bf))
-    logger.info("Number of weights:" + str(len(hom_weights)))
+    logger.info("HOM LOG BF:" + str(pp_result.hom_log_bf))
+    logger.info("Number of weights:" + str(len(pp_result.hom_weights)))
     logger.info("Number of overlaps:" + str(len(maximum_overlaps)))
-    logger.info("Number of effective samples:" + str(np.sum(hom_weights) ** 2 / np.sum(hom_weights ** 2)))
+    logger.info("Number of effective samples:" + str(pp_result.effective_samples))
 
     try:
-        plt.scatter(hom_weights, maximum_overlaps)
+        plt.scatter(pp_result.hom_weights, maximum_overlaps)
         plt.xlabel('log weights')
         plt.ylabel('max overlaps')
         plt.tight_layout()
@@ -332,8 +331,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     except Exception as e:
         logger.warning(e)
 
-    norm_weights = np.exp(hom_weights)
     try:
+        norm_weights = np.exp(pp_result.hom_weights)
         time_and_phase_shifted_result.plot_corner(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
             weights=norm_weights,
