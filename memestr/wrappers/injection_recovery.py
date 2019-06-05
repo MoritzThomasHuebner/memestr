@@ -222,6 +222,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         result = bilby.core.result.read_in_result(filename=str(filename_base) +
                                                            '_pypolychord_production_IMR_non_mem_rec/'
                                                            'IMR_mem_inj_non_mem_rec_result.json')
+        result.outdir = outdir
     except Exception:
         result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
                                                 priors=priors,
@@ -264,7 +265,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     del params['s21']
     del params['s22']
     del params['random_injection_parameters']
-    result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
+    result.plot_corner(lionize=settings.other_settings.lionize, parameters=params, outdir=outdir)
 
     try:
         # raise Exception
@@ -282,7 +283,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         pp_result.maximum_overlaps = maximum_overlaps
         time_and_phase_shifted_result.label = 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
-        time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params))
+        time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params), outdir=outdir)
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
@@ -340,7 +341,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.plot_corner(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
             weights=norm_weights,
-            parameters=deepcopy(params))
+            parameters=deepcopy(params),
+            outdir=outdir)
     except Exception as e:
         logger.warning(e)
 

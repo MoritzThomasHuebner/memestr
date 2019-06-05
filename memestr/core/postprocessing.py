@@ -68,10 +68,6 @@ def overlap_function(a, b, frequency, psd):
     return overlap.real
 
 
-overlap_function_vectorized = np.vectorize(pyfunc=overlap_function, excluded=['a', 'frequency', 'psd'])
-nfft_vectorized = np.vectorize(pyfunc=nfft, excluded=['sampling_frequency'])
-
-
 def calculate_overlaps_optimizable(new_params, *args):
     time_shift = new_params[0]
     phase = new_params[1]
