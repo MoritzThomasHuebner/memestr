@@ -4,8 +4,7 @@ import bilby
 import sys
 
 from memestr.core.population import generate_all_parameters
-from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped, \
-    time_domain_nr_hyb_sur_waveform_with_memory_wrapped
+from memestr.core.waveforms import *
 from memestr.core.parameters import AllSettings
 
 logger = logging.getLogger('bilby')
@@ -51,7 +50,7 @@ def create_parameter_set(filename):
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
         waveform_generator = \
-            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
                                        parameters=settings.injection_parameters.__dict__,
                                        waveform_arguments=settings.waveform_arguments.__dict__,
                                        **settings.waveform_data.__dict__)
