@@ -124,31 +124,36 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     alpha = 0.1
     args = (full_wf, memory_generator, parameters['inc'],
             recovery_wg.frequency_array, ifo.power_spectral_density, alpha)
-    init_guess_time = -0.5 * time_limit
-    init_guess_phase = parameters['phase']
-    x0 = np.array([init_guess_time, init_guess_phase])
-    bounds = [(-time_limit, 0), (parameters['phase']-np.pi/2, parameters['phase']+np.pi/2)]
 
     time_limit_start = time_limit
-    for i in range(2, 5):
-        while maximum_overlap < 0.95:
-            res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds,
-                           tol=0.00001)
-            time_shift, new_phase = res.x[0], res.x[1]
-            new_phase %= 2*np.pi
+    time_limit_expansion = 0
+
+    for time_limit_expansion in range(1, 5):
+        time_limit = time_limit_start * time_limit_expansion
+        while maximum_overlap < 0.95 and counter < 11:
+            if counter == 0:
+                init_guess_time = -0.5 * time_limit
+                init_guess_phase = parameters['phase']
+                x0 = np.array([init_guess_time, init_guess_phase])
+            else:
+                init_guess_time = -np.random.random() * time_limit
+                init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
+                x0 = np.array([init_guess_time, init_guess_phase])
+            bounds = [(-time_limit, 0), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
+
+            res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds, tol=0.00001)
+
             if -res.fun < maximum_overlap:
+                counter += 1
                 continue
             maximum_overlap = -res.fun
+            time_shift, new_phase = res.x[0], res.x[1]
+            new_phase %= 2 * np.pi
             iterations = res.nit
-            init_guess_time = -np.random.random() * time_limit
-            bounds = [(-time_limit, 0), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
-            init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
-            x0 = np.array([init_guess_time, init_guess_phase])
             counter += 1
-            if counter > 8:
-                break
+        if maximum_overlap > 0.95:
+            break
         counter = 0
-        time_limit = time_limit_start * i
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
@@ -219,6 +224,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         logger.info("Time shift:" + str(time_shift))
         logger.info("New Phase:" + str(new_phase))
         logger.info("Counter:" + str(counter))
+        logger.info("Interval Expansions:" + str(time_limit_expansion))
 
     return time_shift, new_phase, maximum_overlap
 
