@@ -93,12 +93,16 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
         parameters['s23'] = parameters['chi_2']
         parameters['inc'] = parameters['theta_jn']
 
+    # duration = 16
+    # sampling_frequency = 2046
     duration = kwargs.get('duration', 16)
-    sampling_frequency = kwargs.get('duration', 2048)
+    sampling_frequency = kwargs.get('sampling_frequency', 2048)
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
                           duration=duration, sampling_frequency=sampling_frequency,
                           waveform_arguments=dict(alpha=0.1))
+    full_wf = recovery_wg.frequency_domain_strain(parameters)
+
 
     try:
         memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
@@ -124,7 +128,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
                                                               units='mks',
                                                               )
     logger.info(memory_generator.reference_frequency)
-    full_wf = recovery_wg.frequency_domain_strain(parameters)
 
     maximum_overlap = 0.
     time_shift = 0.

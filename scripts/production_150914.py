@@ -35,9 +35,7 @@ base_result.outdir = 'GW150914'
 base_result.save_to_file()
 
 time_and_phase_shifted_result = \
-    memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
-                                                                                        duration=duration,
-                                                                                        sampling_frequency=sampling_frequency)
+    memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True)
 
 time_and_phase_shifted_result.label = 'time_and_phase_shifted'
 time_and_phase_shifted_result.outdir = 'GW150914'
