@@ -221,7 +221,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         logger.info("Time shift:" + str(time_shift))
         logger.info("New Phase:" + str(new_phase))
         logger.info("Counter:" + str(counter))
-        logger.info("Interval Expansions:" + str(threshold))
+        logger.info("Threshold:" + str(threshold))
 
     return time_shift, new_phase, maximum_overlap
 
