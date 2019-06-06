@@ -103,7 +103,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
                           waveform_arguments=dict(alpha=0.1))
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
-
     try:
         memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
                                                               total_mass=parameters['total_mass'],
@@ -141,7 +140,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
     for threshold in [0.99, 0.95, 0.90, 0.80, 0.60]:
         counter = 0
         time_limit = time_limit_start * threshold
-        while maximum_overlap < threshold and counter < 5:
+        while maximum_overlap < threshold and counter < 8:
             if counter == 0:
                 init_guess_time = 0.
                 init_guess_phase = parameters['phase']
