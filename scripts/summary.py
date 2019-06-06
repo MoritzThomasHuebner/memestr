@@ -25,6 +25,8 @@ for i in range(1000, 2000):
         pp_res = PostprocessingResult.from_json(outdir=str(i)+'_pypolychord_production_IMR_non_mem_rec/')
         memory_log_bf = pp_res.memory_log_bf
         hom_log_bf = pp_res.hom_log_bf
+        if memory_log_bf is None:
+            continue
         if memory_log_bf > 1:
             print(i)
         # if memory_log_bf > 2:
