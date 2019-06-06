@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-bash production_real_event_submit.sh GW150914
-bash production_real_event_submit.sh GW151012
-bash production_real_event_submit.sh GW151226
-bash production_real_event_submit.sh GW170104
-bash production_real_event_submit.sh GW170608
-bash production_real_event_submit.sh GW170729
-bash production_real_event_submit.sh GW170809
-bash production_real_event_submit.sh GW170814
-bash production_real_event_submit.sh GW170818
-bash production_real_event_submit.sh GW170823
+sbatch production_real_event_submit.sh GW150914
+sbatch production_real_event_submit.sh GW151012
+sbatch production_real_event_submit.sh GW151226
+sbatch production_real_event_submit.sh GW170104
+sbatch production_real_event_submit.sh GW170608
+sbatch production_real_event_submit.sh GW170729
+sbatch production_real_event_submit.sh GW170809
+sbatch production_real_event_submit.sh GW170814
+sbatch production_real_event_submit.sh GW170818
+sbatch production_real_event_submit.sh GW170823
