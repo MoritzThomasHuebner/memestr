@@ -89,10 +89,10 @@ def create_parameter_set(filename):
         best_snr = max(best_snrs)
         network_snr = np.sqrt(np.sum([snr ** 2 for snr in best_snrs]))
         network_snrs.append(network_snr)
-    print(best_snr)
-    print(network_snr)
-    print(filename)
-    print('\n')
+    logger.info(best_snr)
+    logger.info(network_snr)
+    logger.info(filename)
+    logger.info('\n')
 
     with open('parameter_sets/' + str(filename), 'w') as f:
         f.write('total_mass=' + str(settings.injection_parameters.total_mass) +

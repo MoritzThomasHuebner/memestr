@@ -143,11 +143,11 @@ def run_production_injection_imr_phenom(injection_model, recovery_model, outdir,
     for key in injection_parameters:
         priors['prior_' + key] = injection_parameters[key]
     priors['prior_total_mass'] = bilby.core.prior.Uniform(
-        minimum=np.maximum(injection_parameters['total_mass'] - 20, 15),
+        minimum=np.maximum(injection_parameters['total_mass'] - 20, 10),
         maximum=injection_parameters['total_mass'] + 30,
         latex_label="$M_{tot}$")
     priors['prior_mass_ratio'] = bilby.core.prior.Uniform(
-        minimum=np.maximum(injection_parameters['mass_ratio'] - 0.5, 0.2),
+        minimum=0.125,
         maximum=1,
         latex_label="$q$")
     priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
@@ -223,7 +223,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                            '_pypolychord_production_IMR_non_mem_rec/'
                                                            'IMR_mem_inj_non_mem_rec_result.json')
         result.outdir = outdir
-    except Exception:
+    except Exception as e:
+        logger.info(e)
         result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
                                                 priors=priors,
                                                 injection_parameters=deepcopy(settings.injection_parameters.__dict__),
@@ -247,13 +248,15 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     try:
         pp_result = PostprocessingResult.from_json(outdir)
-    except Exception:
+    except Exception as e:
+        logger.info(e)
         pp_result = PostprocessingResult(outdir=outdir)
 
     try:
         result = bilby.result.read_in_result(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reconstructed_result_result.json')
-    except Exception:
+    except Exception as e:
+        logger.info(e)
         result.posterior = bilby.gw.conversion. \
             generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
         result.label = 'reconstructed_result'
