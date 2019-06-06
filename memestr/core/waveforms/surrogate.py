@@ -129,6 +129,7 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
                                                           sampling_frequency=kwargs.get('sampling_frequency', 2048),
                                                           units='mks'
                                                           )
+
     oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase)
     if not fold_in_memory:
         return oscillatory, memory_generator

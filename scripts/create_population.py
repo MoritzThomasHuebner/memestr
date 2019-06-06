@@ -23,10 +23,8 @@ def create_parameter_set(filename):
     while best_snr < 8 and network_snr < 12:
         idx = np.random.randint(0, len(all_params.total_masses))
         total_mass = all_params.total_masses[idx]
-        if total_mass < 15:
-            continue
         mass_ratio = all_params.mass_ratios[idx]
-        if mass_ratio < 0.5:
+        if mass_ratio < 0.125:
             continue
         luminosity_distance = np.random.choice(all_params.luminosity_distance)
         dec = np.random.choice(all_params.dec)
@@ -50,7 +48,7 @@ def create_parameter_set(filename):
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
         waveform_generator = \
-            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
                                        parameters=settings.injection_parameters.__dict__,
                                        waveform_arguments=settings.waveform_arguments.__dict__,
                                        **settings.waveform_data.__dict__)
