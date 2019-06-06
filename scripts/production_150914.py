@@ -1,5 +1,6 @@
 import bilby
 import numpy as np
+from pandas import Series
 import memestr
 from memestr.core.waveforms import *
 from copy import deepcopy
@@ -24,8 +25,24 @@ for name, ifo in zip(['H1', 'L1'], ifos):
                                                      duration=duration, start_time=start_time)
     ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
-hom_result = bilby.result.read_in_result(filename='GW150914/corrected_result.json')
+hom_result_ethan = bilby.result.read_in_result(filename='GW150914/corrected_result.json')
 base_result = bilby.result.read_in_result(filename='GW150914/22_pe_result.json')
+base_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
+
+base_result.plot_corner(outdir='GW150914')
+base_result.label = '22_pe_total_mass'
+base_result.outdir = 'GW150914'
+base_result.save_to_file()
+
+time_and_phase_shifted_result = \
+    memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
+                                                                                        duration=duration,
+                                                                                        sampling_frequency=sampling_frequency)
+
+time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+time_and_phase_shifted_result.outdir = 'GW150914'
+time_and_phase_shifted_result.save_to_file()
+time_and_phase_shifted_result.plot_corner()
 
 waveform_generator_imr = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,

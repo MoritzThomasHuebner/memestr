@@ -86,12 +86,18 @@ def calculate_overlaps_optimizable(new_params, *args):
                              psd=power_spectral_density)
 
 
-def get_time_and_phase_shift(parameters, ifo, verbose=False):
-    time_limit = parameters['total_mass'] * 0.00080
+def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
+    time_limit = parameters['total_mass'] * 0.00030
+    if 's13' not in parameters.keys():
+        parameters['s13'] = parameters['chi_1']
+        parameters['s23'] = parameters['chi_2']
+        parameters['inc'] = parameters['theta_jn']
 
+    duration = kwargs.get('duration', 16)
+    sampling_frequency = kwargs.get('duration', 2048)
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
-                          duration=16, sampling_frequency=2048,
+                          duration=duration, sampling_frequency=sampling_frequency,
                           waveform_arguments=dict(alpha=0.1))
 
     try:
@@ -102,7 +108,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                                                               times=recovery_wg.time_array,
                                                               distance=parameters['luminosity_distance'],
                                                               minimum_frequency=10,
-                                                              sampling_frequency=2048,
+                                                              sampling_frequency=sampling_frequency,
                                                               units='mks',
                                                               )
     except ValueError as e:
@@ -114,13 +120,12 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
                                                               times=recovery_wg.time_array,
                                                               distance=parameters['luminosity_distance'],
                                                               minimum_frequency=20,
-                                                              sampling_frequency=2048,
+                                                              sampling_frequency=sampling_frequency,
                                                               units='mks',
                                                               )
     logger.info(memory_generator.reference_frequency)
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
-    counter = 0.
     maximum_overlap = 0.
     time_shift = 0.
     new_phase = 0.
@@ -134,11 +139,16 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         counter = 0
         time_limit = time_limit_start * threshold
         while maximum_overlap < threshold and counter < 5:
-            init_guess_time = -0.5 * time_limit
-            init_guess_phase = parameters['phase']
-            x0 = np.array([init_guess_time, init_guess_phase])
-            bounds = [(-time_limit, 0), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
-
+            if counter == 0:
+                init_guess_time = 0.
+                init_guess_phase = parameters['phase']
+                x0 = np.array([init_guess_time, init_guess_phase])
+                bounds = [(-time_limit, 0), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
+            else:
+                init_guess_time = -np.random.random() * time_limit
+                init_guess_phase = (np.random.random() - 0.5) * np.pi + parameters['phase']
+                x0 = np.array([init_guess_time, init_guess_phase])
+                bounds = [(-time_limit, 0), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
             res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds, tol=0.00001)
 
             if -res.fun < maximum_overlap:
@@ -219,6 +229,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         logger.info("Maximum overlap: " + str(maximum_overlap))
         logger.info("Iterations " + str(iterations))
         logger.info("Time shift:" + str(time_shift))
+        logger.info("Maximum time shift:" + str(-time_limit))
         logger.info("New Phase:" + str(new_phase))
         logger.info("Counter:" + str(counter))
         logger.info("Threshold:" + str(threshold))
@@ -226,14 +237,14 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
     return time_shift, new_phase, maximum_overlap
 
 
-def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose=False):
+def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose=False, **kwargs):
     new_result = deepcopy(result)
     maximum_overlaps = []
     time_shifts = []
     for index in range(len(result.posterior)):
         parameters = result.posterior.iloc[index].to_dict()
         time_shift, new_phase, maximum_overlap = \
-            get_time_and_phase_shift(parameters, ifo, verbose=verbose)
+            get_time_and_phase_shift(parameters, ifo, verbose=verbose, **kwargs)
         new_phase %= 2*np.pi
         maximum_overlaps.append(maximum_overlap)
         time_shifts.append(time_shift)
