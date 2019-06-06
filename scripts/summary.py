@@ -22,7 +22,7 @@ for i in range(1000, 2000):
     injection_parameters = get_injection_parameter_set(str(i))
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
     try:
-        pp_res = PostprocessingResult.from_json(outdir=str(i)+'_pypolychord_production_IMR_non_mem_rec')
+        pp_res = PostprocessingResult.from_json(outdir=str(i)+'_pypolychord_production_IMR_non_mem_rec/')
         memory_log_bf = pp_res.memory_log_bf
         hom_log_bf = pp_res.hom_log_bf
         if memory_log_bf > 1:
