@@ -130,19 +130,13 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
             recovery_wg.frequency_array, ifo.power_spectral_density, alpha)
 
     time_limit_start = time_limit
-    time_limit_expansion = 0
-
-    for time_limit_expansion in range(1, 2):
-        time_limit = time_limit_start * time_limit_expansion
-        while maximum_overlap < 0.95 and counter < 15:
-            if counter == 0:
-                init_guess_time = -0.5 * time_limit
-                init_guess_phase = parameters['phase']
-                x0 = np.array([init_guess_time, init_guess_phase])
-            else:
-                init_guess_time = -np.random.random() * time_limit
-                init_guess_phase = np.pi*(np.random.random() - 0.5) + parameters['phase']
-                x0 = np.array([init_guess_time, init_guess_phase])
+    for threshold in [0.99, 0.95, 0.90, 0.80, 0.60]:
+        counter = 0
+        time_limit = time_limit_start * threshold
+        while maximum_overlap < threshold and counter < 5:
+            init_guess_time = -0.5 * time_limit
+            init_guess_phase = parameters['phase']
+            x0 = np.array([init_guess_time, init_guess_phase])
             bounds = [(-time_limit, 0), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
 
             res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds, tol=0.00001)
@@ -155,9 +149,8 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
             new_phase %= 2 * np.pi
             iterations = res.nit
             counter += 1
-        if maximum_overlap > 0.95:
+        if maximum_overlap > threshold:
             break
-        counter = 0
     # test_waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], phase_shift)
     # test_waveform = apply_window(waveform=test_waveform, times=recovery_wg.time_array, kwargs=dict(alpha=alpha))
     # test_waveform_fd = dict()
@@ -228,7 +221,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False):
         logger.info("Time shift:" + str(time_shift))
         logger.info("New Phase:" + str(new_phase))
         logger.info("Counter:" + str(counter))
-        logger.info("Interval Expansions:" + str(time_limit_expansion))
+        logger.info("Interval Expansions:" + str(threshold))
 
     return time_shift, new_phase, maximum_overlap
 
