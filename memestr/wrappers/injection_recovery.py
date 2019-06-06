@@ -240,7 +240,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                 resume=settings.sampler_settings.resume,
                                                 save_bounds=False,
                                                 check_point_plot=False,
-                                                walks=55,
+                                                walks=70,
                                                 n_check_point=1000)
         result.save_to_file()
         logger.info(str(result))
