@@ -1,10 +1,10 @@
-import numpy as np
 import matplotlib
 matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
-from copy import deepcopy
 from memestr.core.waveforms import *
 from memestr.core.parameters import AllSettings
+from memestr.core.postprocessing import PostprocessingResult
 from memestr.core.submit import get_injection_parameter_set
 import bilby
 
@@ -22,12 +22,13 @@ for i in range(1000, 2000):
     injection_parameters = get_injection_parameter_set(str(i))
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
     try:
-        memory_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/memory_log_bf.txt')
-        hom_log_bf = np.loadtxt(str(i) + '_pypolychord_production_IMR_non_mem_rec/hom_log_bf.txt')
+        pp_res = PostprocessingResult.from_json(outdir=str(i)+'_pypolychord_production_IMR_non_mem_rec')
+        memory_log_bf = pp_res.memory_log_bf
+        hom_log_bf = pp_res.hom_log_bf
         if memory_log_bf > 1:
             print(i)
-        if memory_log_bf > 2:
-            continue
+        # if memory_log_bf > 2:
+        #     continue
         # if memory_log_bf < 1:
         #     memory_log_bfs.append(memory_log_bf)
         # if hom_log_bf < 20:
@@ -64,10 +65,10 @@ for i in range(1000, 2000):
 
 memory_log_bfs = np.array(memory_log_bfs)
 memory_log_bfs_injected = np.array(memory_log_bfs_injected)
-np.random.seed(42)
-np.random.shuffle(memory_log_bfs)
-np.random.seed(42)
-np.random.shuffle(memory_log_bfs_injected)
+# np.random.seed(42)
+# np.random.shuffle(memory_log_bfs)
+# np.random.seed(42)
+# np.random.shuffle(memory_log_bfs_injected)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
 np.savetxt('summary_log_bfs.txt', memory_log_bfs)
@@ -96,7 +97,6 @@ plt.title('Memory log BFs injected')
 plt.tight_layout()
 plt.savefig('summary_memory_hist_injected')
 plt.clf()
-
 
 plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
 plt.plot(memory_log_bfs_cumsum, label='sampled')

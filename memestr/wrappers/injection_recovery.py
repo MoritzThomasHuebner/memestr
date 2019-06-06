@@ -268,11 +268,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     result.plot_corner(lionize=settings.other_settings.lionize, parameters=params, outdir=outdir)
 
     try:
-        raise Exception
+        # raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
             filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
         maximum_overlaps = pp_result.maximum_overlaps
-        pp_result.to_json()
     except Exception as e:
         logger.warning(e)
         time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
@@ -282,7 +281,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         pp_result.maximum_overlaps = maximum_overlaps
         time_and_phase_shifted_result.label = 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
-        time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params), outdir=outdir)
+        # time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params), outdir=outdir)
+    pp_result.to_json()
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
@@ -306,7 +306,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
-    if True:
+    if pp_result.hom_weights is None:
         hom_log_bf, hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_no_memory,
                                                         new_result=time_and_phase_shifted_result,
                                                         reference_likelihood=likelihood_imr_phenom_unmarginalized,
@@ -321,25 +321,25 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info("Number of overlaps:" + str(len(maximum_overlaps)))
     logger.info("Number of effective samples:" + str(pp_result.effective_samples))
 
-    try:
-        plt.scatter(pp_result.hom_weights, maximum_overlaps)
-        plt.xlabel('log weights')
-        plt.ylabel('max overlaps')
-        plt.tight_layout()
-        plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
-        plt.clf()
-    except Exception as e:
-        logger.warning(e)
+    # try:
+    #     plt.scatter(pp_result.hom_weights, maximum_overlaps)
+    #     plt.xlabel('log weights')
+    #     plt.ylabel('max overlaps')
+    #     plt.tight_layout()
+    #     plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
+    #     plt.clf()
+    # except Exception as e:
+    #     logger.warning(e)
 
-    try:
-        norm_weights = np.exp(pp_result.hom_weights)
-        time_and_phase_shifted_result.plot_corner(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
-            weights=norm_weights,
-            parameters=deepcopy(params),
-            outdir=outdir)
-    except Exception as e:
-        logger.warning(e)
+    # try:
+    #     norm_weights = np.exp(pp_result.hom_weights)
+    #     time_and_phase_shifted_result.plot_corner(
+    #         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
+    #         weights=norm_weights,
+    #         parameters=deepcopy(params),
+    #         outdir=outdir)
+    # except Exception as e:
+    #     logger.warning(e)
 
     memory_log_bf, memory_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
                                                           new_result=time_and_phase_shifted_result,
