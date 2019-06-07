@@ -34,27 +34,37 @@ for name, ifo in zip(['H1', 'L1'], ifos):
                                                      duration=duration, start_time=start_time)
     ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
-# hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
+
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
+base_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
 base_result.posterior = base_result_posterior_list[run_id]
-base_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
+
+
+try:
+    time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
+                                                                + str(run_id) + 'result.json')
+except OSError:
+    time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
+        memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True)
+
+    maximum_overlaps = np.array(maximum_overlaps)
+    np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
+
+    time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
+    time_and_phase_shifted_result.outdir = event_id
+    time_and_phase_shifted_result.save_to_file()
+    # time_and_phase_shifted_result.plot_corner()
+
+    # time_and_phase_shifted_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
+
+# hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
 
 # base_result.plot_corner(outdir=event_id)
 # base_result.label = '22_pe_total_mass'
 # base_result.outdir = event_id
 # base_result.save_to_file()
 
-time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
-    memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True)
-
-maximum_overlaps = np.array(maximum_overlaps)
-np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
-
-time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
-time_and_phase_shifted_result.outdir = event_id
-time_and_phase_shifted_result.save_to_file()
-# time_and_phase_shifted_result.plot_corner()
 
 waveform_generator_imr = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
@@ -93,7 +103,7 @@ likelihoods_memory = []
 # ethan_hom_log_likelihood = ethan_result[:, 1]
 # ethan_weight_log_likelihood = ethan_result[:, 2]
 
-for i in range(len(posterior_dict_22)):
+for i in range(len(posterior_dict_hom)):
 
     likelihood_imr_parameters = dict(
         total_mass=posterior_dict_22['mass_ratio'][i],
