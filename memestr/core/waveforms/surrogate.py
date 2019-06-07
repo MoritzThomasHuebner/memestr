@@ -125,7 +125,7 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
                                                           spin_2=s23,
                                                           times=times,
                                                           distance=luminosity_distance,
-                                                          minimum_frequency=kwargs.get('mininum_frequency', 10),
+                                                          minimum_frequency=kwargs.get('minimum_frequency', 10),
                                                           sampling_frequency=kwargs.get('sampling_frequency', 2048),
                                                           units='mks'
                                                           )

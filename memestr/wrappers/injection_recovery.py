@@ -280,7 +280,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
             result=result,
             ifo=ifos[0],
-            verbose=True)
+            verbose=True,
+            minimum_frequency=20
+        )
         pp_result.maximum_overlaps = maximum_overlaps
         time_and_phase_shifted_result.label = 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
