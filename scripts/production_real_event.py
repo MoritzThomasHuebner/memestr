@@ -57,7 +57,7 @@ except OSError as e:
     time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
 
-time_and_phase_shifted_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
+# time_and_phase_shifted_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 
 # hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
 
@@ -119,7 +119,7 @@ for i in range(len(posterior_dict_hom)):
     likelihood_hom_parameters = dict(
         total_mass=posterior_dict_hom['mass_1'][i]+posterior_dict_hom['mass_2'][i],
         mass_ratio=posterior_dict_hom['mass_2'][i]/posterior_dict_hom['mass_1'][i],
-        s13=posterior_dict_hom['s13'][i], s23=posterior_dict_hom['s23'][i],
+        s13=posterior_dict_hom['chi_1'][i], s23=posterior_dict_hom['chi_2'][i],
         luminosity_distance=posterior_dict_hom['luminosity_distance'][i],
         inc=posterior_dict_hom['theta_jn'][i], psi=posterior_dict_hom['psi'][i],
         phase=posterior_dict_hom['phase'][i],
