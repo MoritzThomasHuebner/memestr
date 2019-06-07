@@ -146,7 +146,8 @@ for i in range(len(posterior_dict_hom)):
 likelihoods_hom = np.array(likelihoods_hom)
 np.savetxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom)
 likelihoods_memory = np.array(likelihoods_memory)
-np.savetxt(event_id + '/moritz_memory_log_likelihoods' + str(run_id) + '.txt', likelihoods_memory)
+np.savetxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt', likelihoods_memory)
+
 likelihoods_22 = np.array([likelihood_22 for likelihood_22 in likelihoods_22])
 hom_weights = likelihoods_hom - likelihoods_22
 memory_weights = likelihoods_memory - likelihoods_hom
@@ -156,6 +157,7 @@ memory_log_bf = logsumexp(memory_weights) - np.log(len(memory_weights))
 
 logger.info("HOM log BF: " + str(hom_log_bf))
 logger.info("Memory log BF: " + str(memory_log_bf))
+logger.info(str(run_id))
 
-np.savetxt(event_id + '/moritz_hom_log_bf' + str(run_id) + '.txt', hom_log_bf)
-np.savetxt(event_id + '/moritz_memory_log_bf' + str(run_id) + '.txt', memory_log_bf)
+# np.savetxt(event_id + '/moritz_hom_log_bf' + str(run_id) + '.txt', hom_log_bf)
+# np.savetxt(event_id + '/moritz_memory_log_bf' + str(run_id) + '.txt', memory_log_bf)
