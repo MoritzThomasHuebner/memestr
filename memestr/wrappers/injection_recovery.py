@@ -349,8 +349,8 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                                               reference_likelihood=likelihood_no_memory,
                                                               reference_result=time_and_phase_shifted_result)
 
-        logger.info("MEMORY LOG BF: " + str(memory_log_bf))
         pp_result.memory_log_bf = memory_log_bf
         pp_result.memory_weights = memory_weights
         pp_result.to_json()
+    logger.info("MEMORY LOG BF: " + str(pp_result.memory_log_bf))
     return time_and_phase_shifted_result
