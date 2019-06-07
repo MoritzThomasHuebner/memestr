@@ -45,8 +45,11 @@ base_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 # base_result.outdir = event_id
 # base_result.save_to_file()
 
-time_and_phase_shifted_result = \
+time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
     memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True)
+
+maximum_overlaps = np.array(maximum_overlaps)
+np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
 
 time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
 time_and_phase_shifted_result.outdir = event_id

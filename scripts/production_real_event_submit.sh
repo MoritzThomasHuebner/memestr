@@ -7,6 +7,6 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=END --mail-user=email@moritz-huebner.de
 #
-#SBATCH --array=0-31
+#SBATCH --array=0-63
 
-srun python production_real_event.py $1 32 ${SLURM_ARRAY_TASK_ID}
+srun python production_real_event.py $1 64 ${SLURM_ARRAY_TASK_ID}
