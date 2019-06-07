@@ -34,7 +34,7 @@ elif len(asd_data_file[0]) == 4:
 
 ifos = bilby.gw.detector.InterferometerList(ifo_names)
 
-for id, name, ifo in zip(ifo_names, ifos):
+for name, ifo in zip(ifo_names, ifos):
     psd = bilby.gw.detector.psd.PowerSpectralDensity.from_amplitude_spectral_density_file(event_id + '/' + name + '_psd.dat')
     ifo.power_spectral_density = psd
     strain = np.loadtxt(event_id + '/' + name + '_frequency_domain_data.dat')
