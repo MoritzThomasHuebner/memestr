@@ -3,11 +3,11 @@ import sys
 import bilby
 from scipy.misc import logsumexp
 
-# event_id = sys.argv[1]
-# number_of_parallel_runs = int(sys.argv[2])
+event_id = sys.argv[1]
+number_of_parallel_runs = int(sys.argv[2])
 
-event_id = 'GW170823'
-number_of_parallel_runs = 64
+# event_id = 'GW170823'
+# number_of_parallel_runs = 64
 
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
 hom_like = np.array([])
