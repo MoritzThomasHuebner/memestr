@@ -3,11 +3,11 @@ import sys
 import bilby
 from scipy.misc import logsumexp
 
-event_id = sys.argv[1]
-number_of_parallel_runs = int(sys.argv[2])
+# event_id = sys.argv[1]
+# number_of_parallel_runs = int(sys.argv[2])
 
-# event_id = 'GW150914'
-# number_of_parallel_runs = 32
+event_id = 'GW170823'
+number_of_parallel_runs = 64
 
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
 hom_like = np.array([])
@@ -17,7 +17,8 @@ hom_weights = []
 
 for run_id in range(number_of_parallel_runs):
     hom_like = np.append(hom_like, np.loadtxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt'))
-    memory_like = np.append(hom_like, np.loadtxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt'))
+    memory_like = np.append(memory_like, np.loadtxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt'))
+
 
 for i in range(len(base_result.posterior)):
     hom_weights.append(hom_like[i] - base_result.posterior.log_likelihood.iloc[i])
