@@ -23,21 +23,27 @@ duration = data[2]
 minimum_frequency = data[3]
 sampling_frequency = data[4]
 
-ifos = bilby.gw.detector.InterferometerList(['H1', 'L1', 'V1'])
-missing_ifos = []
 
-for id, name, ifo in zip([0, 1, 2], ['H1', 'L1', 'V1'], ifos):
-    try:
-        psd = bilby.gw.detector.psd.PowerSpectralDensity.from_amplitude_spectral_density_file(event_id + '/' + name + '_psd.dat')
-        ifo.power_spectral_density = psd
-        strain = np.loadtxt(event_id + '/' + name + '_frequency_domain_data.dat')
-        strain = strain[:, 1] + 1j*strain[:, 2]
-        ifo.set_strain_data_from_frequency_domain_strain(strain, sampling_frequency=sampling_frequency,
-                                                         duration=duration, start_time=start_time)
-        ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
-    except Exception:
-        missing_ifos.append(id)
+asd_data_file = np.genfromtxt(event_id + '/pr_psd.dat')
+ifo_names = []
+if len(asd_data_file[0]) == 3:
+    ifo_names = ['H1', 'L1']
+elif len(asd_data_file[0]) == 4:
+    ifo_names = ['H1', 'L1', 'V1']
 
+
+ifos = bilby.gw.detector.InterferometerList(ifo_names)
+
+for id, name, ifo in zip(ifo_names, ifos):
+    psd = bilby.gw.detector.psd.PowerSpectralDensity.from_amplitude_spectral_density_file(event_id + '/' + name + '_psd.dat')
+    ifo.power_spectral_density = psd
+    strain = np.loadtxt(event_id + '/' + name + '_frequency_domain_data.dat')
+    strain = strain[:, 1] + 1j*strain[:, 2]
+    ifo.set_strain_data_from_frequency_domain_strain(strain, sampling_frequency=sampling_frequency,
+                                                     duration=duration, start_time=start_time)
+    ifo.minimum_frequency = minimum_frequency
+    ifo.maximum_frequency = sampling_frequency/2.
+    ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
 
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
