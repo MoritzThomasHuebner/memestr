@@ -106,24 +106,24 @@ likelihoods_memory = []
 
 for i in range(len(posterior_dict_hom)):
     likelihood_imr_parameters = dict(
-        total_mass=posterior_dict_22['mass_ratio'].iloc(i),
-        mass_ratio=posterior_dict_22['total_mass'].iloc(i),
-        s13=posterior_dict_22['chi_1'].iloc(i), s23=posterior_dict_22['chi_2'].iloc(i),
-        luminosity_distance=posterior_dict_22['luminosity_distance'].iloc(i),
-        inc=posterior_dict_22['theta_jn'].iloc(i), psi=posterior_dict_22['psi'].iloc(i),
-        phase=posterior_dict_22['phase'].iloc(i),
-        geocent_time=posterior_dict_22['geocent_time'].iloc(i),
-        ra=posterior_dict_22['ra'].iloc(i), dec=posterior_dict_22['dec'].iloc(i))
+        total_mass=posterior_dict_22['mass_ratio'].iloc[i],
+        mass_ratio=posterior_dict_22['total_mass'].iloc[i],
+        s13=posterior_dict_22['chi_1'].iloc[i], s23=posterior_dict_22['chi_2'].iloc[i],
+        luminosity_distance=posterior_dict_22['luminosity_distance'].iloc[i],
+        inc=posterior_dict_22['theta_jn'].iloc[i], psi=posterior_dict_22['psi'].iloc[i],
+        phase=posterior_dict_22['phase'].iloc[i],
+        geocent_time=posterior_dict_22['geocent_time'].iloc[i],
+        ra=posterior_dict_22['ra'].iloc[i], dec=posterior_dict_22['dec'].iloc[i])
 
     likelihood_hom_parameters = dict(
-        total_mass=posterior_dict_hom['mass_1'].iloc(i)+posterior_dict_hom['mass_2'].iloc(i),
-        mass_ratio=posterior_dict_hom['mass_2'].iloc(i)/posterior_dict_hom['mass_1'].iloc(i),
-        s13=posterior_dict_hom['chi_1'].iloc(i), s23=posterior_dict_hom['chi_2'].iloc(i),
-        luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc(i),
-        inc=posterior_dict_hom['theta_jn'].iloc(i), psi=posterior_dict_hom['psi'].iloc(i),
-        phase=posterior_dict_hom['phase'].iloc(i),
-        geocent_time=posterior_dict_hom['geocent_time'].iloc(i),
-        ra=posterior_dict_hom['ra'].iloc(i), dec=posterior_dict_hom['dec'].iloc(i))
+        total_mass=posterior_dict_hom['mass_1'].iloc[i]+posterior_dict_hom['mass_2'].iloc[i],
+        mass_ratio=posterior_dict_hom['mass_2'].iloc[i]/posterior_dict_hom['mass_1'].iloc[i],
+        s13=posterior_dict_hom['chi_1'].iloc[i], s23=posterior_dict_hom['chi_2'].iloc[i],
+        luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
+        inc=posterior_dict_hom['theta_jn'].iloc[i], psi=posterior_dict_hom['psi'].iloc[i],
+        phase=posterior_dict_hom['phase'].iloc[i],
+        geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
+        ra=posterior_dict_hom['ra'].iloc[i], dec=posterior_dict_hom['dec'].iloc[i])
 
     likelihood_hom.parameters = likelihood_hom_parameters
     likelihood_memory.parameters = likelihood_hom_parameters
