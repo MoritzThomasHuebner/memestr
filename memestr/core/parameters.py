@@ -114,6 +114,7 @@ class WaveformArguments(RunParameters):
         super(WaveformArguments, self).__init__()
         self.l_max = l_max
         self.alpha = alpha
+        self.minimum_frequency = 20.
 
 
 class WaveformData(RunParameters):
