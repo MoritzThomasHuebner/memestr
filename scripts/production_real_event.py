@@ -57,7 +57,7 @@ except OSError as e:
     time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
 
-    # time_and_phase_shifted_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
+time_and_phase_shifted_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 
 # hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
 
