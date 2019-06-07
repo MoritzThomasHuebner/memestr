@@ -53,12 +53,15 @@ base_result.posterior = base_result_posterior_list[run_id]
 
 
 try:
+    raise OSError
     time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
                                                                 + str(run_id) + '_result.json')
 except OSError as e:
     logger.warning(e)
     time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
-        memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True)
+        memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
+                                                                                            minimum_frequency=20, duration=duration,
+                                                                                            sampling_frequency=sampling_frequency)
 
     maximum_overlaps = np.array(maximum_overlaps)
     np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
