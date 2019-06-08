@@ -28,7 +28,8 @@ for ethan_hom_log_bf, event_id in zip(ethan_hom_log_bfs, event_ids):
         for run_id in range(number_of_parallel_runs):
             hom_like = np.append(hom_like, np.loadtxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt'))
             memory_like = np.append(memory_like, np.loadtxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt'))
-    except ValueError:
+    except ValueError as e:
+        logger.warning(e)
         continue
 
     for i in range(len(base_result.posterior)):
