@@ -136,7 +136,7 @@ for i in range(len(posterior_dict_hom)):
         s13=posterior_dict_hom['chi_1'].iloc[i], s23=posterior_dict_hom['chi_2'].iloc[i],
         luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
         inc=posterior_dict_hom['theta_jn'].iloc[i], psi=posterior_dict_hom['psi'].iloc[i],
-        phase=posterior_dict_hom['phase'].iloc[i],
+        phase=posterior_dict_hom['phase'].iloc[i] + np.pi/2,
         geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
         ra=posterior_dict_hom['ra'].iloc[i], dec=posterior_dict_hom['dec'].iloc[i])
 
