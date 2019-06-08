@@ -155,12 +155,12 @@ for i in range(len(posterior_dict_hom)):
     likelihoods_hom.append(likelihood_hom.log_likelihood_ratio())
     likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
 
-    # logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
-    # logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
-    # logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
-    # logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
-    # logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
-    # logger.info("")
+    logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
+    logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
+    logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
+    logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
+    logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
+    logger.info("")
 
 
 likelihoods_hom = np.array(likelihoods_hom)
