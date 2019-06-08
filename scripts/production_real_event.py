@@ -45,9 +45,9 @@ for name, ifo in zip(ifo_names, ifos):
     ifo.maximum_frequency = sampling_frequency/2.
     ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
-hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
-hom_result_posterior_list = np.array_split(hom_result_ethan.posterior, number_of_parallel_runs, axis=0)
-hom_result_ethan.posterior = hom_result_posterior_list[run_id]
+# hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
+# hom_result_posterior_list = np.array_split(hom_result_ethan.posterior, number_of_parallel_runs, axis=0)
+# hom_result_ethan.posterior = hom_result_posterior_list[run_id]
 
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
 base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
@@ -55,23 +55,23 @@ base_result.posterior = base_result_posterior_list[run_id]
 
 
 
-# try:
-    # raise OSError
-    # time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
-    #                                                             + str(run_id) + '_result.json')
-# except OSError as e:
-#     logger.warning(e)
-#     time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
-#         memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
-#                                                                                             minimum_frequency=20, duration=duration,
-#                                                                                             sampling_frequency=sampling_frequency)
-#
-#     maximum_overlaps = np.array(maximum_overlaps)
-#     np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
-#
-#     time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
-#     time_and_phase_shifted_result.outdir = event_id
-#     time_and_phase_shifted_result.save_to_file()
+try:
+    raise OSError
+    time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
+                                                                + str(run_id) + '_result.json')
+except OSError as e:
+    logger.warning(e)
+    time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
+        memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
+                                                                                            minimum_frequency=20, duration=duration,
+                                                                                            sampling_frequency=sampling_frequency)
+
+    maximum_overlaps = np.array(maximum_overlaps)
+    np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
+
+    time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
+    time_and_phase_shifted_result.outdir = event_id
+    time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
 
 
@@ -108,8 +108,8 @@ likelihood_memory = bilby.gw.likelihood \
 
 likelihoods_22 = base_result.posterior['log_likelihood']
 posterior_dict_22 = deepcopy(base_result.posterior)
-# posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
-posterior_dict_hom = deepcopy(hom_result_ethan.posterior)
+posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
+# posterior_dict_hom = deepcopy(hom_result_ethan.posterior)
 number_of_samples = len(likelihoods_22)
 
 likelihoods_hom = []
@@ -164,9 +164,9 @@ for i in range(len(posterior_dict_hom)):
 
 
 likelihoods_hom = np.array(likelihoods_hom)
-np.savetxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom)
 likelihoods_memory = np.array(likelihoods_memory)
-np.savetxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt', likelihoods_memory)
+np.savetxt(event_id + '/moritz_hom_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_hom)
+np.savetxt(event_id + '/moritz_memory_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_memory)
 
 likelihoods_22 = np.array([likelihood_22 for likelihood_22 in likelihoods_22])
 hom_weights = likelihoods_hom - likelihoods_22
