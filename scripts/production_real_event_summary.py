@@ -23,14 +23,15 @@ for ethan_hom_log_bf, event_id in zip(ethan_hom_log_bfs, event_ids):
     hom_like = np.array([])
     memory_like = np.array([])
     hom_weights = []
+    logger.info(event_id)
 
-    try:
-        for run_id in range(number_of_parallel_runs):
+    for run_id in range(number_of_parallel_runs):
+        try:
             hom_like = np.append(hom_like, np.loadtxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt'))
             memory_like = np.append(memory_like, np.loadtxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt'))
-    except ValueError as e:
-        logger.warning(e)
-        continue
+        except ValueError as e:
+            logger.warning(e)
+            logger.warning("Run ID: " + str(run_id))
 
     for i in range(len(base_result.posterior)):
         hom_weights.append(hom_like[i] - base_result.posterior.log_likelihood.iloc[i])
