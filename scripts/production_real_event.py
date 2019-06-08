@@ -14,7 +14,7 @@ logger = bilby.core.utils.logger
 # run_id = int(sys.argv[3])
 event_id = 'GW150914'
 number_of_parallel_runs = 32
-run_id = 4
+run_id = 0
 
 data = np.genfromtxt(event_id + '/time_data.dat')
 time_of_event = data[0]
@@ -45,11 +45,13 @@ for name, ifo in zip(ifo_names, ifos):
     ifo.maximum_frequency = sampling_frequency/2.
     ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
-
+hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
-base_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
-base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
-base_result.posterior = base_result_posterior_list[run_id]
+
+# base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
+# base_result.posterior = base_result_posterior_list[run_id]
+# hom_result_posterior_list = np.array_split(hom_result_ethan.posterior, number_of_parallel_runs, axis=0)
+# hom_result_ethan.posterior = hom_result_posterior_list[run_id]
 
 
 # try:
@@ -72,8 +74,6 @@ base_result.posterior = base_result_posterior_list[run_id]
     # time_and_phase_shifted_result.plot_corner()
 
 
-hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
-hom_result_ethan.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 
 # base_result.plot_corner(outdir=event_id)
 # base_result.label = '22_pe_total_mass'
@@ -123,35 +123,41 @@ for i in range(len(posterior_dict_hom)):
     likelihood_imr_parameters = dict(
         total_mass=posterior_dict_22['mass_ratio'].iloc[i],
         mass_ratio=posterior_dict_22['total_mass'].iloc[i],
-        s13=posterior_dict_22['chi_1'].iloc[i], s23=posterior_dict_22['chi_2'].iloc[i],
+        s13=posterior_dict_22['chi_1'].iloc[i],
+        s23=posterior_dict_22['chi_2'].iloc[i],
         luminosity_distance=posterior_dict_22['luminosity_distance'].iloc[i],
-        inc=posterior_dict_22['theta_jn'].iloc[i], psi=posterior_dict_22['psi'].iloc[i],
+        inc=posterior_dict_22['theta_jn'].iloc[i],
+        psi=posterior_dict_22['psi'].iloc[i],
         phase=posterior_dict_22['phase'].iloc[i],
         geocent_time=posterior_dict_22['geocent_time'].iloc[i],
-        ra=posterior_dict_22['ra'].iloc[i], dec=posterior_dict_22['dec'].iloc[i])
+        ra=posterior_dict_22['ra'].iloc[i],
+        dec=posterior_dict_22['dec'].iloc[i])
 
     likelihood_hom_parameters = dict(
-        total_mass=posterior_dict_hom['mass_1'].iloc[i]+posterior_dict_hom['mass_2'].iloc[i],
-        mass_ratio=posterior_dict_hom['mass_2'].iloc[i]/posterior_dict_hom['mass_1'].iloc[i],
-        s13=posterior_dict_hom['chi_1'].iloc[i], s23=posterior_dict_hom['chi_2'].iloc[i],
+        total_mass=posterior_dict_hom['total_mass'].iloc[i],
+        mass_ratio=posterior_dict_hom['mass_ratio'].iloc[i],
+        s13=posterior_dict_hom['chi_1'].iloc[i],
+        s23=posterior_dict_hom['chi_2'].iloc[i],
         luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
-        inc=posterior_dict_hom['theta_jn'].iloc[i], psi=posterior_dict_hom['psi'].iloc[i],
+        inc=posterior_dict_hom['theta_jn'].iloc[i],
+        psi=posterior_dict_hom['psi'].iloc[i],
         phase=posterior_dict_hom['phase'].iloc[i] + np.pi/2,
         geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
-        ra=posterior_dict_hom['ra'].iloc[i], dec=posterior_dict_hom['dec'].iloc[i])
+        ra=posterior_dict_hom['ra'].iloc[i],
+        dec=posterior_dict_hom['dec'].iloc[i])
 
     likelihood_hom.parameters = likelihood_hom_parameters
-    likelihood_memory.parameters = likelihood_hom_parameters
+    # likelihood_memory.parameters = likelihood_hom_parameters
     likelihood_imr_phenom.parameters = likelihood_imr_parameters
 
     likelihoods_hom.append(likelihood_hom.log_likelihood_ratio())
-    likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
+    # likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
 
     logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
     logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
     logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
     logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
-    logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
+    # logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
     logger.info("")
 
     likelihood_with_hom = likelihood_hom.log_likelihood_ratio()
