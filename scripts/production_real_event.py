@@ -121,7 +121,8 @@ ethan_hom_log_likelihood = ethan_result[:, 1]
 ethan_weight_log_likelihood = ethan_result[:, 2]
 
 for i in range(len(posterior_dict_hom)):
-
+    if i % 100 == 0:
+        logger.info(("{:0.2f}".format(i / len(posterior_dict_22['total_mass']) * 100) + "%"))
     likelihood_imr_parameters = dict(
         total_mass=posterior_dict_22['total_mass'].iloc[i],
         mass_ratio=posterior_dict_22['mass_ratio'].iloc[i],
