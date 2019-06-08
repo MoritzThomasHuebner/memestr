@@ -31,6 +31,7 @@ for ethan_hom_log_bf, event_id in zip(ethan_hom_log_bfs, event_ids):
     except ValueError as e:
         logger.warning(e)
         logger.warning("Run ID: " + str(run_id))
+        continue
 
     for i in range(len(base_result.posterior)):
         hom_weights.append(hom_like[i] - base_result.posterior.log_likelihood.iloc[i])
