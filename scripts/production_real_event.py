@@ -9,12 +9,12 @@ import sys
 
 logger = bilby.core.utils.logger
 
-event_id = sys.argv[1]
-number_of_parallel_runs = int(sys.argv[2])
-run_id = int(sys.argv[3])
-# event_id = 'GW150914'
-# number_of_parallel_runs = 32
-# run_id = 4
+# event_id = sys.argv[1]
+# number_of_parallel_runs = int(sys.argv[2])
+# run_id = int(sys.argv[3])
+event_id = 'GW150914'
+number_of_parallel_runs = 32
+run_id = 4
 
 data = np.genfromtxt(event_id + '/time_data.dat')
 time_of_event = data[0]
@@ -52,28 +52,28 @@ base_result_posterior_list = np.array_split(base_result.posterior, number_of_par
 base_result.posterior = base_result_posterior_list[run_id]
 
 
-try:
-    raise OSError
-    time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
-                                                                + str(run_id) + '_result.json')
-except OSError as e:
-    logger.warning(e)
-    time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
-        memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
-                                                                                            minimum_frequency=20, duration=duration,
-                                                                                            sampling_frequency=sampling_frequency)
-
-    maximum_overlaps = np.array(maximum_overlaps)
-    np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
-
-    time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
-    time_and_phase_shifted_result.outdir = event_id
-    time_and_phase_shifted_result.save_to_file()
+# try:
+    # raise OSError
+    # time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
+    #                                                             + str(run_id) + '_result.json')
+# except OSError as e:
+#     logger.warning(e)
+#     time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
+#         memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
+#                                                                                             minimum_frequency=20, duration=duration,
+#                                                                                             sampling_frequency=sampling_frequency)
+#
+#     maximum_overlaps = np.array(maximum_overlaps)
+#     np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
+#
+#     time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
+#     time_and_phase_shifted_result.outdir = event_id
+#     time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
 
-# time_and_phase_shifted_result.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 
-# hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
+hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
+hom_result_ethan.posterior.rename(columns={'chi_1': 's13', 'chi_2': 's23'})
 
 # base_result.plot_corner(outdir=event_id)
 # base_result.label = '22_pe_total_mass'
@@ -107,16 +107,17 @@ likelihood_memory = bilby.gw.likelihood \
 
 likelihoods_22 = base_result.posterior['log_likelihood']
 posterior_dict_22 = deepcopy(base_result.posterior)
-posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
+# posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
+posterior_dict_hom = deepcopy(hom_result_ethan.posterior)
 number_of_samples = len(likelihoods_22)
 
 likelihoods_hom = []
 likelihoods_memory = []
 
-# ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
-# ethan_22_log_likelihood = ethan_result[:, 0]
-# ethan_hom_log_likelihood = ethan_result[:, 1]
-# ethan_weight_log_likelihood = ethan_result[:, 2]
+ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
+ethan_22_log_likelihood = ethan_result[:, 0]
+ethan_hom_log_likelihood = ethan_result[:, 1]
+ethan_weight_log_likelihood = ethan_result[:, 2]
 
 for i in range(len(posterior_dict_hom)):
     likelihood_imr_parameters = dict(
@@ -146,14 +147,14 @@ for i in range(len(posterior_dict_hom)):
     likelihoods_hom.append(likelihood_hom.log_likelihood_ratio())
     likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
 
-    # logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
-    # logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
-    # logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
-    # logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
-    # logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
-    # logger.info("")
-    #
-    # likelihood_with_hom = likelihood_hom.log_likelihood_ratio()
+    logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
+    logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
+    logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
+    logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
+    logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
+    logger.info("")
+
+    likelihood_with_hom = likelihood_hom.log_likelihood_ratio()
 
 
 likelihoods_hom = np.array(likelihoods_hom)
