@@ -56,7 +56,7 @@ base_result.posterior = base_result_posterior_list[run_id]
 
 
 try:
-    raise OSError
+    # raise OSError
     time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
                                                                 + str(run_id) + '_result.json')
 except OSError as e:
@@ -135,6 +135,18 @@ for i in range(len(posterior_dict_hom)):
         geocent_time=posterior_dict_22['geocent_time'].iloc[i],
         ra=posterior_dict_22['ra'].iloc[i],
         dec=posterior_dict_22['dec'].iloc[i])
+    # likelihood_hom_parameters = dict(
+    #     total_mass=posterior_dict_hom['total_mass'].iloc[i],
+    #     mass_ratio=posterior_dict_hom['mass_ratio'].iloc[i],
+    #     s13=posterior_dict_hom['chi_1'].iloc[i],
+    #     s23=posterior_dict_hom['chi_2'].iloc[i],
+    #     luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
+    #     inc=posterior_dict_hom['theta_jn'].iloc[i],
+    #     psi=posterior_dict_hom['psi'].iloc[i],
+    #     phase=posterior_dict_hom['phase'].iloc[i] + np.pi/2,
+    #     geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
+    #     ra=posterior_dict_hom['ra'].iloc[i],
+    #     dec=posterior_dict_hom['dec'].iloc[i])
     likelihood_hom_parameters = dict(
         total_mass=posterior_dict_hom['total_mass'].iloc[i],
         mass_ratio=posterior_dict_hom['mass_ratio'].iloc[i],
@@ -143,7 +155,7 @@ for i in range(len(posterior_dict_hom)):
         luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
         inc=posterior_dict_hom['theta_jn'].iloc[i],
         psi=posterior_dict_hom['psi'].iloc[i],
-        phase=posterior_dict_hom['phase'].iloc[i] + np.pi/2,
+        phase=posterior_dict_hom['phase'].iloc[i],
         geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
         ra=posterior_dict_hom['ra'].iloc[i],
         dec=posterior_dict_hom['dec'].iloc[i])
