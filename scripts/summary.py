@@ -67,7 +67,7 @@ memory_log_bfs_injected = np.array(memory_log_bfs_injected)
 # np.random.shuffle(memory_log_bfs_injected)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
-np.savetxt('summary_log_bfs.txt', memory_log_bfs)
+# np.savetxt('summary_log_bfs.txt', memory_log_bfs)
 # np.savetxt('summary_log_bfs_injected.txt', memory_log_bfs_injected)
 hom_log_bfs = np.array(hom_log_bfs)
 
