@@ -220,7 +220,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info(str(settings.injection_parameters))
     try:
         result = bilby.core.result.read_in_result(filename=str(filename_base) +
-                                                           '_pypolychord_production_IMR_non_mem_rec/'
+                                                           '_dynesty_production_IMR_non_mem_rec/'
                                                            'IMR_mem_inj_non_mem_rec_result.json')
         result.outdir = outdir
     except Exception as e:
@@ -254,7 +254,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     try:
         result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reconstructed_result_result.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_result_result.json')
     except Exception as e:
         logger.info(e)
         result.posterior = bilby.gw.conversion. \
@@ -273,7 +273,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     try:
         # raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
         maximum_overlaps = pp_result.maximum_overlaps
     except Exception as e:
         logger.warning(e)
@@ -331,7 +331,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #     plt.xlabel('log weights')
     #     plt.ylabel('max overlaps')
     #     plt.tight_layout()
-    #     plt.savefig(str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
+    #     plt.savefig(str(filename_base) + '_dynesty_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
     #     plt.clf()
     # except Exception as e:
     #     logger.warning(e)
@@ -339,7 +339,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # try:
     #     norm_weights = np.exp(pp_result.hom_weights)
     #     time_and_phase_shifted_result.plot_corner(
-    #         filename=str(filename_base) + '_pypolychord_production_IMR_non_mem_rec/reweighted',
+    #         filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reweighted',
     #         weights=norm_weights,
     #         parameters=deepcopy(params),
     #         outdir=outdir)
