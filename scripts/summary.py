@@ -18,26 +18,20 @@ memory_log_bfs = []
 memory_log_bfs_injected = []
 hom_log_bfs = []
 
-for i in range(0, 1000):
+for i in range(0, 2000):
     injection_parameters = get_injection_parameter_set(str(i))
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
-    try:
-        pp_res = PostprocessingResult.from_json(outdir=str(i)+'_pypolychord_production_IMR_non_mem_rec/')
-        memory_log_bf = pp_res.memory_log_bf
-        hom_log_bf = pp_res.hom_log_bf
-        if memory_log_bf is None:
-            continue
-        if memory_log_bf > 1:
-            print(i)
-        # if memory_log_bf > 2:
+    # try:
+        # pp_res = PostprocessingResult.from_json(outdir=str(i)+'_pypolychord_production_IMR_non_mem_rec/')
+        # memory_log_bf = pp_res.memory_log_bf
+        # hom_log_bf = pp_res.hom_log_bf
+        # if memory_log_bf is None:
         #     continue
-        # if memory_log_bf < 1:
-        #     memory_log_bfs.append(memory_log_bf)
-        # if hom_log_bf < 20:
-        #     hom_log_bfs.append(hom_log_bf)
-    except OSError as e:
-        print(e)
-        continue
+        # if memory_log_bf > 1:
+        #     print(i)
+    # except OSError as e:
+    #     print(e)
+    #     continue
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         parameters=deepcopy(settings.injection_parameters.__dict__),
@@ -61,8 +55,8 @@ for i in range(0, 1000):
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     memory_log_bfs_injected.append(a - b)
-    memory_log_bfs.append(memory_log_bf)
-    hom_log_bfs.append(hom_log_bf)
+    # memory_log_bfs.append(memory_log_bf)
+    # hom_log_bfs.append(hom_log_bf)
     # print(memory_log_bfs_injected)
 
 memory_log_bfs = np.array(memory_log_bfs)
@@ -74,7 +68,7 @@ memory_log_bfs_injected = np.array(memory_log_bfs_injected)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
 np.savetxt('summary_log_bfs.txt', memory_log_bfs)
-np.savetxt('summary_log_bfs_injected.txt', memory_log_bfs_injected)
+# np.savetxt('summary_log_bfs_injected.txt', memory_log_bfs_injected)
 hom_log_bfs = np.array(hom_log_bfs)
 
 # plt.hist(hom_log_bfs, bins=30)
@@ -84,13 +78,13 @@ hom_log_bfs = np.array(hom_log_bfs)
 # plt.savefig('summary_hom_hist')
 # plt.clf()
 
-plt.hist(memory_log_bfs, bins=30)
-plt.xlabel('log BFs')
-plt.ylabel('count')
-plt.title('Memory log BFs')
-plt.tight_layout()
-plt.savefig('summary_memory_hist')
-plt.clf()
+# plt.hist(memory_log_bfs, bins=30)
+# plt.xlabel('log BFs')
+# plt.ylabel('count')
+# plt.title('Memory log BFs')
+# plt.tight_layout()
+# plt.savefig('summary_memory_hist')
+# plt.clf()
 
 plt.hist(memory_log_bfs_injected, bins=30)
 plt.xlabel('log BFs')
