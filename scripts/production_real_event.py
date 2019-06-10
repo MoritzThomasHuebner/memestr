@@ -9,12 +9,12 @@ import sys
 
 logger = bilby.core.utils.logger
 
-event_id = sys.argv[1]
-number_of_parallel_runs = int(sys.argv[2])
-run_id = int(sys.argv[3])
-# event_id = 'GW150914'
-# number_of_parallel_runs = 32
-# run_id = 0
+# event_id = sys.argv[1]
+# number_of_parallel_runs = int(sys.argv[2])
+# run_id = int(sys.argv[3])
+event_id = 'GW150914'
+number_of_parallel_runs = 32
+run_id = 0
 
 data = np.genfromtxt(event_id + '/time_data.dat')
 time_of_event = data[0]
@@ -54,9 +54,9 @@ base_result_posterior_list = np.array_split(base_result.posterior, number_of_par
 base_result.posterior = base_result_posterior_list[run_id]
 
 ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
-ethan_22_log_likelihood = ethan_result[:, 0]
-ethan_posterior_hom_log_likelihood = ethan_result[:, 1]
-ethan_weight_log_likelihood = ethan_result[:, 2]
+ethan_22_log_likelihood = np.array_split(ethan_result[:, 0], number_of_parallel_runs, axis=0)
+ethan_posterior_hom_log_likelihood = np.array_split(ethan_result[:, 1], number_of_parallel_runs, axis=0)
+ethan_weight_log_likelihood = np.array_split(ethan_result[:, 2], number_of_parallel_runs, axis=0)
 
 # log_weights = []
 # for i in range(len(hom_result_ethan.posterior)):
@@ -131,8 +131,7 @@ likelihoods_memory = []
 
 
 for i in range(len(posterior_dict_hom)):
-    if i % 100 == 0:
-        logger.info(("{:0.2f}".format(i / len(posterior_dict_22['total_mass']) * 100) + "%"))
+    logger.info(("{:0.2f}".format(i / len(posterior_dict_22['total_mass']) * 100) + "%"))
     likelihood_imr_parameters = dict(
         total_mass=posterior_dict_22['total_mass'].iloc[i],
         mass_ratio=posterior_dict_22['mass_ratio'].iloc[i],
