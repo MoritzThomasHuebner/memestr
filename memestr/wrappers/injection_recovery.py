@@ -345,14 +345,16 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     #         outdir=outdir)
     # except Exception as e:
     #     logger.warning(e)
-    if pp_result.memory_weights is None:
-        memory_log_bf, memory_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
-                                                              new_result=time_and_phase_shifted_result,
-                                                              reference_likelihood=likelihood_no_memory,
-                                                              reference_result=time_and_phase_shifted_result)
+    # if pp_result.memory_weights is None:
+    if True:
+        memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
+                                                                      new_result=time_and_phase_shifted_result,
+                                                                      reference_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                                      reference_result=result)
 
+        memory_log_bf = memory_hom_log_bf - pp_result.hom_log_bf
         pp_result.memory_log_bf = memory_log_bf
-        pp_result.memory_weights = memory_weights
+        pp_result.memory_weights = memory_hom_weights
         pp_result.to_json()
     logger.info("MEMORY LOG BF: " + str(pp_result.memory_log_bf))
     return time_and_phase_shifted_result
