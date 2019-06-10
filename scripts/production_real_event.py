@@ -102,7 +102,8 @@ waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
 
 waveform_generator_memory = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-    duration=duration, sampling_frequency=sampling_frequency, start_time=start_time)
+    duration=duration, sampling_frequency=sampling_frequency, start_time=start_time,
+    waveform_arguments=dict(alpha=0.1))
 
 likelihood_imr_phenom = bilby.gw.likelihood \
     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
