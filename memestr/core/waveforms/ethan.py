@@ -75,7 +75,7 @@ def gws_nominal(frequency, mass_1, mass_2, luminosity_distance, chi_1,
                   (3, 1), (3, 0), (4, 4), (4, 3), (4, 2), (5, 5)]
 
     # epsilon = 100 * MASS_TO_TIME * m_tot
-    epsilon = 100 * 40 * m_tot
+    epsilon = 100*40*MASS_TO_TIME
     t_nr = np.arange(-duration / 1.3 + epsilon, epsilon, dt)
 
     h = sur(x, times=t_nr, f_low=0, M=m_tot,
