@@ -58,33 +58,33 @@ ethan_22_log_likelihood = ethan_result[:, 0]
 ethan_posterior_hom_log_likelihood = ethan_result[:, 1]
 ethan_weight_log_likelihood = ethan_result[:, 2]
 
-log_weights = []
-for i in range(len(hom_result_ethan.posterior)):
-    log_weights.append(ethan_posterior_hom_log_likelihood[i] - base_result.posterior.log_likelihood.iloc[i])
-
-log_bf = logsumexp(log_weights) - np.log(len(log_weights))
-log_ethan = np.log(np.sum(ethan_weight_log_likelihood)) - np.log(len(ethan_weight_log_likelihood))
-logger.info(log_bf)
-logger.info(log_ethan)
+# log_weights = []
+# for i in range(len(hom_result_ethan.posterior)):
+#     log_weights.append(ethan_posterior_hom_log_likelihood[i] - base_result.posterior.log_likelihood.iloc[i])
+#
+# log_bf = logsumexp(log_weights) - np.log(len(log_weights))
+# log_ethan = np.log(np.sum(ethan_weight_log_likelihood)) - np.log(len(ethan_weight_log_likelihood))
+# logger.info(log_bf)
+# logger.info(log_ethan)
 # sys.exit(0)
 
-try:
+# try:
     # raise OSError
-    time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
-                                                                + str(run_id) + '_result.json')
-except OSError as e:
-    logger.warning(e)
-    time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
-        memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
-                                                                                            minimum_frequency=20, duration=duration,
-                                                                                            sampling_frequency=sampling_frequency)
-
-    maximum_overlaps = np.array(maximum_overlaps)
-    np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
-
-    time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
-    time_and_phase_shifted_result.outdir = event_id
-    time_and_phase_shifted_result.save_to_file()
+    # time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
+    #                                                             + str(run_id) + '_result.json')
+# except OSError as e:
+#     logger.warning(e)
+#     time_and_phase_shifted_result, time_shifts, maximum_overlaps = \
+#         memestr.core.postprocessing.adjust_phase_and_geocent_time_complete_posterior_proper(base_result, ifos[0], True,
+#                                                                                             minimum_frequency=20, duration=duration,
+#                                                                                             sampling_frequency=sampling_frequency)
+#
+#     maximum_overlaps = np.array(maximum_overlaps)
+#     np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
+#
+#     time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
+#     time_and_phase_shifted_result.outdir = event_id
+#     time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
 
 
@@ -189,17 +189,25 @@ for i in range(len(posterior_dict_hom)):
 
 likelihoods_hom_moritz = np.array(likelihoods_hom_moritz)
 likelihoods_memory = np.array(likelihoods_memory)
-np.savetxt(event_id + '/moritz_hom_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_hom_moritz)
-np.savetxt(event_id + '/moritz_memory_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_memory)
+np.savetxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom_moritz)
+np.savetxt(event_id + '/ethan_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom_ethan)
+np.savetxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt', likelihoods_memory)
 
 likelihoods_22 = np.array([likelihood_22 for likelihood_22 in likelihoods_22])
-hom_weights = likelihoods_hom_moritz - likelihoods_22
+hom_weights_moritz = likelihoods_hom_moritz - likelihoods_22
+hom_weights_ethan = likelihoods_hom_ethan - likelihoods_22
 memory_weights = likelihoods_memory - likelihoods_hom_moritz
 
-hom_log_bf = logsumexp(hom_weights) - np.log(len(hom_weights))
+hom_log_bf_moritz = logsumexp(hom_weights_moritz) - np.log(len(hom_weights_moritz))
+hom_log_bf_ethan = np.log(np.sum(hom_weights_ethan)) - np.log(len(hom_weights_ethan))
+hom_log_bf_ethan_posterior = logsumexp(ethan_weight_log_likelihood) - np.log(len(ethan_weight_log_likelihood))
 memory_log_bf = logsumexp(memory_weights) - np.log(len(memory_weights))
 
-logger.info("HOM log BF: " + str(hom_log_bf))
+n_effective = np.sum(hom_weights_moritz) ** 2 / np.sum(np.array(hom_weights_moritz) ** 2)
+logger.info("Effective number of samples: " + str(n_effective))
+logger.info("HOM log BF Moritz: " + str(hom_log_bf_moritz))
+logger.info("HOM log BF Ethan: " + str(hom_log_bf_ethan))
+logger.info("HOM log BF Ethan posterior: " + str(hom_log_bf_ethan_posterior))
 logger.info("Memory log BF: " + str(memory_log_bf))
 logger.info(str(run_id))
 
