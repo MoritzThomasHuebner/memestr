@@ -12,7 +12,7 @@ logger = bilby.core.utils.logger
 
 # event_id = 'GW170823'
 number_of_parallel_runs = 64
-event_ids = ['GW151012', 'GW151226', 'GW170104', 'GW170608',
+event_ids = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608',
              'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
 # ethan_hom_log_bfs = [-0.21, 0.31, -0.05, -0.10, -0.33, 1.15, -0.09, 0.11, 0.37, -0.25]
 
