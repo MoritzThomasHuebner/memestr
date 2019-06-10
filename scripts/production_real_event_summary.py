@@ -26,6 +26,7 @@ for event_id in event_ids:
 
     base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
     hom_like_moritz = np.array([])
+    hom_like_ethan = np.array([])
     memory_like = np.array([])
     hom_weights_moritz = []
     hom_weights_ethan = []
