@@ -53,7 +53,20 @@ base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.jso
 base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
 base_result.posterior = base_result_posterior_list[run_id]
 
+ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
+ethan_22_log_likelihood = ethan_result[:, 0]
+ethan_posterior_hom_log_likelihood = ethan_result[:, 1]
+ethan_weight_log_likelihood = ethan_result[:, 2]
 
+log_weights = []
+for i in range(len(hom_result_ethan.posterior)):
+    log_weights.append(ethan_posterior_hom_log_likelihood[i] - base_result.posterior.log_likelihood.iloc[i])
+
+log_bf = logsumexp(log_weights) - np.log(len(log_weights))
+log_ethan = np.log(np.sum(ethan_weight_log_likelihood)) - np.log(len(ethan_weight_log_likelihood))
+logger.info(log_bf)
+logger.info(log_ethan)
+# sys.exit(0)
 
 try:
     # raise OSError
@@ -73,13 +86,6 @@ except OSError as e:
     time_and_phase_shifted_result.outdir = event_id
     time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
-
-
-
-# base_result.plot_corner(outdir=event_id)
-# base_result.label = '22_pe_total_mass'
-# base_result.outdir = event_id
-# base_result.save_to_file()
 
 
 waveform_generator_imr = bilby.gw.WaveformGenerator(
@@ -122,10 +128,6 @@ likelihoods_hom_moritz = []
 likelihoods_hom_ethan = []
 likelihoods_memory = []
 
-ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
-ethan_22_log_likelihood = ethan_result[:, 0]
-ethan_posterior_hom_log_likelihood = ethan_result[:, 1]
-ethan_weight_log_likelihood = ethan_result[:, 2]
 
 for i in range(len(posterior_dict_hom)):
     if i % 100 == 0:
@@ -176,7 +178,7 @@ for i in range(len(posterior_dict_hom)):
     likelihoods_hom_ethan.append(likelihood_hom_ethan.log_likelihood_ratio())
     likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
 
-    # logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
+    logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
     # logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
     logger.info("Ethan posterior HOM log likelihood: " + str(ethan_posterior_hom_log_likelihood[i]))
     logger.info("Ethan restored HOM log likelihood: " + str(likelihoods_hom_ethan[i]))
