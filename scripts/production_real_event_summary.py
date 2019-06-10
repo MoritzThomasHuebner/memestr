@@ -23,6 +23,7 @@ for ethan_hom_log_bf, event_id in zip(ethan_hom_log_bfs, event_ids):
     hom_like = np.array([])
     memory_like = np.array([])
     hom_weights = []
+    hom_memory_weights = []
     logger.info(event_id)
     try:
         for run_id in range(number_of_parallel_runs):
@@ -35,12 +36,13 @@ for ethan_hom_log_bf, event_id in zip(ethan_hom_log_bfs, event_ids):
 
     for i in range(len(base_result.posterior)):
         hom_weights.append(hom_like[i] - base_result.posterior.log_likelihood.iloc[i])
+        hom_memory_weights.append(memory_like[i] - base_result.posterior.log_likelihood.iloc[i])
 
-    memory_weights = memory_like - hom_like
+    # memory_weights = memory_like - hom_like
 
     hom_log_bf = logsumexp(hom_weights) - np.log(len(hom_weights))
-    memory_log_bf = logsumexp(memory_weights)# - np.log(len(memory_weights))
-
+    hom_memory_log_bf = logsumexp(hom_memory_weights) - np.log(len(hom_memory_weights))
+    memory_log_bf = hom_memory_log_bf - hom_log_bf
     logger.info("Ethan HOM LOG BF: " + str(ethan_hom_log_bf))
     logger.info("Moritz HOM LOG BF: " + str(hom_log_bf))
     logger.info("Memory LOG BF: " + str(memory_log_bf))
