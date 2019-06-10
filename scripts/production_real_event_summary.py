@@ -35,7 +35,7 @@ for event_id in event_ids:
     try:
         for run_id in range(number_of_parallel_runs):
             hom_like_moritz = np.append(hom_like_moritz, np.loadtxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt'))
-            hom_like_ethan = np.append(hom_like_ethan, np.loadtxt(event_id + '/ethan_hom_log_likelihoods_' + str(run_id) + '.txt'))
+            # hom_like_ethan = np.append(hom_like_ethan, np.loadtxt(event_id + '/ethan_hom_log_likelihoods_' + str(run_id) + '.txt'))
             memory_like = np.append(memory_like, np.loadtxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt'))
     except ValueError as e:
         logger.warning(e)
@@ -44,18 +44,17 @@ for event_id in event_ids:
 
     for i in range(len(base_result.posterior)):
         hom_weights_moritz.append(hom_like_moritz[i] - base_result.posterior.log_likelihood.iloc[i])
-        hom_weights_ethan.append(hom_like_ethan[i] - base_result.posterior.log_likelihood.iloc[i])
+        # hom_weights_ethan.append(hom_like_ethan[i] - base_result.posterior.log_likelihood.iloc[i])
         hom_memory_weights.append(memory_like[i] - base_result.posterior.log_likelihood.iloc[i])
 
-    # memory_weights = memory_like - hom_like
 
     hom_log_bf_moritz = logsumexp(hom_weights_moritz) - np.log(len(hom_weights_moritz))
-    hom_log_bf_ethan = logsumexp(hom_weights_ethan) - np.log(len(hom_weights_ethan))
+    # hom_log_bf_ethan = logsumexp(hom_weights_ethan) - np.log(len(hom_weights_ethan))
     hom_log_bf_ethan_posterior = np.log(np.sum(ethan_weight_log_likelihood)) - np.log(len(ethan_weight_log_likelihood))
     hom_memory_log_bf = logsumexp(hom_memory_weights) - np.log(len(hom_memory_weights))
     memory_log_bf = hom_memory_log_bf - hom_log_bf_moritz
     logger.info("Ethan Posterior HOM LOG BF: " + str(hom_log_bf_ethan_posterior))
-    logger.info("Ethan Restored HOM LOG BF: " + str(hom_log_bf_ethan))
+    # logger.info("Ethan Restored HOM LOG BF: " + str(hom_log_bf_ethan))
     logger.info("Moritz HOM LOG BF: " + str(hom_log_bf_moritz))
     logger.info("Memory LOG BF: " + str(memory_log_bf))
     memory_log_bfs.append(memory_log_bf)
