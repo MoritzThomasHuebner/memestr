@@ -42,7 +42,8 @@ for ethan_hom_log_bf, event_id in zip(ethan_hom_log_bfs, event_ids):
 
     hom_log_bf = logsumexp(hom_weights) - np.log(len(hom_weights))
     hom_memory_log_bf = logsumexp(hom_memory_weights) - np.log(len(hom_memory_weights))
-    memory_log_bf = hom_memory_log_bf - hom_log_bf
+    # memory_log_bf = hom_memory_log_bf - hom_log_bf
+    memory_log_bf = np.log(np.sum(np.exp(memory_like - hom_like)))
     logger.info("Ethan HOM LOG BF: " + str(ethan_hom_log_bf))
     logger.info("Moritz HOM LOG BF: " + str(hom_log_bf))
     logger.info("Memory LOG BF: " + str(memory_log_bf))
