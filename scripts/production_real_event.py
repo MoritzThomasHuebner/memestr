@@ -86,8 +86,12 @@ waveform_generator_imr = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
     start_time=start_time, duration=duration, sampling_frequency=sampling_frequency)
 
-waveform_generator_hom = bilby.gw.WaveformGenerator(
+waveform_generator_hom_moritz = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+    duration=duration, sampling_frequency=sampling_frequency, start_time=start_time)
+
+waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
+    frequency_domain_source_model=gws_nominal,
     duration=duration, sampling_frequency=sampling_frequency, start_time=start_time)
 
 waveform_generator_memory = bilby.gw.WaveformGenerator(
@@ -98,9 +102,11 @@ likelihood_imr_phenom = bilby.gw.likelihood \
     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                 waveform_generator=waveform_generator_imr)
 
-likelihood_hom = bilby.gw.GravitationalWaveTransient(
-    interferometers=ifos, waveform_generator=waveform_generator_hom)
+likelihood_hom_moritz = bilby.gw.GravitationalWaveTransient(
+    interferometers=ifos, waveform_generator=waveform_generator_hom_moritz)
 
+likelihood_hom_ethan = bilby.gw.GravitationalWaveTransient(
+    interferometers=ifos, waveform_generator=waveform_generator_hom_ethan)
 
 likelihood_memory = bilby.gw.likelihood \
     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
@@ -112,12 +118,13 @@ posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
 # posterior_dict_hom = deepcopy(hom_result_ethan.posterior)
 number_of_samples = len(likelihoods_22)
 
-likelihoods_hom = []
+likelihoods_hom_moritz = []
+likelihoods_hom_ethan = []
 likelihoods_memory = []
 
 ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
 ethan_22_log_likelihood = ethan_result[:, 0]
-ethan_hom_log_likelihood = ethan_result[:, 1]
+ethan_posterior_hom_log_likelihood = ethan_result[:, 1]
 ethan_weight_log_likelihood = ethan_result[:, 2]
 
 for i in range(len(posterior_dict_hom)):
@@ -135,19 +142,19 @@ for i in range(len(posterior_dict_hom)):
         geocent_time=posterior_dict_22['geocent_time'].iloc[i],
         ra=posterior_dict_22['ra'].iloc[i],
         dec=posterior_dict_22['dec'].iloc[i])
-    # likelihood_hom_parameters = dict(
-    #     total_mass=posterior_dict_hom['total_mass'].iloc[i],
-    #     mass_ratio=posterior_dict_hom['mass_ratio'].iloc[i],
-    #     s13=posterior_dict_hom['chi_1'].iloc[i],
-    #     s23=posterior_dict_hom['chi_2'].iloc[i],
-    #     luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
-    #     inc=posterior_dict_hom['theta_jn'].iloc[i],
-    #     psi=posterior_dict_hom['psi'].iloc[i],
-    #     phase=posterior_dict_hom['phase'].iloc[i] + np.pi/2,
-    #     geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
-    #     ra=posterior_dict_hom['ra'].iloc[i],
-    #     dec=posterior_dict_hom['dec'].iloc[i])
-    likelihood_hom_parameters = dict(
+    likelihood_hom_ethan_parameters = dict(
+        mass_1=posterior_dict_hom['mass_1'].iloc[i],
+        mass_2=posterior_dict_hom['mass_2'].iloc[i],
+        chi_1=posterior_dict_hom['chi_1'].iloc[i],
+        chi_2=posterior_dict_hom['chi_2'].iloc[i],
+        luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
+        theta_jn=posterior_dict_hom['theta_jn'].iloc[i],
+        psi=posterior_dict_hom['psi'].iloc[i],
+        phase=posterior_dict_hom['phase'].iloc[i],
+        geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
+        ra=posterior_dict_hom['ra'].iloc[i],
+        dec=posterior_dict_hom['dec'].iloc[i])
+    likelihood_hom_moritz_parameters = dict(
         total_mass=posterior_dict_hom['total_mass'].iloc[i],
         mass_ratio=posterior_dict_hom['mass_ratio'].iloc[i],
         s13=posterior_dict_hom['chi_1'].iloc[i],
@@ -155,34 +162,37 @@ for i in range(len(posterior_dict_hom)):
         luminosity_distance=posterior_dict_hom['luminosity_distance'].iloc[i],
         inc=posterior_dict_hom['theta_jn'].iloc[i],
         psi=posterior_dict_hom['psi'].iloc[i],
-        phase=posterior_dict_hom['phase'].iloc[i],
+        phase=posterior_dict_hom['phase'].iloc[i] + np.pi/2,
         geocent_time=posterior_dict_hom['geocent_time'].iloc[i],
         ra=posterior_dict_hom['ra'].iloc[i],
         dec=posterior_dict_hom['dec'].iloc[i])
 
-    likelihood_hom.parameters = likelihood_hom_parameters
-    likelihood_memory.parameters = likelihood_hom_parameters
+    likelihood_hom_moritz.parameters = likelihood_hom_moritz_parameters
+    likelihood_hom_ethan.parameters = likelihood_hom_ethan_parameters
+    likelihood_memory.parameters = likelihood_hom_moritz_parameters
     likelihood_imr_phenom.parameters = likelihood_imr_parameters
 
-    likelihoods_hom.append(likelihood_hom.log_likelihood_ratio())
+    likelihoods_hom_moritz.append(likelihood_hom_moritz.log_likelihood_ratio())
+    likelihoods_hom_ethan.append(likelihood_hom_ethan.log_likelihood_ratio())
     likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
 
-    logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
-    logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
-    logger.info("Ethan HOM log likelihood: " + str(ethan_hom_log_likelihood[i]))
-    logger.info("Restored HOM log likelihood: " + str(likelihood_hom.log_likelihood_ratio()))
-    logger.info("Memory log likelihood: " + str(likelihood_memory.log_likelihood_ratio()))
+    # logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
+    # logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
+    logger.info("Ethan posterior HOM log likelihood: " + str(ethan_posterior_hom_log_likelihood[i]))
+    logger.info("Ethan restored HOM log likelihood: " + str(likelihoods_hom_ethan[i]))
+    logger.info("Moritz HOM log likelihood: " + str(likelihoods_hom_moritz[i]))
+    logger.info("Memory log likelihood: " + str(likelihoods_memory[i]))
     logger.info("")
 
 
-likelihoods_hom = np.array(likelihoods_hom)
+likelihoods_hom_moritz = np.array(likelihoods_hom_moritz)
 likelihoods_memory = np.array(likelihoods_memory)
-np.savetxt(event_id + '/moritz_hom_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_hom)
+np.savetxt(event_id + '/moritz_hom_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_hom_moritz)
 np.savetxt(event_id + '/moritz_memory_log_likelihoods_self_shifted_' + str(run_id) + '.txt', likelihoods_memory)
 
 likelihoods_22 = np.array([likelihood_22 for likelihood_22 in likelihoods_22])
-hom_weights = likelihoods_hom - likelihoods_22
-memory_weights = likelihoods_memory - likelihoods_hom
+hom_weights = likelihoods_hom_moritz - likelihoods_22
+memory_weights = likelihoods_memory - likelihoods_hom_moritz
 
 hom_log_bf = logsumexp(hom_weights) - np.log(len(hom_weights))
 memory_log_bf = logsumexp(memory_weights) - np.log(len(memory_weights))

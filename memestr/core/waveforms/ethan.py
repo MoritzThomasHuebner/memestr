@@ -72,7 +72,7 @@ def gws_nominal(frequency, mass_1, mass_2, luminosity_distance, chi_1,
 
     x = [q, s1[2], s2[2]]
     modes_full = [(2, 2), (2, 1), (2, 0), (3, 3), (3, 2),
-                  (3, 1), (3, 0), (4, 4), (4, 3), (4, 2), (5, 5)]
+                  (3, 1), (3, 0), (4, 4), (4, 3), (4, 2)]#, (5, 5)]
 
     epsilon = 100 * MASS_TO_TIME * m_tot
     t_nr = np.arange(-duration / 1.3 + epsilon, epsilon, dt)
