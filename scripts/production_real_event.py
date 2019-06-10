@@ -110,10 +110,10 @@ likelihood_imr_phenom = bilby.gw.likelihood \
                                 waveform_generator=waveform_generator_imr)
 
 likelihood_hom_moritz = bilby.gw.GravitationalWaveTransient(
-    interferometers=ifos, waveform_generator=waveform_generator_hom_moritz)
+    interferometers=deepcopy(ifos), waveform_generator=waveform_generator_hom_moritz)
 
 likelihood_hom_ethan = bilby.gw.GravitationalWaveTransient(
-    interferometers=ifos, waveform_generator=waveform_generator_hom_ethan)
+    interferometers=deepcopy(ifos), waveform_generator=waveform_generator_hom_ethan)
 
 likelihood_memory = bilby.gw.likelihood \
     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
