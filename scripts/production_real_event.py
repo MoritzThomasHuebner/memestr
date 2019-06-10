@@ -94,7 +94,7 @@ waveform_generator_imr = bilby.gw.WaveformGenerator(
 
 waveform_generator_hom_moritz = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-    duration=duration, sampling_frequency=sampling_frequency, start_time=start_time)
+    duration=duration, sampling_frequency=sampling_frequency, start_time=start_time, waveform_arguments=dict(alpha=0.1))
 
 waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
     frequency_domain_source_model=gws_nominal,
