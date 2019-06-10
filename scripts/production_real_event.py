@@ -45,9 +45,9 @@ for name, ifo in zip(ifo_names, ifos):
     ifo.maximum_frequency = sampling_frequency/2.
     ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
-# hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
-# hom_result_posterior_list = np.array_split(hom_result_ethan.posterior, number_of_parallel_runs, axis=0)
-# hom_result_ethan.posterior = hom_result_posterior_list[run_id]
+hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
+hom_result_posterior_list = np.array_split(hom_result_ethan.posterior, number_of_parallel_runs, axis=0)
+hom_result_ethan.posterior = hom_result_posterior_list[run_id]
 
 base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
 base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
@@ -114,8 +114,8 @@ likelihood_memory = bilby.gw.likelihood \
 
 likelihoods_22 = base_result.posterior['log_likelihood']
 posterior_dict_22 = deepcopy(base_result.posterior)
-posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
-# posterior_dict_hom = deepcopy(hom_result_ethan.posterior)
+# posterior_dict_hom = deepcopy(time_and_phase_shifted_result.posterior)
+posterior_dict_hom = deepcopy(hom_result_ethan.posterior)
 number_of_samples = len(likelihoods_22)
 
 likelihoods_hom_moritz = []
