@@ -10,7 +10,7 @@ import bilby
 
 logger = bilby.core.utils.logger
 
-logger.disabled = True
+logger.disabled = False
 
 settings = AllSettings.from_defaults_with_some_specified_kwargs(alpha=0.1, duration=16, sampling_frequency=2048)
 
