@@ -11,7 +11,7 @@ logger = bilby.core.utils.logger
 # number_of_parallel_runs = int(sys.argv[2])
 
 # event_id = 'GW170823'
-number_of_parallel_runs = 64
+number_of_parallel_runs = 128
 event_ids = ['GW150914', 'GW151012', 'GW151226', 'GW170104', 'GW170608',
              'GW170729', 'GW170809', 'GW170814', 'GW170818', 'GW170823']
 # ethan_hom_log_bfs = [-0.21, 0.31, -0.05, -0.10, -0.33, 1.15, -0.09, 0.11, 0.37, -0.25]
@@ -61,12 +61,12 @@ for event_id in event_ids:
     memory_log_bfs.append(memory_log_bf)
 
 memory_log_bfs = np.array(memory_log_bfs)
-cummulative_memory_log_bfs = np.cumsum(memory_log_bfs)
+cumulative_memory_log_bfs = np.cumsum(memory_log_bfs)
 
 plt.plot(memory_log_bfs, label='Memory log BFs')
-plt.plot(cummulative_memory_log_bfs, label='Cumulative memory log BFs')
+plt.plot(cumulative_memory_log_bfs, label='Cumulative memory log BFs')
 plt.xticks(np.arange(10), tuple(event_ids), rotation=70)
 plt.legend()
 plt.tight_layout()
-plt.savefig('money_plot')
+plt.savefig('gwtm-1')
 plt.clf()
