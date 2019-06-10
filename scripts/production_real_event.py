@@ -179,7 +179,7 @@ for i in range(len(posterior_dict_hom)):
     likelihoods_memory.append(likelihood_memory.log_likelihood_ratio())
 
     logger.info("Ethan 22 log likelihood: " + str(ethan_22_log_likelihood[i]))
-    # logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
+    logger.info("Restored 22 log likelihood: " + str(likelihood_imr_phenom.log_likelihood_ratio()))
     logger.info("Ethan posterior HOM log likelihood: " + str(ethan_posterior_hom_log_likelihood[i]))
     logger.info("Ethan restored HOM log likelihood: " + str(likelihoods_hom_ethan[i]))
     logger.info("Moritz HOM log likelihood: " + str(likelihoods_hom_moritz[i]))
