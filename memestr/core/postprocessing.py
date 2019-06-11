@@ -274,16 +274,16 @@ def reweigh_log_evidence_by_weights(log_evidence, log_weights):
     return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
 
 
-def reweigh_by_likelihood(new_likelihood, new_result, reference_likelihood, reference_result=None):
+def reweigh_by_likelihood(new_likelihood, new_result, reference_likelihood, reference_result):
     try:
         log_weights = calculate_log_weights(new_likelihood=new_likelihood,
                                             new_result=new_result,
                                             reference_likelihood=reference_likelihood,
                                             reference_result=reference_result)
-        reweighed_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
+        reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     except AttributeError as e:
         logger.warning(e)
         log_weights = np.nan
-        reweighed_log_bf = np.nan
-    return reweighed_log_bf, log_weights
+        reweighted_log_bf = np.nan
+    return reweighted_log_bf, log_weights
 
