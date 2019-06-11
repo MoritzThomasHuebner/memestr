@@ -126,3 +126,6 @@ plt.ylabel('Number of effective samples')
 plt.tight_layout()
 plt.savefig('summary_n_eff_vs_event_id')
 plt.clf()
+
+np.savetxt("n_effs", n_effs)
+np.savetxt("n_effs_additional_runs", int(np.array(n_effs)/50.))
