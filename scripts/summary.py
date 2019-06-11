@@ -50,7 +50,7 @@ for i in range(min_event_id, max_event_id):
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
     waveform_generator_22 = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
+        frequency_domain_source_model=gws_nominal,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
@@ -64,15 +64,12 @@ for i in range(min_event_id, max_event_id):
     likelihood_22 = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_22)
-    time_shift_22, phase_22, maximum_overlap = get_time_and_phase_shift_inverted(injection_parameters, ifos[0],
-                                                                                 verbose=True)
+
     for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
         likelihood_memory.parameters[parameter] = injection_parameters[parameter]
         likelihood_no_memory.parameters[parameter] = injection_parameters[parameter]
         likelihood_22.parameters[parameter] = injection_parameters[parameter]
-    likelihood_22.parameters['geocent_time'] += time_shift_22
-    likelihood_22.parameters['phase'] += phase_22
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     c = likelihood_22.log_likelihood_ratio()

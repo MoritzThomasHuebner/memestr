@@ -71,8 +71,8 @@ def gws_nominal(frequency, mass_1, mass_2, luminosity_distance, chi_1,
     s2 = np.array([spin_2x, spin_2y, spin_2z])
 
     x = [q, s1[2], s2[2]]
-    modes_full = [(2, 2), (2, 1), (2, 0), (3, 3), (3, 2),
-                  (3, 1), (3, 0), (4, 4), (4, 3), (4, 2), (5, 5)]
+    modes_full = [(2, 2)]#, (2, 1), (2, 0), (3, 3), (3, 2),
+                  #(3, 1), (3, 0), (4, 4), (4, 3), (4, 2), (5, 5)]
 
     epsilon = 100 * MASS_TO_TIME * m_tot
     # epsilon = 100*40*MASS_TO_TIME
