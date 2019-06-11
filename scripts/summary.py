@@ -77,6 +77,7 @@ for i in range(min_event_id, max_event_id):
     likelihood_22.parameters['mass_2'] = mass_2
     likelihood_22.parameters['chi_1'] = injection_parameters['s13']
     likelihood_22.parameters['chi_2'] = injection_parameters['s23']
+    likelihood_22.parameters['theta_jn'] = injection_parameters['inc']
 
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
