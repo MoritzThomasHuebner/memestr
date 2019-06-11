@@ -235,11 +235,11 @@ def get_time_and_phase_shift_inverted(parameters, ifo, verbose=False, **kwargs):
     injected_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
                           duration=duration, sampling_frequency=sampling_frequency,
-                          waveform_arguments=dict(alpha=0.1), parameters=parameters)
+                          waveform_arguments=dict(alpha=0.1))
     recovery_wg = bilby.gw.waveform_generator. \
         WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
                           duration=duration, sampling_frequency=sampling_frequency,
-                          waveform_arguments=dict(alpha=0.1))
+                          waveform_arguments=dict(alpha=0.1), parameters=parameters)
 
     memory_wf = injected_wg.frequency_domain_strain(parameters)
 
