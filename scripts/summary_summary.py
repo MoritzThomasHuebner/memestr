@@ -89,14 +89,15 @@ for i in range(2000):
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
         n_effs.append(pp_res.effective_samples/len(pp_res.hom_weights))
     except (AttributeError, FileNotFoundError):
+        print(i)
         continue
-
-plt.hist(n_effs, bins=45)
-plt.xlabel('Fraction of effective samples')
-plt.ylabel('Count')
-plt.tight_layout()
-plt.savefig('summary_n_eff_hist')
-plt.clf()
+print(n_effs)
+# plt.hist(n_effs, bins=45)
+# plt.xlabel('Fraction of effective samples')
+# plt.ylabel('Count')
+# plt.tight_layout()
+# plt.savefig('summary_n_eff_hist')
+# plt.clf()
 
 plt.plot(n_effs)
 plt.xlabel('Event ID')
