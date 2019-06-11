@@ -88,7 +88,7 @@ for i in range(2000):
     try:
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
         n_effs.append(pp_res.effective_samples/len(pp_res.hom_weights))
-    except AttributeError:
+    except (AttributeError, FileNotFoundError):
         continue
 
 plt.hist(n_effs, bins=45)
