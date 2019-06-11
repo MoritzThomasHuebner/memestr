@@ -283,7 +283,7 @@ def get_time_and_phase_shift_inverted(parameters, ifo, verbose=False, **kwargs):
         logger.info("Maximum overlap: " + str(maximum_overlap))
         logger.info("Iterations " + str(iterations))
         logger.info("Time shift:" + str(time_shift))
-        logger.info("Maximum time shift:" + str(-time_limit))
+        logger.info("Maximum time shift:" + str(time_limit))
         logger.info("New Phase:" + str(new_phase))
         logger.info("Counter:" + str(counter))
         logger.info("Threshold:" + str(threshold))

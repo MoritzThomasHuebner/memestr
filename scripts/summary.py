@@ -1,6 +1,8 @@
 import matplotlib
 matplotlib.use('Agg')
 
+import sys
+
 import matplotlib.pyplot as plt
 from memestr.core.waveforms import *
 from memestr.core.parameters import AllSettings
@@ -19,7 +21,10 @@ memory_log_bfs_injected = []
 hom_log_bfs = []
 hom_log_bfs_injected = []
 
-for i in range(0, 2000):
+min_event_id = int(sys.argv[1])
+max_event_id = int(sys.argv[2])
+
+for i in range(min_event_id, max_event_id):
     logger.info(i)
     injection_parameters = get_injection_parameter_set(str(i))
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
@@ -92,45 +97,40 @@ hom_log_bfs = np.array(hom_log_bfs)
 hom_log_bfs_injected = np.array(hom_log_bfs_injected)
 hom_log_bfs_cumsum = np.cumsum(hom_log_bfs)
 hom_log_bfs_injected_cumsum = np.cumsum(hom_log_bfs_injected)
-np.savetxt('summary_memory_log_bfs.txt', memory_log_bfs)
-np.savetxt('summary_memory_log_bfs_injected.txt', memory_log_bfs_injected)
-np.savetxt('summary_hom_log_bfs.txt', hom_log_bfs)
-np.savetxt('summary_hom_log_bfs_injected.txt', hom_log_bfs_injected)
+np.savetxt('summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs)
+np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected)
+np.savetxt('summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs)
+np.savetxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
 hom_log_bfs = np.array(hom_log_bfs)
 
-plt.hist(hom_log_bfs, bins=45)
-plt.xlabel('log BFs')
-plt.ylabel('count')
-plt.title('HOM log BFs')
-plt.savefig('summary_hom_hist')
-plt.clf()
-#
-plt.hist(memory_log_bfs, bins=45)
-plt.xlabel('log BFs')
-plt.ylabel('count')
-plt.title('Memory log BFs')
-plt.tight_layout()
-plt.savefig('summary_memory_hist')
-plt.clf()
-#
-plt.hist(memory_log_bfs_injected, bins=45)
-plt.xlabel('log BFs')
-plt.ylabel('count')
-plt.title('Memory log BFs injected')
-plt.tight_layout()
-plt.savefig('summary_memory_hist_injected')
-plt.clf()
+# plt.hist(hom_log_bfs, bins=45)
+# plt.xlabel('log BFs')
+# plt.ylabel('count')
+# plt.title('HOM log BFs')
+# plt.savefig('summary_hom_hist' + str(min_event_id) + '_' + str(max_event_id))
+# plt.clf()
 
-plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
-plt.plot(memory_log_bfs_cumsum, label='sampled')
-plt.xlabel('Event ID')
-plt.ylabel('Cumulative log BF')
-plt.legend()
-plt.tight_layout()
-plt.savefig('summary_cumulative_memory_log_bf')
-plt.clf()
+# plt.hist(memory_log_bfs, bins=45)
+# plt.xlabel('log BFs')
+# plt.ylabel('count')
+# plt.title('Memory log BFs')
+# plt.tight_layout()
+# plt.savefig('summary_memory_hist' + str(min_event_id) + '_' + str(max_event_id))
+# plt.clf()
 
+# plt.hist(memory_log_bfs_injected, bins=45)
+# plt.xlabel('log BFs')
+# plt.ylabel('count')
+# plt.title('Memory log BFs injected')
+# plt.tight_layout()
+# plt.savefig('summary_memory_hist_injected' + str(min_event_id) + '_' + str(max_event_id))
+# plt.clf()
+#
+# plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
+# plt.plot(memory_log_bfs_cumsum, label='sampled')
 # plt.xlabel('Event ID')
-# plt.ylabel('Cummulative log BF')
-# plt.savefig('summary_cummulative_memory_log_bf_injected')
+# plt.ylabel('Cumulative log BF')
+# plt.legend()
+# plt.tight_layout()
+# plt.savefig('summary_cumulative_memory_log_bf' + str(min_event_id) + '_' + str(max_event_id))
 # plt.clf()
