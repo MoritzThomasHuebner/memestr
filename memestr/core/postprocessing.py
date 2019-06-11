@@ -44,7 +44,7 @@ class PostprocessingResult(object):
 
     @property
     def effective_samples(self):
-        return np.sum(self.hom_weights) ** 2 / np.sum(np.array(self.hom_weights) ** 2)
+        return np.sum(np.exp(self.hom_weights)) ** 2 / np.sum(np.exp(self.hom_weights) ** 2)
 
 
 def overlap_function(a, b, frequency, psd):
