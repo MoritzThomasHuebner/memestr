@@ -84,21 +84,38 @@ plt.savefig('summary_cumulative_gw_log_bf')
 plt.clf()
 
 n_effs = []
+n_eff_fracs = []
 for i in range(2000):
     try:
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
-        n_eff = pp_res.effective_samples / len(pp_res.hom_weights)
-        if not np.isnan(n_eff):
-            n_effs.append(n_eff)
+        n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
+        if not np.isnan(n_eff_frac):
+            n_eff_fracs.append(n_eff_frac)
+            n_effs.append(pp_res.effective_samples)
     except (AttributeError, FileNotFoundError):
         print(i)
         continue
 
-plt.hist(n_effs, bins=45)
+plt.hist(n_eff_fracs, bins=45)
 plt.xlabel('Fraction of effective samples')
 plt.ylabel('Count')
 plt.tight_layout()
+plt.savefig('summary_n_eff_frac_hist')
+plt.clf()
+
+plt.hist(n_effs, bins=45)
+plt.xlabel('Number of effective samples')
+plt.ylabel('Count')
+plt.tight_layout()
 plt.savefig('summary_n_eff_hist')
+plt.clf()
+
+
+plt.plot(n_eff_fracs)
+plt.xlabel('Event ID')
+plt.ylabel('Effective sample fraction')
+plt.tight_layout()
+plt.savefig('summary_n_eff_frac_vs_event_id')
 plt.clf()
 
 plt.plot(n_effs)
