@@ -6,7 +6,7 @@ import sys
 import matplotlib.pyplot as plt
 from memestr.core.waveforms import *
 from memestr.core.parameters import AllSettings
-from memestr.core.postprocessing import PostprocessingResult, get_time_and_phase_shift_inverted
+from memestr.core.postprocessing import PostprocessingResult
 from memestr.core.submit import get_injection_parameter_set
 import bilby
 
