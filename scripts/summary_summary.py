@@ -112,6 +112,7 @@ plt.clf()
 
 
 plt.plot(n_eff_fracs)
+plt.semilogy()
 plt.xlabel('Event ID')
 plt.ylabel('Effective sample fraction')
 plt.tight_layout()
@@ -119,6 +120,7 @@ plt.savefig('summary_n_eff_frac_vs_event_id')
 plt.clf()
 
 plt.plot(n_effs)
+plt.semilogy()
 plt.xlabel('Event ID')
 plt.ylabel('Effective sample fraction')
 plt.tight_layout()
