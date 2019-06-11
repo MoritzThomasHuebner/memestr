@@ -69,7 +69,15 @@ for i in range(min_event_id, max_event_id):
                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
         likelihood_memory.parameters[parameter] = injection_parameters[parameter]
         likelihood_no_memory.parameters[parameter] = injection_parameters[parameter]
+    for parameter in ['luminosity_distance', 'phase', 'ra', 'dec', 'psi', 'geocent_time']:
         likelihood_22.parameters[parameter] = injection_parameters[parameter]
+    mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(mass_ratio=injection_parameters['mass_ratio'],
+                                                                                       total_mass=injection_parameters['total_mass'])
+    likelihood_22.parameters['mass_1'] = mass_1
+    likelihood_22.parameters['mass_2'] = mass_2
+    likelihood_22.parameters['chi_1'] = injection_parameters['s13']
+    likelihood_22.parameters['chi_2'] = injection_parameters['s23']
+
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     c = likelihood_22.log_likelihood_ratio()
