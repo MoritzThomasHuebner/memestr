@@ -150,9 +150,9 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
             counter += 1
         if maximum_overlap > threshold:
             break
-    test_gw = bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-                                         start_time=0, duration=16, sampling_frequency=2048,
-                                         waveform_arguments=dict(time_shift=time_shift, minimum_frequency=20, alpha=alpha))
+    # test_gw = bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+    #                                      start_time=0, duration=16, sampling_frequency=2048,
+    #                                      waveform_arguments=dict(time_shift=time_shift, minimum_frequency=20, alpha=alpha))
     # parameters['phase'] = new_phase
     # test_waveform = test_gw.time_domain_strain(parameters)
     # test_waveform_fd = test_gw.frequency_domain_strain(parameters)
@@ -199,6 +199,86 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
     # plt.show()
     # plt.clf()
     #
+    if verbose:
+        logger.info("Maximum overlap: " + str(maximum_overlap))
+        logger.info("Iterations " + str(iterations))
+        logger.info("Time shift:" + str(time_shift))
+        logger.info("Maximum time shift:" + str(-time_limit))
+        logger.info("New Phase:" + str(new_phase))
+        logger.info("Counter:" + str(counter))
+        logger.info("Threshold:" + str(threshold))
+
+    return time_shift, new_phase, maximum_overlap
+
+
+def calculate_overlaps_inverted(new_params, *args):
+    time_shift = new_params[0]
+    phase = new_params[1]
+    memory_wf, waveform_generator, inc, frequency_array, power_spectral_density, alpha = args
+    waveform_generator.parameters['phase'] = phase
+    matching_wf = waveform_generator.frequency_domain_strain()
+    matching_wf = apply_time_shift_frequency_domain(waveform=matching_wf, frequency_array=waveform_generator.frequency_array,
+                                                    duration=waveform_generator.duration, shift=time_shift)
+    return -overlap_function(a=memory_wf, b=matching_wf, frequency=frequency_array,
+                             psd=power_spectral_density)
+
+
+def get_time_and_phase_shift_inverted(parameters, ifo, verbose=False, **kwargs):
+    time_limit = parameters['total_mass'] * 0.00030
+    if 's13' not in parameters.keys():
+        parameters['s13'] = parameters['chi_1']
+        parameters['s23'] = parameters['chi_2']
+        parameters['inc'] = parameters['theta_jn']
+
+    duration = kwargs.get('duration', 16)
+    sampling_frequency = kwargs.get('sampling_frequency', 2048)
+    injected_wg = bilby.gw.waveform_generator. \
+        WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+                          duration=duration, sampling_frequency=sampling_frequency,
+                          waveform_arguments=dict(alpha=0.1))
+    recovery_wg = bilby.gw.waveform_generator. \
+        WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
+                          duration=duration, sampling_frequency=sampling_frequency,
+                          waveform_arguments=dict(alpha=0.1))
+
+    memory_wf = injected_wg.frequency_domain_strain(parameters)
+
+    maximum_overlap = 0.
+    time_shift = 0.
+    new_phase = 0.
+    iterations = 0.
+    alpha = 0.1
+    args = (memory_wf, recovery_wg, parameters['inc'],
+            recovery_wg.frequency_array, ifo.power_spectral_density, alpha)
+
+    time_limit_start = time_limit
+    for threshold in [0.99, 0.95, 0.90, 0.80, 0.60]:
+        counter = 0
+        time_limit = time_limit_start * threshold
+        while maximum_overlap < threshold and counter < 8:
+            if counter == 0:
+                init_guess_time = 0.
+                init_guess_phase = parameters['phase']
+                x0 = np.array([init_guess_time, init_guess_phase])
+                bounds = [(0, time_limit), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
+            else:
+                init_guess_time = -np.random.random() * time_limit
+                init_guess_phase = (np.random.random() - 0.5) * np.pi + parameters['phase']
+                x0 = np.array([init_guess_time, init_guess_phase])
+                bounds = [(0, time_limit), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
+            res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds, tol=0.00001)
+
+            if -res.fun < maximum_overlap:
+                counter += 1
+                continue
+            maximum_overlap = -res.fun
+            time_shift, new_phase = res.x[0], res.x[1]
+            new_phase %= 2 * np.pi
+            iterations = res.nit
+            counter += 1
+        if maximum_overlap > threshold:
+            break
+
     if verbose:
         logger.info("Maximum overlap: " + str(maximum_overlap))
         logger.info("Iterations " + str(iterations))

@@ -4,7 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from memestr.core.waveforms import *
 from memestr.core.parameters import AllSettings
-from memestr.core.postprocessing import PostprocessingResult
+from memestr.core.postprocessing import PostprocessingResult, get_time_and_phase_shift_inverted
 from memestr.core.submit import get_injection_parameter_set
 import bilby
 
@@ -17,6 +17,7 @@ settings = AllSettings.from_defaults_with_some_specified_kwargs(alpha=0.1, durat
 memory_log_bfs = []
 memory_log_bfs_injected = []
 hom_log_bfs = []
+hom_log_bfs_injected = []
 
 for i in range(0, 2000):
     logger.info(i)
@@ -43,34 +44,58 @@ for i in range(0, 2000):
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
+    waveform_generator_22 = bilby.gw.WaveformGenerator(
+        frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
+        parameters=deepcopy(settings.injection_parameters.__dict__),
+        waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+        **settings.waveform_data.__dict__)
+
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_memory)
     likelihood_no_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_no_memory)
+    likelihood_22 = bilby.gw.likelihood \
+        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
+                                    waveform_generator=waveform_generator_22)
+    time_shift_22, phase_22, maximum_overlap = get_time_and_phase_shift_inverted(injection_parameters, ifos[0],
+                                                                                 verbose=True)
     for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-        likelihood_no_memory.parameters[parameter] = injection_parameters[parameter]
         likelihood_memory.parameters[parameter] = injection_parameters[parameter]
+        likelihood_no_memory.parameters[parameter] = injection_parameters[parameter]
+        likelihood_22.parameters[parameter] = injection_parameters[parameter]
+    likelihood_22.parameters['geocent_time'] += time_shift_22
+    likelihood_22.parameters['phase'] += phase_22
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
+    c = likelihood_22.log_likelihood_ratio()
     memory_log_bfs_injected.append(a - b)
     memory_log_bfs.append(memory_log_bf)
+    hom_log_bfs_injected.append(b - c)
     hom_log_bfs.append(hom_log_bf)
-    logger.info(memory_log_bfs_injected[-1])
-    logger.info(memory_log_bfs[-1])
+    logger.info("Memory Log BF injected: " + str(memory_log_bfs_injected[-1]))
+    logger.info("Memory Log BF sampled: " + str(memory_log_bfs[-1]))
+    logger.info("HOM Log BF injected: " + str(memory_log_bfs_injected[-1]))
+    logger.info("HOM Log BF sampled: " + str(memory_log_bfs[-1]))
 
-memory_log_bfs = np.array(memory_log_bfs)
-memory_log_bfs_injected = np.array(memory_log_bfs_injected)
 # np.random.seed(42)
 # np.random.shuffle(memory_log_bfs)
 # np.random.seed(42)
 # np.random.shuffle(memory_log_bfs_injected)
+memory_log_bfs = np.array(memory_log_bfs)
+memory_log_bfs_injected = np.array(memory_log_bfs_injected)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
-np.savetxt('summary_log_bfs.txt', memory_log_bfs)
-np.savetxt('summary_log_bfs_injected.txt', memory_log_bfs_injected)
+hom_log_bfs = np.array(hom_log_bfs)
+hom_log_bfs_injected = np.array(hom_log_bfs_injected)
+hom_log_bfs_cumsum = np.cumsum(hom_log_bfs)
+hom_log_bfs_injected_cumsum = np.cumsum(hom_log_bfs_injected)
+np.savetxt('summary_memory_log_bfs.txt', memory_log_bfs)
+np.savetxt('summary_memory_log_bfs_injected.txt', memory_log_bfs_injected)
+np.savetxt('summary_hom_log_bfs.txt', hom_log_bfs)
+np.savetxt('summary_hom_log_bfs_injected.txt', hom_log_bfs_injected)
 hom_log_bfs = np.array(hom_log_bfs)
 
 plt.hist(hom_log_bfs, bins=45)
