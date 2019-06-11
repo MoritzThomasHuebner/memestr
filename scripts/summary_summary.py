@@ -93,13 +93,13 @@ for i in range(2000):
     except (AttributeError, FileNotFoundError):
         print(i)
         continue
-print(n_effs)
-# plt.hist(n_effs, bins=45)
-# plt.xlabel('Fraction of effective samples')
-# plt.ylabel('Count')
-# plt.tight_layout()
-# plt.savefig('summary_n_eff_hist')
-# plt.clf()
+
+plt.hist(n_effs, bins=45)
+plt.xlabel('Fraction of effective samples')
+plt.ylabel('Count')
+plt.tight_layout()
+plt.savefig('summary_n_eff_hist')
+plt.clf()
 
 plt.plot(n_effs)
 plt.xlabel('Event ID')
