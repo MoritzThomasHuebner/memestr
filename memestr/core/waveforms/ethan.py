@@ -71,11 +71,8 @@ def gws_nominal(frequency, mass_1, mass_2, luminosity_distance, chi_1,
     s2 = np.array([spin_2x, spin_2y, spin_2z])
 
     x = [q, s1[2], s2[2]]
-    modes_full = [(2, 2)]#, (2, 1), (2, 0), (3, 3), (3, 2),
-                  #(3, 1), (3, 0), (4, 4), (4, 3), (4, 2), (5, 5)]
-
+    modes_full = [(2, 2)]
     epsilon = 100 * MASS_TO_TIME * m_tot
-    # epsilon = 100*40*MASS_TO_TIME
     t_nr = np.arange(-duration / 1.3 + epsilon, epsilon, dt)
 
     h = sur(x, times=t_nr, f_low=0, M=m_tot,
@@ -86,13 +83,7 @@ def gws_nominal(frequency, mass_1, mass_2, luminosity_distance, chi_1,
     y22_time_shift = 0
     for mode in modes_full:
         h_nr += (gwmemory.harmonics.sYlm(-2, mode[0], mode[1], theta_jn, phase + np.pi / 2) * h[mode])
-
-        if mode[1] > 0:
-            h_nr += (gwmemory.harmonics.sYlm(-2, mode[0], -mode[1], theta_jn, phase + np.pi / 2) *
-                     (-1) ** mode[0] * np.conj(h[mode]))
-
-        if mode == (2, 2):
-            y22_time_shift = t_nr[np.argmax(h[(2, 2)])]
+        y22_time_shift = t_nr[np.argmax(h[(2, 2)])]
 
     plus, cross = convert_time_strain_to_frequency(h_nr, t_nr, time,
                                                    sampling_frequency, minimum_frequency, frequency)
