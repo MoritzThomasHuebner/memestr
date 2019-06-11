@@ -60,7 +60,7 @@ for event_id in event_ids:
 
 memory_log_bfs = np.array(memory_log_bfs)
 cumulative_memory_log_bfs = np.cumsum(memory_log_bfs)
-
+logger.info("Cumulative log BF: " + str(cumulative_memory_log_bfs[-1]))
 # plt.plot(memory_log_bfs, label='Memory log BFs')
 plt.plot(cumulative_memory_log_bfs, label='Cumulative memory log BFs')
 plt.xticks(np.arange(10), tuple(event_ids), rotation=70)
