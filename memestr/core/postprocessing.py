@@ -266,7 +266,7 @@ def get_time_and_phase_shift_inverted(parameters, ifo, verbose=False, **kwargs):
                 init_guess_phase = (np.random.random() - 0.5) * np.pi + parameters['phase']
                 x0 = np.array([init_guess_time, init_guess_phase])
                 bounds = [(0, time_limit), (parameters['phase'] - np.pi / 2, parameters['phase'] + np.pi / 2)]
-            res = minimize(calculate_overlaps_optimizable, x0=x0, args=args, bounds=bounds, tol=0.00001)
+            res = minimize(calculate_overlaps_inverted, x0=x0, args=args, bounds=bounds, tol=0.00001)
 
             if -res.fun < maximum_overlap:
                 counter += 1
