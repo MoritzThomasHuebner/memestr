@@ -85,11 +85,13 @@ for i in range(min_event_id, max_event_id):
     likelihood_22.parameters['chi_1'] = injection_parameters['s13']
     likelihood_22.parameters['chi_2'] = injection_parameters['s23']
     likelihood_22.parameters['theta_jn'] = injection_parameters['inc']
+    likelihood_22.parameters['phase'] = injection_parameters['phase'] - np.pi/2
     likelihood_hom.parameters['mass_1'] = mass_1
     likelihood_hom.parameters['mass_2'] = mass_2
     likelihood_hom.parameters['chi_1'] = injection_parameters['s13']
     likelihood_hom.parameters['chi_2'] = injection_parameters['s23']
     likelihood_hom.parameters['theta_jn'] = injection_parameters['inc']
+    likelihood_hom.parameters['phase'] = injection_parameters['phase'] - np.pi/2
 
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
