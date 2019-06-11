@@ -79,7 +79,6 @@ for i in range(min_event_id, max_event_id):
     likelihood_22.parameters['theta_jn'] = injection_parameters['inc']
     likelihood_22.parameters['phase'] = injection_parameters['phase'] - np.pi/2
 
-
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     c = likelihood_22.log_likelihood_ratio()
