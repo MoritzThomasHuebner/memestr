@@ -20,6 +20,8 @@ memory_log_bfs = []
 memory_log_bfs_injected = []
 hom_log_bfs = []
 hom_log_bfs_injected = []
+gw_log_bfs = []
+gw_log_bfs_injected = []
 
 min_event_id = int(sys.argv[1])
 max_event_id = int(sys.argv[2])
@@ -30,6 +32,8 @@ for i in range(min_event_id, max_event_id):
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
     try:
         pp_res = PostprocessingResult.from_json(outdir=str(i)+'_dynesty_production_IMR_non_mem_rec/')
+        res = bilby.result.read_in_result(filename=str(i)+'_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+        gw_log_bf = res.log_bayes_factor
         memory_log_bf = pp_res.memory_log_bf
         hom_log_bf = pp_res.hom_log_bf
         if memory_log_bf is None:
@@ -86,10 +90,14 @@ for i in range(min_event_id, max_event_id):
     memory_log_bfs.append(memory_log_bf)
     hom_log_bfs_injected.append(b - c)
     hom_log_bfs.append(hom_log_bf)
+    gw_log_bfs_injected.append(c)
+    gw_log_bfs.append(gw_log_bf)
     logger.info("Memory Log BF injected: " + str(memory_log_bfs_injected[-1]))
     logger.info("Memory Log BF sampled: " + str(memory_log_bfs[-1]))
     logger.info("HOM Log BF injected: " + str(hom_log_bfs_injected[-1]))
     logger.info("HOM Log BF sampled: " + str(hom_log_bfs[-1]))
+    logger.info("GW Log BF injected: " + str(gw_log_bfs_injected[-1]))
+    logger.info("GW Log BF sampled: " + str(gw_log_bfs[-1]))
 
 # np.random.seed(42)
 # np.random.shuffle(memory_log_bfs)
@@ -103,10 +111,16 @@ hom_log_bfs = np.array(hom_log_bfs)
 hom_log_bfs_injected = np.array(hom_log_bfs_injected)
 hom_log_bfs_cumsum = np.cumsum(hom_log_bfs)
 hom_log_bfs_injected_cumsum = np.cumsum(hom_log_bfs_injected)
+gw_log_bfs = np.array(gw_log_bfs)
+gw_log_bfs_injected = np.array(gw_log_bfs_injected)
+gw_log_bfs_cumsum = np.cumsum(gw_log_bfs)
+gw_log_bfs_injected_cumsum = np.cumsum(gw_log_bfs_injected)
 np.savetxt('summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs)
 np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected)
 np.savetxt('summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs)
 np.savetxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
+np.savetxt('summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs)
+np.savetxt('summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs_injected)
 hom_log_bfs = np.array(hom_log_bfs)
 
 # plt.hist(hom_log_bfs, bins=45)
