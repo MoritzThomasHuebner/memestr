@@ -53,10 +53,6 @@ for i in range(min_event_id, max_event_id):
         frequency_domain_source_model=gws_nominal,
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
-    waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=gws_nominal_hom,
-        waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
-        **settings.waveform_data.__dict__)
 
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
@@ -67,17 +63,13 @@ for i in range(min_event_id, max_event_id):
     likelihood_22 = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_22)
-    likelihood_hom = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
-                                    waveform_generator=waveform_generator_hom_ethan)
 
     for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                       'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
         likelihood_memory.parameters[parameter] = injection_parameters[parameter]
         likelihood_no_memory.parameters[parameter] = injection_parameters[parameter]
-    for parameter in ['luminosity_distance', 'phase', 'ra', 'dec', 'psi', 'geocent_time']:
+    for parameter in ['luminosity_distance', 'ra', 'dec', 'psi', 'geocent_time']:
         likelihood_22.parameters[parameter] = injection_parameters[parameter]
-        likelihood_hom.parameters[parameter] = injection_parameters[parameter]
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(mass_ratio=injection_parameters['mass_ratio'],
                                                                                        total_mass=injection_parameters['total_mass'])
     likelihood_22.parameters['mass_1'] = mass_1
@@ -86,12 +78,7 @@ for i in range(min_event_id, max_event_id):
     likelihood_22.parameters['chi_2'] = injection_parameters['s23']
     likelihood_22.parameters['theta_jn'] = injection_parameters['inc']
     likelihood_22.parameters['phase'] = injection_parameters['phase'] - np.pi/2
-    likelihood_hom.parameters['mass_1'] = mass_1
-    likelihood_hom.parameters['mass_2'] = mass_2
-    likelihood_hom.parameters['chi_1'] = injection_parameters['s13']
-    likelihood_hom.parameters['chi_2'] = injection_parameters['s23']
-    likelihood_hom.parameters['theta_jn'] = injection_parameters['inc']
-    likelihood_hom.parameters['phase'] = injection_parameters['phase'] - np.pi/2
+
 
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
