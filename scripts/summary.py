@@ -82,8 +82,8 @@ for i in range(min_event_id, max_event_id):
     hom_log_bfs.append(hom_log_bf)
     logger.info("Memory Log BF injected: " + str(memory_log_bfs_injected[-1]))
     logger.info("Memory Log BF sampled: " + str(memory_log_bfs[-1]))
-    logger.info("HOM Log BF injected: " + str(memory_log_bfs_injected[-1]))
-    logger.info("HOM Log BF sampled: " + str(memory_log_bfs[-1]))
+    logger.info("HOM Log BF injected: " + str(hom_log_bfs_injected[-1]))
+    logger.info("HOM Log BF sampled: " + str(hom_log_bfs[-1]))
 
 # np.random.seed(42)
 # np.random.shuffle(memory_log_bfs)
