@@ -51,7 +51,6 @@ for i in range(min_event_id, max_event_id):
         **settings.waveform_data.__dict__)
     waveform_generator_22 = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=gws_nominal,
-        parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
