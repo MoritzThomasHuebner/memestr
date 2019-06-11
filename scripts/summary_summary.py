@@ -85,8 +85,11 @@ plt.clf()
 
 n_effs = []
 for i in range(2000):
-    pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
-    n_effs.append(pp_res.effective_samples/len(pp_res.hom_weights))
+    try:
+        pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
+        n_effs.append(pp_res.effective_samples/len(pp_res.hom_weights))
+    except AttributeError:
+        continue
 
 plt.hist(n_effs, bins=45)
 plt.xlabel('Fraction of effective samples')
