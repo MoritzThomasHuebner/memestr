@@ -85,6 +85,7 @@ plt.clf()
 n_effs = []
 n_eff_fracs = []
 for i in range(2000):
+    print(i)
     try:
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
@@ -95,7 +96,6 @@ for i in range(2000):
             n_eff_fracs.append(n_eff_fracs)
             n_effs.append(pp_res.effective_samples)
     except (AttributeError, FileNotFoundError):
-        print(i)
         continue
 
 plt.hist(n_eff_fracs, bins=45)
