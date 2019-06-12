@@ -188,6 +188,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
     sub_run_id = str(kwargs.get('sub_run_id', ''))
+    logger.info("Sub run ID: " + str(sub_run_id))
     if sub_run_id == '':
         sys.exit(1)
     settings.sampler_settings.label = sub_run_id + settings.sampler_settings.label

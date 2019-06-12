@@ -7,11 +7,8 @@ do
   if [[ ${line} -gt "0" ]]
   then
     for ((j=0; j<=${line}; j++)); do
-      echo "${i}_dynesty ${j}"
+      bash production_submit.sh ${i}_dynesty ${j}
     done
   fi
   ((i++))
 done < "$input"
-
-
-#bash production_submit.sh
