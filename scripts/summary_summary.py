@@ -89,9 +89,9 @@ for i in range(2000):
     try:
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
-        if not np.isnan(n_eff_frac):
-            n_eff_fracs.append(n_eff_frac)
-            n_effs.append(pp_res.effective_samples)
+        if np.isnan(n_eff_frac):
+            n_eff_fracs.append(0)
+            n_effs.append(1.)
     except (AttributeError, FileNotFoundError):
         print(i)
         continue
@@ -129,4 +129,7 @@ plt.clf()
 
 np.savetxt("n_effs", n_effs)
 n_effs_additional_runs = [int(50/x) for x in n_effs]
-np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
+with open("n_effs_additional_runs", 'w') as f:
+    for i in range(n_effs_additional_runs):
+        f.write(int(n_effs_additional_runs[i]))
+# np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
