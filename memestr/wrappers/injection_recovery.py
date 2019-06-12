@@ -222,7 +222,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
                                     distance_marginalization=settings.other_settings.distance_marginalization,
                                     phase_marginalization=settings.other_settings.phase_marginalization)
     likelihood_imr_phenom.parameters = deepcopy(settings.injection_parameters.__dict__)
-    np.random.seed(int(time.time()))
+    np.random.seed(int(time.time() * 1000000) % 1000000)
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
     try:
