@@ -135,4 +135,5 @@ n_effs_additional_runs = [int(50/x) for x in n_effs]
 with open("n_effs_additional_runs", 'w') as f:
     for i in range(len(n_effs_additional_runs)):
         f.write(str(n_effs_additional_runs[i]) + '\n')
+print(sum(n_effs_additional_runs))
 # np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
