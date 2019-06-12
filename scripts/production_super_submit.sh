@@ -12,7 +12,6 @@ do
        echo $j
     done
   fi
-  echo $i
   ((i++))
 done < "$input"
 
