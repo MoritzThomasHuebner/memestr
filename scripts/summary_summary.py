@@ -88,7 +88,6 @@ for i in range(2000):
     try:
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
-        print(n_eff_frac)
         if np.isnan(n_eff_frac):
             n_eff_fracs.append(0)
             n_effs.append(1.)
@@ -98,42 +97,42 @@ for i in range(2000):
     except (AttributeError, FileNotFoundError):
         continue
 
-plt.hist(n_eff_fracs, bins=45)
-plt.xlabel('Fraction of effective samples')
-plt.ylabel('Count')
-plt.tight_layout()
-plt.savefig('summary_n_eff_frac_hist')
-plt.clf()
-
-plt.hist(n_effs, bins=45)
-plt.xlabel('Number of effective samples')
-plt.ylabel('Count')
-plt.tight_layout()
-plt.savefig('summary_n_eff_hist')
-plt.clf()
-
-
-plt.plot(n_eff_fracs)
-plt.semilogy()
-plt.xlabel('Event ID')
-plt.ylabel('Effective sample fraction')
-plt.tight_layout()
-plt.savefig('summary_n_eff_frac_vs_event_id')
-plt.clf()
-
-plt.plot(n_effs)
-plt.semilogy()
-plt.xlabel('Event ID')
-plt.ylabel('Number of effective samples')
-plt.tight_layout()
-plt.savefig('summary_n_eff_vs_event_id')
-plt.clf()
+# plt.hist(n_eff_fracs, bins=45)
+# plt.xlabel('Fraction of effective samples')
+# plt.ylabel('Count')
+# plt.tight_layout()
+# plt.savefig('summary_n_eff_frac_hist')
+# plt.clf()
+#
+# plt.hist(n_effs, bins=45)
+# plt.xlabel('Number of effective samples')
+# plt.ylabel('Count')
+# plt.tight_layout()
+# plt.savefig('summary_n_eff_hist')
+# plt.clf()
+#
+#
+# plt.plot(n_eff_fracs)
+# plt.semilogy()
+# plt.xlabel('Event ID')
+# plt.ylabel('Effective sample fraction')
+# plt.tight_layout()
+# plt.savefig('summary_n_eff_frac_vs_event_id')
+# plt.clf()
+#
+# plt.plot(n_effs)
+# plt.semilogy()
+# plt.xlabel('Event ID')
+# plt.ylabel('Number of effective samples')
+# plt.tight_layout()
+# plt.savefig('summary_n_eff_vs_event_id')
+# plt.clf()
 
 np.savetxt("n_effs", n_effs)
 n_effs_additional_runs = [int(50/x) for x in n_effs]
-# with open("n_effs_additional_runs", 'w') as f:
-#     for i in range(len(n_effs_additional_runs)):
-#         print(i)
-#         f.write(str(n_effs_additional_runs[i]) + '\n')
+with open("n_effs_additional_runs", 'w') as f:
+    for i in range(len(n_effs_additional_runs)):
+        print(i)
+        f.write(str(n_effs_additional_runs[i]) + '\n')
 print(sum(n_effs_additional_runs))
-np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
+# np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
