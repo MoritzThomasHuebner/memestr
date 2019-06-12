@@ -6,13 +6,12 @@ while IFS= read -r line
 do
   if [[ ${line} -gt "0" ]]
   then
-    echo "$line"
     for ((j=0; j<=${line}; j++)); do
-      echo "$j"
+      echo "${i}_dynesty ${j}"
     done
   fi
   ((i++))
 done < "$input"
 
 
-#bash production_submit.sh ${i}_dynesty j
+#bash production_submit.sh
