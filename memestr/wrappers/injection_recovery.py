@@ -186,12 +186,12 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     settings = AllSettings.from_defaults_with_some_specified_kwargs(**kwargs)
     settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
 
-    bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
     sub_run_id = str(kwargs.get('sub_run_id', ''))
+    settings.sampler_settings.label = sub_run_id + settings.sampler_settings.label
+    bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
     logger.info("Sub run ID: " + str(sub_run_id))
     if sub_run_id == '':
         sys.exit(1)
-    settings.sampler_settings.label = sub_run_id + settings.sampler_settings.label
 
     filename_base = str(kwargs.get('filename_base', 0))
     filename_base = filename_base.replace('_dynesty', '')
