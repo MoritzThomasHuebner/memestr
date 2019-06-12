@@ -3,6 +3,7 @@ from __future__ import division
 import logging
 import time
 from copy import deepcopy
+import sys
 
 import bilby
 import matplotlib.pyplot as plt
@@ -186,6 +187,11 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     settings.waveform_data.start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
 
     bilby.core.utils.setup_logger(outdir=outdir, label=settings.sampler_settings.label)
+    sub_run_id = str(kwargs.get('sub_run_id', ''))
+    if sub_run_id == '':
+        sys.exit(1)
+    settings.sampler_settings.label = sub_run_id + settings.sampler_settings.label
+
     filename_base = str(kwargs.get('filename_base', 0))
     filename_base = filename_base.replace('_dynesty', '')
     filename_base = filename_base.replace('_cpnest', '')
@@ -220,7 +226,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info(str(settings.injection_parameters))
     try:
         result = bilby.core.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result' + sub_run_id + '.json')
         result.outdir = outdir
     except Exception as e:
         logger.info(e)
@@ -253,13 +259,15 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     try:
         result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_result_result.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'reconstructed_result_result.json')
     except Exception as e:
         logger.info(e)
         result.posterior = bilby.gw.conversion. \
             generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-        result.label = 'reconstructed_result'
+        result.label = 'reconstructed_result' + sub_run_id
         result.save_to_file()
+
+    sys.exit(0)
 
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
