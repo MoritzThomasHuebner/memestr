@@ -87,12 +87,12 @@ n_effs = []
 n_eff_fracs = []
 for i in range(2000):
     try:
+        n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
         if np.isnan(n_eff_frac):
             n_eff_fracs.append(0)
             n_effs.append(1.)
         else:
             pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
-            n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
             n_eff_fracs.append(n_eff_fracs)
             n_effs.append(pp_res.effective_samples)
     except (AttributeError, FileNotFoundError):
