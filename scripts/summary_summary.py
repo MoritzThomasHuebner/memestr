@@ -130,6 +130,6 @@ plt.clf()
 np.savetxt("n_effs", n_effs)
 n_effs_additional_runs = [int(50/x) for x in n_effs]
 with open("n_effs_additional_runs", 'w') as f:
-    for i in range(n_effs_additional_runs):
-        f.write(int(n_effs_additional_runs[i]))
+    for i in range(len(n_effs_additional_runs)):
+        f.write(n_effs_additional_runs[i])
 # np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
