@@ -14,7 +14,6 @@ do
   fi
   echo $i
   ((i++))
-
-done <<< "$input"
+done < "$input"
 
 
