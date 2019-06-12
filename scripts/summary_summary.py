@@ -128,4 +128,5 @@ plt.savefig('summary_n_eff_vs_event_id')
 plt.clf()
 
 np.savetxt("n_effs", n_effs)
-np.savetxt("n_effs_additional_runs", int(np.array(n_effs)/50.))
+n_effs_additional_runs = [int(x/50) for x in n_effs]
+np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
