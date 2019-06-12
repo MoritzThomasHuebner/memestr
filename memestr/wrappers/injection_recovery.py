@@ -268,8 +268,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         result.label = 'reconstructed_result' + sub_run_id
         result.save_to_file()
 
-    sys.exit(0)
-
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
     del params['s12']
@@ -279,10 +277,10 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params, outdir=outdir)
 
     try:
-        # raise Exception
+        raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_result.json')
-        maximum_overlaps = pp_result.maximum_overlaps
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'time_and_phase_shifted_result.json')
+        # maximum_overlaps = pp_result.maximum_overlaps
     except Exception as e:
         logger.warning(e)
         time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
@@ -291,11 +289,13 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
             verbose=True,
             minimum_frequency=20
         )
-        pp_result.maximum_overlaps = maximum_overlaps
-        time_and_phase_shifted_result.label = 'time_and_phase_shifted'
+        # pp_result.maximum_overlaps = maximum_overlaps
+        time_and_phase_shifted_result.label = sub_run_id + 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
         # time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params), outdir=outdir)
     pp_result.to_json()
+    sys.exit(0)
+
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
