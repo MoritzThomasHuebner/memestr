@@ -129,7 +129,7 @@ for i in range(2000):
 # plt.clf()
 
 np.savetxt("n_effs", n_effs)
-n_effs_additional_runs = [int(50/x) for x in n_effs]
+n_effs_additional_runs = [int(20/x) for x in n_effs]
 with open("n_effs_additional_runs", 'w') as f:
     for i in range(len(n_effs_additional_runs)):
         print(i)
