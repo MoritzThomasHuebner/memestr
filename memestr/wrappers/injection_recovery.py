@@ -227,7 +227,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     logger.info(str(settings.injection_parameters))
     try:
         result = bilby.core.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result' + sub_run_id + '.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'IMR_mem_inj_non_mem_rec_result.json')
         result.outdir = outdir
     except Exception as e:
         logger.info(e)
