@@ -15,5 +15,7 @@ models = dict(
 
 scripts = dict(
     run_production_injection_imr_phenom=wrappers.injection_recovery.run_production_injection_imr_phenom,
+    run_time_and_phase_optimization=wrappers.injection_recovery.run_time_and_phase_optimization,
+    run_reweighting=wrappers.injection_recovery.run_reweighting,
     run_basic_injection_imr_phenom=wrappers.injection_recovery.run_basic_injection_imr_phenom,
 )

@@ -221,7 +221,7 @@ def adjust_phase_and_geocent_time_complete_posterior_parallel(result, n_parallel
         res.posterior = posteriors[i]
         new_results.append(res)
     shifted_results = p.map(adjust_phase_and_geocent_time_default, new_results)
-    shifted_combined_posterior = pd.concat(shifted_results.posterior)
+    shifted_combined_posterior = pd.concat([r.posterior for r in shifted_results])
     new_result.posterior = shifted_combined_posterior
     return new_result.posterior
 

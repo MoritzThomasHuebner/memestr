@@ -7,11 +7,10 @@ import os
 outdir = sys.argv[1]
 script = scripts[sys.argv[2]]
 dir_path = os.path.dirname(os.path.realpath(__file__))
-injection_model = models[sys.argv[3]]
-recovery_model = models[sys.argv[4]]
+recovery_model = models[sys.argv[3]]
 
 kwargs = dict()
-for arg in sys.argv[5:]:
+for arg in sys.argv[4:]:
     print(arg)
     key = arg.split("=")[0]
     value = arg.split("=")[1]
@@ -29,6 +28,5 @@ print(kwargs)
 submit.run_job(outdir=outdir,
                script=script,
                dir_path=dir_path,
-               injection_model=injection_model,
                recovery_model=recovery_model,
                **kwargs)

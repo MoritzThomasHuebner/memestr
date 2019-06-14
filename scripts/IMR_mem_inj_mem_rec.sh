@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #source setup_distances_run.sh ${0}
-source production_setup.sh ${0} ${1}
+source production_IMR_non_mem_rec_setup.sh ${0} ${1}
 #source setup_random_injections.sh ${0} ${1}
 
 sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} ${EMAIL} ${ARRAY}<<EOF
