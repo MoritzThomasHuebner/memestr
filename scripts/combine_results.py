@@ -13,7 +13,7 @@ for i in range(2000):
             res = read_in_result(outdir + "reconstructed_result{}_result.json".format(j))
             res_list.append(res)
         except OSError as e:
-            logger.info(e)
+            # logger.info(e)
             break
     new_res = res_list.combine()
     new_res.label = "reconstructed_combined"
