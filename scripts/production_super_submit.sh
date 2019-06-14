@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-bash production_IMR_time_and_phase_submit.sh 0_dynesty
+bash production_IMR_time_phase_submit.sh 0_dynesty
 
 #input="n_effs_additional_runs"
 #i=0
