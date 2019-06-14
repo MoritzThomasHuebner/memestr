@@ -16,3 +16,4 @@ for j in range(41):
 new_res = res_list.combine()
 new_res.label = "time_and_phase_shifted_combined"
 new_res.save_to_file()
+new_res.plot_corner()
