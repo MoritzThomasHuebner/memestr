@@ -11,7 +11,7 @@ import numpy as np
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_posterior_proper, \
-    reweigh_by_likelihood, PostprocessingResult
+    reweigh_by_likelihood, PostprocessingResult, adjust_phase_and_geocent_time_complete_posterior_parallel
 from memestr.core.submit import get_injection_parameter_set
 from memestr.core.utils import get_ifo
 from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped
@@ -260,7 +260,7 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
 
     try:
         result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'reconstructed_result_result.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'reconstructed_combined_result.json')
     except Exception as e:
         logger.info(e)
         result.posterior = bilby.gw.conversion. \
@@ -277,24 +277,24 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params, outdir=outdir)
 
     try:
-        # raise Exception
+        raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'time_and_phase_shifted_result_combined.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'time_and_phase_shifted_result.json')
         # maximum_overlaps = pp_result.maximum_overlaps
     except Exception as e:
         logger.warning(e)
-        time_and_phase_shifted_result, shifts, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
-            result=result,
-            ifo=ifos[0],
-            verbose=True,
-            minimum_frequency=20
-        )
+        # time_and_phase_shifted_result, maximum_overlaps = adjust_phase_and_geocent_time_complete_posterior_proper(
+        #     result=result,
+        #     ifo=ifos[0],
+        #     verbose=True,
+        #     minimum_frequency=20
+        # )
+        time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_parallel(result, 2)
         # pp_result.maximum_overlaps = maximum_overlaps
         time_and_phase_shifted_result.label = sub_run_id + 'time_and_phase_shifted'
         time_and_phase_shifted_result.save_to_file()
         # time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params), outdir=outdir)
     pp_result.to_json()
-
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,

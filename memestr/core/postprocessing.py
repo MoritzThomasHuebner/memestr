@@ -5,9 +5,11 @@ import bilby.gw.utils as utils
 import gwmemory
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from scipy.misc import logsumexp
 from scipy.optimize import minimize
 from collections import namedtuple
+import multiprocessing
 
 import json
 
@@ -211,21 +213,41 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
     return time_shift, new_phase, maximum_overlap
 
 
+def adjust_phase_and_geocent_time_complete_posterior_parallel(result, n_parallel=2):
+    p = multiprocessing.Pool(n_parallel)
+    new_result = deepcopy(result)
+    posteriors = np.array_split(new_result.posterior, n_parallel, 0)
+    new_results = []
+    for i in range(n_parallel):
+        res = deepcopy(new_result)
+        res.posterior = posteriors[i]
+        new_results.append(res)
+    shifted_results = p.map(adjust_phase_and_geocent_time_default, new_results)
+    shifted_combined_posterior = pd.concat(shifted_results)
+    new_result.posterior = shifted_combined_posterior
+    return new_result.posterior
+
+
+def adjust_phase_and_geocent_time_default(result):
+    ifo = bilby.gw.detector.get_empty_interferometer('H1')
+    verbose = False
+    new_res, max_overlap = adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose)
+    return new_res
+
+
 def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose=False, **kwargs):
     new_result = deepcopy(result)
     maximum_overlaps = []
-    time_shifts = []
     for index in range(len(result.posterior)):
         parameters = result.posterior.iloc[index].to_dict()
         time_shift, new_phase, maximum_overlap = \
             get_time_and_phase_shift(parameters, ifo, verbose=verbose, **kwargs)
         new_phase %= 2*np.pi
         maximum_overlaps.append(maximum_overlap)
-        time_shifts.append(time_shift)
         new_result.posterior.geocent_time.iloc[index] += time_shift
         new_result.posterior.phase.iloc[index] = new_phase
         logger.info(("{:0.2f}".format(index / len(result.posterior) * 100) + "%"))
-    return new_result, time_shifts, maximum_overlaps
+    return new_result, maximum_overlaps
 
 
 def _plot_2d_overlap(reshaped_overlaps, time_grid_mesh, phase_grid_mesh):
