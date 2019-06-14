@@ -12,7 +12,7 @@ base_result = read_in_result(outdir + filename)
 res_list = ResultList([base_result])
 for j in range(41):
     try:
-        res = read_in_result(outdir + "reconstructed_result{}_result.json".format(i))
+        res = read_in_result(outdir + "reconstructed_result{}_result.json".format(j))
         res_list.append(res)
     except OSError as e:
         logger.info(e)
