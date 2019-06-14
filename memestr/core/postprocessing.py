@@ -115,8 +115,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
                                                           units='mks',
                                                           )
 
-    logger.info(memory_generator.reference_frequency)
-
     maximum_overlap = 0.
     time_shift = 0.
     new_phase = 0.
