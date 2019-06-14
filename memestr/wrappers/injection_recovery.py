@@ -272,7 +272,7 @@ def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
     return time_and_phase_shifted_result
 
 
-def run_time_and_phase_optimization(recovery_model, outdir, **kwargs):
+def run_time_phase_optimization(recovery_model, outdir, **kwargs):
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
