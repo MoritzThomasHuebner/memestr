@@ -277,9 +277,9 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
     # result.plot_corner(lionize=settings.other_settings.lionize, parameters=params, outdir=outdir)
 
     try:
-        raise Exception
+        # raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'time_and_phase_shifted_result.json')
+            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'time_and_phase_shifted_result_combined.json')
         # maximum_overlaps = pp_result.maximum_overlaps
     except Exception as e:
         logger.warning(e)
@@ -294,7 +294,6 @@ def run_production_recovery(recovery_model, outdir, **kwargs):
         time_and_phase_shifted_result.save_to_file()
         # time_and_phase_shifted_result.plot_corner(parameters=deepcopy(params), outdir=outdir)
     pp_result.to_json()
-    sys.exit(0)
 
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
