@@ -282,13 +282,13 @@ def run_time_phase_optimization(recovery_model, outdir, **kwargs):
         pp_result = PostprocessingResult(outdir=outdir)
     result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     try:
-        # raise Exception
+        raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
             filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
         # maximum_overlaps = pp_result.maximum_overlaps
     except Exception as e:
         logger.warning(e)
-        time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_parallel(result, 16)
+        time_and_phase_shifted_result = adjust_phase_and_geocent_time_complete_posterior_parallel(result, 32)
         # pp_result.maximum_overlaps = maximum_overlaps
         time_and_phase_shifted_result.label = sub_run_id + 'time_and_phase_shifted_combined'
         time_and_phase_shifted_result.save_to_file()
