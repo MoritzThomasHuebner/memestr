@@ -3,7 +3,7 @@ from bilby.core.result import ResultList, read_in_result
 
 logger = bilby.core.utils.logger
 
-for i in range(1950, 1951):
+for i in range(1950, 2000):
     outdir = "{}_dynesty_production_IMR_non_mem_rec/".format(i)
     filename = "reconstructed_result_result.json"
     base_result = read_in_result(outdir + filename)
