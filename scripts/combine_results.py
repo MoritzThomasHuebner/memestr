@@ -14,7 +14,7 @@ for i in range(1950, 2000):
             res_list.append(res)
         except OSError as e:
             logger.info(e)
-            break
+            continue
     new_res = res_list.combine()
     new_res.label = "reconstructed_combined"
     new_res.save_to_file()
