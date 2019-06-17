@@ -4,12 +4,11 @@ import memestr
 import memestr.core.waveforms.surrogate
 
 
-memestr.wrappers.injection_recovery. \
-    run_production_injection_imr_phenom(
+memestr.wrappers.injection_recovery.run_time_phase_optimization_debug(
         injection_model=memestr.core.waveforms.surrogate.time_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         recovery_model=memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory,
-        filename_base=0,
-        outdir='0_dynesty_production_IMR_non_mem_rec/', label='IMR_mem_inj_non_mem_rec',
+        filename_base=653,
+        outdir='653_dynesty_production_IMR_non_mem_rec/', label='IMR_mem_inj_non_mem_rec',
         alpha=0.1, distance_marginalization=True,
         time_marginalization=False, phase_marginalization=True,
         sampler='dynesty', nthreads=1,

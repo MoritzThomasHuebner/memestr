@@ -207,6 +207,13 @@ def run_time_phase_optimization(recovery_model, outdir, **kwargs):
     return time_and_phase_shifted_result
 
 
+def run_time_phase_optimization_debug(recovery_model, outdir, **kwargs):
+    filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
+        kwargs, outdir, recovery_model)
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
+    return adjust_phase_and_geocent_time_complete_posterior_proper(result, ifos[0], True)
+
+
 def run_reweighting(recovery_model, outdir, **kwargs):
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
