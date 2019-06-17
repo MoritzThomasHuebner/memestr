@@ -186,13 +186,13 @@ def run_time_phase_optimization(recovery_model, outdir, **kwargs):
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
-        pp_result = PostprocessingResult.from_json(outdir)
+        pp_result = PostprocessingResult.from_json(str(filename_base) + '_dynesty_production_IMR_non_mem_rec')
     except Exception as e:
         logger.info(e)
-        pp_result = PostprocessingResult(outdir=outdir)
+        pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec')
     result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     try:
-        raise Exception
+        # raise Exception
         time_and_phase_shifted_result = bilby.result.read_in_result(
             filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
         # maximum_overlaps = pp_result.maximum_overlaps
@@ -218,10 +218,10 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
-        pp_result = PostprocessingResult.from_json(outdir)
+        pp_result = PostprocessingResult.from_json(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec')
     except Exception as e:
         logger.info(e)
-        pp_result = PostprocessingResult(outdir=outdir)
+        pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec')
     result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
 
