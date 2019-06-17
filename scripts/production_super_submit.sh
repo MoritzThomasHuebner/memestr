@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for i in {0..1999}
+for i in {1999..0}
 do
     bash production_IMR_time_phase_submit.sh ${i}_dynesty
 done
