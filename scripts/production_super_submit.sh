@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-for i in {1999..0}
+for i in {0..1600}
 do
-    bash production_IMR_time_phase_submit.sh ${i}_dynesty
+    bash production_IMR_reweight_submit.sh ${i}_dynesty
 done
 #input="n_effs_additional_runs"
 #i=0
