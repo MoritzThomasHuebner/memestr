@@ -11,7 +11,8 @@ import numpy as np
 
 from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_posterior_proper, \
-    reweigh_by_likelihood, PostprocessingResult, adjust_phase_and_geocent_time_complete_posterior_parallel
+    reweigh_by_likelihood, reweigh_by_likelihood_parallel, PostprocessingResult, \
+    adjust_phase_and_geocent_time_complete_posterior_parallel
 from memestr.core.submit import get_injection_parameter_set
 from memestr.core.utils import get_ifo
 from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped
@@ -237,6 +238,13 @@ def run_reweighting(recovery_model, outdir, **kwargs):
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
+    # def conv(params):
+    #     return params, []
+    #
+    # waveform_generator_no_memory.parameter_conversion = conv
+    # waveform_generator_memory.parameter_conversion = conv
+    # likelihood_imr_phenom_unmarginalized.waveform_generator.parameter_conversion = conv
+
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator_memory)
@@ -248,11 +256,17 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     if pp_result.hom_weights is None:
-        hom_log_bf, hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_no_memory,
-                                                        new_result=time_and_phase_shifted_result,
-                                                        reference_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                        reference_result=result
-                                                        )
+        # hom_log_bf, hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_no_memory,
+        #                                                 new_result=time_and_phase_shifted_result,
+        #                                                 reference_likelihood=likelihood_imr_phenom_unmarginalized,
+        #                                                 reference_result=result
+        #                                                 )
+        hom_log_bf, hom_weights = reweigh_by_likelihood_parallel(new_likelihood=likelihood_no_memory,
+                                                                 new_result=time_and_phase_shifted_result,
+                                                                 reference_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                                 reference_result=result,
+                                                                 n_parallel=16
+                                                                 )
         pp_result.hom_weights = hom_weights
         pp_result.hom_log_bf = hom_log_bf
         pp_result.to_json()
@@ -282,10 +296,15 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     #     logger.warning(e)
     # if pp_result.memory_weights is None:
     if True:
-        memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
-                                                                      new_result=time_and_phase_shifted_result,
-                                                                      reference_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                                      reference_result=result)
+        # memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
+        #                                                               new_result=time_and_phase_shifted_result,
+        #                                                               reference_likelihood=likelihood_imr_phenom_unmarginalized,
+        #                                                               reference_result=result)
+        memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood_parallel(new_likelihood=likelihood_memory,
+                                                                               new_result=time_and_phase_shifted_result,
+                                                                               reference_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                                               reference_result=result,
+                                                                               n_parallel=16)
 
         memory_log_bf = memory_hom_log_bf - pp_result.hom_log_bf
         pp_result.memory_log_bf = memory_log_bf
