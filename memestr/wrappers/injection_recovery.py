@@ -219,10 +219,10 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
-        pp_result = PostprocessingResult.from_json(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec')
+        pp_result = PostprocessingResult.from_json(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
     except Exception as e:
         logger.info(e)
-        pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec')
+        pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
     result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
 
@@ -372,6 +372,8 @@ def setup_run(kwargs, outdir, recovery_model):
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
                                                           str(filename_base) +
                                                           '_H1L1V1.h5')
+    for ifo in ifos:
+        setattr(ifo.strain_data, '_frequency_mask_updated', True)
     waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,

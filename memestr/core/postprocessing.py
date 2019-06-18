@@ -276,8 +276,8 @@ def calculate_log_weights(new_likelihood, new_result, reference_likelihood, refe
     log_weights = []
 
     for i in range(len(new_result.posterior)):
-        if i % 100 == 0:
-            logger.info("{:0.2f}".format(i / len(new_result.posterior) * 100) + "%")
+        # if i % 100 == 0:
+        logger.info("{:0.2f}".format(i / len(new_result.posterior) * 100) + "%")
         for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
                           'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
             new_likelihood.parameters[parameter] = new_result.posterior.iloc[i][parameter]
@@ -327,7 +327,6 @@ def reweigh_by_likelihood_parallel(new_likelihood, new_result, reference_likelih
         new_results.append(new_res)
         new_results.append(reference_res)
         args_list.append([new_likelihood, new_res, reference_likelihood, reference_res])
-
     log_weights = p.map(calculate_log_weights_parallel, args_list)
     log_weights = list(itertools.chain.from_iterable(log_weights))
     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
