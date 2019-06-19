@@ -63,6 +63,7 @@ plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate',
 plt.plot(memory_log_bfs_cumsum, label='sampled')
 plt.xlabel('Event ID')
 plt.ylabel('Cumulative log BF')
+plt.ylim(-2, 8)
 plt.legend()
 plt.tight_layout()
 plt.savefig('summary_cumulative_memory_log_bf')
@@ -132,11 +133,11 @@ for i in range(2000):
 # plt.savefig('summary_n_eff_vs_event_id')
 # plt.clf()
 
-np.savetxt("n_effs", n_effs)
-n_effs_additional_runs = [int(80/x) for x in n_effs]
-with open("n_effs_additional_runs", 'w') as f:
-    for i in range(len(n_effs_additional_runs)):
-        print(i)
-        f.write(str(n_effs_additional_runs[i]) + '\n')
-print(sum(n_effs_additional_runs))
+# np.savetxt("n_effs", n_effs)
+# n_effs_additional_runs = [int(80/x) for x in n_effs]
+# with open("n_effs_additional_runs", 'w') as f:
+#     for i in range(len(n_effs_additional_runs)):
+#         print(i)
+#         f.write(str(n_effs_additional_runs[i]) + '\n')
+# print(sum(n_effs_additional_runs))
 # np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
