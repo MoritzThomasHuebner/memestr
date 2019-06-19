@@ -18,6 +18,7 @@ settings = AllSettings.from_defaults_with_some_specified_kwargs(alpha=0.1, durat
 
 memory_log_bfs = []
 memory_log_bfs_injected = []
+memory_log_bfs_injected_degenerate = []
 hom_log_bfs = []
 hom_log_bfs_injected = []
 gw_log_bfs = []
@@ -86,13 +87,22 @@ for i in range(min_event_id, max_event_id):
     a = likelihood_memory.log_likelihood_ratio()
     b = likelihood_no_memory.log_likelihood_ratio()
     c = likelihood_22.log_likelihood_ratio()
+    likelihood_memory.parameters['psi'] += np.pi/2.
+    likelihood_memory.parameters['phase'] += np.pi/2.
+    likelihood_no_memory.parameters['psi'] += np.pi/2.
+    likelihood_no_memory.parameters['phase'] += np.pi/2.
+    d = likelihood_memory.log_likelihood_ratio()
+    e = likelihood_no_memory.log_likelihood_ratio()
+
     memory_log_bfs_injected.append(a - b)
+    memory_log_bfs_injected_degenerate.append((a - b + d - e)/2.)
     memory_log_bfs.append(memory_log_bf)
     hom_log_bfs_injected.append(b - c)
     hom_log_bfs.append(hom_log_bf)
     gw_log_bfs_injected.append(c)
     gw_log_bfs.append(gw_log_bf)
     logger.info("Memory Log BF injected: " + str(memory_log_bfs_injected[-1]))
+    logger.info("Memory Log BF injected degenerate: " + str(memory_log_bfs_injected_degenerate[-1]))
     logger.info("Memory Log BF sampled: " + str(memory_log_bfs[-1]))
     logger.info("HOM Log BF injected: " + str(hom_log_bfs_injected[-1]))
     logger.info("HOM Log BF sampled: " + str(hom_log_bfs[-1]))
@@ -105,8 +115,10 @@ for i in range(min_event_id, max_event_id):
 # np.random.shuffle(memory_log_bfs_injected)
 memory_log_bfs = np.array(memory_log_bfs)
 memory_log_bfs_injected = np.array(memory_log_bfs_injected)
+memory_log_bfs_injected_degenerate = np.array(memory_log_bfs_injected_degenerate)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
+memory_log_bfs_injected_degenerate_cumsum = np.cumsum(memory_log_bfs_injected_degenerate)
 hom_log_bfs = np.array(hom_log_bfs)
 hom_log_bfs_injected = np.array(hom_log_bfs_injected)
 hom_log_bfs_cumsum = np.cumsum(hom_log_bfs)
@@ -117,6 +129,7 @@ gw_log_bfs_cumsum = np.cumsum(gw_log_bfs)
 gw_log_bfs_injected_cumsum = np.cumsum(gw_log_bfs_injected)
 np.savetxt('summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs)
 np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected)
+np.savetxt('summary_memory_log_bfs_injected_degenerate' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected_degenerate)
 np.savetxt('summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs)
 np.savetxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
 np.savetxt('summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs)
