@@ -95,7 +95,7 @@ for i in range(min_event_id, max_event_id):
     e = likelihood_no_memory.log_likelihood_ratio()
 
     memory_log_bfs_injected.append(a - b)
-    memory_log_bfs_injected_degenerate.append((a - b + d - e)/2.)
+    memory_log_bfs_injected_degenerate.append((a + d)/2. - b)
     memory_log_bfs.append(memory_log_bf)
     hom_log_bfs_injected.append(b - c)
     hom_log_bfs.append(hom_log_bf)
