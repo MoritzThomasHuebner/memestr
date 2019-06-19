@@ -63,7 +63,7 @@ plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate',
 plt.plot(memory_log_bfs_cumsum, label='sampled')
 plt.xlabel('Event ID')
 plt.ylabel('Cumulative log BF')
-plt.ylim(-2, 8)
+# plt.ylim(-2, 8)
 plt.legend()
 plt.tight_layout()
 plt.savefig('summary_cumulative_memory_log_bf')
