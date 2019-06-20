@@ -102,36 +102,36 @@ for i in range(2000):
     except (AttributeError, FileNotFoundError):
         continue
 
-# plt.hist(n_eff_fracs, bins=45)
-# plt.xlabel('Fraction of effective samples')
-# plt.ylabel('Count')
-# plt.tight_layout()
-# plt.savefig('summary_plot_n_eff_frac_hist')
-# plt.clf()
-#
-# plt.hist(n_effs, bins=45)
-# plt.xlabel('Number of effective samples')
-# plt.ylabel('Count')
-# plt.tight_layout()
-# plt.savefig('summary_plot_n_eff_hist')
-# plt.clf()
-#
-#
-# plt.plot(n_eff_fracs)
-# plt.semilogy()
-# plt.xlabel('Event ID')
-# plt.ylabel('Effective sample fraction')
-# plt.tight_layout()
-# plt.savefig('summary_plot_n_eff_frac_vs_event_id')
-# plt.clf()
-#
-# plt.plot(n_effs)
-# plt.semilogy()
-# plt.xlabel('Event ID')
-# plt.ylabel('Number of effective samples')
-# plt.tight_layout()
-# plt.savefig('summary_plot_n_eff_vs_event_id')
-# plt.clf()
+plt.hist(n_eff_fracs, bins=45)
+plt.xlabel('Fraction of effective samples')
+plt.ylabel('Count')
+plt.tight_layout()
+plt.savefig('summary_plot_n_eff_frac_hist')
+plt.clf()
+
+plt.hist(n_effs, bins=45)
+plt.xlabel('Number of effective samples')
+plt.ylabel('Count')
+plt.tight_layout()
+plt.savefig('summary_plot_n_eff_hist')
+plt.clf()
+
+
+plt.plot(n_eff_fracs)
+plt.semilogy()
+plt.xlabel('Event ID')
+plt.ylabel('Effective sample fraction')
+plt.tight_layout()
+plt.savefig('summary_plot_n_eff_frac_vs_event_id')
+plt.clf()
+
+plt.plot(n_effs)
+plt.semilogy()
+plt.xlabel('Event ID')
+plt.ylabel('Number of effective samples')
+plt.tight_layout()
+plt.savefig('summary_plot_n_eff_vs_event_id')
+plt.clf()
 
 # np.savetxt("n_effs", n_effs)
 # n_effs_additional_runs = [int(80/x) for x in n_effs]
