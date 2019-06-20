@@ -13,10 +13,10 @@ from memestr.core.parameters import AllSettings, InjectionParameters
 from memestr.core.postprocessing import adjust_phase_and_geocent_time_complete_posterior_proper, \
     reweigh_by_likelihood, reweigh_by_likelihood_parallel, PostprocessingResult, \
     adjust_phase_and_geocent_time_complete_posterior_parallel
+from memestr.core.likelihood import HOMTimePhaseMarginalizedGWT
 from memestr.core.submit import get_injection_parameter_set
 from memestr.core.utils import get_ifo
-from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped
-from memestr.core.waveforms import frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+from memestr.core.waveforms import *
 
 
 def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
@@ -226,47 +226,60 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
 
+    # waveform_generator_memory = bilby.gw.WaveformGenerator(
+    #     frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+    #     parameters=deepcopy(settings.injection_parameters.__dict__),
+    #     waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+    #     **settings.waveform_data.__dict__)
+    #
+    # waveform_generator_no_memory = bilby.gw.WaveformGenerator(
+    #     frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+    #     parameters=deepcopy(settings.injection_parameters.__dict__),
+    #     waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+    #     **settings.waveform_data.__dict__)
+
+    # likelihood_memory = bilby.gw.likelihood \
+    #     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
+    #                                 waveform_generator=waveform_generator_memory)
+    #
+    # likelihood_no_memory = bilby.gw.likelihood \
+    #     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
+    #                                 waveform_generator=waveform_generator_no_memory)
+
     waveform_generator_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped_lm_modes,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_lm_modes,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
 
-    # def conv(params):
-    #     return params, []
-    #
-    # waveform_generator_no_memory.parameter_conversion = conv
-    # waveform_generator_memory.parameter_conversion = conv
-    # likelihood_imr_phenom_unmarginalized.waveform_generator.parameter_conversion = conv
+    likelihood_memory = HOMTimePhaseMarginalizedGWT(interferometers=deepcopy(ifos),
+                                                    waveform_generator=waveform_generator_memory,
+                                                    priors=priors)
 
-    likelihood_memory = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
-                                    waveform_generator=waveform_generator_memory)
+    likelihood_no_memory = HOMTimePhaseMarginalizedGWT(interferometers=deepcopy(ifos),
+                                                       waveform_generator=waveform_generator_no_memory,
+                                                       priors=priors)
 
-    likelihood_no_memory = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
-                                    waveform_generator=waveform_generator_no_memory)
     likelihood_no_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_memory.parameters = deepcopy(settings.injection_parameters.__dict__)
 
     if True:
-        # hom_log_bf, hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_no_memory,
-        #                                                 new_result=time_and_phase_shifted_result,
-        #                                                 reference_likelihood=likelihood_imr_phenom_unmarginalized,
-        #                                                 reference_result=result
-        #                                                 )
-        hom_log_bf, hom_weights = reweigh_by_likelihood_parallel(new_likelihood=likelihood_no_memory,
-                                                                 new_result=time_and_phase_shifted_result,
-                                                                 reference_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                                 reference_result=result,
-                                                                 n_parallel=16
-                                                                 )
+        hom_log_bf, hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_no_memory,
+                                                        new_result=result,
+                                                        reference_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                        reference_result=result)
+        # hom_log_bf, hom_weights = reweigh_by_likelihood_parallel(new_likelihood=likelihood_no_memory,
+        #                                                          new_result=time_and_phase_shifted_result,
+        #                                                          reference_likelihood=likelihood_imr_phenom_unmarginalized,
+        #                                                          reference_result=result,
+        #                                                          n_parallel=16
+        #                                                          )
         pp_result.hom_weights = hom_weights
         pp_result.hom_log_bf = hom_log_bf
         pp_result.to_json()
@@ -275,36 +288,17 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     logger.info("Number of weights:" + str(len(pp_result.hom_weights)))
     logger.info("Number of effective samples:" + str(pp_result.effective_samples))
 
-    # try:
-    #     plt.scatter(pp_result.hom_weights, maximum_overlaps)
-    #     plt.xlabel('log weights')
-    #     plt.ylabel('max overlaps')
-    #     plt.tight_layout()
-    #     plt.savefig(str(filename_base) + '_dynesty_production_IMR_non_mem_rec/log_weights_vs_max_overlaps')
-    #     plt.clf()
-    # except Exception as e:
-    #     logger.warning(e)
-
-    # try:
-    #     norm_weights = np.exp(pp_result.hom_weights)
-    #     time_and_phase_shifted_result.plot_corner(
-    #         filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reweighted',
-    #         weights=norm_weights,
-    #         parameters=deepcopy(params),
-    #         outdir=outdir)
-    # except Exception as e:
-    #     logger.warning(e)
     # if pp_result.memory_weights is None:
     if True:
-        # memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
-        #                                                               new_result=time_and_phase_shifted_result,
-        #                                                               reference_likelihood=likelihood_imr_phenom_unmarginalized,
-        #                                                               reference_result=result)
-        memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood_parallel(new_likelihood=likelihood_memory,
-                                                                               new_result=time_and_phase_shifted_result,
-                                                                               reference_likelihood=likelihood_imr_phenom_unmarginalized,
-                                                                               reference_result=result,
-                                                                               n_parallel=16)
+        memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
+                                                                      new_result=result,
+                                                                      reference_likelihood=likelihood_imr_phenom_unmarginalized,
+                                                                      reference_result=result)
+        # memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood_parallel(new_likelihood=likelihood_memory,
+        #                                                                        new_result=time_and_phase_shifted_result,
+        #                                                                        reference_likelihood=likelihood_imr_phenom_unmarginalized,
+        #                                                                        reference_result=result,
+        #                                                                        n_parallel=16)
 
         memory_log_bf = memory_hom_log_bf - pp_result.hom_log_bf
         pp_result.memory_log_bf = memory_log_bf

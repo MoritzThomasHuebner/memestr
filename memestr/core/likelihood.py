@@ -8,6 +8,13 @@ from bilby.gw.likelihood import GravitationalWaveTransient
 
 class HOMTimePhaseMarginalizedGWT(GravitationalWaveTransient):
 
+    def __init__(self, interferometers, waveform_generator, priors):
+        super(HOMTimePhaseMarginalizedGWT, self).__init__(interferometers, waveform_generator,
+                                                          time_marginalization=True,
+                                                          distance_marginalization=False,
+                                                          phase_marginalization=True, priors=priors,
+                                                          distance_marginalization_lookup_table=None)
+
     def log_likelihood_ratio(self):
         waveform_polarizations = self.waveform_generator.frequency_domain_strain(self.parameters)
 
@@ -23,7 +30,8 @@ class HOMTimePhaseMarginalizedGWT(GravitationalWaveTransient):
         for mode in waveform_polarizations:
             ll, mm = mode[0], mode[1]
             for interferometer in self.interferometers:
-                waveform_polarizations_plus_cross = combine_modes(h_lm={(ll, mm): mode}, inc=self.parameters['inc'],
+                waveform_polarizations_plus_cross = combine_modes(h_lm={(ll, mm): waveform_polarizations[mode]},
+                                                                  inc=self.parameters['inc'],
                                                                   phase=self.parameters['phase'])
                 per_detector_snr = self.calculate_snrs(
                     waveform_polarizations=waveform_polarizations_plus_cross,
@@ -32,7 +40,8 @@ class HOMTimePhaseMarginalizedGWT(GravitationalWaveTransient):
                 d_inner_h += per_detector_snr.d_inner_h
                 optimal_snr_squared += np.real(per_detector_snr.optimal_snr_squared)
                 complex_matched_filter_snr += per_detector_snr.complex_matched_filter_snr
-                d_inner_h_tc_array += per_detector_snr.d_inner_h_squared_tc_array * np.exp(1j*mm*self.parameters['phase'])
+                d_inner_h_tc_array += per_detector_snr.d_inner_h_squared_tc_array * np.exp(
+                    1j * mm * self.parameters['phase'])
 
         log_l_tc_array = np.sum(d_inner_h_tc_array.real) * self.delta_tc - optimal_snr_squared / 2
         log_l = logsumexp(log_l_tc_array, b=self.time_prior_array)
@@ -64,9 +73,9 @@ class HOMTimePhaseMarginalizedGWT(GravitationalWaveTransient):
             waveform_polarizations, self.parameters)
         d_inner_h = interferometer.inner_product(signal=signal)
         optimal_snr_squared = interferometer.optimal_snr_squared(signal=signal)
-        complex_matched_filter_snr = d_inner_h / (optimal_snr_squared**0.5)
+        complex_matched_filter_snr = d_inner_h / (optimal_snr_squared ** 0.5)
 
-        d_inner_h_squared_tc_array =\
+        d_inner_h_squared_tc_array = \
             4 / self.waveform_generator.duration * np.fft.fft(
                 signal[0:-1] *
                 interferometer.frequency_domain_strain.conjugate()[0:-1] /
