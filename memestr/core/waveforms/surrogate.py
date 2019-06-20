@@ -45,6 +45,33 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
     return waveform_fd
 
 
+def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_lm_modes(frequencies, mass_ratio, total_mass, s13, s23,
+                                                                         luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+    waveform, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
+                                                            mass_ratio=mass_ratio, inc=inc,
+                                                            luminosity_distance=luminosity_distance, phase=phase,
+                                                            s13=s13, s23=s23, kwargs=kwargs, fold_in_memory=False)
+    waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, memory_generator.h_lm, **kwargs)
+    return waveform_fd
+
+
+def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped_lm_modes(frequencies, mass_ratio, total_mass, s13, s23,
+                                                                      luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+
+    _, memory, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
+                                                             mass_ratio=mass_ratio, inc=inc,
+                                                             luminosity_distance=luminosity_distance,
+                                                             phase=phase,
+                                                             s13=s13, s23=s23, kwargs=kwargs)
+    waveform = {mode: memory_generator.h_lm[mode] + memory_generator.h_mem_lm[mode] for mode in memory_generator.h_lm}
+    waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+    return waveform_fd
+
+
 def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
