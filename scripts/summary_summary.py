@@ -116,7 +116,7 @@ for i in range(2000):
         else:
             n_eff_fracs.append(pp_res.effective_samples/len(pp_res.hom_weights))
             n_effs.append(pp_res.effective_samples)
-        if n_effs[-1] < 3:
+        if n_effs[-1] < 2:
             print(i)
     except (AttributeError, FileNotFoundError):
         continue
