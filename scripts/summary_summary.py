@@ -23,13 +23,20 @@ for min_event_id, max_event_id in zip(minimums, maximums):
     gw_log_bfs = np.append(gw_log_bfs, np.loadtxt('summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
     gw_log_bfs_injected = np.append(gw_log_bfs_injected, np.loadtxt('summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
 
-memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
-memory_log_bfs_injected_degenerate_cumsum = np.cumsum(memory_log_bfs_injected_degenerate)
-memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
-hom_log_bfs_injected_cumsum = np.cumsum(hom_log_bfs_injected)
-hom_log_bfs_cumsum = np.cumsum(hom_log_bfs)
-gw_log_bfs_injected_cumsum = np.cumsum(gw_log_bfs_injected)
-gw_log_bfs_cumsum = np.cumsum(gw_log_bfs)
+np.random.seed(42)
+memory_log_bfs_injected_cumsum = np.cumsum(np.random.shuffle(memory_log_bfs_injected))
+np.random.seed(42)
+memory_log_bfs_injected_degenerate_cumsum = np.cumsum(np.random.shuffle(memory_log_bfs_injected_degenerate))
+np.random.seed(42)
+memory_log_bfs_cumsum = np.cumsum(np.random.shuffle(memory_log_bfs))
+np.random.seed(42)
+hom_log_bfs_injected_cumsum = np.cumsum(np.random.shuffle(hom_log_bfs_injected))
+np.random.seed(42)
+hom_log_bfs_cumsum = np.cumsum(np.random.shuffle(hom_log_bfs))
+np.random.seed(42)
+gw_log_bfs_injected_cumsum = np.cumsum(np.random.shuffle(gw_log_bfs_injected))
+np.random.seed(42)
+gw_log_bfs_cumsum = np.cumsum(np.random.shuffle(gw_log_bfs))
 
 plt.hist(hom_log_bfs, bins=45, label='Reweighted')
 plt.hist(hom_log_bfs_injected, bins=45, label='Injected')
@@ -89,27 +96,22 @@ plt.clf()
 
 n_effs = []
 n_eff_fracs = []
-for i in range(2000):
-    print(i)
-    try:
-        pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
-        n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
-        if np.isnan(n_eff_frac):
-            n_eff_fracs.append(0)
-            n_effs.append(1.)
-        elif np.isinf(n_eff_frac):
-            n_eff_fracs.append(0)
-            n_effs.append(1.)
-        else:
-            n_eff_fracs.append(pp_res.effective_samples/len(pp_res.hom_weights))
-            n_effs.append(pp_res.effective_samples)
-    except (AttributeError, FileNotFoundError):
-        continue
+# for i in range(2000):
+#     try:
+#         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
+#         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
+#         if np.isnan(n_eff_frac):
+#             n_eff_fracs.append(0)
+#             n_effs.append(1.)
+#         elif np.isinf(n_eff_frac):
+#             n_eff_fracs.append(0)
+#             n_effs.append(1.)
+#         else:
+#             n_eff_fracs.append(pp_res.effective_samples/len(pp_res.hom_weights))
+#             n_effs.append(pp_res.effective_samples)
+#     except (AttributeError, FileNotFoundError):
+#         continue
 
-print(n_eff_fracs)
-print(n_effs)
-
-print('a')
 plt.hist(n_eff_fracs, bins=45)
 plt.xlabel('Fraction of effective samples')
 plt.ylabel('Count')
@@ -117,7 +119,6 @@ plt.tight_layout()
 plt.savefig('summary_plot_n_eff_frac_hist')
 plt.clf()
 
-print('b')
 plt.hist(n_effs, bins=45)
 plt.xlabel('Number of effective samples')
 plt.ylabel('Count')
@@ -125,8 +126,6 @@ plt.tight_layout()
 plt.savefig('summary_plot_n_eff_hist')
 plt.clf()
 
-
-print('c')
 plt.plot(n_eff_fracs)
 # plt.semilogy()
 plt.xlabel('Event ID')
@@ -135,7 +134,6 @@ plt.tight_layout()
 plt.savefig('summary_plot_n_eff_frac_vs_event_id')
 plt.clf()
 
-print('d')
 plt.plot(n_effs)
 plt.semilogy()
 plt.xlabel('Event ID')
