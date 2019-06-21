@@ -106,21 +106,24 @@ for i in range(2000):
     except (AttributeError, FileNotFoundError):
         continue
 
-# print('a')
-# plt.hist(n_eff_fracs, bins=45)
-# plt.xlabel('Fraction of effective samples')
-# plt.ylabel('Count')
-# plt.tight_layout()
-# plt.savefig('summary_plot_n_eff_frac_hist')
-# plt.clf()
+print(n_eff_fracs)
+print(n_effs)
 
-print('b')
-plt.hist(n_effs, bins=45)
-plt.xlabel('Number of effective samples')
+print('a')
+plt.hist(n_eff_fracs, bins=45)
+plt.xlabel('Fraction of effective samples')
 plt.ylabel('Count')
 plt.tight_layout()
-plt.savefig('summary_plot_n_eff_hist')
+plt.savefig('summary_plot_n_eff_frac_hist')
 plt.clf()
+
+# print('b')
+# plt.hist(n_effs, bins=45)
+# plt.xlabel('Number of effective samples')
+# plt.ylabel('Count')
+# plt.tight_layout()
+# plt.savefig('summary_plot_n_eff_hist')
+# plt.clf()
 
 
 print('c')
