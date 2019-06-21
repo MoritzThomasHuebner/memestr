@@ -131,7 +131,7 @@ def read_snr(filename):
 for i in range(0, 2000):
     network_snrs.append(read_snr(i))
 
-
+np.savetxt('network_snrs.txt', network_snrs)
 plt.hist(network_snrs, bins=int(np.sqrt(len(network_snrs))))
 plt.xlabel('Network SNR')
 plt.ylabel('Counts')

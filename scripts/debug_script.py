@@ -11,27 +11,23 @@ outdir = 'nr_hyb_sur_rec'
 injection_parameters = get_injection_parameter_set(filename_base)
 for key in injection_parameters:
     priors['prior_' + key] = injection_parameters[key]
+for key in injection_parameters:
+    priors['prior_' + key] = injection_parameters[key]
 priors['prior_total_mass'] = bilby.core.prior.Uniform(
-    minimum=injection_parameters['total_mass'] - 2,
-    maximum=injection_parameters['total_mass'] + 2,
+    minimum=np.maximum(injection_parameters['total_mass'] - 20, 10),
+    maximum=injection_parameters['total_mass'] + 30,
     latex_label="$M_{tot}$")
 priors['prior_mass_ratio'] = bilby.core.prior.Uniform(
-    minimum=0.85,
+    minimum=0.125,
     maximum=1,
     latex_label="$q$")
 priors['prior_luminosity_distance'] = bilby.gw.prior.UniformComovingVolume(minimum=10,
                                                                            maximum=5000,
                                                                            latex_label="$L_D$",
                                                                            name='luminosity_distance')
-priors['prior_inc'] = bilby.core.prior.Uniform(minimum=injection_parameters['inc'] - 0.2,
-                                               maximum=injection_parameters['inc'] + 0.2,
-                                               latex_label="$\\theta_{jn}$")
-priors['prior_ra'] = bilby.core.prior.Uniform(minimum=injection_parameters['ra'] - 0.01,
-                                              maximum=injection_parameters['ra'] + 0.01,
-                                              latex_label="$RA$")
-priors['prior_dec'] = bilby.core.prior.Uniform(minimum=injection_parameters['dec'] - 0.01,
-                                               maximum=injection_parameters['dec'] + 0.01,
-                                               latex_label="$DEC$")
+priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
+priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2 * np.pi, latex_label="$RA$")
+priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
 priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
                                                  maximum=2 * np.pi,
                                                  latex_label="$\phi$")
@@ -85,14 +81,10 @@ result = bilby.core.sampler.run_sampler(likelihood=likelihood_nr_phenom,
                                         save=True,
                                         verbose=True,
                                         random_seed=np.random.randint(0, 100000),
-                                        sampler='dynesty',
-                                        npoints=250,
+                                        sampler='emcee',
                                         label='NRHybSur',
-                                        clean=settings.sampler_settings.clean,
-                                        resume=True,
-                                        save_bounds=False,
-                                        check_point_plot=True,
-                                        walks=50,
+                                        clean=True,
+                                        resume=False,
                                         n_check_point=100)
 result.save_to_file()
 logger.info(str(result))
