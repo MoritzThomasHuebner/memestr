@@ -73,7 +73,7 @@ plt.savefig('summary_plot_gw_hist')
 plt.clf()
 
 plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
-plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate', linestyle='--')
+# plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate', linestyle='--')
 plt.plot(memory_log_bfs_cumsum, label='sampled')
 plt.xlabel('Event ID')
 plt.ylabel('Cumulative log BF')
