@@ -97,19 +97,22 @@ for i in range(2000):
         if np.isnan(n_eff_frac):
             n_eff_fracs.append(0)
             n_effs.append(1.)
+        elif np.isinf(n_eff_frac):
+            n_eff_fracs.append(0)
+            n_effs.append(1.)
         else:
             n_eff_fracs.append(n_eff_fracs)
             n_effs.append(pp_res.effective_samples)
     except (AttributeError, FileNotFoundError):
         continue
 
-print('a')
-plt.hist(n_eff_fracs, bins=45)
-plt.xlabel('Fraction of effective samples')
-plt.ylabel('Count')
-plt.tight_layout()
-plt.savefig('summary_plot_n_eff_frac_hist')
-plt.clf()
+# print('a')
+# plt.hist(n_eff_fracs, bins=45)
+# plt.xlabel('Fraction of effective samples')
+# plt.ylabel('Count')
+# plt.tight_layout()
+# plt.savefig('summary_plot_n_eff_frac_hist')
+# plt.clf()
 
 print('b')
 plt.hist(n_effs, bins=45)
