@@ -112,6 +112,14 @@ def time_domain_nr_hyb_sur_waveform_with_memory(times, mass_ratio, total_mass, s
     return apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
+def time_domain_nr_hyb_sur_waveform_memory(times, mass_ratio, total_mass, s13, s23,
+                                           luminosity_distance, inc, phase, **kwargs):
+    _, memory, _ = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                              luminosity_distance=luminosity_distance, phase=phase,
+                                              s13=s13, s23=s23, kwargs=kwargs)
+    return apply_window(waveform=memory, times=times, kwargs=kwargs)
+
+
 def time_domain_nr_hyb_sur_waveform_with_memory_wrapped(times, mass_ratio, total_mass, s13, s23,
                                                         luminosity_distance, inc, phase, **kwargs):
     waveform, memory, memory_generator = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass,

@@ -90,6 +90,7 @@ plt.clf()
 n_effs = []
 n_eff_fracs = []
 for i in range(2000):
+    print(i)
     try:
         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
@@ -102,6 +103,7 @@ for i in range(2000):
     except (AttributeError, FileNotFoundError):
         continue
 
+print('a')
 plt.hist(n_eff_fracs, bins=45)
 plt.xlabel('Fraction of effective samples')
 plt.ylabel('Count')
@@ -109,6 +111,7 @@ plt.tight_layout()
 plt.savefig('summary_plot_n_eff_frac_hist')
 plt.clf()
 
+print('b')
 plt.hist(n_effs, bins=45)
 plt.xlabel('Number of effective samples')
 plt.ylabel('Count')
@@ -117,6 +120,7 @@ plt.savefig('summary_plot_n_eff_hist')
 plt.clf()
 
 
+print('c')
 plt.plot(n_eff_fracs)
 plt.semilogy()
 plt.xlabel('Event ID')
@@ -125,6 +129,7 @@ plt.tight_layout()
 plt.savefig('summary_plot_n_eff_frac_vs_event_id')
 plt.clf()
 
+print('d')
 plt.plot(n_effs)
 plt.semilogy()
 plt.xlabel('Event ID')
@@ -141,3 +146,4 @@ plt.clf()
 #         f.write(str(n_effs_additional_runs[i]) + '\n')
 # print(sum(n_effs_additional_runs))
 # np.savetxt("n_effs_additional_runs", n_effs_additional_runs)
+
