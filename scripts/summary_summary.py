@@ -103,21 +103,23 @@ plt.clf()
 
 n_effs = []
 n_eff_fracs = []
-# for i in range(2000):
-#     try:
-#         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
-#         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
-#         if np.isnan(n_eff_frac):
-#             n_eff_fracs.append(0)
-#             n_effs.append(1.)
-#         elif np.isinf(n_eff_frac):
-#             n_eff_fracs.append(0)
-#             n_effs.append(1.)
-#         else:
-#             n_eff_fracs.append(pp_res.effective_samples/len(pp_res.hom_weights))
-#             n_effs.append(pp_res.effective_samples)
-#     except (AttributeError, FileNotFoundError):
-#         continue
+for i in range(2000):
+    try:
+        pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
+        n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
+        if np.isnan(n_eff_frac):
+            n_eff_fracs.append(0)
+            n_effs.append(1.)
+        elif np.isinf(n_eff_frac):
+            n_eff_fracs.append(0)
+            n_effs.append(1.)
+        else:
+            n_eff_fracs.append(pp_res.effective_samples/len(pp_res.hom_weights))
+            n_effs.append(pp_res.effective_samples)
+        if n_effs[-1] < 4:
+            print(i)
+    except (AttributeError, FileNotFoundError):
+        continue
 
 plt.hist(n_eff_fracs, bins=45)
 plt.xlabel('Fraction of effective samples')
