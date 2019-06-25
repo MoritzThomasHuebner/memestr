@@ -45,6 +45,34 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
     return waveform_fd
 
 
+def frequency_domain_nr_hyb_sur_memory_waveform_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
+                                                        luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+
+    _, memory, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
+                                                             mass_ratio=mass_ratio, inc=inc,
+                                                             luminosity_distance=luminosity_distance,
+                                                             phase=phase, s13=s13, s23=s23, kwargs=kwargs)
+
+    memory_waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, memory, **kwargs)
+    return memory_waveform_fd
+
+
+def frequency_domain_nr_hyb_sur_memory_waveform_wrapped_unwindowed(frequencies, mass_ratio, total_mass, s13, s23,
+                                                                   luminosity_distance, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+
+    _, memory, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
+                                                             mass_ratio=mass_ratio, inc=inc,
+                                                             luminosity_distance=luminosity_distance,
+                                                             phase=phase, s13=s13, s23=s23, kwargs=kwargs)
+    kwargs['alpha'] = 0.0
+    memory_waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, memory, **kwargs)
+    return memory_waveform_fd
+
+
 def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_lm_modes(frequencies, mass_ratio, total_mass, s13, s23,
                                                                          luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
