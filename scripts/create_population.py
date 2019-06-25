@@ -188,7 +188,7 @@ def create_parameter_set(filename):
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
 
 
-for i in range(sys.argv[1], sys.argv[2]):
+for i in range(int(sys.argv[1]), int(sys.argv[2])):
     print(i)
     create_parameter_set(i)
 
