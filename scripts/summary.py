@@ -46,7 +46,7 @@ for i in range(min_event_id, max_event_id):
         memory_log_bf = 0
         hom_log_bf = 0
         # print(e)
-        continue
+        # continue
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         parameters=deepcopy(settings.injection_parameters.__dict__),
@@ -134,9 +134,9 @@ gw_log_bfs_injected_cumsum = np.cumsum(gw_log_bfs_injected)
 np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected)
 # np.savetxt('summary_memory_log_bfs_injected_degenerate' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected_degenerate)
 # np.savetxt('summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs)
-np.savetxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
+# np.savetxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
 # np.savetxt('summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs)
-np.savetxt('summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs_injected)
+# np.savetxt('summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs_injected)
 # hom_log_bfs = np.array(hom_log_bfs)
 
 # plt.hist(hom_log_bfs, bins=45)
