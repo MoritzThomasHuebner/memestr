@@ -42,7 +42,10 @@ for i in range(min_event_id, max_event_id):
         # if memory_log_bf > 1:
         #     logger.info(i)
     except OSError as e:
-        print(e)
+        gw_log_bf = 0
+        memory_log_bf = 0
+        hom_log_bf = 0
+        # print(e)
         continue
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
