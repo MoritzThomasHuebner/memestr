@@ -10,7 +10,7 @@ from memestr.core.waveforms import *
 from memestr.core.parameters import AllSettings
 
 logger = logging.getLogger('bilby')
-logger.disabled = True
+# logger.disabled = True
 
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
 all_params = generate_all_parameters(size=100000, clean=False, plot=False)
@@ -101,10 +101,11 @@ def create_parameter_set(filename):
             #     sampling_frequency=settings.waveform_data.sampling_frequency,
             #     duration=settings.waveform_data.duration,
             #     start_time=start_time)
-
+            logger.disabled = True
             injection_polarizations = interferometer.inject_signal(
                 parameters=settings.injection_parameters.__dict__,
                 injection_polarizations=hf_signal)
+            logger.disabled = False
             # injection_polarizations_mem = interferometer_mem.inject_signal(
             #     parameters=settings.injection_parameters.__dict__,
             #     injection_polarizations=hf_signal_mem)
@@ -161,9 +162,10 @@ with open(output, 'w') as f:
     f.write('# Memory Log BF\tTrials\n')
 
 i = 0
-while True:
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
-    settings =  AllSettings()
+while True:
+    logger.info('Start sampling population')
+    settings = AllSettings()
     ifos, injection_parameters, trials = create_parameter_set(i)
     settings.waveform_data.sampling_frequency = 2048
     settings.waveform_data.duration = 16
