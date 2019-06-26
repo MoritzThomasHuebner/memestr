@@ -1,5 +1,6 @@
 import sys
 from bilby.core.utils import logger
+logger.info('Test')
 
 from memestr.core.parameters import AllSettings
 from memestr.core.population import generate_all_parameters
@@ -8,7 +9,9 @@ from memestr.core.waveforms import *
 # logger.disabled = True
 
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
-all_params = generate_all_parameters(size=100000, clean=False, plot=False)
+logger.info('Generating population params')
+all_params = generate_all_parameters(size=10000, clean=False, plot=False)
+logger.info('Generated population params')
 
 network_snrs = []
 network_mem_snrs = []
@@ -153,6 +156,7 @@ def create_parameter_set(filename):
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
 
 output = 'Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
+logger.info(output)
 with open(output, 'w') as f:
     f.write('# Memory Log BF\tTrials\n')
 
