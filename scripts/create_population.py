@@ -1,15 +1,10 @@
-import logging
-import numpy as np
-import bilby
 import sys
-import matplotlib.pyplot as plt
-import gwmemory
+from bilby.core.utils import logger
 
+from memestr.core.parameters import AllSettings
 from memestr.core.population import generate_all_parameters
 from memestr.core.waveforms import *
-from memestr.core.parameters import AllSettings
 
-logger = logging.getLogger('bilby')
 # logger.disabled = True
 
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
