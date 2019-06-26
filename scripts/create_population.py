@@ -10,7 +10,7 @@ from memestr.core.waveforms import *
 
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
 logger.info('Generating population params')
-all_params = generate_all_parameters(size=10000, clean=True, plot=False)
+all_params = generate_all_parameters(size=10000, clean=False, plot=False)
 logger.info('Generated population params')
 
 network_snrs = []
