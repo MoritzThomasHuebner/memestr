@@ -5,6 +5,7 @@ logger.info('Test')
 from memestr.core.parameters import AllSettings
 from memestr.core.population import generate_all_parameters
 from memestr.core.waveforms import *
+from memestr.core.submit import get_injection_parameter_set
 
 # logger.disabled = True
 
@@ -22,25 +23,43 @@ def create_parameter_set(filename):
     network_snr = 0
     settings = AllSettings()
     trials = 0
-    while network_snr < 30:
+    while network_snr < 20:
         idx = np.random.randint(0, len(all_params.total_masses))
-        total_mass = all_params.total_masses[idx]
-        mass_ratio = all_params.mass_ratios[idx]
-        if mass_ratio < 0.125:
-            continue
-        luminosity_distance = np.random.choice(all_params.luminosity_distance)
-        dec = np.random.choice(all_params.dec)
-        ra = np.random.choice(all_params.ra)
-        inc = np.random.choice(all_params.inc)
-        psi = np.random.choice(all_params.psi)
-        phase = np.random.choice(all_params.phase)
-        geocent_time = np.random.choice(all_params.geocent_time)
-        s11 = 0
-        s12 = 0
-        s13 = np.random.choice(all_params.s13)
-        s21 = 0
-        s22 = 0
-        s23 = np.random.choice(all_params.s23)
+        params = get_injection_parameter_set(str(filename))
+
+        # total_mass = all_params.total_masses[idx]
+        # mass_ratio = all_params.mass_ratios[idx]
+        # if mass_ratio < 0.125:
+        #     continue
+        # luminosity_distance = np.random.choice(all_params.luminosity_distance)
+        # dec = np.random.choice(all_params.dec)
+        # ra = np.random.choice(all_params.ra)
+        # inc = np.random.choice(all_params.inc)
+        # psi = np.random.choice(all_params.psi)
+        # phase = np.random.choice(all_params.phase)
+        # geocent_time = np.random.choice(all_params.geocent_time)
+        # s11 = 0
+        # s12 = 0
+        # s13 = np.random.choice(all_params.s13)
+        # s21 = 0
+        # s22 = 0
+        # s23 = np.random.choice(all_params.s23)
+
+        total_mass = params['total_mass']
+        mass_ratio = params['mass_ratio']
+        luminosity_distance = params['luminosity_distance']
+        dec = params['dec']
+        ra = params['ra']
+        inc = params['inc']
+        psi = params['psi']
+        phase = params['phase']
+        geocent_time = params['geocent_time']
+        s11 = params['s11']
+        s12 = params['s12']
+        s13 = params['s13']
+        s21 = params['s21']
+        s22 = params['s22']
+        s23 = params['s23']
 
         settings.injection_parameters.update_args(mass_ratio=mass_ratio, total_mass=total_mass,
                                                   luminosity_distance=luminosity_distance, dec=dec, ra=ra,
@@ -50,8 +69,13 @@ def create_parameter_set(filename):
         settings.waveform_data.sampling_frequency = 2048
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
+        # waveform_generator_fd = \
+        #     bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+        #                                parameters=settings.injection_parameters.__dict__,
+        #                                waveform_arguments=settings.waveform_arguments.__dict__,
+        #                                **settings.waveform_data.__dict__)
         waveform_generator_fd = \
-            bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+            bilby.gw.WaveformGenerator(time_domain_source_model=time_domain_IMRPhenomD_waveform_with_memory,
                                        parameters=settings.injection_parameters.__dict__,
                                        waveform_arguments=settings.waveform_arguments.__dict__,
                                        **settings.waveform_data.__dict__)
@@ -134,7 +158,7 @@ def create_parameter_set(filename):
     # logger.info(best_snr)
     # logger.info(network_snr)
     logger.disabled = True
-    return ifos, settings.injection_parameters.__dict__, trials
+    # return ifos, settings.injection_parameters.__dict__, trials
     # with open('parameter_sets/' + str(filename), 'w') as f:
     #     f.write('total_mass=' + str(settings.injection_parameters.total_mass) +
     #             ' mass_ratio=' + str(settings.injection_parameters.mass_ratio) +
@@ -152,7 +176,7 @@ def create_parameter_set(filename):
     #             ' s22=' + str(settings.injection_parameters.s22) +
     #             ' s23=' + str(settings.injection_parameters.s23))
 
-    # ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
+    ifos.to_hdf5(outdir='parameter_sets', label=str(filename) + '_IMR_inj')
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
 
 output = 'Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
