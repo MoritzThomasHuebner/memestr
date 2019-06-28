@@ -184,35 +184,37 @@ logger.info(output)
 with open(output, 'w') as f:
     f.write('# Memory Log BF\tTrials\n')
 
-i = 0
+for i in range(int(sys.argv[1]), int(sys.argv[2])):
+    create_parameter_set(str(i))
+# i = 0
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
-while True:
-    logger.info('Start sampling population')
-    settings = AllSettings()
-    ifos, injection_parameters, trials = create_parameter_set(i)
-    settings.waveform_data.sampling_frequency = 2048
-    settings.waveform_data.duration = 16
-
-    waveform_generator_with_memory = \
-        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-                                   parameters=injection_parameters,
-                                   waveform_arguments=settings.waveform_arguments.__dict__,
-                                   **settings.waveform_data.__dict__)
-    waveform_generator_without_memory = \
-        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-                                   parameters=injection_parameters,
-                                   waveform_arguments=settings.waveform_arguments.__dict__,
-                                   **settings.waveform_data.__dict__)
-    likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
-                                                                            waveform_generator=waveform_generator_with_memory)
-    likelihood_without_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
-                                                                               waveform_generator=waveform_generator_without_memory)
-    likelihood_with_memory.parameters = injection_parameters
-    likelihood_without_memory.parameters = injection_parameters
-    res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
-    with open(output, 'a') as f:
-        f.write(str(res) + '\t' + str(trials) + '\n')
-    i += 1
+# while True:
+#     logger.info('Start sampling population')
+#     settings = AllSettings()
+#     ifos, injection_parameters, trials = create_parameter_set(i)
+#     settings.waveform_data.sampling_frequency = 2048
+#     settings.waveform_data.duration = 16
+#
+#     waveform_generator_with_memory = \
+#         bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+#                                    parameters=injection_parameters,
+#                                    waveform_arguments=settings.waveform_arguments.__dict__,
+#                                    **settings.waveform_data.__dict__)
+#     waveform_generator_without_memory = \
+#         bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+#                                    parameters=injection_parameters,
+#                                    waveform_arguments=settings.waveform_arguments.__dict__,
+#                                    **settings.waveform_data.__dict__)
+#     likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+#                                                                             waveform_generator=waveform_generator_with_memory)
+#     likelihood_without_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+#                                                                                waveform_generator=waveform_generator_without_memory)
+#     likelihood_with_memory.parameters = injection_parameters
+#     likelihood_without_memory.parameters = injection_parameters
+#     res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
+#     with open(output, 'a') as f:
+#         f.write(str(res) + '\t' + str(trials) + '\n')
+#     i += 1
 
 
 # import matplotlib.pyplot as plt
