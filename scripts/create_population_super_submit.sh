@@ -2,8 +2,9 @@
 
 
 for i in {32..96}
+do
     sbatch create_population.sh ${i}
-
+done
 #sbatch create_population.sh 2000 2040
 #sbatch create_population.sh 2040 2080
 #sbatch create_population.sh 2080 2120
