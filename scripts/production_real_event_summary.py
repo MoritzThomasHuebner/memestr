@@ -62,12 +62,21 @@ for event_id in event_ids:
     memory_log_bfs.append(memory_log_bf)
 
 memory_log_bfs = np.array(memory_log_bfs)
+np.savetxt('real_event_log_bfs.txt', memory_log_bfs)
 cumulative_memory_log_bfs = np.cumsum(memory_log_bfs)
 logger.info("Cumulative log BF: " + str(cumulative_memory_log_bfs[-1]))
-plt.plot(memory_log_bfs, label='Memory log BFs')
+plt.plot(memory_log_bfs, label='Memory log BF')
+plt.xticks(np.arange(10), tuple(event_ids), rotation=70)
+plt.legend()
+plt.tight_layout()
+plt.savefig('gwtc-1_cumulative')
+plt.clf()
+
+
 plt.plot(cumulative_memory_log_bfs, label='Cumulative memory log BFs')
 plt.xticks(np.arange(10), tuple(event_ids), rotation=70)
 plt.legend()
 plt.tight_layout()
 plt.savefig('gwtm-1')
 plt.clf()
+
