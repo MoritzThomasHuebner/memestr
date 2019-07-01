@@ -372,7 +372,7 @@ def setup_run(kwargs, outdir, recovery_model):
                                                           '_H1L1V1.h5')
     for ifo in ifos:
         setattr(ifo.strain_data, '_frequency_mask_updated', True)
-    waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
+    waveform_generator = bilby.gw.WaveformGenerator(timr_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)

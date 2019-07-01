@@ -52,7 +52,7 @@ def create_parameter_set(filename):
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
         waveform_generator_fd = \
-            bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped,
+            bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
                                        parameters=settings.injection_parameters.__dict__,
                                        waveform_arguments=settings.waveform_arguments.__dict__,
                                        **settings.waveform_data.__dict__)
