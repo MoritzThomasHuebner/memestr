@@ -316,7 +316,8 @@ def setup_run(kwargs, outdir, recovery_model):
     filename_base = filename_base.replace('_dynesty', '')
     filename_base = filename_base.replace('_cpnest', '')
     filename_base = filename_base.replace('_pypolychord', '')
-    injection_parameters = get_injection_parameter_set(filename_base)
+    injection_params_file = filename_base.replace('_IMR_inj', '')
+    injection_parameters = get_injection_parameter_set(injection_params_file)
     for key in injection_parameters:
         priors['prior_' + key] = injection_parameters[key]
     priors['prior_total_mass'] = bilby.core.prior.Uniform(
