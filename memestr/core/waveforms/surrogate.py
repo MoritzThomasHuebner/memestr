@@ -107,7 +107,7 @@ def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
     time_shift += shift * (series.time_array[1] - series.time_array[0])
     waveform_fd = nfft(waveform, series.sampling_frequency)
     for mode in waveform:
-        indexes = np.where(series.frequency_array < 20)
+        indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
         waveform_fd[mode][indexes] = 0
     waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
                                                     duration=series.duration, shift=time_shift)
