@@ -135,7 +135,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 
 def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
-    recovery_model = time_domain_IMRPhenomD_waveform_without_memory
+    recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
@@ -161,7 +161,7 @@ def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
                                                 resume=settings.sampler_settings.resume,
                                                 save_bounds=False,
                                                 check_point_plot=False,
-                                                walks=70,
+                                                walks=50,
                                                 n_check_point=1000)
         result.save_to_file()
         logger.info(str(result))
@@ -316,7 +316,8 @@ def setup_run(kwargs, outdir, recovery_model):
     filename_base = filename_base.replace('_dynesty', '')
     filename_base = filename_base.replace('_cpnest', '')
     filename_base = filename_base.replace('_pypolychord', '')
-    injection_params_file = filename_base.replace('_IMR_inj', '')
+    injection_params_file = filename_base.replace('_nrsur_rec', '')
+    injection_params_file = injection_params_file.replace('_IMR_inj', '')
     injection_parameters = get_injection_parameter_set(injection_params_file)
     for key in injection_parameters:
         priors['prior_' + key] = injection_parameters[key]
@@ -366,13 +367,16 @@ def setup_run(kwargs, outdir, recovery_model):
     filename_base = filename_base.replace('_dynesty', '')
     filename_base = filename_base.replace('_cpnest', '')
     filename_base = filename_base.replace('_pypolychord', '')
+    ifo_file = filename_base.replace('_nrsur_rec', '')
+    ifo_file = ifo_file.replace('_IMR_inj', '')
+
     logger.info("Parameter Set: " + str(filename_base))
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
-                                                          str(filename_base) +
+                                                          str(ifo_file) +
                                                           '_H1L1V1.h5')
     for ifo in ifos:
         setattr(ifo.strain_data, '_frequency_mask_updated', True)
-    waveform_generator = bilby.gw.WaveformGenerator(timr_domain_source_model=recovery_model,
+    waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
