@@ -162,7 +162,7 @@ def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
                                                 save_bounds=False,
                                                 check_point_plot=False,
                                                 walks=50,
-                                                n_check_point=1000)
+                                                n_check_point=10)
         result.save_to_file()
         logger.info(str(result))
 
