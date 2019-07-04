@@ -166,15 +166,15 @@ def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
         result.save_to_file()
         logger.info(str(result))
 
-    try:
-        result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'reconstructed_combined_result.json')
-    except Exception as e:
-        logger.info(e)
-        result.posterior = bilby.gw.conversion. \
-            generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
-        result.label = 'reconstructed_result' + sub_run_id
-        result.save_to_file()
+    # try:
+    #     result = bilby.result.read_in_result(
+    #         filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'reconstructed_combined_result.json')
+    # except Exception as e:
+    #     logger.info(e)
+    #     result.posterior = bilby.gw.conversion. \
+    #         generate_posterior_samples_from_marginalized_likelihood(result.posterior, likelihood_imr_phenom)
+    #     result.label = 'reconstructed_result' + sub_run_id
+    #     result.save_to_file()
 
     params = deepcopy(settings.injection_parameters.__dict__)
     del params['s11']
@@ -218,6 +218,7 @@ def run_time_phase_optimization_debug(recovery_model, outdir, **kwargs):
 
 
 def run_reweighting(recovery_model, outdir, **kwargs):
+    recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
@@ -225,8 +226,9 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     except Exception as e:
         logger.info(e)
         pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
-    result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
-    time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
+    # result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
+    # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_IMR_inj_production_IMR_non_mem_rec/combined_result.json')
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,

@@ -20,14 +20,12 @@ logger = bilby.core.utils.logger
 #     new_res.save_to_file()
     # new_res.plot_corner()
 
-for i in range(0, 2000):
-    outdir = "{}_dynesty_production_IMR_non_mem_rec/".format(i)
-    filename = "reconstructed_result_result.json"
-    base_result = read_in_result(outdir + filename)
-    res_list = ResultList([base_result])
-    for j in range(81):
+for i in range(1850, 1851):
+    outdir = "{}_dynesty_nrsur_rec_IMR_inj_production_IMR_non_mem_rec/".format(i)
+    res_list = ResultList([])
+    for j in range(101):
         try:
-            res = read_in_result(outdir + "reconstructed_result{}_result.json".format(j))
+            res = read_in_result(outdir + "{}IMR_mem_inj_non_mem_rec_result".format(j))
             res_list.append(res)
         except OSError as e:
             logger.info(e)
