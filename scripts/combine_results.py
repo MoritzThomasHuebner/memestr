@@ -33,5 +33,5 @@ for i in range(1850, 1851):
     new_res = res_list.combine()
     new_res.label = "reconstructed_combined"
     new_res.save_to_file()
+    new_res.plot_corner()
 
-new_res.plot_corner()
