@@ -329,7 +329,7 @@ def setup_run(kwargs, outdir, recovery_model):
     filename_base = filename_base.replace('_dynesty', '')
     filename_base = filename_base.replace('_cpnest', '')
     filename_base = filename_base.replace('_pypolychord', '')
-    injection_params_file = filename_base.replace('_nrsur', '')
+    injection_params_file = filename_base.replace('_nr_sur', '')
     injection_params_file = injection_params_file.replace('_IMR_inj', '')
     injection_parameters = get_injection_parameter_set(injection_params_file)
     for key in injection_parameters:
@@ -380,7 +380,7 @@ def setup_run(kwargs, outdir, recovery_model):
     ifo_file = filename_base.replace('_dynesty', '')
     ifo_file = ifo_file.replace('_cpnest', '')
     ifo_file = ifo_file.replace('_pypolychord', '')
-    ifo_file = ifo_file.replace('_nrsur', '')
+    ifo_file = ifo_file.replace('_nr_sur', '')
     ifo_file = ifo_file.replace('_IMR_inj', '')
 
     logger.info("Parameter Set: " + str(filename_base))

@@ -20,7 +20,7 @@ for i in {1999..1850};
 do
     for j in {0..20}
     do
-        bash production_IMR_non_mem_rec_submit.sh ${i}_dynesty_nrsur ${j}
+        bash production_IMR_non_mem_rec_submit.sh ${i}_dynesty_nr_sur ${j}
     done
 done
 
