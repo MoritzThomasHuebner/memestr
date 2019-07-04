@@ -31,7 +31,7 @@ for i in range(1850, 1851):
             logger.info(e)
             continue
     new_res = res_list.combine()
-    new_res.label = "reconstructed_combined"
+    new_res.label = "combined"
     new_res.save_to_file()
     new_res.plot_corner()
 
