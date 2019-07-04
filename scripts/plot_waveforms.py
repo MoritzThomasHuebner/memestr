@@ -47,7 +47,7 @@ params_gws = dict(mass_1=mass_1, mass_2=mass_2, chi_1=chi_1, chi_2=chi_2, lumino
                   theta_jn=theta_jn, phase=phase - np.pi / 2, ra=ra, dec=dec, geocent_time=geocent_time, psi=psi)
 font = {'family': 'sans-serif', 'weight': 300, 'size': 22}
 matplotlib.rc('font', **font)
-matplotlib.rcParams.update({'text.usetex': True})
+# matplotlib.rcParams.update({'text.usetex': True})
 merger_index = np.argmax(wg_nr_osc_mem.time_domain_strain(params)['plus'])
 merger_time = wg_nr_osc_mem.time_array[merger_index]
 plt.plot(wg_nr_osc_mem.time_array - merger_time, 10**21*wg_nr_osc_mem.time_domain_strain(params)['plus'],
