@@ -308,7 +308,7 @@ def run_reweighting(recovery_model, outdir, **kwargs):
         memory_hom_log_bf, memory_hom_weights = reweigh_by_likelihood(new_likelihood=likelihood_memory,
                                                                       new_result=result,
                                                                       reference_likelihood=likelihood_no_memory)
-        memory_log_bf = memory_hom_log_bf - result.log
+        memory_log_bf = memory_hom_log_bf
         pp_result.memory_log_bf = memory_log_bf
         pp_result.memory_weights = memory_hom_weights
         pp_result.to_json()

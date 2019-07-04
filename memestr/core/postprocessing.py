@@ -285,7 +285,7 @@ def calculate_log_weights(new_likelihood, new_result, reference_likelihood, refe
 
         reweighted_likelihood = new_likelihood.log_likelihood_ratio()
         # original_likelihood = reference_likelihood.log_likelihood_ratio()
-        original_likelihood = reference_likelihood.posterior.log_likelihood.iloc[i]
+        original_likelihood = reference_result.posterior.log_likelihood.iloc[i]
         weight = reweighted_likelihood - original_likelihood
         log_weights.append(weight)
         logger.info("Original Log Likelihood: " + str(original_likelihood))
