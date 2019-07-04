@@ -369,10 +369,10 @@ def setup_run(kwargs, outdir, recovery_model):
     # if sub_run_id == '':
     #     sys.exit(1)
     filename_base = str(kwargs.get('filename_base', 0))
-    ifo_file = filename_base.replace('_dynesty', '')
-    ifo_file = ifo_file.replace('_cpnest', '')
-    ifo_file = ifo_file.replace('_pypolychord', '')
-    ifo_file = ifo_file.replace('_nrsur_rec', '')
+    filename_base = filename_base.replace('_dynesty', '')
+    filename_base = filename_base.replace('_cpnest', '')
+    filename_base = filename_base.replace('_pypolychord', '')
+    ifo_file = filename_base.replace('_nrsur_rec', '')
     ifo_file = ifo_file.replace('_IMR_inj', '')
 
     logger.info("Parameter Set: " + str(filename_base))
