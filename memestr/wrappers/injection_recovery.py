@@ -245,11 +245,19 @@ def run_reweighting(recovery_model, outdir, **kwargs):
 
     likelihood_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
-                                    waveform_generator=waveform_generator_memory)
+                                    waveform_generator=waveform_generator_memory,
+                                    priors=priors,
+                                    time_marginalization=settings.other_settings.time_marginalization,
+                                    distance_marginalization=settings.other_settings.distance_marginalization,
+                                    phase_marginalization=settings.other_settings.phase_marginalization)
 
     likelihood_no_memory = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
-                                    waveform_generator=waveform_generator_no_memory)
+                                    waveform_generator=waveform_generator_no_memory,
+                                    priors=priors,
+                                    time_marginalization=settings.other_settings.time_marginalization,
+                                    distance_marginalization=settings.other_settings.distance_marginalization,
+                                    phase_marginalization=settings.other_settings.phase_marginalization)
     #
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
     # waveform_generator_memory = bilby.gw.WaveformGenerator(
