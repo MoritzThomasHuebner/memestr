@@ -25,7 +25,7 @@ for i in range(1850, 1851):
     res_list = ResultList([])
     for j in range(101):
         try:
-            res = read_in_result(outdir + "{}IMR_mem_inj_non_mem_rec_result".format(j))
+            res = read_in_result(outdir + "{}IMR_mem_inj_non_mem_rec_result.json".format(j))
             res_list.append(res)
         except OSError as e:
             logger.info(e)
