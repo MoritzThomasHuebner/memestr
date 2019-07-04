@@ -303,7 +303,7 @@ def reweigh_log_evidence_by_weights(log_evidence, log_weights):
     return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
 
 
-def reweigh_by_likelihood(new_likelihood, new_result, reference_likelihood, reference_result):
+def reweigh_by_likelihood(new_likelihood, new_result, reference_likelihood, reference_result=None):
     try:
         log_weights = calculate_log_weights(new_likelihood=new_likelihood,
                                             new_result=new_result,
