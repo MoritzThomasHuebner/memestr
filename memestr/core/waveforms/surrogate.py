@@ -180,6 +180,16 @@ def time_domain_nr_hyb_sur_waveform_without_memory_wrapped(times, mass_ratio, to
     return waveform, shift
 
 
+def time_domain_nr_hyb_sur_waveform_without_memory(times, mass_ratio, total_mass, s13, s23,
+                                                   luminosity_distance, inc, phase, **kwargs):
+    waveform, memory_generator = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio,
+                                                            inc=inc,
+                                                            luminosity_distance=luminosity_distance, phase=phase,
+                                                            s13=s13, s23=s23,
+                                                            kwargs=kwargs, fold_in_memory=False)
+    return waveform
+
+
 def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s13, s23, kwargs,
                                fold_in_memory=True):
     memory_generator = gwmemory.waveforms.HybridSurrogate(q=mass_ratio,

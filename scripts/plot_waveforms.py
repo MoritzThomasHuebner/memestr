@@ -14,7 +14,7 @@ wg_nr_gws = WaveformGenerator(
     sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
     waveform_arguments=dict(alpha=0.1))
 wg_nr_osc = WaveformGenerator(
-    time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+    time_domain_source_model=time_domain_nr_hyb_sur_waveform_without_memory,
     sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
     waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
 wg_nr_osc_mem = WaveformGenerator(
@@ -45,7 +45,9 @@ params = dict(mass_ratio=mass_2 / mass_1, total_mass=mass_1 + mass_2, s13=chi_1,
               geocent_time=geocent_time, psi=psi)
 params_gws = dict(mass_1=mass_1, mass_2=mass_2, chi_1=chi_1, chi_2=chi_2, luminosity_distance=luminosity_distance,
                   theta_jn=theta_jn, phase=phase - np.pi / 2, ra=ra, dec=dec, geocent_time=geocent_time, psi=psi)
-font = {'family': 'sans-serif', 'weight': 300, 'size': 22}
+matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+# plt.style.use('fivethirtyeight')
+font = {'family': 'sans-serif', 'weight': 300, 'size': 15}
 matplotlib.rc('font', **font)
 # matplotlib.rcParams.update({'text.usetex': True})
 merger_index = np.argmax(wg_nr_osc_mem.time_domain_strain(params)['plus'])
@@ -59,8 +61,32 @@ plt.xlabel('Time [s]')
 plt.ylabel('Strain [$10^{-21}$]')
 plt.ylim(-0.95, 1.5)
 plt.xlim(12.2 - merger_time, 12.32 - merger_time)
-plt.legend()
+plt.grid()
+plt.legend(fontsize=14)
+plt.tight_layout()
+# plt.show()
 plt.savefig('test_waveform')
+plt.clf()
+
+matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+# plt.style.use('fivethirtyeight')
+font = {'family': 'sans-serif', 'weight': 300, 'size': 15}
+matplotlib.rc('font', **font)
+# matplotlib.rcParams.update({'text.usetex': True})
+merger_index = np.argmax(wg_nr_osc_mem.time_domain_strain(params)['plus'])
+merger_time = wg_nr_osc_mem.time_array[merger_index]
+plt.plot(wg_nr_osc_mem.time_array - merger_time, 10**21*wg_nr_osc_mem.time_domain_strain(params)['plus'], label='Oscillatory + Memory')
+plt.plot(wg_nr_osc.time_array - merger_time, 10**21*wg_nr_osc.time_domain_strain(params)['plus'], label='Oscillatory')
+# plt.plot(wg_nr_gws.time_array, np.roll(wg_nr_gws.time_domain_strain(params_gws)['plus'], 16000))
+plt.xlabel('Time [s]')
+plt.ylabel('Strain [$10^{-21}$]')
+plt.ylim(-0.95, 1.5)
+plt.xlim(12.2 - merger_time, 12.32 - merger_time)
+plt.grid()
+plt.legend(fontsize=14)
+plt.tight_layout()
+# plt.show()
+plt.savefig('test_waveform2')
 plt.clf()
 
 import sys

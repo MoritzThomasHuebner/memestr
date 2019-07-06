@@ -140,8 +140,8 @@ def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
         kwargs, outdir, recovery_model)
 
     try:
-        result = bilby.core.result.read_in_result(
-            filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/' + sub_run_id + 'IMR_mem_inj_non_mem_rec_result.json')
+        result = bilby.result.read_in_result(
+            filename=str(filename_base) + '_IMR_inj_production_IMR_non_mem_rec/' + str(sub_run_id) + 'IMR_mem_inj_non_mem_rec_result.json')
         result.outdir = outdir
     except Exception as e:
         logger.info(e)
