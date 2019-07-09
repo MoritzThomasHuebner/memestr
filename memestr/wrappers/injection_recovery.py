@@ -222,14 +222,14 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
-        pp_result = PostprocessingResult.from_json(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
+        pp_result = PostprocessingResult.from_json(outdir=str(filename_base) + '_production_IMR_non_mem_rec/')
     except Exception as e:
         logger.info(e)
-        pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
+        pp_result = PostprocessingResult(outdir=str(filename_base) + '_production_IMR_non_mem_rec/')
     #IMR
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
-    result = bilby.result.read_in_result(filename=str(filename_base) + '_IMR_inj_production_IMR_non_mem_rec/combined_result.json')
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_result.json')
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
