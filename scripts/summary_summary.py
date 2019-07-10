@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import memestr
 import numpy as np
 
-minimums = np.arange(0, 1950, 50)
+minimums = np.arange(0, 2000, 50)
 maximums = minimums + 50
 
 memory_log_bfs = np.array([])
