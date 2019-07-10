@@ -32,8 +32,13 @@ for i in range(min_event_id, max_event_id):
     injection_parameters = get_injection_parameter_set(str(i))
     ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1.h5')
     try:
-        pp_res = PostprocessingResult.from_json(outdir=str(i)+'_dynesty_production_IMR_non_mem_rec/')
-        res = bilby.result.read_in_result(filename=str(i)+'_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
+        if i > 1850:
+            pp_res = PostprocessingResult.from_json(outdir=str(i) + 'dynesty_nr_sur_production_IMR_non_mem_rec/')
+            res = bilby.result.read_in_result(
+                filename=str(i) + 'dynesty_nr_sur_production_IMR_non_mem_rec/combined_result.json')
+        else:
+            pp_res = PostprocessingResult.from_json(outdir=str(i)+'_dynesty_production_IMR_non_mem_rec/')
+            res = bilby.result.read_in_result(filename=str(i)+'_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
         gw_log_bf = res.log_bayes_factor
         memory_log_bf = pp_res.memory_log_bf
         hom_log_bf = pp_res.hom_log_bf
