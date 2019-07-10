@@ -30,7 +30,7 @@ max_event_id = int(sys.argv[2])
 for i in range(min_event_id, max_event_id):
     logger.info(i)
     injection_parameters = get_injection_parameter_set(str(i))
-    ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1.h5')
+    ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' + str(i) + '_H1L1V1.h5')
     try:
         if i > 1850:
             pp_res = PostprocessingResult.from_json(outdir=str(i) + 'dynesty_nr_sur_production_IMR_non_mem_rec/')
