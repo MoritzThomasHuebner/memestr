@@ -47,6 +47,7 @@ for i in range(min_event_id, max_event_id):
         # if memory_log_bf > 1:
         #     logger.info(i)
     except OSError as e:
+        logger.warning(e)
         gw_log_bf = 0
         memory_log_bf = 0
         hom_log_bf = 0
