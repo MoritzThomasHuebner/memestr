@@ -21,7 +21,7 @@ logger = bilby.core.utils.logger
     # new_res.plot_corner()
 
 for i in [1863, 1870, 1876, 1896, 1903, 1907, 1912, 1916, 1936, 1937, 1938, 1958, 1971, 1982, 1996]:
-    outdir = "{}_dynesty_nr_sur_rec_IMR_inj_production_IMR_non_mem_rec/".format(i)
+    outdir = "{}_dynesty_nr_sur_production_IMR_non_mem_rec/".format(i)
     res_list = ResultList([])
     for j in range(100, 110):
         try:
