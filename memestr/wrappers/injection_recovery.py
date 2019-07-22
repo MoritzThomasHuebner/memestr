@@ -229,7 +229,10 @@ def run_reweighting(recovery_model, outdir, **kwargs):
     #IMR
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
-    result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_result.json')
+    # try:
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_high_nlive_result.json')
+    # except Exception:
+    #     result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_result.json')
 
     waveform_generator_memory = bilby.gw.WaveformGenerator(
         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
