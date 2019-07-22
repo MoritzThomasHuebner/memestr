@@ -34,8 +34,12 @@ for i in range(min_event_id, max_event_id):
     try:
         if i > 1850:
             pp_res = PostprocessingResult.from_json(outdir=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/')
-            res = bilby.result.read_in_result(
-                filename=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/combined_result.json')
+            try:
+                res = bilby.result.read_in_result(
+                    filename=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/combined_high_nlive_result.json')
+            except Exception:
+                res = bilby.result.read_in_result(
+                    filename=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/combined_result.json')
         else:
             pp_res = PostprocessingResult.from_json(outdir=str(i)+'_dynesty_production_IMR_non_mem_rec/')
             res = bilby.result.read_in_result(filename=str(i)+'_dynesty_production_IMR_non_mem_rec/IMR_mem_inj_non_mem_rec_result.json')
