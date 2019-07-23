@@ -17,6 +17,9 @@ gw_log_bfs_injected = np.array([])
 for min_event_id, max_event_id in zip(minimums, maximums):
     memory_log_bfs = np.append(memory_log_bfs, np.loadtxt('summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
     memory_log_bfs_injected = np.append(memory_log_bfs_injected, np.loadtxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
+    invalid_indices = np.where(memory_log_bfs < -2)
+    memory_log_bfs[invalid_indices] = 0
+    memory_log_bfs_injected[invalid_indices] = 0
     # memory_log_bfs_injected_degenerate = np.append(memory_log_bfs_injected_degenerate, np.loadtxt('summary_memory_log_bfs_injected_degenerate' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
     # hom_log_bfs = np.append(hom_log_bfs, np.loadtxt('summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
     # hom_log_bfs_injected = np.append(hom_log_bfs_injected, np.loadtxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
@@ -81,8 +84,22 @@ plt.ylabel('Cumulative log BF')
 plt.ylim(-5, 12)
 plt.legend()
 plt.tight_layout()
-plt.savefig('summary_plot_cumulative_memory_log_bf_new')
+plt.savefig('summary_plot_cumulative_memory_log_bf')
 plt.clf()
+
+plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
+# plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate', linestyle='--')
+plt.plot(memory_log_bfs_cumsum, label='sampled')
+plt.axvline(1850, label='Change of methods', linestyle=':', color='red')
+plt.xlabel('Event ID')
+plt.ylabel('Cumulative log BF')
+plt.ylim(-5, 12)
+plt.xlim(1850, 2000)
+plt.legend()
+plt.tight_layout()
+plt.savefig('summary_plot_cumulative_memory_log_bf_high_snr')
+plt.clf()
+
 
 # plt.plot(hom_log_bfs_injected_cumsum, label='injected', linestyle='--')
 # plt.plot(hom_log_bfs_cumsum, label='sampled')
