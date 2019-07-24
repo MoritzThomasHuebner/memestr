@@ -194,6 +194,7 @@ while True:
     likelihood_with_memory.parameters = injection_parameters
     likelihood_without_memory.parameters = injection_parameters
     res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
+    logger.disabled = False
     logger.info(str(res) + '\t' + str(trials) + '\t' + str(network_snr))
     with open(output, 'a') as f:
         f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\n')
