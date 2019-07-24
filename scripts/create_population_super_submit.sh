@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 
-for i in {32..96}
+for i in {0..31}
 do
-    sbatch create_population.sh ${i}
+    sbatch create_population.sh snr_60_${i}
 done
 #sbatch create_population.sh 2000 2040
 #sbatch create_population.sh 2040 2080
