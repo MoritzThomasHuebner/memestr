@@ -87,6 +87,7 @@ def create_parameter_set(filename):
             interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
             # interferometer_mem = bilby.gw.detector.get_empty_interferometer(ifo)
             # interferometer_mem_ref = bilby.gw.detector.get_empty_interferometer(ifo)
+            logger.disabled = True
             if ifo in ['H1', 'L1']:
                 interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
                 # interferometer_mem.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
@@ -97,6 +98,7 @@ def create_parameter_set(filename):
                     from_power_spectral_density_file('AdV_psd.txt')
                 # interferometer_mem.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.\
                 #     from_power_spectral_density_file('AdV_psd.txt')
+
             interferometer.set_strain_data_from_power_spectral_density(
                 sampling_frequency=settings.waveform_data.sampling_frequency,
                 duration=settings.waveform_data.duration,
@@ -105,7 +107,6 @@ def create_parameter_set(filename):
             #     sampling_frequency=settings.waveform_data.sampling_frequency,
             #     duration=settings.waveform_data.duration,
             #     start_time=start_time)
-            logger.disabled = True
             injection_polarizations = interferometer.inject_signal(
                 parameters=settings.injection_parameters.__dict__,
                 injection_polarizations=hf_signal)
@@ -193,6 +194,7 @@ while True:
     likelihood_with_memory.parameters = injection_parameters
     likelihood_without_memory.parameters = injection_parameters
     res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
+    logger.info(str(res) + '\t' + str(trials) + '\t' + str(network_snr))
     with open(output, 'a') as f:
         f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\n')
     i += 1
