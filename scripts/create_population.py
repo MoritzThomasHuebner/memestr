@@ -23,7 +23,7 @@ def create_parameter_set(filename):
     network_snr = 0
     settings = AllSettings()
     trials = 0
-    while network_snr < 30:
+    while network_snr < 60:
         idx = np.random.randint(0, len(all_params.total_masses))
         total_mass = all_params.total_masses[idx]
         mass_ratio = all_params.mass_ratios[idx]
@@ -159,7 +159,7 @@ def create_parameter_set(filename):
 output = 'Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
 logger.info(output)
 with open(output, 'w') as f:
-    f.write('# Memory Log BF\tTrials\n')
+    f.write('# Memory Log BF\tTrials\tNetwork SNR\n')
 
 i = 0
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
@@ -167,6 +167,7 @@ while True:
     logger.info('Start sampling population')
     settings = AllSettings()
     ifos, injection_parameters, trials = create_parameter_set(i)
+    network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in ifos]))
     settings.waveform_data.sampling_frequency = 2048
     settings.waveform_data.duration = 16
 
@@ -188,7 +189,7 @@ while True:
     likelihood_without_memory.parameters = injection_parameters
     res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
     with open(output, 'a') as f:
-        f.write(str(res) + '\t' + str(trials) + '\n')
+        f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\n')
     i += 1
 
 
