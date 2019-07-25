@@ -23,7 +23,7 @@ def create_parameter_set(filename):
     network_snr = 0
     settings = AllSettings()
     trials = 0
-    while network_snr < 60:
+    while network_snr < 12:
         idx = np.random.randint(0, len(all_params.total_masses))
         total_mass = all_params.total_masses[idx]
         mass_ratio = all_params.mass_ratios[idx]

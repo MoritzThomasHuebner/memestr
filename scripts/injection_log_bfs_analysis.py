@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 log_bfs = np.array([])
@@ -8,24 +6,25 @@ snrs = np.array([])
 trials = np.array([])
 
 for i in range(32):
-    data = np.loadtxt('Injection_log_bfs_snr_60_{}.txt'.format(i))
-    snrs = np.append(snrs, data[:, 0])
+    data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_snr_60_{}.txt'.format(i))
+    log_bfs = np.append(log_bfs, data[:, 0])
     trials = np.append(trials, data[:, 1])
-    memory_log_bfs = np.append(log_bfs, data[:, 2])
-
+    snrs = np.append(snrs, data[:, 2])
+print(len(trials))
 
 # for i in range(32, 97):
 #     data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}.txt'.format(i))
 #     log_bfs = np.append(log_bfs, data[:, 0])
 #     trials = np.append(trials, data[:, 1])
 
-plt.plot(np.cumsum(log_bfs))
-plt.xlabel('Number of events')
-plt.ylabel('Cumulative log BF')
+plt.scatter(log_bfs, snrs)
+plt.xlabel('log BFs')
+plt.ylabel('SNR')
 plt.show()
 plt.clf()
 
 plt.hist(log_bfs, bins=int(np.sqrt(len(log_bfs))))
+plt.semilogy()
 plt.xlabel('log BFs')
 plt.show()
 plt.clf()
