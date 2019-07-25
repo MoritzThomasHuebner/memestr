@@ -58,16 +58,25 @@ plt.clf()
 #     maximums.append(np.max(np.cumsum(log_bfs)))
 # maximums = np.loadtxt('maximums.txt')
 maximums = np.loadtxt('maximums.txt')
-percentiles = np.percentile(maximums, [99.99994, 99.994, 99.7, 95, 68])
-plt.hist(maximums, alpha=0.5, bins=1000)
-plt.xlim(15, -5)
-colors = ['red', 'orange', 'cyan', 'black', 'green']
-for i in range(len(percentiles)):
-    plt.axvline(percentiles[i], label='${}\sigma$'.format(5 - i), color=colors[i])
-plt.legend()
-plt.xlabel('Maximum log BF')
-plt.ylabel('Count')
-plt.semilogy()
+# pcs = [99.99994, 99.994, 99.7, 95, 68]
+pcs = 100*(-1/np.linspace(1/.50, 1/.9999994, 100) + 1.4999994)
+percentiles = np.percentile(maximums, pcs)
+for percentage, log_bf in zip(pcs, percentiles):
+    print(str(1 - percentage/100) + '\t' + str(1/np.exp(log_bf)))
+# plt.semilogy()
+plt.plot(1 - pcs/100, 1/np.exp(percentiles))
+plt.plot([0, 0.5], [0, 0.5])
 plt.show()
 plt.clf()
+# plt.hist(maximums, alpha=0.5, bins=1000)
+# plt.xlim(-5, 15)
+# colors = ['red', 'orange', 'cyan', 'black', 'green']
+# for i in range(len(percentiles)):
+#     plt.axvline(percentiles[i], label='${}\sigma$'.format(5 - i), color=colors[i])
+# plt.legend()
+# plt.xlabel('Maximum log BF')
+# plt.ylabel('Count')
+# plt.semilogy()
+# plt.show()
+# plt.clf()
 
