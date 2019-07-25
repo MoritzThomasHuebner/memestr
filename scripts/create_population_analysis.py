@@ -7,7 +7,8 @@ memory_log_bfs = np.array([])
 for i in range(1):
     data = np.loadtxt('Injection_log_bfs_snr_60_{}'.format(i))
     # data = test
-    snrs = np.append(snrs, data[:, 0])
-    memory_log_bfs = np.append(memory_log_bfs, data[:, 2])
+    print(data[0])
+    snrs = np.append(snrs, data[0])
+    memory_log_bfs = np.append(memory_log_bfs, data[2])
 print(snrs)
 print(memory_log_bfs)
