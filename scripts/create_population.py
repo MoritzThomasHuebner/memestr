@@ -62,69 +62,16 @@ def create_parameter_set(filename):
                                        waveform_arguments=settings.waveform_arguments.__dict__,
                                        **settings.waveform_data.__dict__)
 
-        # waveform_generator_memory = \
-        #     bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_memory_waveform_wrapped,
-        #                                parameters=settings.injection_parameters.__dict__,
-        #                                waveform_arguments=settings.waveform_arguments.__dict__,
-        #                                **settings.waveform_data.__dict__)
 
-        try:
-            # hf_signal = waveform_generator.frequency_domain_strain()
-            hf_signal = waveform_generator_fd.frequency_domain_strain()
-            # hf_signal_mem = waveform_generator_memory.frequency_domain_strain()
-            # hf_signal_mem_ref = waveform_generator_memory_ref.frequency_domain_strain()
-        except ValueError as e:
-            logger.warning(e)
-            logger.info(str(settings.injection_parameters))
-            continue
+        hf_signal = waveform_generator_fd.frequency_domain_strain()
 
         ifos = bilby.gw.detector.InterferometerList([])
-        # ifos_mem = bilby.gw.detector.InterferometerList([])
-        # ifos_mem_ref = bilby.gw.detector.InterferometerList([])
-        # for ifo in ['H1', 'L1', 'V1']:
         for ifo in ['H1', 'L1', 'V1']:
-            start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
-            interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
-            # interferometer_mem = bilby.gw.detector.get_empty_interferometer(ifo)
-            # interferometer_mem_ref = bilby.gw.detector.get_empty_interferometer(ifo)
             logger.disabled = True
-            if ifo in ['H1', 'L1']:
-                interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
-                # interferometer_mem.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
-                # interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
-                # interferometer_mem.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
-            else:
-                interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.\
-                    from_power_spectral_density_file('AdV_psd.txt')
-                # interferometer_mem.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.\
-                #     from_power_spectral_density_file('AdV_psd.txt')
-
-            interferometer.set_strain_data_from_power_spectral_density(
-                sampling_frequency=settings.waveform_data.sampling_frequency,
-                duration=settings.waveform_data.duration,
-                start_time=start_time)
-            # interferometer_mem.set_strain_data_from_power_spectral_density(
-            #     sampling_frequency=settings.waveform_data.sampling_frequency,
-            #     duration=settings.waveform_data.duration,
-            #     start_time=start_time)
-            injection_polarizations = interferometer.inject_signal(
-                parameters=settings.injection_parameters.__dict__,
-                injection_polarizations=hf_signal)
+            interferometer = setup_ifo(hf_signal, ifo, settings)
             logger.disabled = False
-            # injection_polarizations_mem = interferometer_mem.inject_signal(
-            #     parameters=settings.injection_parameters.__dict__,
-            #     injection_polarizations=hf_signal_mem)
-
-            # signal = interferometer.get_detector_response(
-            #     injection_polarizations, settings.injection_parameters.__dict__)
-            # signal_mem = interferometer_mem.get_detector_response(
-            #     injection_polarizations_mem, settings.injection_parameters.__dict__)
-            #
-            # interferometer.plot_data(signal=signal, outdir='', label=str(filename) + '_osc')
-            # interferometer_mem.plot_data(signal=signal_mem, outdir='.', label=str(filename) + '_mem')
-
             ifos.append(interferometer)
-            # ifos_mem.append(interferometer_mem)
+
         best_snrs = [ifo.meta_data['matched_filter_SNR'].real for ifo in ifos]
         best_snr = max(best_snrs)
         network_snr = np.sqrt(np.sum([snr ** 2 for snr in best_snrs]))
@@ -136,12 +83,21 @@ def create_parameter_set(filename):
         trials += 1
     logger.disabled = False
     logger.info(filename)
-    # logger.info(best_mem_snr)
-    # logger.info(network_mem_snr)
-    # logger.info(best_snr)
-    # logger.info(network_snr)
-    logger.disabled = True
-    return ifos, settings.injection_parameters.__dict__, trials
+
+    waveform_generator_memory = \
+        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_memory_waveform_wrapped,
+                                   parameters=settings.injection_parameters.__dict__,
+                                   waveform_arguments=settings.waveform_arguments.__dict__,
+                                   **settings.waveform_data.__dict__)
+    hf_signal = waveform_generator_memory.frequency_domain_strain()
+    mem_ifos = bilby.gw.detector.InterferometerList([])
+    for ifo in ['H1', 'L1', 'V1']:
+        logger.disabled = True
+        interferometer = setup_ifo(hf_signal, ifo, settings)
+        logger.disabled = False
+        mem_ifos.append(interferometer)
+
+    return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
     # with open('parameter_sets/' + str(filename), 'w') as f:
     #     f.write('total_mass=' + str(settings.injection_parameters.total_mass) +
     #             ' mass_ratio=' + str(settings.injection_parameters.mass_ratio) +
@@ -162,18 +118,38 @@ def create_parameter_set(filename):
     # ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
 
-output = 'Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
+
+def setup_ifo(hf_signal, ifo, settings):
+    start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
+    interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
+    if ifo in ['H1', 'L1']:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+    else:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
+            from_power_spectral_density_file('AdV_psd.txt')
+    interferometer.set_strain_data_from_power_spectral_density(
+        sampling_frequency=settings.waveform_data.sampling_frequency,
+        duration=settings.waveform_data.duration,
+        start_time=start_time)
+    injection_polarizations = interferometer.inject_signal(
+        parameters=settings.injection_parameters.__dict__,
+        injection_polarizations=hf_signal)
+    return interferometer
+
+
+output = 'Injection_log_bfs/Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
 logger.info(output)
 with open(output, 'w') as f:
-    f.write('# Memory Log BF\tTrials\tNetwork SNR\n')
+    f.write('# Memory Log BF\tTrials\tNetwork SNR\tMemory Network SNR\n')
 
 i = 0
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
 while True:
     logger.info('Start sampling population')
     settings = AllSettings()
-    ifos, injection_parameters, trials = create_parameter_set(i)
+    ifos, mem_ifos, injection_parameters, trials = create_parameter_set(i)
     network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in ifos]))
+    memory_network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in mem_ifos]))
     settings.waveform_data.sampling_frequency = 2048
     settings.waveform_data.duration = 16
 
@@ -195,9 +171,9 @@ while True:
     likelihood_without_memory.parameters = injection_parameters
     res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
     logger.disabled = False
-    logger.info(str(res) + '\t' + str(trials) + '\t' + str(network_snr))
+    logger.info(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\t' + str(memory_network_snr))
     with open(output, 'a') as f:
-        f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\n')
+        f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\t' + str(memory_network_snr) + '\n')
     i += 1
 
 
