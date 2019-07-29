@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-label = '{}'
+label = 'snr_0'
 
 log_bfs = np.array([])
 trials = np.array([])
