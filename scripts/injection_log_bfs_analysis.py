@@ -8,7 +8,7 @@ trials = np.array([])
 snrs = np.array([])
 memory_snrs = np.array([])
 
-for i in range(32):
+for i in range(256):
     data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_snr_0_{}.txt'.format(i))
     log_bfs = np.append(log_bfs, data[:, 0])
     trials = np.append(trials, data[:, 1])
