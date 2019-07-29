@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-label = 'snr_0'
+label = 'snr_12'
 
 log_bfs = np.array([])
 trials = np.array([])
@@ -64,7 +64,7 @@ plt.clf()
 
 minimums = []
 
-for i in range(1000000):
+for i in range(10000):
     print(i)
     np.random.shuffle(log_bfs)
     minimums.append(np.min(np.cumsum(log_bfs)))
