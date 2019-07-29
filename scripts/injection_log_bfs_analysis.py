@@ -11,7 +11,10 @@ snrs = np.array([])
 memory_snrs = np.array([])
 
 for i in range(256):
-    data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}_{}.txt'.format(label, i))
+    try:
+        data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}_{}.txt'.format(label, i))
+    except Exception:
+        continue
     log_bfs = np.append(log_bfs, data[:, 0])
     trials = np.append(trials, data[:, 1])
     snrs = np.append(snrs, data[:, 2])
