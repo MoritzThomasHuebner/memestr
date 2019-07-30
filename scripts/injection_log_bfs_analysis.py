@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-label = 'snr_12'
+label = 'snr_0'
 
 log_bfs = np.array([])
 trials = np.array([])
@@ -67,10 +67,12 @@ plt.clf()
 
 minimums = []
 
-for i in range(10000):
+for i in range(100000):
     print(i)
-    np.random.shuffle(log_bfs)
-    minimums.append(np.min(np.cumsum(log_bfs)))
+    reduced_log_bfs = np.random.choice(log_bfs, 100000)
+    np.random.shuffle(reduced_log_bfs)
+    reduced_log_bfs_cumsum = np.cumsum(reduced_log_bfs)
+    minimums.append(np.min(reduced_log_bfs))
 # minimums = np.loadtxt('minimums.txt')
 np.savetxt('{}_minimums.txt'.format(label), minimums)
 percentiles = np.percentile(minimums, [100*(1-0.9999994), 100*(1-0.99994), 0.3, 5, 32])
@@ -83,7 +85,7 @@ plt.legend()
 plt.xlabel('Minimum log BF')
 plt.ylabel('Count')
 plt.semilogy()
-plt.savefig('{}_minimums'.format(label))
+plt.savefig('Injection_log_bfs/{}_minimums'.format(label))
 # plt.show()
 plt.clf()
 # maximums = []
