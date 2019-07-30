@@ -65,18 +65,18 @@ plt.clf()
 # sys.exit(0)
 
 
-minimums = []
+maximums = []
 
 for i in range(100000):
     print(i)
     reduced_log_bfs = np.random.choice(log_bfs, 100000)
     np.random.shuffle(reduced_log_bfs)
     reduced_log_bfs_cumsum = np.cumsum(reduced_log_bfs)
-    minimums.append(np.min(reduced_log_bfs))
+    maximums.append(np.max(reduced_log_bfs))
 # minimums = np.loadtxt('minimums.txt')
-np.savetxt('{}_minimums.txt'.format(label), minimums)
-percentiles = np.percentile(minimums, [100*(1-0.9999994), 100*(1-0.99994), 0.3, 5, 32])
-plt.hist(minimums, alpha=0.5, bins=100)
+np.savetxt('{}_maximums.txt'.format(label), maximums)
+percentiles = np.percentile(maximums, [100 * (1 - 0.9999994), 100 * (1 - 0.99994), 0.3, 5, 32])
+plt.hist(maximums, alpha=0.5, bins=100)
 plt.xlim(15, -5)
 colors = ['red', 'orange', 'cyan', 'black', 'green']
 for i in range(len(percentiles)):
