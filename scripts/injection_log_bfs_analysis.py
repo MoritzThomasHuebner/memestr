@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-label = 'snr_0'
+label = 'snr_12'
 
 log_bfs = np.array([])
 trials = np.array([])
@@ -19,8 +19,13 @@ for i in range(256):
     trials = np.append(trials, data[:, 1])
     snrs = np.append(snrs, data[:, 2])
     memory_snrs = np.append(memory_snrs, data[:, 3])
-print(len(trials))
 
+
+print("Memory log BF per Event: " + str(np.sum(log_bfs)/len(log_bfs)))
+print("Events to log BF = 8: " + str(8*len(log_bfs)/np.sum(log_bfs)))
+
+import sys
+sys.exit(0)
 # for i in range(32, 97):
 #     data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}.txt'.format(i))
 #     log_bfs = np.append(log_bfs, data[:, 0])
