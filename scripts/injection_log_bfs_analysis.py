@@ -20,7 +20,7 @@ for i in range(256):
     snrs = np.append(snrs, data[:, 2])
     memory_snrs = np.append(memory_snrs, data[:, 3])
 
-
+log_bfs[np.where(log_bfs > 8)] = 8
 print("Memory log BF per Event: " + str(-np.sum(log_bfs)/len(log_bfs)))
 print("Events to log BF = 8: " + str(-8*len(log_bfs)/np.sum(log_bfs)))
 print("Total number of events considered: " + str(len(log_bfs)))
