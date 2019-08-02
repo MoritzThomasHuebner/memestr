@@ -21,8 +21,8 @@ for i in range(256):
     memory_snrs = np.append(memory_snrs, data[:, 3])
 
 
-print("Memory log BF per Event: " + str(np.sum(log_bfs)/len(log_bfs)))
-print("Events to log BF = 8: " + str(8*len(log_bfs)/np.sum(log_bfs)))
+print("Memory log BF per Event: " + str(-np.sum(log_bfs)/len(log_bfs)))
+print("Events to log BF = 8: " + str(-8*len(log_bfs)/np.sum(log_bfs)))
 
 import sys
 sys.exit(0)
