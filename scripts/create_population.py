@@ -23,7 +23,7 @@ def create_parameter_set(filename):
     network_snr = 0
     settings = AllSettings()
     trials = 0
-    while network_snr == 0:
+    while network_snr < 12:
         idx = np.random.randint(0, len(all_params.total_masses))
         total_mass = all_params.total_masses[idx]
         mass_ratio = all_params.mass_ratios[idx]
@@ -123,7 +123,8 @@ def setup_ifo(hf_signal, ifo, settings):
     start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
     interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
     if ifo in ['H1', 'L1']:
-        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+        # interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
     else:
         interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
             from_power_spectral_density_file('AdV_psd.txt')
