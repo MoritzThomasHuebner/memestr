@@ -23,7 +23,7 @@ for i in range(256):
 
 print("Memory log BF per Event: " + str(-np.sum(log_bfs)/len(log_bfs)))
 print("Events to log BF = 8: " + str(-8*len(log_bfs)/np.sum(log_bfs)))
-print("Total number of events considered: ")
+print("Total number of events considered: " + str(len(log_bfs)))
 
 
 sys.exit(0)
