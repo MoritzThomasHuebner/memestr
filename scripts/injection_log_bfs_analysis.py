@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
-label = 'aplus'
+import sys
+label = sys.argv[1]
 
 log_bfs = np.array([])
 trials = np.array([])
@@ -23,8 +23,9 @@ for i in range(256):
 
 print("Memory log BF per Event: " + str(-np.sum(log_bfs)/len(log_bfs)))
 print("Events to log BF = 8: " + str(-8*len(log_bfs)/np.sum(log_bfs)))
+print("Total number of events considered: ")
 
-import sys
+
 sys.exit(0)
 # for i in range(32, 97):
 #     data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}.txt'.format(i))
