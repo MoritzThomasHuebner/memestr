@@ -115,7 +115,7 @@ def generate_extrinsic_parameters(size=10000, plot=False):
     priors_phase = bilby.core.prior.Uniform(minimum=0, maximum=np.pi)
     priors_psi = bilby.core.prior.Uniform(minimum=0, maximum=np.pi/2)
     priors_geocent_time = bilby.core.prior.Uniform(minimum=0.0, maximum=16.0)
-    priors_luminosity_distance = bilby.gw.prior.UniformComovingVolume(minimum=10, maximum=80,
+    priors_luminosity_distance = bilby.gw.prior.UniformComovingVolume(minimum=10, maximum=5000,
                                                                       name='luminosity_distance')
     inc = priors_inc.sample(size=size)
     ra = priors_ra.sample(size=size)
