@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-
-for i in {0..255}
+for j in {0..99}
 do
-    sbatch create_population.sh aplus_${i}
+  for i in {0..7}
+  do
+      sbatch create_population.sh ${i}
+  done
 done
 #sbatch create_population.sh 2000 2040
 #sbatch create_population.sh 2040 2080

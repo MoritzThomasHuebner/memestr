@@ -1,3 +1,4 @@
+import os
 import sys
 from bilby.core.utils import logger
 logger.info('Test')
@@ -23,7 +24,8 @@ def create_parameter_set(filename):
     network_snr = 0
     settings = AllSettings()
     trials = 0
-    while network_snr < 12:
+    memory_log_bf = 0
+    while memory_log_bf > -6:
         idx = np.random.randint(0, len(all_params.total_masses))
         total_mass = all_params.total_masses[idx]
         mass_ratio = all_params.mass_ratios[idx]
@@ -51,19 +53,20 @@ def create_parameter_set(filename):
         settings.waveform_data.sampling_frequency = 2048
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
-        # waveform_generator_fd = \
-        #     bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-        #                                parameters=settings.injection_parameters.__dict__,
-        #                                waveform_arguments=settings.waveform_arguments.__dict__,
-        #                                **settings.waveform_data.__dict__)
-        waveform_generator_fd = \
-            bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
-                                       parameters=settings.injection_parameters.__dict__,
-                                       waveform_arguments=settings.waveform_arguments.__dict__,
-                                       **settings.waveform_data.__dict__)
+        waveform_generator_with_memory = \
+            bilby.gw.WaveformGenerator(
+                frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+                parameters=settings.injection_parameters.__dict__,
+                waveform_arguments=settings.waveform_arguments.__dict__,
+                **settings.waveform_data.__dict__)
+        waveform_generator_without_memory = \
+            bilby.gw.WaveformGenerator(
+                frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+                parameters=settings.injection_parameters.__dict__,
+                waveform_arguments=settings.waveform_arguments.__dict__,
+                **settings.waveform_data.__dict__)
 
-
-        hf_signal = waveform_generator_fd.frequency_domain_strain()
+        hf_signal = waveform_generator_with_memory.frequency_domain_strain()
 
         ifos = bilby.gw.detector.InterferometerList([])
         for ifo in ['H1', 'L1', 'V1']:
@@ -71,6 +74,15 @@ def create_parameter_set(filename):
             interferometer = setup_ifo(hf_signal, ifo, settings)
             logger.disabled = False
             ifos.append(interferometer)
+
+        likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+                                                                                waveform_generator=waveform_generator_with_memory)
+        likelihood_without_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+                                                                                   waveform_generator=waveform_generator_without_memory)
+        likelihood_with_memory.parameters = settings.injection_parameters.__dict__
+        likelihood_without_memory.parameters = settings.injection_parameters.__dict__
+        memory_log_bf = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
+        logger.info('Memory log BF: ' + str(memory_log_bf))
 
         best_snrs = [ifo.meta_data['matched_filter_SNR'].real for ifo in ifos]
         best_snr = max(best_snrs)
@@ -81,42 +93,44 @@ def create_parameter_set(filename):
         network_mem_snr = np.sqrt(np.sum([snr ** 2 for snr in best_mem_snrs]))
         network_mem_snrs.append(network_snr)
         trials += 1
+        if os.path.exists('parameter_sets/' + str(filename)):
+            return
     logger.disabled = False
     logger.info(filename)
 
-    waveform_generator_memory = \
-        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_memory_waveform_wrapped,
-                                   parameters=settings.injection_parameters.__dict__,
-                                   waveform_arguments=settings.waveform_arguments.__dict__,
-                                   **settings.waveform_data.__dict__)
-    hf_signal = waveform_generator_memory.frequency_domain_strain()
-    mem_ifos = bilby.gw.detector.InterferometerList([])
-    for ifo in ['H1', 'L1', 'V1']:
-        logger.disabled = True
-        interferometer = setup_ifo(hf_signal, ifo, settings)
-        logger.disabled = False
-        mem_ifos.append(interferometer)
+    # waveform_generator_memory = \
+    #     bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_memory_waveform_wrapped,
+    #                                parameters=settings.injection_parameters.__dict__,
+    #                                waveform_arguments=settings.waveform_arguments.__dict__,
+    #                                **settings.waveform_data.__dict__)
+    # hf_signal = waveform_generator_memory.frequency_domain_strain()
+    # mem_ifos = bilby.gw.detector.InterferometerList([])
+    # for ifo in ['H1', 'L1', 'V1']:
+    #     logger.disabled = True
+    #     interferometer = setup_ifo(hf_signal, ifo, settings)
+    #     logger.disabled = False
+    #     mem_ifos.append(interferometer)
 
-    return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
-    # with open('parameter_sets/' + str(filename), 'w') as f:
-    #     f.write('total_mass=' + str(settings.injection_parameters.total_mass) +
-    #             ' mass_ratio=' + str(settings.injection_parameters.mass_ratio) +
-    #             ' luminosity_distance=' + str(settings.injection_parameters.luminosity_distance) +
-    #             ' dec=' + str(settings.injection_parameters.dec) +
-    #             ' ra=' + str(settings.injection_parameters.ra) +
-    #             ' inc=' + str(settings.injection_parameters.inc) +
-    #             ' psi=' + str(settings.injection_parameters.psi) +
-    #             ' phase=' + str(settings.injection_parameters.phase) +
-    #             ' geocent_time=' + str(settings.injection_parameters.geocent_time) +
-    #             ' s11=' + str(settings.injection_parameters.s11) +
-    #             ' s12=' + str(settings.injection_parameters.s12) +
-    #             ' s13=' + str(settings.injection_parameters.s13) +
-    #             ' s21=' + str(settings.injection_parameters.s21) +
-    #             ' s22=' + str(settings.injection_parameters.s22) +
-    #             ' s23=' + str(settings.injection_parameters.s23))
+    with open('parameter_sets/' + str(filename), 'w') as f:
+        f.write('total_mass=' + str(settings.injection_parameters.total_mass) +
+                ' mass_ratio=' + str(settings.injection_parameters.mass_ratio) +
+                ' luminosity_distance=' + str(settings.injection_parameters.luminosity_distance) +
+                ' dec=' + str(settings.injection_parameters.dec) +
+                ' ra=' + str(settings.injection_parameters.ra) +
+                ' inc=' + str(settings.injection_parameters.inc) +
+                ' psi=' + str(settings.injection_parameters.psi) +
+                ' phase=' + str(settings.injection_parameters.phase) +
+                ' geocent_time=' + str(settings.injection_parameters.geocent_time) +
+                ' s11=' + str(settings.injection_parameters.s11) +
+                ' s12=' + str(settings.injection_parameters.s12) +
+                ' s13=' + str(settings.injection_parameters.s13) +
+                ' s21=' + str(settings.injection_parameters.s21) +
+                ' s22=' + str(settings.injection_parameters.s22) +
+                ' s23=' + str(settings.injection_parameters.s23))
 
-    # ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
+    ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
+    # return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
 
 
 def setup_ifo(hf_signal, ifo, settings):
@@ -138,44 +152,46 @@ def setup_ifo(hf_signal, ifo, settings):
     return interferometer
 
 
-output = 'Injection_log_bfs/Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
-logger.info(output)
-with open(output, 'w') as f:
-    f.write('# Memory Log BF\tTrials\tNetwork SNR\tMemory Network SNR\n')
+# output = 'Injection_log_bfs/Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
+# logger.info(output)
+# with open(output, 'w') as f:
+#     f.write('# Memory Log BF\tTrials\tNetwork SNR\tMemory Network SNR\n')
 
-i = 0
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
-while True:
-    logger.info('Start sampling population')
-    settings = AllSettings()
-    ifos, mem_ifos, injection_parameters, trials = create_parameter_set(i)
-    network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in ifos]))
-    memory_network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in mem_ifos]))
-    settings.waveform_data.sampling_frequency = 2048
-    settings.waveform_data.duration = 16
+#     create_parameter_set(i)
+create_parameter_set(6000)
 
-    waveform_generator_with_memory = \
-        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-                                   parameters=injection_parameters,
-                                   waveform_arguments=settings.waveform_arguments.__dict__,
-                                   **settings.waveform_data.__dict__)
-    waveform_generator_without_memory = \
-        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-                                   parameters=injection_parameters,
-                                   waveform_arguments=settings.waveform_arguments.__dict__,
-                                   **settings.waveform_data.__dict__)
-    likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
-                                                                            waveform_generator=waveform_generator_with_memory)
-    likelihood_without_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
-                                                                               waveform_generator=waveform_generator_without_memory)
-    likelihood_with_memory.parameters = injection_parameters
-    likelihood_without_memory.parameters = injection_parameters
-    res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
-    logger.disabled = False
-    logger.info(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\t' + str(memory_network_snr))
-    with open(output, 'a') as f:
-        f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\t' + str(memory_network_snr) + '\n')
-    i += 1
+# while True:
+#     logger.info('Start sampling population')
+#     settings = AllSettings()
+#     ifos, mem_ifos, injection_parameters, trials = create_parameter_set(i)
+#     network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in ifos]))
+#     memory_network_snr = np.sqrt(np.sum([ifo.meta_data['matched_filter_SNR'].real**2 for ifo in mem_ifos]))
+#     settings.waveform_data.sampling_frequency = 2048
+#     settings.waveform_data.duration = 16
+#
+#     waveform_generator_with_memory = \
+#         bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+#                                    parameters=injection_parameters,
+#                                    waveform_arguments=settings.waveform_arguments.__dict__,
+#                                    **settings.waveform_data.__dict__)
+#     waveform_generator_without_memory = \
+#         bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+#                                    parameters=injection_parameters,
+#                                    waveform_arguments=settings.waveform_arguments.__dict__,
+#                                    **settings.waveform_data.__dict__)
+#     likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+#                                                                             waveform_generator=waveform_generator_with_memory)
+#     likelihood_without_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+#                                                                                waveform_generator=waveform_generator_without_memory)
+#     likelihood_with_memory.parameters = injection_parameters
+#     likelihood_without_memory.parameters = injection_parameters
+#     res = likelihood_with_memory.log_likelihood_ratio() - likelihood_without_memory.log_likelihood_ratio()
+#     logger.disabled = False
+#     logger.info(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\t' + str(memory_network_snr))
+#     with open(output, 'a') as f:
+#         f.write(str(res) + '\t' + str(trials) + '\t' + str(network_snr) + '\t' + str(memory_network_snr) + '\n')
+#     i += 1
 
 
 # import matplotlib.pyplot as plt
