@@ -2,7 +2,7 @@
 
 for j in {0..99}
 do
-  for i in {0..7}
+  for i in {2000..2007}
   do
       sbatch create_population.sh ${i}
   done
