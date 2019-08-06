@@ -159,7 +159,7 @@ def setup_ifo(hf_signal, ifo, settings):
 
 # for i in range(int(sys.argv[1]), int(sys.argv[2])):
 #     create_parameter_set(i)
-create_parameter_set(6000)
+create_parameter_set(int(sys.argv[1]))
 
 # while True:
 #     logger.info('Start sampling population')
