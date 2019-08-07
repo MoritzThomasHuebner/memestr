@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-for j in {0..99}
+for i in {0..256}
 do
-  for i in {10000..10007}
-  do
-      sbatch create_population.sh ${i}
-  done
+    sbatch create_population.sh snr_8_12_no_mem_${i}
 done
 #sbatch create_population.sh 2000 2040
 #sbatch create_population.sh 2040 2080
