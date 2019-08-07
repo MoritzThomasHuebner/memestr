@@ -31,8 +31,8 @@ wg_nr_mem = WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_wa
 mass_1 = 36.
 mass_2 = 29.
 luminosity_distance = 410.
-chi_1 = -0.4
-chi_2 = 0.4
+chi_1 = 0.2
+chi_2 = 0.3
 theta_jn = 1.5
 phase = 0.
 psi = 0.
@@ -65,7 +65,7 @@ plt.grid()
 plt.legend(fontsize=14)
 plt.tight_layout()
 # plt.show()
-plt.savefig('test_waveform')
+plt.savefig('test_waveform.pdf')
 plt.clf()
 
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)

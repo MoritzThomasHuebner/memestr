@@ -2,6 +2,7 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import memestr
+import scipy.stats
 import numpy as np
 
 minimums = np.arange(0, 2000, 50)
@@ -26,14 +27,14 @@ for min_event_id, max_event_id in zip(minimums, maximums):
     # gw_log_bfs = np.append(gw_log_bfs, np.loadtxt('summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
     # gw_log_bfs_injected = np.append(gw_log_bfs_injected, np.loadtxt('summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
 
-# np.random.seed(42)
-# np.random.shuffle(memory_log_bfs_injected)
+np.random.seed(42)
+np.random.shuffle(memory_log_bfs_injected)
 memory_log_bfs_injected_cumsum = np.cumsum(memory_log_bfs_injected)
 # np.random.seed(42)
 # np.random.shuffle(memory_log_bfs_injected_degenerate)
 # memory_log_bfs_injected_degenerate_cumsum = np.cumsum(memory_log_bfs_injected_degenerate)
-# np.random.seed(42)
-# np.random.shuffle(memory_log_bfs)
+np.random.seed(42)
+np.random.shuffle(memory_log_bfs)
 memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 # np.random.seed(42)
 # np.random.shuffle(hom_log_bfs_injected)
@@ -75,30 +76,110 @@ memory_log_bfs_cumsum = np.cumsum(memory_log_bfs)
 # plt.savefig('summary_plot_gw_hist_new')
 # plt.clf()
 
-plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
-# plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate', linestyle='--')
-plt.plot(memory_log_bfs_cumsum, label='sampled')
-plt.axvline(1850, label='Change of methods', linestyle=':', color='red')
-plt.xlabel('Event ID')
+
+label = 'snr_8_12_no_mem'
+
+log_bfs = np.array([])
+trials = np.array([])
+snrs = np.array([])
+memory_snrs = np.array([])
+
+for i in range(256):
+    try:
+        data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}_{}.txt'.format(label, i))
+    except Exception:
+        continue
+    log_bfs = np.append(log_bfs, data[:, 0])
+    trials = np.append(trials, data[:, 1])
+    snrs = np.append(snrs, data[:, 2])
+    memory_snrs = np.append(memory_snrs, data[:, 3])
+
+# log_bfs[np.where(log_bfs > 8)] = 8
+print("Memory log BF per Event: " + str(-np.sum(log_bfs)/len(log_bfs)))
+print("Events to log BF = 8: " + str(-8*len(log_bfs)/np.sum(log_bfs)))
+print("Total number of events considered: " + str(len(log_bfs)))
+
+plt.hist(log_bfs, bins=int(np.sqrt(len(log_bfs))))
+plt.semilogy()
+plt.xlabel('Log BF')
+plt.savefig('summary_plot_log_bf_distribution')
+plt.clf()
+
+
+# log_bf_distribution = []
+# for i in range(10000):
+#     log_bf_distribution.append(-np.sum(np.random.choice(log_bfs, 2000)))
+#
+# plt.hist(log_bf_distribution, bins=100, normed=True)
+# plt.axvline(np.mean(log_bf_distribution), color='red', label='Mean')
+# plt.xlabel('Log BF after 2000 events')
+# plt.ylabel('Probability (normalized)')
+# plt.legend()
+# plt.savefig('summary_plot_log_bf')
+# plt.clf()
+#
+# print(np.mean(log_bf_distribution))
+# print(np.std(log_bf_distribution))
+
+matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+matplotlib.rcParams.update({'font.size': 20})
+plt.plot(memory_log_bfs_cumsum, label='Memory Search Study')#, color='orange', linewidth=5.0)
+arc = np.cumsum(-np.random.choice(log_bfs, 2000))
+plt.plot(arc, alpha=0.3, color='grey', label='Other Realizations')
+plt.axhline(8, linestyle='--', color='red', label='Detection Threshold')
+for i in range(15):
+    arc = np.cumsum(np.random.choice(log_bfs, 2000))
+    plt.plot(arc, alpha=0.3, color='grey')
+# plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
+plt.xlabel('Event #')
 plt.ylabel('Cumulative log BF')
-plt.ylim(-5, 12)
+plt.ylim(-7, 18)
 plt.legend()
 plt.tight_layout()
 plt.savefig('summary_plot_cumulative_memory_log_bf')
 plt.clf()
+import sys
+sys.exit(0)
+required_events = []
+for i in range(10000):
+    tot = 0
+    j = 0
+    while tot < 8:
+        tot -= np.sum(np.random.choice(log_bfs, 10))
+        j += 10
+    required_events.append(j)
 
-plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
-# plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate', linestyle='--')
-plt.plot(memory_log_bfs_cumsum, label='sampled')
-plt.axvline(1850, label='Change of methods', linestyle=':', color='red')
-plt.xlabel('Event ID')
-plt.ylabel('Cumulative log BF')
-plt.ylim(-5, 12)
-plt.xlim(1850, 2000)
+interval = np.percentile(required_events, [5, 95])
+plt.hist(required_events, bins=100, normed=True)
+plt.axvline(np.mean(required_events), color='orange', label='Mean')
+plt.axvline(interval[0], color='red', linestyle='--', label='$95\% \mathrm{CL}$')
+plt.axvline(interval[1], color='red', linestyle='--')
+plt.xlabel('Number of events to $\log \mathcal{BF} > 8$')
+plt.ylabel('Probability (normalized)')
 plt.legend()
-plt.tight_layout()
-plt.savefig('summary_plot_cumulative_memory_log_bf_high_snr')
+plt.savefig('summary_plot_required_events')
 plt.clf()
+print('Mean number of events: ' + str(np.mean(required_events)))
+print('Median number of events: ' + str(np.median(required_events)))
+print('Standard deviation on number of events: ' + str(np.std(required_events)))
+print('95 percent CL on number of required events: ' + str(interval))
+
+
+# plt.axvline(1850, label='Change of methods', linestyle=':', color='red')
+# plt.ylim(-5, 12)
+
+# plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
+# plt.plot(memory_log_bfs_injected_degenerate_cumsum, label='injected degenerate', linestyle='--')
+# plt.plot(memory_log_bfs_cumsum, label='sampled')
+# plt.axvline(1850, label='Change of methods', linestyle=':', color='red')
+# plt.xlabel('Event ID')
+# plt.ylabel('Cumulative log BF')
+# plt.ylim(-5, 12)
+# plt.xlim(1850, 2000)
+# plt.legend()
+# plt.tight_layout()
+# plt.savefig('summary_plot_cumulative_memory_log_bf_high_snr')
+# plt.clf()
 
 
 # plt.plot(hom_log_bfs_injected_cumsum, label='injected', linestyle='--')

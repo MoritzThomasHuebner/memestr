@@ -3,10 +3,11 @@ import sys
 import bilby
 from scipy.misc import logsumexp
 import matplotlib
-matplotlib.rcParams['text.usetex'] = True
-matplotlib.rcParams['text.latex.unicode'] = True
+# matplotlib.rcParams['text.usetex'] = True
+# matplotlib.rcParams['text.latex.unicode'] = True
 import matplotlib.pyplot as plt
-
+matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+matplotlib.rcParams.update({'font.size': 15})
 logger = bilby.core.utils.logger
 
 
@@ -69,11 +70,11 @@ logger.info("Cumulative log BF: " + str(cumulative_memory_log_bfs[-1]))
 plt.plot(memory_log_bfs, label='Memory log BF', marker='H', linestyle='None', color='black')
 plt.grid(False)
 plt.axhline(0, color='grey', linestyle='--')
-plt.xticks(np.arange(10), tuple(event_ids), rotation=70)
+plt.xticks(np.arange(10), tuple(event_ids), rotation=45)
 plt.ylabel('log BF')
-plt.legend()
+# plt.legend()
 plt.tight_layout()
-plt.savefig('gwtc-1.png')
+plt.savefig('gwtc-1.pdf')
 plt.clf()
 
 
