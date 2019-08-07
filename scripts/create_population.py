@@ -54,20 +54,21 @@ def create_parameter_set(filename):
         settings.waveform_data.sampling_frequency = 2048
         settings.waveform_data.duration = 16
         settings.waveform_arguments.l_max = 4
-        waveform_generator_with_memory = \
-            bilby.gw.WaveformGenerator(
-                frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-                parameters=settings.injection_parameters.__dict__,
-                waveform_arguments=settings.waveform_arguments.__dict__,
-                **settings.waveform_data.__dict__)
-        # waveform_generator_without_memory = \
+        # waveform_generator_with_memory = \
         #     bilby.gw.WaveformGenerator(
-        #         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+        #         frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         #         parameters=settings.injection_parameters.__dict__,
         #         waveform_arguments=settings.waveform_arguments.__dict__,
         #         **settings.waveform_data.__dict__)
+        waveform_generator_without_memory = \
+            bilby.gw.WaveformGenerator(
+                frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+                parameters=settings.injection_parameters.__dict__,
+                waveform_arguments=settings.waveform_arguments.__dict__,
+                **settings.waveform_data.__dict__)
 
-        hf_signal = waveform_generator_with_memory.frequency_domain_strain()
+        # hf_signal = waveform_generator_with_memory.frequency_domain_strain()
+        hf_signal = waveform_generator_without_memory.frequency_domain_strain()
 
         ifos = bilby.gw.detector.InterferometerList([])
         for ifo in ['H1', 'L1', 'V1']:
