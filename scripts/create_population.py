@@ -149,8 +149,8 @@ def setup_ifo(hf_signal, ifo, settings):
     return interferometer
 
 
-output = 'Injection_log_bfs/Injection_log_bfs_' + str('test') + '.txt'
-# output = 'Injection_log_bfs/Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
+# output = 'Injection_log_bfs/Injection_log_bfs_' + str('test') + '.txt'
+output = 'Injection_log_bfs/Injection_log_bfs_' + str(sys.argv[1]) + '.txt'
 logger.info(output)
 with open(output, 'w') as f:
     f.write('# Memory Log BF\tTrials\tNetwork SNR\tMemory Network SNR\n')
