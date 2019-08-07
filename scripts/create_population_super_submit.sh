@@ -2,7 +2,7 @@
 
 for i in {0..256}
 do
-    sbatch create_population.sh snr_8_12_no_mem_${i}
+    sbatch create_population.sh snr_8_12_mem_${i}
 done
 #sbatch create_population.sh 2000 2040
 #sbatch create_population.sh 2040 2080
