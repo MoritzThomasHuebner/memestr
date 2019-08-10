@@ -66,8 +66,8 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             # sampler=settings.sampler_settings.sampler,
                                             sampler='dynesty',
                                             npoints=settings.sampler_settings.npoints,
-                                            # npoints=3000,
-                                            walks=10,
+                                            npoints=400,
+                                            # walks=10,
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
                                             nthreads=settings.sampler_settings.nthreads,
@@ -135,7 +135,8 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 
 def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
-    recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+    # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+    recovery_model = time_domain_IMRPhenomD_waveform_without_memory
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
