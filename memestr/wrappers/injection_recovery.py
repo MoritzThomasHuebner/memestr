@@ -66,7 +66,7 @@ def run_basic_injection(injection_model, recovery_model, outdir, **kwargs):
                                             # sampler=settings.sampler_settings.sampler,
                                             sampler='dynesty',
                                             npoints=settings.sampler_settings.npoints,
-                                            npoints=400,
+                                            # npoints=400,
                                             # walks=10,
                                             label=settings.sampler_settings.label,
                                             clean=settings.sampler_settings.clean,
