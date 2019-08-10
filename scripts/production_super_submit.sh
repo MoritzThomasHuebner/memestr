@@ -17,7 +17,7 @@
 #  ((i++))
 #done < "$input"
 
-for i in {20000..20029}
+for i in {1850..2000}
 do
     for j in {100..107}
     do

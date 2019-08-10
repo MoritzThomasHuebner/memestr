@@ -135,8 +135,8 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 
 def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
-    # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
-    recovery_model = time_domain_IMRPhenomD_waveform_without_memory
+    recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+    # recovery_model = time_domain_IMRPhenomD_waveform_without_memory
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
@@ -353,11 +353,11 @@ def setup_run(kwargs, outdir, recovery_model):
     priors['prior_inc'] = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
     priors['prior_ra'] = bilby.core.prior.Uniform(minimum=0, maximum=2 * np.pi, latex_label="$RA$")
     priors['prior_dec'] = bilby.core.prior.Cosine(latex_label="$DEC$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=injection_parameters['phase'] - np.pi/2,
-                                                     maximum=injection_parameters['phase'] + np.pi/2,
+    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=0,
+                                                     maximum=2*np.pi,
                                                      latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=injection_parameters['psi'] - np.pi/2,
-                                                   maximum=injection_parameters['psi'] + np.pi/2,
+    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
+                                                   maximum=np.pi,
                                                    latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.1,
                                                             maximum=injection_parameters['geocent_time'] + 0.1,
