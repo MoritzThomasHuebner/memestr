@@ -33,8 +33,6 @@ plt.hist(log_bfs, bins='fd')
 plt.semilogy()
 plt.show()
 plt.clf()
-
-
 # idxs = np.where(snrs < 32)
 # log_bfs[idxs] = 0
 # assert False
@@ -105,15 +103,15 @@ plt.clf()
 # assert False
 
 print('Number of events to draw: ' + str(25*np.std(log_bfs)**2/np.mean(log_bfs)**2))
+# sys.exit(0)
 
-maximums = []
-for i in range(100000):
-    print(i)
-    realization = -np.random.choice(log_bfs, 15000)
-    realization_cumsum = np.cumsum(realization)
-    maximums.append(np.max(realization_cumsum))
-np.savetxt('Injection_log_bfs/{}_maximums.txt'.format(label), maximums)
-# maximums = np.loadtxt('Injection_log_bfs/{}_maximums.txt'.format(label))
+# maximums = []
+# for i in range(1000000):
+#     realization = np.random.choice(log_bfs, 15000)
+#     realization_cumsum = np.cumsum(realization)
+#     maximums.append(np.max(realization_cumsum))
+# np.savetxt('Injection_log_bfs/{}_maximums.txt'.format(label), maximums)
+maximums = np.loadtxt('Injection_log_bfs/{}_maximums.txt'.format(label))
 
 percentiles = np.percentile(maximums, [99.99994, 99.994, 99.7, 95, 68])
 plt.hist(maximums, alpha=0.5, bins='fd')
@@ -135,3 +133,20 @@ for i in range(20):
 plt.show()
 plt.clf()
 
+percentiles = np.percentile(maximums, np.linspace(0, 100, 100000))
+false_alarm_prob = 1 - np.linspace(0, 1, 100000)
+from scipy.interpolate import interp1d
+threshold_false_alarm = interp1d(percentiles, false_alarm_prob)(8)
+current_false_alarm = interp1d(percentiles, false_alarm_prob)(0.003)
+plt.plot(percentiles, false_alarm_prob)
+# plt.axvline(8, color='red', linestyle='--')
+# plt.axhline(threshold_false_alarm, color='red', linestyle='--', label='Threshold False Alarm Rate')
+# plt.ylim(0, 100)
+plt.xlim(0, 13)
+plt.semilogy()
+plt.xlabel('log BF')
+plt.ylabel('log False Alarm Probability')
+plt.show()
+
+print('Threshold False Alarm Rate: ' + str(threshold_false_alarm))
+print('Current False Alarm Rate: ' + str(current_false_alarm))

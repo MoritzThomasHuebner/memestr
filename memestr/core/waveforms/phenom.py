@@ -33,7 +33,8 @@ def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total
                                                   luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                   s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    return wrap_at_maximum(waveform=waveform)
+    waveform, _ = wrap_at_maximum(waveform=waveform)
+    return waveform
 
 
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
@@ -50,7 +51,8 @@ def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, to
                                                      luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
     waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    return wrap_at_maximum(waveform=waveform)
+    waveform, _ = wrap_at_maximum(waveform=waveform)
+    return waveform
 
 
 def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
