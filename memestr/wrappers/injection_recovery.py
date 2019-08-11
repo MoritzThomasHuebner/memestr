@@ -135,8 +135,8 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 
 def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
-    recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
-    # recovery_model = time_domain_IMRPhenomD_waveform_without_memory
+    # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+    recovery_model = time_domain_IMRPhenomD_waveform_without_memory_wrapped
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
@@ -162,8 +162,8 @@ def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
                                                 resume=settings.sampler_settings.resume,
                                                 save_bounds=False,
                                                 check_point_plot=False,
-                                                walks=50,
-                                                n_check_point=20)
+                                                walks=50)
+                                                # n_check_point=20)
         result.save_to_file()
         logger.info(str(result))
 
@@ -219,8 +219,8 @@ def run_time_phase_optimization_debug(recovery_model, outdir, **kwargs):
 
 
 def run_reweighting(recovery_model, outdir, **kwargs):
-    # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
-    recovery_model = time_domain_IMRPhenomD_waveform_with_memory_wrapped
+    recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
+    # recovery_model = time_domain_IMRPhenomD_waveform_with_memory_wrapped
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
@@ -400,7 +400,7 @@ def setup_run(kwargs, outdir, recovery_model):
                                                           '_H1L1V1.h5')
     for ifo in ifos:
         setattr(ifo.strain_data, '_frequency_mask_updated', True)
-    waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
+    waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=recovery_model,
                                                     parameters=settings.injection_parameters.__dict__,
                                                     waveform_arguments=settings.waveform_arguments.__dict__,
                                                     **settings.waveform_data.__dict__)
