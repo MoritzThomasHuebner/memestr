@@ -50,7 +50,7 @@ def create_parameter_set(filename, **kwargs):
         inc = 1.5
         psi = 2.659
         phase = 1.3
-        geocent_time = 4
+        geocent_time = 4.0
         s11 = 0.
         s12 = 0.
         # s13 = np.random.choice(all_params.s13)
@@ -70,7 +70,7 @@ def create_parameter_set(filename, **kwargs):
         settings.waveform_arguments.l_max = 4
         waveform_generator_with_memory = \
             bilby.gw.WaveformGenerator(
-                time_domain_source_model=time_domain_IMRPhenomD_waveform_with_memory_wrapped,
+                time_domain_source_model=time_domain_IMRPhenomD_waveform_with_memory,
                 parameters=settings.injection_parameters.__dict__,
                 waveform_arguments=settings.waveform_arguments.__dict__,
                 **settings.waveform_data.__dict__)

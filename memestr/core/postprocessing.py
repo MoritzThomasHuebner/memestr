@@ -25,21 +25,22 @@ roll_off = 0.2
 class PostprocessingResult(object):
 
     def __init__(self, outdir, maximum_overlaps=None, memory_log_bf=None, memory_weights=None,
-                 hom_log_bf=None, hom_weights=None):
+                 hom_log_bf=None, hom_weights=None, filename='pp_result.json'):
         self.maximum_overlaps = maximum_overlaps
         self.memory_log_bf = memory_log_bf
         self.memory_weights = memory_weights
         self.hom_log_bf = hom_log_bf
         self.hom_weights = hom_weights
         self.outdir = outdir
+        self.filename = filename
 
     def to_json(self):
-        with open(self.outdir + 'pp_result.json', 'w') as f:
+        with open(self.outdir + self.filename, 'w') as f:
             json.dump(self.__dict__, f)
 
     @classmethod
-    def from_json(cls, outdir):
-        with open(outdir + 'pp_result.json', 'r') as f:
+    def from_json(cls, outdir, filename='pp_result.json'):
+        with open(outdir + filename, 'r') as f:
             data = json.load(f)
         return cls(outdir=outdir, maximum_overlaps=data['maximum_overlaps'],
                    memory_log_bf=data['memory_log_bf'], memory_weights=data['memory_weights'],
