@@ -136,7 +136,7 @@ def run_basic_injection_imr_phenom(injection_model, recovery_model, outdir, **kw
 
 def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
     # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return
-    recovery_model = time_domain_IMRPhenomD_waveform_with_memory_wrapped
+    recovery_model = time_domain_IMRPhenomD_waveform_without_memory_wrapped
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
