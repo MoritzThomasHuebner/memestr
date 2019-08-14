@@ -61,12 +61,6 @@ def _generate_masses(m_mesh, q_mesh, size, alpha, m_min, m_max, beta):
             if valid_samples[i][j]:
                 primary_masses_filtered.append(m_mesh[i][j])
                 mass_ratios_filtered.append(q_mesh[i][j])
-    # if len(primary_masses_filtered) > size:
-    #     primary_masses_filtered, mass_ratios_filtered = \
-    #         random.sample(zip(primary_masses_filtered, mass_ratios_filtered), size)
-    # elif len(primary_masses_filtered) < size:
-    #     raise ValueError('Insufficient Samples.')
-
     primary_masses_filtered = np.array(primary_masses_filtered)
     mass_ratios_filtered = np.array(mass_ratios_filtered)
     return np.array(primary_masses_filtered), np.array(mass_ratios_filtered)
