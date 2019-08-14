@@ -64,7 +64,7 @@ for i in range(min_event_id, max_event_id):
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
@@ -141,20 +141,20 @@ memory_log_bfs_injected_degenerate_cumsum = np.cumsum(memory_log_bfs_injected_de
 # gw_log_bfs_injected = np.array(gw_log_bfs_injected)
 # gw_log_bfs_cumsum = np.cumsum(gw_log_bfs)
 gw_log_bfs_injected_cumsum = np.cumsum(gw_log_bfs_injected)
-np.savetxt('summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs)
-np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected)
-# np.savetxt('summary_memory_log_bfs_injected_degenerate' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected_degenerate)
-# np.savetxt('summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs)
-# np.savetxt('summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
-# np.savetxt('summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs)
-# np.savetxt('summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs_injected)
+np.savetxt('summary/summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs)
+np.savetxt('summary/summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected)
+# np.savetxt('summary/summary_memory_log_bfs_injected_degenerate' + str(min_event_id) + '_' + str(max_event_id) + '.txt', memory_log_bfs_injected_degenerate)
+# np.savetxt('summary/summary_hom_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs)
+# np.savetxt('summary/summary_hom_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', hom_log_bfs_injected)
+# np.savetxt('summary/summary_gw_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs)
+# np.savetxt('summary/summary_gw_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt', gw_log_bfs_injected)
 # hom_log_bfs = np.array(hom_log_bfs)
 
 # plt.hist(hom_log_bfs, bins=45)
 # plt.xlabel('log BFs')
 # plt.ylabel('count')
 # plt.title('HOM log BFs')
-# plt.savefig('summary_hom_hist' + str(min_event_id) + '_' + str(max_event_id))
+# plt.savefig('summary/summary_hom_hist' + str(min_event_id) + '_' + str(max_event_id))
 # plt.clf()
 
 # plt.hist(memory_log_bfs, bins=45)
@@ -162,7 +162,7 @@ np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max
 # plt.ylabel('count')
 # plt.title('Memory log BFs')
 # plt.tight_layout()
-# plt.savefig('summary_memory_hist' + str(min_event_id) + '_' + str(max_event_id))
+# plt.savefig('summary/summary_memory_hist' + str(min_event_id) + '_' + str(max_event_id))
 # plt.clf()
 
 # plt.hist(memory_log_bfs_injected, bins=45)
@@ -170,7 +170,7 @@ np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max
 # plt.ylabel('count')
 # plt.title('Memory log BFs injected')
 # plt.tight_layout()
-# plt.savefig('summary_memory_hist_injected' + str(min_event_id) + '_' + str(max_event_id))
+# plt.savefig('summary/summary_memory_hist_injected' + str(min_event_id) + '_' + str(max_event_id))
 # plt.clf()
 #
 # plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
@@ -179,5 +179,5 @@ np.savetxt('summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max
 # plt.ylabel('Cumulative log BF')
 # plt.legend()
 # plt.tight_layout()
-# plt.savefig('summary_cumulative_memory_log_bf' + str(min_event_id) + '_' + str(max_event_id))
+# plt.savefig('summary/summary_cumulative_memory_log_bf' + str(min_event_id) + '_' + str(max_event_id))
 # plt.clf()
