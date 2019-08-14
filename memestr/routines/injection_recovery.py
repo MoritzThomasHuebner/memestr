@@ -1,10 +1,5 @@
 from __future__ import division
 
-import logging
-import time
-
-from memestr.core.parameters import AllSettings, InjectionParameters
-from memestr.core.utils import get_ifo
 from memestr.core.waveforms import *
 from memestr.routines.setup import setup_run
 
@@ -18,7 +13,8 @@ def update_kwargs(default_kwargs, kwargs):
 
 def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
     # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped
-    recovery_model = time_domain_IMRPhenomD_waveform_without_memory
+    # recovery_model = time_domain_IMRPhenomD_waveform_without_memory
+    recovery_model = models[recovery_model]
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 

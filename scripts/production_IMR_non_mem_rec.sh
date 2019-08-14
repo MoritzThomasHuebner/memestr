@@ -6,7 +6,6 @@ sbatch ${JOB_NAME} ${OUTPUT} ${TIME} ${NTASKS} ${MEM_PER_CPU} ${CPUS_PER_TASK} $
 #!/usr/bin/env bash
 JOB=run_basic_job.py
 SCRIPT=run_production_injection_imr_phenom
-RECOVERY_MODEL=frequency_domain_IMRPhenomD_waveform_without_memory
 
 srun python \${JOB} ${OUTDIR}/\${SLURM_ARRAY_TASK_ID} \${SCRIPT} \${RECOVERY_MODEL} $@
 EOF

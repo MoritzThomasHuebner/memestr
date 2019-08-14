@@ -4,13 +4,14 @@ import bilby
 
 from memestr.core.postprocessing import PostprocessingResult, reweigh_by_likelihood
 from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, \
-    time_domain_IMRPhenomD_waveform_without_memory
+    time_domain_IMRPhenomD_waveform_without_memory, models
 from memestr.routines.setup import setup_run
 
 
 def run_reweighting(recovery_model, outdir, **kwargs):
+    recovery_model = models[recovery_model]
     # recovery_model = frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped
-    recovery_model = time_domain_IMRPhenomD_waveform_with_memory
+    # recovery_model = time_domain_IMRPhenomD_waveform_with_memory
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
