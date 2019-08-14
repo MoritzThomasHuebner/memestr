@@ -9,14 +9,16 @@ import sys
 
 logger = bilby.core.utils.logger
 
-# event_id = sys.argv[1]
-# number_of_parallel_runs = int(sys.argv[2])
-# run_id = int(sys.argv[3])
-event_id = 'GW150914'
-number_of_parallel_runs = 32
-run_id = 0
+outdir = 'gwtc-1/'
+event_id = sys.argv[1]
+path = outdir + event_id + '/'
+number_of_parallel_runs = int(sys.argv[2])
+run_id = int(sys.argv[3])
+# event_id = 'GW150914'
+# number_of_parallel_runs = 32
+# run_id = 0
 
-data = np.genfromtxt(event_id + '/time_data.dat')
+data = np.genfromtxt(path + 'time_data.dat')
 time_of_event = data[0]
 start_time = data[1]
 duration = data[2]
@@ -24,7 +26,7 @@ minimum_frequency = data[3]
 sampling_frequency = data[4]
 
 
-asd_data_file = np.genfromtxt(event_id + '/pr_psd.dat')
+asd_data_file = np.genfromtxt(path + 'pr_psd.dat')
 ifo_names = []
 if len(asd_data_file[0]) == 3:
     ifo_names = ['H1', 'L1']
@@ -35,9 +37,9 @@ elif len(asd_data_file[0]) == 4:
 ifos = bilby.gw.detector.InterferometerList(ifo_names)
 
 for name, ifo in zip(ifo_names, ifos):
-    psd = bilby.gw.detector.psd.PowerSpectralDensity.from_amplitude_spectral_density_file(event_id + '/' + name + '_psd.dat')
+    psd = bilby.gw.detector.psd.PowerSpectralDensity.from_amplitude_spectral_density_file(path + name + '_psd.dat')
     ifo.power_spectral_density = psd
-    strain = np.loadtxt(event_id + '/' + name + '_frequency_domain_data.dat')
+    strain = np.loadtxt(path + name + '_frequency_domain_data.dat')
     strain = strain[:, 1] + 1j*strain[:, 2]
     ifo.set_strain_data_from_frequency_domain_strain(strain, sampling_frequency=sampling_frequency,
                                                      duration=duration, start_time=start_time)
@@ -45,15 +47,15 @@ for name, ifo in zip(ifo_names, ifos):
     ifo.maximum_frequency = sampling_frequency/2.
     ifo.power_spectral_density.psd_array = np.minimum(ifo.power_spectral_density.psd_array, 1)
 
-hom_result_ethan = bilby.result.read_in_result(filename=event_id + '/corrected_result.json')
+hom_result_ethan = bilby.result.read_in_result(filename=path + 'corrected_result.json')
 hom_result_posterior_list = np.array_split(hom_result_ethan.posterior, number_of_parallel_runs, axis=0)
 hom_result_ethan.posterior = hom_result_posterior_list[run_id]
 
-base_result = bilby.result.read_in_result(filename=event_id + '/22_pe_result.json')
+base_result = bilby.result.read_in_result(filename=path + '22_pe_result.json')
 base_result_posterior_list = np.array_split(base_result.posterior, number_of_parallel_runs, axis=0)
 base_result.posterior = base_result_posterior_list[run_id]
 
-ethan_result = np.loadtxt(event_id + '/new_likelihoods.dat')
+ethan_result = np.loadtxt(path + 'new_likelihoods.dat')
 ethan_22_log_likelihood = np.array_split(ethan_result[:, 0], number_of_parallel_runs, axis=0)
 ethan_posterior_hom_log_likelihood = np.array_split(ethan_result[:, 1], number_of_parallel_runs, axis=0)
 ethan_weight_log_likelihood = np.array_split(ethan_result[:, 2], number_of_parallel_runs, axis=0)
@@ -70,7 +72,7 @@ ethan_weight_log_likelihood = np.array_split(ethan_result[:, 2], number_of_paral
 
 # try:
     # raise OSError
-    # time_and_phase_shifted_result = bilby.result.read_in_result(event_id + '/time_and_phase_shifted_'
+    # time_and_phase_shifted_result = bilby.result.read_in_result(path + 'time_and_phase_shifted_'
     #                                                             + str(run_id) + '_result.json')
 # except OSError as e:
 #     logger.warning(e)
@@ -80,10 +82,10 @@ ethan_weight_log_likelihood = np.array_split(ethan_result[:, 2], number_of_paral
 #                                                                                             sampling_frequency=sampling_frequency)
 #
 #     maximum_overlaps = np.array(maximum_overlaps)
-#     np.savetxt(event_id + '/moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
+#     np.savetxt(path + 'moritz_maximum_overlaps_' + str(run_id) + '.txt', maximum_overlaps)
 #
 #     time_and_phase_shifted_result.label = 'time_and_phase_shifted_' + str(run_id)
-#     time_and_phase_shifted_result.outdir = event_id
+#     time_and_phase_shifted_result.outdir = path
 #     time_and_phase_shifted_result.save_to_file()
     # time_and_phase_shifted_result.plot_corner()
 
@@ -93,7 +95,7 @@ waveform_generator_imr = bilby.gw.WaveformGenerator(
     start_time=start_time, duration=duration, sampling_frequency=sampling_frequency)
 
 waveform_generator_hom_moritz = bilby.gw.WaveformGenerator(
-    frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+    frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped,
     duration=duration, sampling_frequency=sampling_frequency, start_time=start_time, waveform_arguments=dict(alpha=0.1))
 
 waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
@@ -189,9 +191,9 @@ for i in range(len(posterior_dict_hom)):
 
 likelihoods_hom_moritz = np.array(likelihoods_hom_moritz)
 likelihoods_memory = np.array(likelihoods_memory)
-np.savetxt(event_id + '/moritz_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom_moritz)
-np.savetxt(event_id + '/ethan_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom_ethan)
-np.savetxt(event_id + '/moritz_memory_log_likelihoods_' + str(run_id) + '.txt', likelihoods_memory)
+np.savetxt(path + 'moritz_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom_moritz)
+np.savetxt(path + 'ethan_hom_log_likelihoods_' + str(run_id) + '.txt', likelihoods_hom_ethan)
+np.savetxt(path + 'moritz_memory_log_likelihoods_' + str(run_id) + '.txt', likelihoods_memory)
 
 likelihoods_22 = np.array([likelihood_22 for likelihood_22 in likelihoods_22])
 hom_weights_moritz = likelihoods_hom_moritz - likelihoods_22
@@ -211,5 +213,5 @@ logger.info("HOM log BF Ethan posterior: " + str(hom_log_bf_ethan_posterior))
 logger.info("Memory log BF: " + str(memory_log_bf))
 logger.info(str(run_id))
 
-# np.savetxt(event_id + '/moritz_hom_log_bf' + str(run_id) + '.txt', hom_log_bf)
-# np.savetxt(event_id + '/moritz_memory_log_bf' + str(run_id) + '.txt', memory_log_bf)
+# np.savetxt(path + 'moritz_hom_log_bf' + str(run_id) + '.txt', hom_log_bf)
+# np.savetxt(path + 'moritz_memory_log_bf' + str(run_id) + '.txt', memory_log_bf)

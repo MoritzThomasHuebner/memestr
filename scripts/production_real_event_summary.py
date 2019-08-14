@@ -24,7 +24,7 @@ plt.axhline(0, color='grey', linestyle='--')
 plt.xticks(np.arange(10), tuple(event_ids), rotation=45)
 plt.ylabel('log BF')
 plt.tight_layout()
-plt.savefig('summary/gwtc-1.pdf')
+plt.savefig('gwtc-1/gwtc-1.pdf')
 plt.clf()
 
 
@@ -35,6 +35,6 @@ plt.ylabel('Cumulative log BF')
 plt.grid(False)
 plt.legend()
 plt.tight_layout()
-plt.savefig('summary/gwtc-1-cumulative.png')
+plt.savefig('gwtc-1/gwtc-1-cumulative.png')
 plt.clf()
 
