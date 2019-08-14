@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import sys
 # label = sys.argv[1]
 # label = 'aplus'
-label = 'snr_8_12_no_mem'
+label = 'snr_8_12_mem'
 
 log_bfs = np.array([])
 trials = np.array([])
@@ -105,13 +105,13 @@ plt.clf()
 print('Number of events to draw: ' + str(25*np.std(log_bfs)**2/np.mean(log_bfs)**2))
 # sys.exit(0)
 
-# maximums = []
-# for i in range(1000000):
-#     realization = np.random.choice(log_bfs, 15000)
-#     realization_cumsum = np.cumsum(realization)
-#     maximums.append(np.max(realization_cumsum))
+maximums = []
+for i in range(1000000):
+    realization = -np.random.choice(log_bfs, 10)
+    realization_cumsum = np.cumsum(realization)
+    maximums.append(np.max(realization_cumsum))
 # np.savetxt('Injection_log_bfs/{}_maximums.txt'.format(label), maximums)
-maximums = np.loadtxt('Injection_log_bfs/{}_maximums.txt'.format(label))
+# maximums = np.loadtxt('Injection_log_bfs/{}_maximums.txt'.format(label))
 
 percentiles = np.percentile(maximums, [99.99994, 99.994, 99.7, 95, 68])
 plt.hist(maximums, alpha=0.5, bins='fd')
@@ -136,8 +136,8 @@ plt.clf()
 percentiles = np.percentile(maximums, np.linspace(0, 100, 100000))
 false_alarm_prob = 1 - np.linspace(0, 1, 100000)
 from scipy.interpolate import interp1d
-threshold_false_alarm = interp1d(percentiles, false_alarm_prob)(8)
-current_false_alarm = interp1d(percentiles, false_alarm_prob)(0.003)
+# threshold_false_alarm = interp1d(percentiles, false_alarm_prob)(8)
+# current_false_alarm = interp1d(percentiles, false_alarm_prob)(0.003)
 plt.plot(percentiles, false_alarm_prob)
 # plt.axvline(8, color='red', linestyle='--')
 # plt.axhline(threshold_false_alarm, color='red', linestyle='--', label='Threshold False Alarm Rate')
@@ -148,5 +148,5 @@ plt.xlabel('log BF')
 plt.ylabel('log False Alarm Probability')
 plt.show()
 
-print('Threshold False Alarm Rate: ' + str(threshold_false_alarm))
-print('Current False Alarm Rate: ' + str(current_false_alarm))
+# print('Threshold False Alarm Rate: ' + str(threshold_false_alarm))
+# print('Current False Alarm Rate: ' + str(current_false_alarm))
