@@ -14,9 +14,8 @@ def get_injection_parameter_set(id):
     return injection_params
 
 
-def run_job(outdir, script, **kwargs):
-    result = script(outdir=outdir, **kwargs)
-    return result
+def run_job(script, **kwargs):
+    return script(**kwargs)
 
 
 def parse_kwargs(input):

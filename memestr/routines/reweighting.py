@@ -8,8 +8,8 @@ from memestr.core.waveforms import time_domain_IMRPhenomD_waveform_with_memory, 
 from memestr.routines.setup import setup_run
 
 
-def run_reweighting(recovery_model, outdir, **kwargs):
-    recovery_model = models[recovery_model]
+def run_reweighting(outdir, **kwargs):
+    recovery_model = models[kwargs['recovery_model']]
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:

@@ -5,7 +5,7 @@ import memestr.routines as wrappers
 import memestr.routines.optimization
 import memestr.routines.reweighting
 
-scripts = dict(
+routines = dict(
     run_production_injection_imr_phenom=routines.injection_recovery.run_production_injection_imr_phenom,
     run_time_phase_optimization=memestr.routines.optimization.run_time_phase_optimization,
     run_reweighting=memestr.routines.reweighting.run_reweighting

@@ -11,8 +11,8 @@ def update_kwargs(default_kwargs, kwargs):
     return new_kwargs
 
 
-def run_production_injection_imr_phenom(recovery_model, outdir, **kwargs):
-    recovery_model = models[recovery_model]
+def run_production_injection_imr_phenom(outdir, **kwargs):
+    recovery_model = models[kwargs['recovery_model']]
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
