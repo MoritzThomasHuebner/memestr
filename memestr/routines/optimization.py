@@ -10,11 +10,13 @@ def run_time_phase_optimization(outdir, **kwargs):
     recovery_model = models[kwargs['recovery_model']]
     filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
+
     try:
         pp_result = PostprocessingResult.from_json(str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
     except Exception as e:
         logger.info(e)
         pp_result = PostprocessingResult(outdir=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/')
+
     result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/reconstructed_combined_result.json')
     try:
         # raise Exception

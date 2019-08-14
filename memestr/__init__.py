@@ -6,7 +6,7 @@ import memestr.routines.optimization
 import memestr.routines.reweighting
 
 routines = dict(
-    run_production_injection_imr_phenom=routines.injection_recovery.run_production_injection_imr_phenom,
+    run_production_injection=routines.injection_recovery.run_production_injection,
     run_time_phase_optimization=memestr.routines.optimization.run_time_phase_optimization,
     run_reweighting=memestr.routines.reweighting.run_reweighting
 )

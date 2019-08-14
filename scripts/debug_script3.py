@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import memestr.core.waveforms.surrogate
 
-memestr.wrappers.injection_recovery.run_production_injection_imr_phenom(
+memestr.wrappers.injection_recovery.run_production_injection(
         # injection_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
         recovery_model='frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped',
         filename_base=20021,

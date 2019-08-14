@@ -6,11 +6,10 @@ import sys
 from memestr import routines
 
 outdir = sys.argv[1]
-script = routines[sys.argv[2]]
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 kwargs = dict()
-for arg in sys.argv[3:]:
+for arg in sys.argv[2:]:
     print(arg)
     key = arg.split("=")[0]
     value = arg.split("=")[1]
@@ -25,4 +24,5 @@ for arg in sys.argv[3:]:
     kwargs[key] = value
 print(kwargs)
 
+script = routines[kwargs['script']]
 script(dir_path=dir_path, outdir=outdir, **kwargs)
