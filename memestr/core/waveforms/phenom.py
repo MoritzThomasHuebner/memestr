@@ -26,38 +26,12 @@ def time_domain_IMRPhenomD_waveform_with_memory(times, mass_ratio, total_mass, l
     return apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
-def time_domain_IMRPhenomD_waveform_with_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance, s11, s12,
-                                                        s13,
-                                                        s21, s22, s23, inc, phase, **kwargs):
-    waveform_no_mem = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
-                                                     luminosity_distance=luminosity_distance, phase=phase, s11=s11,
-                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform_no_mem = apply_window(waveform=waveform_no_mem, times=times, kwargs=kwargs)
-    _, shift = wrap_at_maximum(waveform=waveform_no_mem)
-    waveform = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
-                                                     luminosity_distance=luminosity_distance, phase=phase, s11=s11,
-                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    waveform, _ = wrap_at_maximum(waveform=waveform)
-    return waveform
-
-
 def time_domain_IMRPhenomD_waveform_without_memory(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
                                                    s21, s22, s23, inc, phase, **kwargs):
     waveform = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                                      luminosity_distance=luminosity_distance, phase=phase, s11=s11,
                                                      s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
     return apply_window(waveform=waveform, times=times, kwargs=kwargs)
-
-
-def time_domain_IMRPhenomD_waveform_without_memory_wrapped(times, mass_ratio, total_mass, luminosity_distance,
-                                                           s11, s12, s13, s21, s22, s23, inc, phase, **kwargs):
-    waveform = _evaluate_imr_phenom_d_without_memory(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
-                                                     luminosity_distance=luminosity_distance, phase=phase, s11=s11,
-                                                     s12=s12, s13=s13, s21=s21, s22=s22, s23=s23)
-    waveform = apply_window(waveform=waveform, times=times, kwargs=kwargs)
-    waveform, _ = wrap_at_maximum(waveform=waveform)
-    return waveform
 
 
 def time_domain_IMRPhenomD_memory_waveform(times, mass_ratio, total_mass, luminosity_distance, s11, s12, s13,
