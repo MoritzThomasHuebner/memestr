@@ -1,7 +1,7 @@
+import memestr.core
 import memestr.core.waveforms.surrogate
 import memestr.core.waveforms.phenom
 import memestr.routines as wrappers
-import memestr.core as core
 import memestr.routines.optimization
 import memestr.routines.reweighting
 
