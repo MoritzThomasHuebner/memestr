@@ -3,6 +3,7 @@ from __future__ import division
 import os
 import sys
 import memestr
+import bilby
 
 outdir = sys.argv[1]
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -23,5 +24,7 @@ for arg in sys.argv[2:]:
     kwargs[key] = value
 print(kwargs)
 
+bilby.core.utils.logger.info(memestr.scripts)
+bilby.core.utils.logger.info(kwargs)
 script = memestr.scripts[kwargs['script']]
 script(dir_path=dir_path, outdir=outdir, **kwargs)
