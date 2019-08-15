@@ -21,8 +21,7 @@ for arg in sys.argv[2:]:
             except Exception:
                 pass
     kwargs[key] = value
-print('Scripts:')
-print(memestr.scripts)
+
 script = memestr.scripts[kwargs['script']]
 script(dir_path=dir_path, outdir=outdir, **kwargs)
 

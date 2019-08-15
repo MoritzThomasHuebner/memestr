@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-bash production_IMR_non_mem_rec.sh              script=run_production_injection recovery_model=time_domain_IMRPhenomD_waveform_without_memory outdir_base=${1} filename_base=${1} sub_run_id=${2} npoints=200 alpha=0.1 distance_marginalization=True time_marginalization=False phase_marginalization=False resume=False sampler=dynesty duration=16 random_seed=42 sampling_frequency=2048 label=IMR_mem_inj_non_mem_rec
+bash production_IMR_non_mem_rec.sh              outdir_base=${1} filename_base=${1} sub_run_id=${2} script=run_production_injection recovery_model=time_domain_IMRPhenomD_waveform_without_memory npoints=200 alpha=0.1 distance_marginalization=True time_marginalization=False phase_marginalization=False resume=True sampler=dynesty duration=16 random_seed=42 sampling_frequency=2048 label=IMR_mem_inj_non_mem_rec
