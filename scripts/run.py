@@ -2,8 +2,7 @@ from __future__ import division
 
 import os
 import sys
-
-from memestr import routines
+import memestr
 
 outdir = sys.argv[1]
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -24,5 +23,5 @@ for arg in sys.argv[2:]:
     kwargs[key] = value
 print(kwargs)
 
-script = routines[kwargs['script']]
+script = memestr.scripts[kwargs['script']]
 script(dir_path=dir_path, outdir=outdir, **kwargs)

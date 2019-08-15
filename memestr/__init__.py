@@ -1,12 +1,8 @@
 import memestr.core
-import memestr.core.waveforms.surrogate
-import memestr.core.waveforms.phenom
-import memestr.routines as wrappers
-import memestr.routines.optimization
-import memestr.routines.reweighting
+import memestr.routines
 
-routines = dict(
-    run_production_injection=routines.injection_recovery.run_production_injection,
-    run_time_phase_optimization=memestr.routines.optimization.run_time_phase_optimization,
-    run_reweighting=memestr.routines.reweighting.run_reweighting
+scripts = dict(
+    run_production_injection=memestr.scripts.injection_recovery.run_production_injection,
+    run_time_phase_optimization=memestr.scripts.optimization.run_time_phase_optimization,
+    run_reweighting=memestr.scripts.reweighting.run_reweighting
 )
