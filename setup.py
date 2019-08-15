@@ -4,6 +4,6 @@ from distutils.core import setup
 
 setup(name='memestr',
       version='0.0.2',
-      packages=['memestr', 'memestr.core', 'memestr.core.waveforms', 'memestr.wrappers'],
+      packages=['memestr', 'memestr.core', 'memestr.core.waveforms', 'memestr.routines'],
       package_dir={'memestr': 'memestr'},
       )
