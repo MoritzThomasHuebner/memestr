@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-LABEL="${1::-3}"
+LABEL="production_IMR_non_mem_rec"
 OUTDIR=${2//outdir_base=/}_${LABEL}
 mkdir -p ${OUTDIR}
 JOB_NAME="--job-name=$LABEL"
