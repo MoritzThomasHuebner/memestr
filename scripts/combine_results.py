@@ -20,10 +20,10 @@ logger = bilby.core.utils.logger
 #     new_res.save_to_file()
     # new_res.plot_corner()
 
-for i in [1863, 1870, 1876, 1896, 1903, 1907, 1912, 1916, 1936, 1937, 1938, 1958, 1971, 1982, 1996]:
+for i in range(1850, 2000):
     outdir = "{}_dynesty_nr_sur_production_IMR_non_mem_rec/".format(i)
     res_list = ResultList([])
-    for j in range(100, 110):
+    for j in range(200, 208):
         try:
             res = read_in_result(outdir + "{}IMR_mem_inj_non_mem_rec_result.json".format(j))
             res_list.append(res)
@@ -31,7 +31,7 @@ for i in [1863, 1870, 1876, 1896, 1903, 1907, 1912, 1916, 1936, 1937, 1938, 1958
             logger.info(e)
             continue
     new_res = res_list.combine()
-    new_res.label = "combined_high_nlive"
+    new_res.label = "combined_proper_prior"
     new_res.save_to_file()
     new_res.plot_corner()
 
