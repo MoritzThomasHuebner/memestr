@@ -21,7 +21,7 @@ for i in {1850..1999}
 do
     for j in {200..207}
     do
-        bash production_IMR_non_mem_rec_submit.sh ${i}_dynesty ${j}
+        bash production_IMR_reweight_submit.sh ${i}_dynesty_nr_sur ${j}
     done
 done
 
