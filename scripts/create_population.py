@@ -155,7 +155,11 @@ def setup_ifo(hf_signal, ifo, settings):
     else:
         interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
             from_power_spectral_density_file('AdV_psd.txt')
-    interferometer.set_strain_data_from_power_spectral_density(
+    # interferometer.set_strain_data_from_power_spectral_density(
+    #     sampling_frequency=settings.waveform_data.sampling_frequency,
+    #     duration=settings.waveform_data.duration,
+    #     start_time=start_time)
+    interferometer.set_strain_data_from_zero_noise(
         sampling_frequency=settings.waveform_data.sampling_frequency,
         duration=settings.waveform_data.duration,
         start_time=start_time)
@@ -180,14 +184,14 @@ for i, ld in zip(['20000', '20001', '20002', '20003',
                   '20020', '20021', '20022', '20023',
                   '20024', '20025', '20026', '20027',
                   '20028', '20029'],
-                 [2000.0, 1666.6666666666667, 1428.5714285714287, 1250.0,
-                  1111.111111111111, 1000.0, 909.0909090909091, 833.3333333333334,
-                  769.2307692307693, 714.2857142857143, 666.6666666666666, 625.0,
-                  588.2352941176471, 555.5555555555555, 526.3157894736842, 500.0,
-                  476.1904761904762, 454.54545454545456, 434.7826086956522, 416.6666666666667,
-                  400.0, 384.61538461538464, 370.3703703703704, 357.14285714285717,
-                  344.82758620689657, 333.3333333333333, 322.5806451612903, 312.5,
-                  303.030303030303, 294.11764705882354]):
+                 [1000., 810.81081081, 681.81818182, 588.23529412,
+                  517.24137931, 461.53846154, 416.66666667, 379.74683544,
+                  348.8372093, 322.58064516, 300., 280.37383178,
+                  263.15789474, 247.9338843, 234.375, 222.22222222,
+                  211.26760563, 201.34228188, 192.30769231, 184.04907975,
+                  176.47058824, 169.49152542, 163.04347826, 157.06806283,
+                  151.51515152, 146.34146341, 141.50943396, 136.98630137,
+                  132.74336283, 128.75536481, 125.]):
     create_parameter_set(i, luminosity_distance=ld)
 sys.exit(0)
 create_parameter_set(int(sys.argv[1]))
