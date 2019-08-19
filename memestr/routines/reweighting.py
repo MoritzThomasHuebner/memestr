@@ -10,9 +10,10 @@ from memestr.routines.setup import setup_run
 def run_reweighting(outdir, **kwargs):
     recovery_model = models[kwargs['recovery_model']]
     reweight_model = models[kwargs['reweight_model']]
-    filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
+    filename_base, ifos, likelihood, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
     try:
+        raise Exception
         pp_result = PostprocessingResult.from_json(outdir=str(filename_base) + '_production_IMR_non_mem_rec/',
                                                    filename=str(sub_run_id) + 'pp_result.json')
     except Exception as e:
@@ -33,7 +34,7 @@ def run_reweighting(outdir, **kwargs):
             parameters=deepcopy(settings.injection_parameters.__dict__),
             waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
             **settings.waveform_data.__dict__)
-    elif reweight_model.__name__.startswith('time'):
+    else:
         waveform_generator_reweight = bilby.gw.WaveformGenerator(
             time_domain_source_model=reweight_model,
             parameters=deepcopy(settings.injection_parameters.__dict__),
@@ -46,7 +47,7 @@ def run_reweighting(outdir, **kwargs):
             parameters=deepcopy(settings.injection_parameters.__dict__),
             waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
             **settings.waveform_data.__dict__)
-    elif recovery_model.__name__.startswith('time'):
+    else:
         waveform_generator_recovery = bilby.gw.WaveformGenerator(
             time_domain_source_model=recovery_model,
             parameters=deepcopy(settings.injection_parameters.__dict__),
@@ -59,7 +60,8 @@ def run_reweighting(outdir, **kwargs):
                                     priors=priors,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
-                                    phase_marginalization=settings.other_settings.phase_marginalization)
+                                    phase_marginalization=settings.other_settings.phase_marginalization,
+                                    distance_marginalization_lookup_table=[])
 
     likelihood_recovery = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
@@ -67,7 +69,8 @@ def run_reweighting(outdir, **kwargs):
                                     priors=priors,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
-                                    phase_marginalization=settings.other_settings.phase_marginalization)
+                                    phase_marginalization=settings.other_settings.phase_marginalization,
+                                    distance_marginalization_lookup_table=[])
 
     likelihood_recovery.parameters = deepcopy(settings.injection_parameters.__dict__)
     likelihood_reweight.parameters = deepcopy(settings.injection_parameters.__dict__)
@@ -79,7 +82,7 @@ def run_reweighting(outdir, **kwargs):
     #                                                                        reference_result=result,
     #                                                                        n_parallel=16)
     # memory_log_bf = memory_hom_log_bf - pp_result.hom_log_bf
-    # NRSur rec
+
     reweight_log_bf, weights = reweigh_by_likelihood(new_likelihood=likelihood_reweight,
                                                      new_result=result,
                                                      reference_likelihood=likelihood_recovery)

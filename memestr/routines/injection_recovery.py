@@ -13,7 +13,7 @@ def update_kwargs(default_kwargs, kwargs):
 
 def run_production_injection(outdir, **kwargs):
     recovery_model = models[kwargs['recovery_model']]
-    filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id = setup_run(
+    filename_base, ifos, likelihood, logger, priors, settings, sub_run_id = setup_run(
         kwargs, outdir, recovery_model)
 
     try:
@@ -22,7 +22,7 @@ def run_production_injection(outdir, **kwargs):
         result.outdir = outdir
     except Exception as e:
         logger.info(e)
-        result = bilby.core.sampler.run_sampler(likelihood=likelihood_imr_phenom,
+        result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                                 priors=priors,
                                                 injection_parameters=deepcopy(settings.injection_parameters.__dict__),
                                                 outdir=outdir,

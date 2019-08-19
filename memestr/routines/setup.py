@@ -81,24 +81,29 @@ def setup_run(kwargs, outdir, recovery_model):
                                                           '_H1L1V1.h5')
     for ifo in ifos:
         setattr(ifo.strain_data, '_frequency_mask_updated', True)
-    waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=recovery_model,
-                                                    parameters=settings.injection_parameters.__dict__,
-                                                    waveform_arguments=settings.waveform_arguments.__dict__,
-                                                    **settings.waveform_data.__dict__)
+
+    if recovery_model.__name__.startswith('frequency'):
+        waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=recovery_model,
+                                                        parameters=settings.injection_parameters.__dict__,
+                                                        waveform_arguments=settings.waveform_arguments.__dict__,
+                                                        **settings.waveform_data.__dict__)
+    else:
+        waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=recovery_model,
+                                                        parameters=settings.injection_parameters.__dict__,
+                                                        waveform_arguments=settings.waveform_arguments.__dict__,
+                                                        **settings.waveform_data.__dict__)
+
     priors = deepcopy(settings.recovery_priors.proper_dict())
-    likelihood_imr_phenom_unmarginalized = bilby.gw.likelihood \
-        .GravitationalWaveTransient(interferometers=deepcopy(ifos),
-                                    waveform_generator=waveform_generator)
-    likelihood_imr_phenom_unmarginalized.parameters = deepcopy(settings.injection_parameters.__dict__)
-    likelihood_imr_phenom = bilby.gw.likelihood \
+    likelihood = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                     waveform_generator=waveform_generator,
                                     priors=priors,
                                     time_marginalization=settings.other_settings.time_marginalization,
                                     distance_marginalization=settings.other_settings.distance_marginalization,
-                                    phase_marginalization=settings.other_settings.phase_marginalization)
-    likelihood_imr_phenom.parameters = deepcopy(settings.injection_parameters.__dict__)
+                                    phase_marginalization=settings.other_settings.phase_marginalization,
+                                    distance_marginalization_lookup_table=[])
+    likelihood.parameters = deepcopy(settings.injection_parameters.__dict__)
     np.random.seed(int(time.time() * 1000000) % 1000000)
     logger.info('Injection Parameters')
     logger.info(str(settings.injection_parameters))
-    return filename_base, ifos, likelihood_imr_phenom, likelihood_imr_phenom_unmarginalized, logger, priors, settings, sub_run_id
+    return filename_base, ifos, likelihood, logger, priors, settings, sub_run_id
