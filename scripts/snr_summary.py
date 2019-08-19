@@ -20,9 +20,13 @@ for run_id in range(20000, 20030):
     no_mem_evidence = []
     mem_evidence = []
     for sub_run_id in range(0, 8):
-        pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(outdir='{}_dynesty_production_IMR_non_mem_rec/'.format(run_id),
-                                                                            filename='{}pp_result.json'.format(sub_run_id))
-        mem_log_bfs.append(pp_res.memory_log_bf)
+        try:
+            pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(outdir='{}_dynesty_production_IMR_non_mem_rec/'.format(run_id),
+                                                                                filename='{}pp_result.json'.format(sub_run_id))
+            mem_log_bfs.append(pp_res.memory_log_bf)
+        except FileNotFoundError as e:
+            print(e)
+            mem_log_bfs.append(np.nan)
         try:
             res = bilby.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, sub_run_id))
             no_mem_evidence.append(res.log_evidence)
