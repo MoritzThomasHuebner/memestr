@@ -93,6 +93,6 @@ plt.errorbar(snrs, mem_log_bfs_reweight, yerr=mem_log_bfs_reweight_err, label='R
 plt.xlabel('$\rho_{\mathrm{mf}}$')
 plt.ylabel('$\ln \mathcal{BF}$')
 plt.legend()
-# plt.savefig('snr_vs_evidence.pdf')
-plt.show()
+plt.savefig('snr_vs_evidence.pdf')
+# plt.show()
 plt.clf()
