@@ -22,22 +22,36 @@ def run_reweighting(outdir, **kwargs):
     #IMR
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(sub_run_id))
     # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
-    try:
-        result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_proper_prior_result.json')
-    except Exception:
-        result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_proper_prior_result.json')
+    # try:
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(sub_run_id))
+    # except Exception:
+    #     result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_proper_prior_result.json')
 
-    waveform_generator_reweight = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=reweight_model,
-        parameters=deepcopy(settings.injection_parameters.__dict__),
-        waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
-        **settings.waveform_data.__dict__)
+    if reweight_model.__name__.startswith('frequency'):
+        waveform_generator_reweight = bilby.gw.WaveformGenerator(
+            frequency_domain_source_model=reweight_model,
+            parameters=deepcopy(settings.injection_parameters.__dict__),
+            waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+            **settings.waveform_data.__dict__)
+    elif reweight_model.__name__.startswith('time'):
+        waveform_generator_reweight = bilby.gw.WaveformGenerator(
+            time_domain_source_model=reweight_model,
+            parameters=deepcopy(settings.injection_parameters.__dict__),
+            waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+            **settings.waveform_data.__dict__)
 
-    waveform_generator_recovery = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=recovery_model,
-        parameters=deepcopy(settings.injection_parameters.__dict__),
-        waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
-        **settings.waveform_data.__dict__)
+    if recovery_model.__name__.startswith('frequency'):
+        waveform_generator_recovery = bilby.gw.WaveformGenerator(
+            frequency_domain_source_model=recovery_model,
+            parameters=deepcopy(settings.injection_parameters.__dict__),
+            waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+            **settings.waveform_data.__dict__)
+    elif recovery_model.__name__.startswith('time'):
+        waveform_generator_recovery = bilby.gw.WaveformGenerator(
+            time_domain_source_model=recovery_model,
+            parameters=deepcopy(settings.injection_parameters.__dict__),
+            waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
+            **settings.waveform_data.__dict__)
 
     likelihood_reweight = bilby.gw.likelihood \
         .GravitationalWaveTransient(interferometers=deepcopy(ifos),

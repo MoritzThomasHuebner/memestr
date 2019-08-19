@@ -19,10 +19,10 @@
 
 for i in {1850..1999}
 do
-    bash production_IMR_reweight_submit.sh ${i}_dynesty_nr_sur
-#    for j in {200..207}
-#    do
-#    done
+    for j in {0..7}
+    do
+        bash production_IMR_reweight_submit.sh ${i}_dynesty ${j}
+    done
 done
 
 #for i in 1863 1870 1876 1896 1903 1907 1912 1916 1936 1937 1938 1958 1971 1982 1996
