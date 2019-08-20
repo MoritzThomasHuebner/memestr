@@ -24,7 +24,8 @@ def run_reweighting(outdir, **kwargs):
     # result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(sub_run_id))
     # time_and_phase_shifted_result = bilby.result.read_in_result(filename=str(filename_base) + '_dynesty_production_IMR_non_mem_rec/time_and_phase_shifted_combined_result.json')
     # try:
-    result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(sub_run_id))
+    # result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(sub_run_id))
+    result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_proper_prior_result.json')
     # except Exception:
     #     result = bilby.result.read_in_result(filename=str(filename_base) + '_production_IMR_non_mem_rec/combined_proper_prior_result.json')
 
