@@ -121,11 +121,11 @@ plt.clf()
 # print(np.mean(log_bf_distribution))
 # print(np.std(log_bf_distribution))
 
-events = np.linspace(0, 2000, 100)
+events = np.linspace(0, 2000, 101)
 intervals = []
 for event in events:
     print(event)
-    cum_log_bfs = [-np.sum(np.random.choice(log_bfs, int(event))) for j in range(10000)]
+    cum_log_bfs = [-np.sum(np.random.choice(log_bfs, int(event))) for j in range(50000)]
     intervals.append(np.percentile(cum_log_bfs, [5, 50, 95]))
 lower_limits = [interval[0] for interval in intervals]
 means = [interval[1] for interval in intervals]
@@ -147,7 +147,7 @@ for i in range(15):
     plt.plot(arc, alpha=0.3, color='grey')
 # plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
 plt.xlabel('Event #')
-plt.ylabel('Cumulative log BF')
+plt.ylabel('Cumulative ln BF')
 # plt.ylim(-7, 18)
 plt.legend()
 plt.tight_layout()
@@ -158,7 +158,7 @@ plt.clf()
 import sys
 sys.exit(0)
 required_events = []
-for i in range(10000):
+for i in range(100000):
     tot = 0
     j = 0
     while tot < 8:
