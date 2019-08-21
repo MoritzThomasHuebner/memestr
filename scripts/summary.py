@@ -36,7 +36,7 @@ for i in range(min_event_id, max_event_id):
             pp_res = PostprocessingResult.from_json(outdir=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/')
             try:
                 res = bilby.result.read_in_result(
-                    filename=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/combined_high_nlive_result.json')
+                    filename=str(i) + '_dynesty_nr_sur_production_IMR_non_mem_rec/combined_proper_prior_result.json')
                 logger.info('Using high live point run')
             except Exception:
                 res = bilby.result.read_in_result(
