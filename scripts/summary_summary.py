@@ -121,26 +121,26 @@ plt.clf()
 # print(np.mean(log_bf_distribution))
 # print(np.std(log_bf_distribution))
 
-events = np.linspace(0, 2000, 101)
-intervals = []
-for event in events:
-    print(event)
-    cum_log_bfs = [-np.sum(np.random.choice(log_bfs, int(event))) for j in range(50000)]
-    intervals.append(np.percentile(cum_log_bfs, [5, 50, 95]))
-lower_limits = [interval[0] for interval in intervals]
-means = [interval[1] for interval in intervals]
-upper_limits = [interval[2] for interval in intervals]
+# events = np.linspace(0, 2000, 101)
+# intervals = []
+# for event in events:
+#     print(event)
+#     cum_log_bfs = [-np.sum(np.random.choice(log_bfs, int(event))) for j in range(50000)]
+#     intervals.append(np.percentile(cum_log_bfs, [5, 50, 95]))
+# lower_limits = [interval[0] for interval in intervals]
+# means = [interval[1] for interval in intervals]
+# upper_limits = [interval[2] for interval in intervals]
 
 
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 matplotlib.rcParams.update({'font.size': 20})
-matplotlib.rcParams.update({'font.family': 'sans'})
-# plt.plot(memory_log_bfs_cumsum, label='This Memory Study')#, color='orange', linewidth=5.0)
-plt.plot(events, means, label='Average', color='blue', linewidth=5.0)#, color='orange', linewidth=5.0)
-plt.plot(events, upper_limits, label='$90\%$ CL', color='blue', linestyle='--')#, color='orange', linewidth=5.0)
-plt.plot(events, lower_limits, color='blue', linestyle='--')#, color='orange', linewidth=5.0)
+matplotlib.rcParams.update({'font.family': 'serif'})
+plt.plot(memory_log_bfs_cumsum, label='Memory Search Study')#, color='orange', linewidth=5.0)
+# plt.plot(events, means, label='Average', color='blue', linewidth=5.0)#, color='orange', linewidth=5.0)
+# plt.plot(events, upper_limits, label='$90\%$ CL', color='blue', linestyle='--')#, color='orange', linewidth=5.0)
+# plt.plot(events, lower_limits, color='blue', linestyle='--')#, color='orange', linewidth=5.0)
 arc = np.cumsum(-np.random.choice(log_bfs, 2000))
-plt.plot(arc, alpha=0.3, color='grey')#, label='Other Realizations')
+plt.plot(arc, alpha=0.3, color='grey', label='Other Realizations')
 plt.axhline(8, linestyle='--', color='red', label='Detection Threshold')
 for i in range(15):
     arc = np.cumsum(-np.random.choice(log_bfs, 2000))
@@ -148,7 +148,7 @@ for i in range(15):
 # plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
 plt.xlabel('Event #')
 plt.ylabel('Cumulative ln BF')
-# plt.ylim(-7, 18)
+plt.ylim(-7, 18)
 plt.legend()
 plt.tight_layout()
 plt.savefig('summary/summary_plot_cumulative_memory_log_bf_poster.pdf')
