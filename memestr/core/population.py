@@ -147,3 +147,28 @@ def generate_all_parameters(size=10000, plot=False, **mass_kwargs):
                                  inc=eps.inc, ra=eps.ra, dec=eps.dec,
                                  psi=eps.psi, phase=eps.phase, geocent_time=eps.geocent_time,
                                  luminosity_distance=eps.luminosity_distance)
+
+
+def setup_ifo(hf_signal, ifo, settings):
+    start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
+    interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
+    if ifo in ['H1', 'L1']:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+        # interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
+    else:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
+            from_power_spectral_density_file('AdV_psd.txt')
+    if settings.detector_settings.zero_noise:
+        interferometer.set_strain_data_from_zero_noise(
+            sampling_frequency=settings.waveform_data.sampling_frequency,
+            duration=settings.waveform_data.duration,
+            start_time=start_time)
+    else:
+        interferometer.set_strain_data_from_power_spectral_density(
+            sampling_frequency=settings.waveform_data.sampling_frequency,
+            duration=settings.waveform_data.duration,
+            start_time=start_time)
+    injection_polarizations = interferometer.inject_signal(
+        parameters=settings.injection_parameters.__dict__,
+        injection_polarizations=hf_signal)
+    return interferometer

@@ -1,4 +1,3 @@
-import os
 import sys
 import warnings
 from bilby.core.utils import logger
@@ -6,9 +5,8 @@ from bilby.core.utils import logger
 logger.info('Test')
 
 from memestr.core.parameters import AllSettings
-from memestr.core.population import generate_all_parameters
+from memestr.core.population import generate_all_parameters, setup_ifo
 from memestr.core.waveforms import *
-from memestr.core.submit import get_injection_parameter_set
 
 # logger.disabled = True
 warnings.filterwarnings("ignore")
@@ -144,29 +142,6 @@ def create_parameter_set(filename, **kwargs):
     ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
     return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
-
-
-def setup_ifo(hf_signal, ifo, settings):
-    start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
-    interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
-    if ifo in ['H1', 'L1']:
-        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
-        # interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
-    else:
-        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
-            from_power_spectral_density_file('AdV_psd.txt')
-    # interferometer.set_strain_data_from_power_spectral_density(
-    #     sampling_frequency=settings.waveform_data.sampling_frequency,
-    #     duration=settings.waveform_data.duration,
-    #     start_time=start_time)
-    interferometer.set_strain_data_from_zero_noise(
-        sampling_frequency=settings.waveform_data.sampling_frequency,
-        duration=settings.waveform_data.duration,
-        start_time=start_time)
-    injection_polarizations = interferometer.inject_signal(
-        parameters=settings.injection_parameters.__dict__,
-        injection_polarizations=hf_signal)
-    return interferometer
 
 
 # output = 'Injection_log_bfs/Injection_log_bfs_' + str('test') + '.txt'
