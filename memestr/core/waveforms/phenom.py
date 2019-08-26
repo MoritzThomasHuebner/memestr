@@ -4,8 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from memestr.core.waveforms import convert_to_frequency_domain
-from .utils import apply_window, gamma_lmlm
+from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain
 
 
 # def frequency_domain_IMRPhenomD_waveform_without_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
