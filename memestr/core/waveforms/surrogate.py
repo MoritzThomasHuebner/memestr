@@ -1,9 +1,7 @@
 import bilby
 import gwmemory
-import numpy as np
 
-from .utils import apply_window, wrap_at_maximum_from_2_2_mode, nfft, \
-    apply_time_shift_frequency_domain, wrap_by_n_indices, gamma_lmlm
+from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain
 
 
 def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
@@ -14,8 +12,7 @@ def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mas
                                                             mass_ratio=mass_ratio, inc=inc,
                                                             luminosity_distance=luminosity_distance, phase=phase,
                                                             s13=s13, s23=s23, kwargs=kwargs, fold_in_memory=False)
-    waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
-    return waveform_fd
+    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
 def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
@@ -31,8 +28,7 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
     for mode in memory:
         waveform[mode] += memory[mode]
 
-    waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
-    return waveform_fd
+    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
 def frequency_domain_nr_hyb_sur_memory_waveform_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
@@ -45,8 +41,7 @@ def frequency_domain_nr_hyb_sur_memory_waveform_wrapped(frequencies, mass_ratio,
                                                              luminosity_distance=luminosity_distance,
                                                              phase=phase, s13=s13, s23=s23, kwargs=kwargs)
 
-    memory_waveform_fd, shift = convert_to_frequency_domain(memory_generator, series, memory, **kwargs)
-    return memory_waveform_fd
+    return convert_to_frequency_domain(memory_generator, series, memory, **kwargs)
 
 
 def time_domain_nr_hyb_sur_waveform_memory(times, mass_ratio, total_mass, s13, s23,
@@ -86,17 +81,3 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
         return oscillatory, memory, memory_generator
-
-
-def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
-    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
-    _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
-    time_shift = kwargs.get('time_shift', 0.)
-    time_shift += shift * (series.time_array[1] - series.time_array[0])
-    waveform_fd = nfft(waveform, series.sampling_frequency)
-    for mode in waveform:
-        indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
-        waveform_fd[mode][indexes] = 0
-    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
-                                                    duration=series.duration, shift=time_shift)
-    return waveform_fd, shift

@@ -1,20 +1,15 @@
 from copy import deepcopy
 
-import bilby
 import bilby.gw.utils as utils
-import gwmemory
 import itertools
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from scipy.misc import logsumexp
 from scipy.optimize import minimize
-from collections import namedtuple
 import multiprocessing
 
 import json
 
-from memestr.core.waveforms.surrogate import *
 from memestr.core.waveforms.phenom import *
 
 logger = bilby.core.utils.logger
@@ -84,8 +79,8 @@ def calculate_overlaps_optimizable(new_params, *args):
     series.time_array = memory_generator.times
 
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
-    waveform_fd, _ = convert_to_frequency_domain(memory_generator=memory_generator, series=series,
-                                                 waveform=waveform, alpha=alpha, time_shift=time_shift)
+    waveform_fd = convert_to_frequency_domain(memory_generator=memory_generator, series=series,
+                                              waveform=waveform, alpha=alpha, time_shift=time_shift)
     return -overlap_function(a=full_wf, b=waveform_fd, frequency=frequency_array,
                              psd=power_spectral_density)
 

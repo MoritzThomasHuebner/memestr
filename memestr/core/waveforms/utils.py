@@ -57,3 +57,17 @@ def nfft(time_domain_strain, sampling_frequency):
         frequency_domain_strain[mode] = np.fft.rfft(time_domain_strain[mode])
         frequency_domain_strain[mode] /= sampling_frequency
     return frequency_domain_strain
+
+
+def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
+    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
+    _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
+    time_shift = kwargs.get('time_shift', 0.)
+    time_shift += shift * (series.time_array[1] - series.time_array[0])
+    waveform_fd = nfft(waveform, series.sampling_frequency)
+    for mode in waveform:
+        indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
+        waveform_fd[mode][indexes] = 0
+    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
+                                                    duration=series.duration, shift=time_shift)
+    return waveform_fd
