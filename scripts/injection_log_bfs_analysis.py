@@ -5,8 +5,8 @@ import scipy.stats
 import matplotlib.pyplot as plt
 import sys
 # label = sys.argv[1]
-# label = 'aplus'
-label = 'snr_8_12_mem'
+label = 'aplus'
+# label = 'snr_8_12_mem'
 
 log_bfs = np.array([])
 trials = np.array([])
@@ -23,16 +23,28 @@ for i in range(256):
     snrs = np.append(snrs, data[:, 2])
     memory_snrs = np.append(memory_snrs, data[:, 3])
 
+events_to_detection = 8*len(log_bfs)/np.sum(log_bfs)
+events_per_day = 53.2/365 * 4/3*np.pi*5**3
 print("Memory log BF per Event: " + str(np.mean(log_bfs)))
 print("Standard deviation log BF: " + str(np.std(log_bfs)))
-print("Events to log BF = 8: " + str(8*len(log_bfs)/np.sum(log_bfs)))
+print("Events to log BF = 8: " + str(events_to_detection))
 print("Total number of events considered: " + str(len(log_bfs)))
+print("Total number of events drawn: " + str(np.sum(trials)))
+print("Fraction of detected events: " + str(1/np.mean(trials)))
+print("Total number of BBH events in prior volume to log BF = 8: " + str(events_to_detection*np.mean(trials)))
+print("Number of events per day in prior volume " + str(events_per_day))
+print("Number of duty cycle days to detection: " + str(events_to_detection*np.mean(trials)/events_per_day))
 
+# low_snr_log_bf = np.sum(log_bfs[np.where(snrs < 16)])
+# high_snr_log_bf = np.sum(log_bfs[np.where(snrs > 16)])
+# print(low_snr_log_bf)
+# print(high_snr_log_bf)
 
-plt.hist(log_bfs, bins='fd')
-plt.semilogy()
-plt.show()
-plt.clf()
+# sys.exit(0)
+# plt.hist(log_bfs, bins='fd')
+# plt.semilogy()
+# plt.show()
+# plt.clf()
 # idxs = np.where(snrs < 32)
 # log_bfs[idxs] = 0
 # assert False
@@ -54,30 +66,22 @@ plt.clf()
 #     plt.plot(arc, alpha=0.2, color='grey')
 #     plt.axhline(8, linestyle='--', color='red')
 
-# required_events = []
-# for i in range(10000):
-#     tot = 0
-#     j = 0
-#     while tot < 8:
-#         tot -= np.sum(np.random.choice(log_bfs, 10))
-#         j += 10
-#     required_events.append(j)
-
-# interval = scipy.stats.t.interval(0.95,
-#                                   len(required_events)-1,
-#                                   loc=np.mean(required_events),
-#                                   scale=scipy.stats.sem(required_events))
-#
-# plt.hist(required_events, bins=100)
-# plt.axvline(np.mean(required_events), color='orange')
-# plt.axvline(interval[0], color='red', linestyle='--')
-# plt.axvline(interval[1], color='red', linestyle='--')
-# plt.clf()
-# print('Mean number of events: ' + str(np.mean(required_events)))
-# print('Median number of events: ' + str(np.median(required_events)))
-# print('Standard deviation on number of events: ' + str(np.std(required_events)))
-
-# sys.exit(0)
+required_events = []
+for i in range(20000):
+    print(i)
+    tot = 0
+    j = 0
+    while tot < 8:
+        tot += np.sum(np.random.choice(log_bfs, 10))
+        j += 10
+    required_events.append(j)
+print(np.mean(required_events))
+print(np.median(required_events))
+print(np.percentile(required_events, [5, 95]))
+plt.hist(required_events, bins='fd')
+plt.show()
+plt.clf()
+sys.exit(0)
 # for i in range(32, 97):
 #     data = np.loadtxt('Injection_log_bfs/Injection_log_bfs_{}.txt'.format(i))
 #     log_bfs = np.append(log_bfs, data[:, 0])

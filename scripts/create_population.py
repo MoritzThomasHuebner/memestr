@@ -26,37 +26,37 @@ def create_parameter_set(filename, **kwargs):
     trials = 0
     memory_log_bf = 0
     a = True
-    while a:
-        # while network_snr < 12 or best_snr < 8:
+    # while a:
+    while network_snr < 12 or best_snr < 8:
         idx = np.random.randint(0, len(all_params.total_masses))
-        # total_mass = all_params.total_masses[idx]
-        # mass_ratio = all_params.mass_ratios[idx]
-        # if mass_ratio < 0.125:
-        #     continue
-        # luminosity_distance = np.random.choice(all_params.luminosity_distance)
-        # dec = np.random.choice(all_params.dec)
-        # ra = np.random.choice(all_params.ra)
-        # inc = np.random.choice(all_params.inc)
-        # psi = np.random.choice(all_params.psi)
-        # phase = np.random.choice(all_params.phase)
-        # geocent_time = np.random.choice(all_params.geocent_time)
-        total_mass = 65
-        mass_ratio = 0.8
-        luminosity_distance = kwargs.get('luminosity_distance')
-        dec = -1.2108
-        ra = 1.375
-        inc = 1.5
-        psi = 2.659
-        phase = 1.3
-        geocent_time = 4.0
+        total_mass = all_params.total_masses[idx]
+        mass_ratio = all_params.mass_ratios[idx]
+        if mass_ratio < 0.125:
+            continue
+        luminosity_distance = np.random.choice(all_params.luminosity_distance)
+        dec = np.random.choice(all_params.dec)
+        ra = np.random.choice(all_params.ra)
+        inc = np.random.choice(all_params.inc)
+        psi = np.random.choice(all_params.psi)
+        phase = np.random.choice(all_params.phase)
+        geocent_time = np.random.choice(all_params.geocent_time)
+        # total_mass = 65
+        # mass_ratio = 0.8
+        # luminosity_distance = kwargs.get('luminosity_distance')
+        # dec = -1.2108
+        # ra = 1.375
+        # inc = 1.5
+        # psi = 2.659
+        # phase = 1.3
+        # geocent_time = 4.0
         s11 = 0.
         s12 = 0.
-        # s13 = np.random.choice(all_params.s13)
-        s13 = 0.
+        s13 = np.random.choice(all_params.s13)
+        # s13 = 0.
         s21 = 0.
         s22 = 0.
-        s23 = 0.
-        # s23 = np.random.choice(all_params.s23)
+        # s23 = 0.
+        s23 = np.random.choice(all_params.s23)
 
         settings.injection_parameters.update_args(mass_ratio=mass_ratio, total_mass=total_mass,
                                                   luminosity_distance=luminosity_distance, dec=dec, ra=ra,
@@ -68,7 +68,7 @@ def create_parameter_set(filename, **kwargs):
         settings.waveform_arguments.l_max = 4
         waveform_generator_with_memory = \
             bilby.gw.WaveformGenerator(
-                frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_with_memory,
+                frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
                 parameters=settings.injection_parameters.__dict__,
                 waveform_arguments=settings.waveform_arguments.__dict__,
                 **settings.waveform_data.__dict__)
@@ -85,12 +85,12 @@ def create_parameter_set(filename, **kwargs):
         ifos = bilby.gw.detector.InterferometerList([])
         for ifo in ['H1', 'L1', 'V1']:
             logger.disabled = True
-            interferometer = setup_ifo(hf_signal, ifo, settings)
+            interferometer = setup_ifo(hf_signal, ifo, settings, aplus=True)
             logger.disabled = False
             ifos.append(interferometer)
 
-        # likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
-        #                                                                         waveform_generator=waveform_generator_with_memory)
+        likelihood_with_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
+                                                                                waveform_generator=waveform_generator_with_memory)
         # likelihood_without_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos,
         #                                                                            waveform_generator=waveform_generator_without_memory)
         # likelihood_with_memory.parameters = settings.injection_parameters.__dict__
@@ -105,41 +105,41 @@ def create_parameter_set(filename, **kwargs):
         trials += 1
         # if os.path.exists('parameter_sets/' + str(filename)):
         #     return
-        a = False
+        # a = False
     logger.disabled = False
     # logger.info(filename)
 
-    waveform_generator_memory = \
-        bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_memory_waveform_wrapped,
-                                   parameters=settings.injection_parameters.__dict__,
-                                   waveform_arguments=settings.waveform_arguments.__dict__,
-                                   **settings.waveform_data.__dict__)
-    hf_signal = waveform_generator_memory.frequency_domain_strain()
-    mem_ifos = bilby.gw.detector.InterferometerList([])
-    for ifo in ['H1', 'L1', 'V1']:
-        logger.disabled = True
-        interferometer = setup_ifo(hf_signal, ifo, settings)
-        logger.disabled = False
-        mem_ifos.append(interferometer)
+    # waveform_generator_memory = \
+    #     bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_memory_waveform_wrapped,
+    #                                parameters=settings.injection_parameters.__dict__,
+    #                                waveform_arguments=settings.waveform_arguments.__dict__,
+    #                                **settings.waveform_data.__dict__)
+    # hf_signal = waveform_generator_memory.frequency_domain_strain()
+    # mem_ifos = bilby.gw.detector.InterferometerList([])
+    # for ifo in ['H1', 'L1', 'V1']:
+    #     logger.disabled = True
+    #     interferometer = setup_ifo(hf_signal, ifo, settings, aplus=True)
+    #     logger.disabled = False
+    #     mem_ifos.append(interferometer)
 
-    with open('parameter_sets/' + str(filename), 'w') as f:
-        f.write('total_mass=' + str(settings.injection_parameters.total_mass) +
-                ' mass_ratio=' + str(settings.injection_parameters.mass_ratio) +
-                ' luminosity_distance=' + str(settings.injection_parameters.luminosity_distance) +
-                ' dec=' + str(settings.injection_parameters.dec) +
-                ' ra=' + str(settings.injection_parameters.ra) +
-                ' inc=' + str(settings.injection_parameters.inc) +
-                ' psi=' + str(settings.injection_parameters.psi) +
-                ' phase=' + str(settings.injection_parameters.phase) +
-                ' geocent_time=' + str(settings.injection_parameters.geocent_time) +
-                ' s11=' + str(settings.injection_parameters.s11) +
-                ' s12=' + str(settings.injection_parameters.s12) +
-                ' s13=' + str(settings.injection_parameters.s13) +
-                ' s21=' + str(settings.injection_parameters.s21) +
-                ' s22=' + str(settings.injection_parameters.s22) +
-                ' s23=' + str(settings.injection_parameters.s23))
+    # with open('parameter_sets/' + str(filename), 'w') as f:
+    #     f.write('total_mass=' + str(settings.injection_parameters.total_mass) +
+    #             ' mass_ratio=' + str(settings.injection_parameters.mass_ratio) +
+    #             ' luminosity_distance=' + str(settings.injection_parameters.luminosity_distance) +
+    #             ' dec=' + str(settings.injection_parameters.dec) +
+    #             ' ra=' + str(settings.injection_parameters.ra) +
+    #             ' inc=' + str(settings.injection_parameters.inc) +
+    #             ' psi=' + str(settings.injection_parameters.psi) +
+    #             ' phase=' + str(settings.injection_parameters.phase) +
+    #             ' geocent_time=' + str(settings.injection_parameters.geocent_time) +
+    #             ' s11=' + str(settings.injection_parameters.s11) +
+    #             ' s12=' + str(settings.injection_parameters.s12) +
+    #             ' s13=' + str(settings.injection_parameters.s13) +
+    #             ' s21=' + str(settings.injection_parameters.s21) +
+    #             ' s22=' + str(settings.injection_parameters.s22) +
+    #             ' s23=' + str(settings.injection_parameters.s23))
 
-    ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
+    # ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
     return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
 
