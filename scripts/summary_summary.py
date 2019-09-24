@@ -133,8 +133,9 @@ plt.clf()
 
 
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)
-matplotlib.rcParams.update({'font.size': 20})
+matplotlib.rcParams.update({'font.size': 18})
 matplotlib.rcParams.update({'font.family': 'serif'})
+matplotlib.rcParams.update({'mathtext.fontset': 'dejavuserif'})
 plt.plot(memory_log_bfs_cumsum, label='Memory Search Study')#, color='orange', linewidth=5.0)
 # plt.plot(events, means, label='Average', color='blue', linewidth=5.0)#, color='orange', linewidth=5.0)
 # plt.plot(events, upper_limits, label='$90\%$ CL', color='blue', linestyle='--')#, color='orange', linewidth=5.0)
@@ -146,12 +147,12 @@ for i in range(15):
     arc = np.cumsum(-np.random.choice(log_bfs, 2000))
     plt.plot(arc, alpha=0.3, color='grey')
 # plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
-plt.xlabel('Event #')
-plt.ylabel('Cumulative ln BF')
+plt.xlabel('Event ID')
+plt.ylabel('Cumulative $\ln \, \mathcal{BF}$')
 plt.ylim(-7, 18)
 plt.legend()
 plt.tight_layout()
-plt.savefig('summary/summary_plot_cumulative_memory_log_bf_poster.pdf')
+plt.savefig('summary/summary_plot_cumulative_memory_log_bf.pdf')
 plt.clf()
 
 
