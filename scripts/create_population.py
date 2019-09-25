@@ -141,7 +141,7 @@ def create_parameter_set(filename, **kwargs):
     #
     ifos.to_hdf5(outdir='parameter_sets', label=str(filename))
     # ifos_mem.to_hdf5(outdir='parameter_sets', label=str(filename))
-    return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
+    # return ifos, mem_ifos, settings.injection_parameters.__dict__, trials
 
 
 # output = 'Injection_log_bfs/Injection_log_bfs_' + str('test') + '.txt'
