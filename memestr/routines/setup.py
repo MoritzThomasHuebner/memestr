@@ -41,11 +41,11 @@ def setup_run(kwargs, outdir, recovery_model):
     # priors['prior_psi'] = bilby.core.prior.Uniform(minimum=0,
     #                                                maximum=np.pi,
     #                                                latex_label="$\psi$")
-    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=injection_parameters['phase'] - np.pi / 2,
-                                                     maximum=injection_parameters['phase'] + np.pi / 2,
+    priors['prior_phase'] = bilby.core.prior.Uniform(minimum=injection_parameters['phase'] - np.pi / 4,
+                                                     maximum=injection_parameters['phase'] + np.pi / 4,
                                                      latex_label="$\phi$")
-    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=injection_parameters['psi'] - np.pi / 2,
-                                                   maximum=injection_parameters['psi'] + np.pi / 2,
+    priors['prior_psi'] = bilby.core.prior.Uniform(minimum=injection_parameters['psi'] - np.pi / 4,
+                                                   maximum=injection_parameters['psi'] + np.pi / 4,
                                                    latex_label="$\psi$")
     priors['prior_geocent_time'] = bilby.core.prior.Uniform(minimum=injection_parameters['geocent_time'] - 0.1,
                                                             maximum=injection_parameters['geocent_time'] + 0.1,
