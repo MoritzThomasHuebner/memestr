@@ -91,7 +91,7 @@ ax1 = plt.subplot(gs[1])
 ax0.plot(snrs, mem_log_bfs_sampled, label='Sampling', linestyle='None', marker="v")
 ax0.plot(snrs, mem_log_bfs_reweight, label='Reweighting', linestyle='None', marker="o")
 ax0.plot(snrs, mem_log_bfs_injected, label='$\ln\mathcal{L}$ at injected value')
-ax0.set_ylabel('$\ln \mathcal{BF}$')
+ax0.set_ylabel('$\ln \mathcal{BF}_{\mathrm{mem}}$')
 ax0.legend()
 ax0.set_xticks([])
 

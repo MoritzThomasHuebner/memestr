@@ -22,7 +22,7 @@ plt.plot(memory_log_bfs, label='Memory ln BF', marker='H', linestyle='None', col
 plt.grid(False)
 plt.axhline(0, color='grey', linestyle='--')
 plt.xticks(np.arange(10), tuple(event_ids), rotation=60)
-plt.ylabel('Memory $\ln \, \mathcal{BF}$')
+plt.ylabel('$\ln \, \mathcal{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
 plt.savefig('gwtc-1/gwtc-1.pdf')
 plt.clf()

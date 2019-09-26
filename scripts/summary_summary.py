@@ -148,7 +148,7 @@ for i in range(15):
     plt.plot(arc, alpha=0.3, color='grey')
 # plt.plot(memory_log_bfs_injected_cumsum, label='injected', linestyle='--')
 plt.xlabel('Event ID')
-plt.ylabel('Cumulative $\ln \, \mathcal{BF}$')
+plt.ylabel('Cumulative $\ln \, \mathcal{BF}_{\mathrm{mem}}$')
 plt.ylim(-7, 18)
 plt.legend()
 plt.tight_layout()
