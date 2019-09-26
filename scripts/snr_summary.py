@@ -51,6 +51,9 @@ for run_id in range(20000, 20030):
     mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
     snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
     print(run_id)
+    print(mem_log_bfs_reweight[-1])
+    print(mem_log_bfs_sampled[-1])
+    print(mem_log_bfs_sampled_err[-1])
 
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
