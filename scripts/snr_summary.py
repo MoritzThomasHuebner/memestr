@@ -42,7 +42,7 @@ for run_id in range(20000, 20030):
     for i in range(0, 8):
         res_non_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i))
         res_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i + 10))
-        pp_result = memestr.core.postprocessing.PostprocessingResult.from_json('{}_dynesty_production_IMR_non_mem_rec'.format(run_id), '{}pp_result.json'.format(i))
+        pp_result = memestr.core.postprocessing.PostprocessingResult.from_json('{}_dynesty_production_IMR_non_mem_rec/'.format(run_id), '{}pp_result.json'.format(i))
         sampling_log_bfs.append(res_mem_rec.log_bayes_factor - res_non_mem_rec.log_bayes_factor)
         reweight_log_bfs.append(pp_result.memory_log_bf)
     mem_log_bfs_reweight.append(np.mean(reweight_log_bfs))
