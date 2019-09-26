@@ -49,7 +49,7 @@ for run_id in range(20000, 20030):
     mem_log_bfs_reweight_err.append(np.std(reweight_log_bfs)/np.sqrt(len(reweight_log_bfs)))
     mem_log_bfs_sampled.append(np.mean(sampling_log_bfs))
     mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
-    snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data[ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
+    snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood'][ifo]['H1']['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
     print(run_id)
 
 fig = plt.figure(figsize=(7, 7))
