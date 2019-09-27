@@ -17,9 +17,10 @@ def run_production_injection(outdir, **kwargs):
         kwargs, outdir, recovery_model)
 
     try:
-        result = bilby.result.read_in_result(
-            filename=str(filename_base) + '_production_IMR_non_mem_rec/' + str(sub_run_id) + 'IMR_mem_inj_non_mem_rec_result.json')
-        result.outdir = outdir
+        if settings.sampler_settings.resume:
+            result = bilby.result.read_in_result(
+                filename=str(filename_base) + '_production_IMR_non_mem_rec/' + str(sub_run_id) + 'IMR_mem_inj_non_mem_rec_result.json')
+            result.outdir = outdir
     except Exception as e:
         logger.info(e)
         result = bilby.core.sampler.run_sampler(likelihood=likelihood,
