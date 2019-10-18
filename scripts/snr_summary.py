@@ -55,6 +55,7 @@ for run_id in range(20000, 20030):
     mem_log_bfs_injected.append(res_mem_rec.meta_data['likelihood'] - res_non_mem_rec.meta_data['likelihood'])
     snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
     print(run_id)
+    print(mem_log_bfs_injected[-1])
     print(mem_log_bfs_reweight[-1])
     print(mem_log_bfs_sampled[-1])
     print(mem_log_bfs_sampled_err[-1])
