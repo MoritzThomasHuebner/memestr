@@ -50,17 +50,21 @@ for run_id in range(20000, 20030):
     mem_log_bfs_sampled.append(np.mean(sampling_log_bfs))
     mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
     params = memestr.core.submit.get_injection_parameter_set(run_id)
-    res_non_mem_rec.meta_data['likelihood'].params = params
-    res_mem_rec.meta_data['likelihood'].params = params
+    res_non_mem_rec.meta_data['likelihood'].parameters = params
+    res_mem_rec.meta_data['likelihood'].parameters = params
     mem_log_bfs_injected.append(res_mem_rec.meta_data['likelihood'] - res_non_mem_rec.meta_data['likelihood'])
     snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
     print(run_id)
     print(mem_log_bfs_reweight[-1])
     print(mem_log_bfs_sampled[-1])
     print(mem_log_bfs_sampled_err[-1])
-
 np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([mem_log_bfs_reweight, mem_log_bfs_reweight_err,
                                                        mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
+# res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
+# mem_log_bfs_reweight = res[0]
+# mem_log_bfs_reweight_err = res[1]
+# mem_log_bfs_sampled = res[2]
+# mem_log_bfs_sampled_err = res[3]
 
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
