@@ -53,19 +53,19 @@ likelihood = bilby.gw.likelihood \
                                 distance_marginalization=True)
 
 for run_id in range(20000, 20030):
-    sampling_log_bfs = []
-    reweight_log_bfs = []
-    for i in range(0, 8):
-        res_non_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i))
-        res_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i + 10))
-        pp_result = memestr.core.postprocessing.PostprocessingResult.from_json('{}_dynesty_production_IMR_non_mem_rec/'.format(run_id), '{}pp_result.json'.format(i))
-        sampling_log_bfs.append(res_mem_rec.log_bayes_factor - res_non_mem_rec.log_bayes_factor)
-        reweight_log_bfs.append(pp_result.memory_log_bf)
-    mem_log_bfs_reweight.append(np.mean(reweight_log_bfs))
-    mem_log_bfs_reweight_err.append(np.std(reweight_log_bfs)/np.sqrt(len(reweight_log_bfs)))
-    mem_log_bfs_sampled.append(np.mean(sampling_log_bfs))
-    mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
-
+    # sampling_log_bfs = []
+    # reweight_log_bfs = []
+    # for i in range(0, 8):
+    #     res_non_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i))
+    #     res_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i + 10))
+    #     pp_result = memestr.core.postprocessing.PostprocessingResult.from_json('{}_dynesty_production_IMR_non_mem_rec/'.format(run_id), '{}pp_result.json'.format(i))
+    #     sampling_log_bfs.append(res_mem_rec.log_bayes_factor - res_non_mem_rec.log_bayes_factor)
+    #     reweight_log_bfs.append(pp_result.memory_log_bf)
+    # mem_log_bfs_reweight.append(np.mean(reweight_log_bfs))
+    # mem_log_bfs_reweight_err.append(np.std(reweight_log_bfs)/np.sqrt(len(reweight_log_bfs)))
+    # mem_log_bfs_sampled.append(np.mean(sampling_log_bfs))
+    # mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
+    #
     params = memestr.core.submit.get_injection_parameter_set(run_id)
     likelihood.interferometers = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/{}_H1L1V1.h5'.format(run_id))
     likelihood.parameters = memestr.core.submit.get_injection_parameter_set(run_id)
@@ -78,20 +78,20 @@ for run_id in range(20000, 20030):
     print("no memory evidence: " + str(no_mem_evidence))
     mem_log_bfs_injected.append(mem_evidence - no_mem_evidence)
 
-    snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
+    # snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
     print(run_id)
     print(mem_log_bfs_injected[-1])
-    print(mem_log_bfs_reweight[-1])
-    print(mem_log_bfs_sampled[-1])
-    print(mem_log_bfs_sampled_err[-1])
+    # print(mem_log_bfs_reweight[-1])
+    # print(mem_log_bfs_sampled[-1])
+    # print(mem_log_bfs_sampled_err[-1])
 
-np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([mem_log_bfs_reweight, mem_log_bfs_reweight_err,
-                                                       mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
-# res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
-# mem_log_bfs_reweight = res[0]
-# mem_log_bfs_reweight_err = res[1]
-# mem_log_bfs_sampled = res[2]
-# mem_log_bfs_sampled_err = res[3]
+# np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([mem_log_bfs_reweight, mem_log_bfs_reweight_err,
+#                                                        mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
+res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
+mem_log_bfs_reweight = res[0]
+mem_log_bfs_reweight_err = res[1]
+mem_log_bfs_sampled = res[2]
+mem_log_bfs_sampled_err = res[3]
 
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
