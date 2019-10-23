@@ -54,7 +54,7 @@ waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=no_mem_
 
 for run_id in range(20000, 20030):
     res_mem_rec = bilby.core.result.read_in_result(
-        '{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_mem_rec_result.json'.format(run_id, 0))
+        '{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, 10))
     snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
     continue
 
