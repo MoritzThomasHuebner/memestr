@@ -37,8 +37,8 @@ mem_log_bfs_sampled_err = []
 mem_log_bfs_injected = []
 snrs = []
 
-no_mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_with_memory
-mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory
+no_mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory
+mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_with_memory
 settings = memestr.core.parameters.AllSettings()
 waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=no_mem_model,
                                                 parameters=settings.injection_parameters.__dict__,
@@ -113,7 +113,7 @@ ax1.plot(snrs, mem_log_bfs_reweight_err, label='Reweighting', linestyle='None', 
 ax1.set_yscale('log')
 ax1.set_xlabel('$\\rho_{mf}$')
 # ax1.set_ylim(1e-4, 1)
-# ax1.set_yticks([10e-4, 10e-1])
+ax1.set_yticks([10e-4, 10e-1])
 ax1.set_xticks([10, 20, 30, 40, 50, 60])
 ax1.set_ylabel('$\Delta \ln \mathcal{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
