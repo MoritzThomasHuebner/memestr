@@ -67,6 +67,7 @@ for run_id in range(20000, 20030):
     # mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
     #
     params = memestr.core.submit.get_injection_parameter_set(run_id)
+    del params['luminosity_distance']
     likelihood.interferometers = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/{}_H1L1V1.h5'.format(run_id))
     likelihood.parameters = memestr.core.submit.get_injection_parameter_set(run_id)
     likelihood.waveform_generator.time_domain_source_model = mem_model
