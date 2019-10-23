@@ -38,7 +38,7 @@ mem_log_bfs_injected = []
 snrs = []
 
 no_mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_with_memory
-mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_with_memory
+mem_model = memestr.core.waveforms.frequency_domain_IMRPhenomD_waveform_without_memory
 settings = memestr.core.parameters.AllSettings()
 waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=no_mem_model,
                                                 parameters=settings.injection_parameters.__dict__,
