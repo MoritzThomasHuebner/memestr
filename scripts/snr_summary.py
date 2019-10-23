@@ -70,11 +70,11 @@ for run_id in range(20000, 20030):
     likelihood.interferometers = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/{}_H1L1V1.h5'.format(run_id))
     likelihood.parameters = memestr.core.submit.get_injection_parameter_set(run_id)
     likelihood.waveform_generator.time_domain_source_model = mem_model
-    mem_evidence = likelihood.log_likelihood()
+    mem_evidence = likelihood.log_likelihood_ratio()
     print("memory evidence: " + str(mem_evidence))
     likelihood.waveform_generator.time_domain_source_model = no_mem_model
     likelihood.waveform_generator._cache['model'] = 'test'
-    no_mem_evidence = likelihood.log_likelihood()
+    no_mem_evidence = likelihood.log_likelihood_ratio()
     print("no memory evidence: " + str(no_mem_evidence))
     mem_log_bfs_injected.append(mem_evidence - no_mem_evidence)
 
