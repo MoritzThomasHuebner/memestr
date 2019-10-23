@@ -71,8 +71,10 @@ for run_id in range(20000, 20030):
     likelihood.parameters = memestr.core.submit.get_injection_parameter_set(run_id)
     likelihood.waveform_generator.time_domain_source_model = mem_model
     mem_evidence = likelihood.log_likelihood()
+    print("memory evidence: " + str(mem_evidence))
     likelihood.waveform_generator.time_domain_source_model = no_mem_model
     no_mem_evidence = likelihood.log_likelihood()
+    print("no memory evidence: " + str(no_mem_evidence))
     mem_log_bfs_injected.append(mem_evidence - no_mem_evidence)
 
     snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
