@@ -51,12 +51,12 @@ def create_parameter_set(filename, **kwargs):
         geocent_time = 4.0
         s11 = 0.
         s12 = 0.
-        s13 = np.random.choice(all_params.s13)
-        # s13 = 0.
+        # s13 = np.random.choice(all_params.s13)
+        s13 = 0.
         s21 = 0.
         s22 = 0.
-        # s23 = 0.
-        s23 = np.random.choice(all_params.s23)
+        s23 = 0.
+        # s23 = np.random.choice(all_params.s23)
 
         settings.injection_parameters.update_args(mass_ratio=mass_ratio, total_mass=total_mass,
                                                   luminosity_distance=luminosity_distance, dec=dec, ra=ra,
