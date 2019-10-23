@@ -73,11 +73,11 @@ for run_id in range(20000, 20030):
     likelihood.parameters = memestr.core.submit.get_injection_parameter_set(run_id)
     likelihood.waveform_generator.frequency_domain_source_model = mem_model
     mem_evidence = likelihood.log_likelihood_ratio()
-    print("memory evidence: " + str(mem_evidence))
+    # print("memory evidence: " + str(mem_evidence))
     likelihood.waveform_generator.frequency_domain_source_model = no_mem_model
     likelihood.waveform_generator._cache['model'] = 'test'
     no_mem_evidence = likelihood.log_likelihood_ratio()
-    print("no memory evidence: " + str(no_mem_evidence))
+    # print("no memory evidence: " + str(no_mem_evidence))
     mem_log_bfs_injected.append(mem_evidence - no_mem_evidence)
 
     print(run_id)
@@ -94,6 +94,7 @@ mem_log_bfs_sampled = res[3]
 mem_log_bfs_sampled_err = res[4]
 # np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([snrs, mem_log_bfs_reweight, mem_log_bfs_reweight_err,
 #                                                        mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
+print(snrs)
 
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
@@ -113,7 +114,7 @@ ax1.plot(snrs, mem_log_bfs_reweight_err, label='Reweighting', linestyle='None', 
 ax1.set_yscale('log')
 ax1.set_xlabel('$\\rho_{mf}$')
 # ax1.set_ylim(1e-4, 1)
-ax1.set_yticks([10e-4, 10e-1])
+ax1.set_yticks([1e-4, 1e-2, 1])
 ax1.set_xticks([10, 20, 30, 40, 50, 60])
 ax1.set_ylabel('$\Delta \ln \mathcal{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
