@@ -73,7 +73,7 @@ for run_id in range(20000, 20030):
     mem_evidence = likelihood.log_likelihood()
     print("memory evidence: " + str(mem_evidence))
     likelihood.waveform_generator.time_domain_source_model = no_mem_model
-    likelihood.waveform_generator._cache['model'] = None
+    likelihood.waveform_generator._cache['model'] = 'test'
     no_mem_evidence = likelihood.log_likelihood()
     print("no memory evidence: " + str(no_mem_evidence))
     mem_log_bfs_injected.append(mem_evidence - no_mem_evidence)
