@@ -31,7 +31,7 @@ def time_domain_minimum_waveform_model_wrapped(times, mass_ratio, total_mass, lu
     return time_domain_memory
 
 
-def frequency_domain_minimum_waveform_model_wrapped(frequencies, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
+def frequency_domain_minimum_waveform_model(frequencies, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
     series = CoupledTimeAndFrequencySeries()
     series.frequency_array = frequencies
     series.start_time = -series.duration/2

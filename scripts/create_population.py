@@ -182,13 +182,13 @@ while True:
 
     waveform_generator_with_memory = \
         bilby.gw.WaveformGenerator(
-            frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+            frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory,
             parameters=injection_parameters,
             waveform_arguments=settings.waveform_arguments.__dict__,
             **settings.waveform_data.__dict__)
     waveform_generator_without_memory = \
         bilby.gw.WaveformGenerator(
-            frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
+            frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory,
             parameters=injection_parameters,
             waveform_arguments=settings.waveform_arguments.__dict__,
             **settings.waveform_data.__dict__)
