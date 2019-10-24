@@ -12,8 +12,8 @@ p.add_argument('--outdir_base', type=str, required=True)
 p.add_argument('--filename_base', type=str, required=True)
 p.add_argument('--sub_run_id', type=int)
 p.add_argument('--routine', type=str, required=True)
-p.add_argument('--reweight_model')
-p.add_argument('--recovery_model')
+p.add_argument('--reweight_model', type=str)
+p.add_argument('--recovery_model', type=str)
 
 p.add_argument('--distance_marginalization', type=bool, default=False)
 p.add_argument('--time_marginalization', type=bool, default=False)
@@ -41,10 +41,14 @@ p.add_argument('--filename_base', type=str, required=True)
 p.add_argument('--zero_noise', type=bool, default=False)
 p.add_argument('--detectors', type=list, default=['H1', 'L1', 'V1'])
 
-priors = bilby.gw.prior.BBHPriorDict.from_file('bbh.prior')
+priors = bilby.gw.prior.BBHPriorDict()
+priors.from_file('bbh.prior')
 
 options = p.parse_args().__dict__
 options['priors'] = priors
+
+options['recovery_model'] = memestr.core.waveforms.models[options['recovery_model']]
+options['reweight_model'] = memestr.core.waveforms.models[options['reweight_model']]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 routine = memestr.routines[options['routine']]

@@ -12,24 +12,18 @@ def update_kwargs(default_kwargs, kwargs):
 
 
 def run_production_injection(outdir, **kwargs):
-    recovery_model = models[kwargs['recovery_model']]
     filename_base, ifos, likelihood, logger, priors, settings, sub_run_id = setup_run(
-        kwargs, recovery_model)
+        kwargs)
 
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
                                             injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-                                            outdir=outdir,
+                                            outdir=settings.sampler_settings.outdir,
                                             save=True,
                                             verbose=True,
-                                            sampler=settings.sampler_settings.sampler,
-                                            npoints=settings.sampler_settings.npoints,
-                                            label=settings.sampler_settings.label,
-                                            clean=settings.sampler_settings.clean,
-                                            resume=settings.sampler_settings.resume,
                                             save_bounds=False,
                                             check_point_plot=False,
-                                            walks=settings.sampler_settings.walks)
+                                            **settings.sampler_settings.__dict__)
     result.save_to_file()
     logger.info(str(result))
 

@@ -79,19 +79,18 @@ class WaveformData(RunParameters):
 
 class SamplerSettings(RunParameters):
 
-    def __init__(self, sampler='cpnest', npoints=200, walks=50, label='IMRPhenomD', clean=False,
-                 dlogz=0.1, maxmcmc=100, nthreads=1, resume=True, plot=False):
+    def __init__(self, outdir='.', sampler='dynesty', npoints=200, walks=50, label='IMRPhenomD', clean=False,
+                 dlogz=0.1, resume=True, plot=False):
         super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.walks = int(walks)
         self.label = label
         self.clean = clean
-        self.nthreads = nthreads
         self.dlogz = dlogz
-        self.maxmcmc = int(maxmcmc)
         self.resume = resume
         self.plot = plot
+        self.outdir = outdir
 
     @property
     def resume(self):

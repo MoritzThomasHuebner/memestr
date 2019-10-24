@@ -9,7 +9,8 @@ from memestr.core.parameters import AllSettings
 from memestr.core.submit import get_injection_parameter_set
 
 
-def setup_run(kwargs, recovery_model):
+def setup_run(kwargs):
+    recovery_model = kwargs['recovery_model']
     logger = logging.getLogger('bilby')
 
     filename_base = kwargs['filename_base']
