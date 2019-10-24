@@ -95,7 +95,7 @@ waveform_generator_imr = bilby.gw.WaveformGenerator(
     start_time=start_time, duration=duration, sampling_frequency=sampling_frequency)
 
 waveform_generator_hom_moritz = bilby.gw.WaveformGenerator(
-    frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped,
+    frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory,
     duration=duration, sampling_frequency=sampling_frequency, start_time=start_time, waveform_arguments=dict(alpha=0.1))
 
 waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
@@ -103,7 +103,7 @@ waveform_generator_hom_ethan = bilby.gw.WaveformGenerator(
     duration=duration, sampling_frequency=sampling_frequency, start_time=start_time)
 
 waveform_generator_memory = bilby.gw.WaveformGenerator(
-    frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
+    frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory,
     duration=duration, sampling_frequency=sampling_frequency, start_time=start_time,
     waveform_arguments=dict(alpha=0.1))
 

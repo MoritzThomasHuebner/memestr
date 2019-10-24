@@ -4,8 +4,8 @@ import gwmemory
 from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain
 
 
-def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
-                                                                luminosity_distance, inc, phase, **kwargs):
+def frequency_domain_nr_hyb_sur_waveform_without_memory(frequencies, mass_ratio, total_mass, s13, s23,
+                                                        luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     waveform, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
@@ -15,8 +15,8 @@ def frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped(frequencies, mas
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
-def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
-                                                             luminosity_distance, inc, phase, **kwargs):
+def frequency_domain_nr_hyb_sur_waveform_with_memory(frequencies, mass_ratio, total_mass, s13, s23,
+                                                     luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
 
@@ -31,8 +31,8 @@ def frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped(frequencies, mass_r
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
-def frequency_domain_nr_hyb_sur_memory_waveform_wrapped(frequencies, mass_ratio, total_mass, s13, s23,
-                                                        luminosity_distance, inc, phase, **kwargs):
+def frequency_domain_nr_hyb_sur_memory_waveform(frequencies, mass_ratio, total_mass, s13, s23,
+                                                luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
 

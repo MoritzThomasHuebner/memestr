@@ -4,8 +4,8 @@ matplotlib.use('Agg')
 import memestr.core.waveforms.surrogate
 
 memestr.wrappers.injection_recovery.run_production_injection(
-        # injection_model=frequency_domain_nr_hyb_sur_waveform_with_memory_wrapped,
-        recovery_model='frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped',
+        # injection_model=frequency_domain_nr_hyb_sur_waveform_with_memory,
+        recovery_model='frequency_domain_nr_hyb_sur_waveform_without_memory',
         filename_base=20021,
         outdir='20021_dynesty_production_IMR_non_mem_rec/', label='IMR_mem_inj_non_mem_rec',
         alpha=0.1, distance_marginalization=False,
@@ -16,8 +16,8 @@ memestr.wrappers.injection_recovery.run_production_injection(
 
 
 # memestr.routines.reweighting.run_reweighting(
-#         injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory_wrapped,
-#         recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory_wrapped,
+#         injection_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
+#         recovery_model=memestr.core.waveforms.time_domain_IMRPhenomD_waveform_with_memory,
 #         filename_base='20021_dynesty',
 #         outdir='20021_dynesty_production_IMR_non_mem_rec/', label='IMR_mem_inj_non_mem_rec',
 #         sub_run_id=10,
