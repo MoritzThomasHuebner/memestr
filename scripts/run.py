@@ -37,7 +37,6 @@ p.add_argument('--resume', type=bool, default=False)
 p.add_argument('--clean', type=bool, default=False)
 p.add_argument('--plot', type=bool, default=False)
 
-p.add_argument('--filename_base', type=str, required=True)
 p.add_argument('--zero_noise', type=bool, default=False)
 p.add_argument('--detectors', type=list, default=['H1', 'L1', 'V1'])
 
