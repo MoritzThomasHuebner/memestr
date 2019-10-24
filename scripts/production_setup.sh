@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-LABEL="production_IMR_non_mem_rec"
-OUTDIR=${2//outdir_base=/}_${LABEL}
-mkdir -p ${OUTDIR}
+LABEL="memory"
 JOB_NAME="--job-name=$LABEL"
 OUTPUT=""
 TIME="--time=72:00:00"

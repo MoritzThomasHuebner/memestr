@@ -40,15 +40,15 @@ series = CoupledTimeAndFrequencySeries(sampling_frequency=2048, duration=16)
 wg_1 = WaveformGenerator(duration=series.duration, sampling_frequency=series.sampling_frequency,
                          frequency_domain_source_model=fd_imrd)
 wg_2 = WaveformGenerator(duration=series.duration, sampling_frequency=series.sampling_frequency,
-                         frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory_2)
+                         frequency_domain_source_model=fd_imrd_bilby)
 
 wg_1.parameters = params
 wg_2.parameters = params
 
 print(overlap_function(wg_1.frequency_domain_strain(), wg_2.frequency_domain_strain(), series.frequency_array, psd))
 
-plt.plot(wg_1.time_array, wg_1.time_domain_strain()['cross'])
+# plt.plot(wg_1.time_array, wg_1.time_domain_strain()['cross'])
 plt.plot(wg_2.time_array, wg_2.time_domain_strain()['cross'])
-plt.xlim(15.8, 16)
+plt.xlim(0, 16)
 plt.show()
 plt.clf()
