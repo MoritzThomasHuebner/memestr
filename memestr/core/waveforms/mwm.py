@@ -6,7 +6,7 @@ from bilby.core.series import CoupledTimeAndFrequencySeries
 from .utils import nfft
 
 
-def time_domain_minimum_waveform_model(times, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
+def td_mwm(times, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
     times -= times[-1]/2
     mwm = gwmemory.waveforms.MWM(q=mass_ratio, MTot=total_mass, distance=luminosity_distance, times=times)
     time_domain_memory, _ = mwm.time_domain_memory(inc=inc, phase=phase)
@@ -16,7 +16,7 @@ def time_domain_minimum_waveform_model(times, mass_ratio, total_mass, luminosity
     return time_domain_memory
 
 
-def time_domain_minimum_waveform_model_wrapped(times, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
+def td_mwm_wrapped(times, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
     times -= times[-1]/2
     series = CoupledTimeAndFrequencySeries()
     series.time_array = times
@@ -31,7 +31,7 @@ def time_domain_minimum_waveform_model_wrapped(times, mass_ratio, total_mass, lu
     return time_domain_memory
 
 
-def frequency_domain_minimum_waveform_model(frequencies, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
+def fd_mwm(frequencies, mass_ratio, total_mass, luminosity_distance, inc, phase, **kwargs):
     series = CoupledTimeAndFrequencySeries()
     series.frequency_array = frequencies
     series.start_time = -series.duration/2
