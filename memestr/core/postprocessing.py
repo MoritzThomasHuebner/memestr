@@ -96,7 +96,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
     sampling_frequency = kwargs.get('sampling_frequency', 2048)
     minimum_frequency = kwargs.get('minimum_frequency', 10)
     recovery_wg = bilby.gw.waveform_generator. \
-        WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
+        WaveformGenerator(frequency_domain_source_model=fd_imrd,
                           duration=duration, sampling_frequency=sampling_frequency,
                           waveform_arguments=dict(alpha=0.1))
     full_wf = recovery_wg.frequency_domain_strain(parameters)

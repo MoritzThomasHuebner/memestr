@@ -91,7 +91,7 @@ ethan_weight_log_likelihood = np.array_split(ethan_result[:, 2], number_of_paral
 
 
 waveform_generator_imr = bilby.gw.WaveformGenerator(
-    frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
+    frequency_domain_source_model=fd_imrd,
     start_time=start_time, duration=duration, sampling_frequency=sampling_frequency)
 
 waveform_generator_hom_moritz = bilby.gw.WaveformGenerator(

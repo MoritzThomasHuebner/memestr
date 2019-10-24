@@ -21,7 +21,7 @@ wg_nr_osc_mem = WaveformGenerator(
     time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory,
     sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
     waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
-wg_imr_osc = WaveformGenerator(frequency_domain_source_model=frequency_domain_IMRPhenomD_waveform_without_memory,
+wg_imr_osc = WaveformGenerator(frequency_domain_source_model=fd_imrd,
                                sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
                                waveform_arguments=dict(alpha=0.1))
 wg_nr_mem = WaveformGenerator(time_domain_source_model=time_domain_nr_hyb_sur_waveform_memory,
