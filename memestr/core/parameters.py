@@ -59,55 +59,6 @@ class InjectionParameters(RunParameters):
         self.random_injection_parameters = random_injection_parameters
 
 
-class RecoveryPriors(RunParameters):
-
-    def __init__(self,
-                 total_mass=bilby.core.prior.Uniform(minimum=50, maximum=70, latex_label="$M_{tot}$"),
-                 mass_ratio=bilby.core.prior.Uniform(minimum=1, maximum=2, latex_label="$q$"),
-                 luminosity_distance=bilby.gw.prior.UniformComovingVolume(name='luminosity_distance', minimum=1e1,
-                                                                          maximum=5e3, latex_label="$L_D$"),
-                 inc=bilby.core.prior.Uniform(minimum=0, maximum=np.pi, latex_label="$\iota$"),
-                 phase=bilby.core.prior.Uniform(name='phase', minimum=0, maximum=2 * np.pi, latex_label="$\phi$"),
-                 ra=bilby.core.prior.Uniform(name='ra', minimum=0, maximum=2 * np.pi, latex_label="$RA$"),
-                 dec=bilby.core.prior.Cosine(name='dec', latex_label="$DEC$"),
-                 psi=bilby.core.prior.Uniform(name='psi', minimum=0, maximum=2 * np.pi, latex_label="$\psi$"),
-                 geocent_time=bilby.core.prior.Uniform(1126259642.322, 1126259642.522, name='geocent_time'),
-                 s11=bilby.core.prior.DeltaFunction(name='s11', peak=0.0, latex_label='s11'),
-                 s12=bilby.core.prior.DeltaFunction(name='s12', peak=0.0, latex_label='s12'),
-                 s21=bilby.core.prior.DeltaFunction(name='s21', peak=0.0, latex_label='s21'),
-                 s22=bilby.core.prior.DeltaFunction(name='s22', peak=0.0, latex_label='s22'),
-                 s13=bilby.gw.prior.AlignedSpin(name='s13', a_prior=bilby.core.prior.Uniform(0, 0.5),
-                                                latex_label='s13'),
-                 s23=bilby.gw.prior.AlignedSpin(name='s23', a_prior=bilby.core.prior.Uniform(0, 0.5),
-                                                latex_label='s23')):
-        super(RecoveryPriors, self).__init__()
-        self.prior_total_mass = total_mass
-        self.prior_mass_ratio = mass_ratio
-        self.prior_luminosity_distance = luminosity_distance
-        self.prior_inc = inc
-        self.prior_phase = phase
-        self.prior_ra = ra
-        self.prior_dec = dec
-        self.prior_psi = psi
-        self.prior_geocent_time = geocent_time
-        self.prior_s11 = s11
-        self.prior_s12 = s12
-        self.prior_s21 = s21
-        self.prior_s22 = s22
-        self.prior_s13 = s13
-        self.prior_s23 = s23
-
-    def proper_dict(self):
-        result = dict()
-        for key in [
-            'prior_total_mass', 'prior_mass_ratio', 'prior_luminosity_distance', 'prior_inc', 'prior_phase', 'prior_ra',
-            'prior_dec', 'prior_psi', 'prior_geocent_time', 'prior_s11', 'prior_s12', 'prior_s21', 'prior_s22',
-            'prior_s13', 'prior_s23'
-        ]:
-            result[key[6:]] = getattr(self, key)
-        return result
-
-
 class WaveformArguments(RunParameters):
 
     def __init__(self, l_max=2, alpha=0.1):
@@ -222,12 +173,11 @@ class OtherSettings(RunParameters):
 
 class AllSettings(object):
 
-    def __init__(self, injection_parameters=InjectionParameters(), recovery_priors=RecoveryPriors(),
+    def __init__(self, injection_parameters=InjectionParameters(),
                  waveform_arguments=WaveformArguments(), waveform_data=WaveformData(),
                  sampler_settings=SamplerSettings(), detector_settings=DetectorSettings(),
                  other_settings=OtherSettings()):
         self.injection_parameters = injection_parameters
-        self.recovery_priors = recovery_priors
         self.waveform_arguments = waveform_arguments
         self.waveform_data = waveform_data
         self.sampler_settings = sampler_settings
@@ -246,7 +196,6 @@ class AllSettings(object):
     @classmethod
     def from_defaults_with_some_specified_kwargs(cls, **kwargs):
         return cls(injection_parameters=InjectionParameters.init_with_updated_kwargs(**kwargs),
-                   recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
                    waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
                    waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
                    sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),

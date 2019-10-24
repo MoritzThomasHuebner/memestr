@@ -38,9 +38,10 @@ p.add_argument('--filename_base', type=str, required=True)
 p.add_argument('--zero_noise', type=bool, default=False)
 p.add_argument('--detectors', type=list, default=['H1', 'L1', 'V1'])
 
+priors = bilby.gw.prior.BBHPriorDict.from_file('bbh.prior')
 
 options = p.parse_args().__dict__
-print(options)
+options['priors'] = priors
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 routine = memestr.routines[options['routine']]
