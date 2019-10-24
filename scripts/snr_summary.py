@@ -45,7 +45,8 @@ waveform_generator = bilby.gw.WaveformGenerator(time_domain_source_model=no_mem_
                                                 waveform_arguments=settings.waveform_arguments.__dict__,
                                                 **settings.waveform_data.__dict__)
 ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/20000_H1L1V1.h5')
-priors = deepcopy(settings.recovery_priors.proper_dict())
+priors = bilby.gw.prior.BBHPriorDict()
+priors.from_file('bbh.prior')
 likelihood = bilby.gw.likelihood \
     .GravitationalWaveTransient(interferometers=deepcopy(ifos),
                                 waveform_generator=waveform_generator,
@@ -53,20 +54,20 @@ likelihood = bilby.gw.likelihood \
                                 distance_marginalization=True)
 
 for run_id in range(20000, 20030):
-    # sampling_log_bfs = []
-    # reweight_log_bfs = []
-    # for i in range(0, 8):
-    #     res_non_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i))
-    #     res_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i + 10))
-    #     pp_result = memestr.core.postprocessing.PostprocessingResult.from_json('{}_dynesty_production_IMR_non_mem_rec/'.format(run_id), '{}pp_result.json'.format(i))
-    #     sampling_log_bfs.append(res_mem_rec.log_bayes_factor - res_non_mem_rec.log_bayes_factor)
-    #     reweight_log_bfs.append(pp_result.memory_log_bf)
-    # snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
-    # mem_log_bfs_reweight.append(np.mean(reweight_log_bfs))
-    # mem_log_bfs_reweight_err.append(np.std(reweight_log_bfs)/np.sqrt(len(reweight_log_bfs)))
-    # mem_log_bfs_sampled.append(np.mean(sampling_log_bfs))
-    # mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
-    #
+    sampling_log_bfs = []
+    reweight_log_bfs = []
+    for i in range(0, 8):
+        res_non_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i))
+        res_mem_rec = bilby.core.result.read_in_result('{}_dynesty_production_IMR_non_mem_rec/{}IMR_mem_inj_non_mem_rec_result.json'.format(run_id, i + 10))
+        pp_result = memestr.core.postprocessing.PostprocessingResult.from_json('{}_dynesty_production_IMR_non_mem_rec/'.format(run_id), '{}pp_result.json'.format(i))
+        sampling_log_bfs.append(res_mem_rec.log_bayes_factor - res_non_mem_rec.log_bayes_factor)
+        reweight_log_bfs.append(pp_result.memory_log_bf)
+    snrs.append(np.sqrt(np.sum([res_mem_rec.meta_data['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']])))
+    mem_log_bfs_reweight.append(np.mean(reweight_log_bfs))
+    mem_log_bfs_reweight_err.append(np.std(reweight_log_bfs)/np.sqrt(len(reweight_log_bfs)))
+    mem_log_bfs_sampled.append(np.mean(sampling_log_bfs))
+    mem_log_bfs_sampled_err.append(np.std(sampling_log_bfs)/np.sqrt(len(sampling_log_bfs)))
+
     params = memestr.core.submit.get_injection_parameter_set(run_id)
     del params['luminosity_distance']
     likelihood.interferometers = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/{}_H1L1V1.h5'.format(run_id))
@@ -86,14 +87,14 @@ for run_id in range(20000, 20030):
     # print(mem_log_bfs_sampled[-1])
     # print(mem_log_bfs_sampled_err[-1])
 
-res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
-snrs = res[0]
-mem_log_bfs_reweight = res[1]
-mem_log_bfs_reweight_err = res[2]
-mem_log_bfs_sampled = res[3]
-mem_log_bfs_sampled_err = res[4]
-# np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([snrs, mem_log_bfs_reweight, mem_log_bfs_reweight_err,
-#                                                        mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
+# res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
+# snrs = res[0]
+# mem_log_bfs_reweight = res[1]
+# mem_log_bfs_reweight_err = res[2]
+# mem_log_bfs_sampled = res[3]
+# mem_log_bfs_sampled_err = res[4]
+np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([snrs, mem_log_bfs_reweight, mem_log_bfs_reweight_err,
+                                                       mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
 print(snrs)
 
 fig = plt.figure(figsize=(7, 7))
