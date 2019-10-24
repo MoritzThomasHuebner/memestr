@@ -7,8 +7,7 @@ from memestr.routines.setup import setup_run
 
 
 def run_reweighting(**kwargs):
-    filename_base, ifos, likelihood, logger, priors, settings, sub_run_id = setup_run(
-        kwargs)
+    filename_base, ifos, likelihood, logger, priors, settings, sub_run_id = setup_run(kwargs)
     outdir = settings.sampler_settings.outdir
     try:
         pp_result = PostprocessingResult.from_json(outdir=outdir,

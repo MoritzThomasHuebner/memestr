@@ -7,8 +7,7 @@ from memestr.routines.setup import setup_run
 
 
 def run_time_phase_optimization(**kwargs):
-    filename_base, ifos, likelihood_imr_phenom, logger, priors, settings, sub_run_id = setup_run(
-        kwargs, kwargs['recovery_model'])
+    filename_base, ifos, likelihood_imr_phenom, logger, priors, settings, sub_run_id = setup_run(kwargs)
 
     try:
         pp_result = PostprocessingResult.from_json(outdir=settings.sampler_settings.outdir)
