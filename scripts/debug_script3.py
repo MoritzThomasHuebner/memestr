@@ -9,8 +9,8 @@ from bilby.core.series import CoupledTimeAndFrequencySeries
 from bilby.gw.waveform_generator import WaveformGenerator
 
 # memestr.wrappers.injection_recovery.run_production_injection(
-# injection_model=frequency_domain_nr_hyb_sur_waveform_with_memory,
-# recovery_model='frequency_domain_nr_hyb_sur_waveform_without_memory',
+# injection_model=fd_nr_sur_with_memory,
+# recovery_model='fd_nr_sur',
 # filename_base=20021,
 # outdir='20021_dynesty_production_IMR_non_mem_rec/', label='IMR_mem_inj_non_mem_rec',
 # alpha=0.1, distance_marginalization=False,

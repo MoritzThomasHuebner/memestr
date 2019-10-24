@@ -59,12 +59,12 @@ for i in range(min_event_id, max_event_id):
         # print(e)
         # continue
     waveform_generator_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_with_memory,
+        frequency_domain_source_model=fd_nr_sur_with_memory,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)
     waveform_generator_no_memory = bilby.gw.WaveformGenerator(
-        frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory,
+        frequency_domain_source_model=fd_nr_sur,
         parameters=deepcopy(settings.injection_parameters.__dict__),
         waveform_arguments=deepcopy(settings.waveform_arguments.__dict__),
         **settings.waveform_data.__dict__)

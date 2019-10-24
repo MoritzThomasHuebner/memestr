@@ -5,9 +5,9 @@ from .ethan import *
 from .mwm import *
 
 models = dict(
-    frequency_domain_nr_hyb_sur_waveform_with_memory=frequency_domain_nr_hyb_sur_waveform_with_memory,
-    frequency_domain_nr_hyb_sur_waveform_without_memory=frequency_domain_nr_hyb_sur_waveform_without_memory,
-    frequency_domain_nr_hyb_sur_memory_waveform=frequency_domain_nr_hyb_sur_memory_waveform,
+    frequency_domain_nr_hyb_sur_waveform_with_memory=fd_nr_sur_with_memory,
+    frequency_domain_nr_hyb_sur_waveform_without_memory=fd_nr_sur,
+    frequency_domain_nr_hyb_sur_memory_waveform=fd_nr_sur_memory_only,
     frequency_domain_IMRPhenomD_waveform_without_memory=fd_imrd,
     frequency_domain_IMRPhenomD_waveform_with_memory=fd_imrd_with_memory,
     time_domain_IMRPhenomD_waveform_with_memory=td_imrd_with_memory,

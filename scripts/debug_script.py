@@ -53,7 +53,7 @@ logger.info("Parameter Set: " + str(filename_base))
 ifos = bilby.gw.detector.InterferometerList.from_hdf5('parameter_sets/' +
                                                       str(filename_base) +
                                                       '_H1L1V1.h5')
-waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory,
+waveform_generator = bilby.gw.WaveformGenerator(frequency_domain_source_model=fd_nr_sur,
                                                 parameters=settings.injection_parameters.__dict__,
                                                 waveform_arguments=settings.waveform_arguments.__dict__,
                                                 **settings.waveform_data.__dict__)
