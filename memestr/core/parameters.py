@@ -126,11 +126,11 @@ class WaveformData(RunParameters):
         self.sampling_frequency = sampling_frequency
 
 
-class CpnestSettings(RunParameters):
+class SamplerSettings(RunParameters):
 
     def __init__(self, sampler='cpnest', npoints=200, label='IMRPhenomD', clean=False,
                  dlogz=0.1, maxmcmc=100, nthreads=1, resume=True):
-        super(CpnestSettings, self).__init__()
+        super(SamplerSettings, self).__init__()
         self.sampler = sampler
         self.npoints = int(npoints)
         self.label = label
@@ -224,7 +224,7 @@ class AllSettings(object):
 
     def __init__(self, injection_parameters=InjectionParameters(), recovery_priors=RecoveryPriors(),
                  waveform_arguments=WaveformArguments(), waveform_data=WaveformData(),
-                 sampler_settings=CpnestSettings(), detector_settings=DetectorSettings(),
+                 sampler_settings=SamplerSettings(), detector_settings=DetectorSettings(),
                  other_settings=OtherSettings()):
         self.injection_parameters = injection_parameters
         self.recovery_priors = recovery_priors
@@ -249,6 +249,6 @@ class AllSettings(object):
                    recovery_priors=RecoveryPriors.init_with_updated_kwargs(**kwargs),
                    waveform_arguments=WaveformArguments.init_with_updated_kwargs(**kwargs),
                    waveform_data=WaveformData.init_with_updated_kwargs(**kwargs),
-                   sampler_settings=CpnestSettings.init_with_updated_kwargs(**kwargs),
+                   sampler_settings=SamplerSettings.init_with_updated_kwargs(**kwargs),
                    detector_settings=DetectorSettings.init_with_updated_kwargs(**kwargs),
                    other_settings=OtherSettings.init_with_updated_kwargs(**kwargs))
