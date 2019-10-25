@@ -95,12 +95,12 @@ for run_id in range(20000, 20030):
     # print(mem_log_bfs_sampled[-1])
     # print(mem_log_bfs_sampled_err[-1])
 
-res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
-snrs = res[0]
-mem_log_bfs_reweight = res[1]
-mem_log_bfs_reweight_err = res[2]
-mem_log_bfs_sampled = res[3]
-mem_log_bfs_sampled_err = res[4]
+# res = np.loadtxt('SNR_VS_LOGBF_DATA/new_data.txt')
+# snrs = res[0]
+# mem_log_bfs_reweight = res[1]
+# mem_log_bfs_reweight_err = res[2]
+# mem_log_bfs_sampled = res[3]
+# mem_log_bfs_sampled_err = res[4]
 np.savetxt('SNR_VS_LOGBF_DATA/new_data.txt', np.array([snrs, mem_log_bfs_reweight, mem_log_bfs_reweight_err,
                                                        mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
 print(snrs)
@@ -113,7 +113,7 @@ ax1 = plt.subplot(gs[1])
 ax0.plot(snrs, mem_log_bfs_sampled, label='Sampling', linestyle='None', marker="v")
 ax0.plot(snrs, mem_log_bfs_reweight, label='Reweighting', linestyle='None', marker="o")
 ax0.plot(snrs, mem_log_bfs_injected, label='$\ln\mathcal{L}$ at injected value')
-ax1.set_ylim(-2, 2)
+ax0.set_ylim(-2, 2)
 ax0.set_ylabel('$\ln \mathcal{BF}_{\mathrm{mem}}$')
 ax0.legend()
 ax0.set_xticks([])
