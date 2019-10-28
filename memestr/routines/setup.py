@@ -40,7 +40,7 @@ def setup_run(kwargs):
                                     priors=priors,
                                     time_marginalization=kwargs['time_marginalization'],
                                     distance_marginalization=kwargs['distance_marginalization'],
-                                    phase_marginalization=kwargs['phase'])
+                                    phase_marginalization=kwargs['phase_marginalization'])
 
     likelihood.parameters = deepcopy(settings.injection_parameters.__dict__)
     np.random.seed(int(time.time() * 1000000) % 1000000)
