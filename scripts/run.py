@@ -7,7 +7,6 @@ import configargparse
 
 p = configargparse.ArgParser()
 p.add_argument('--outdir', type=str, required=True)
-p.add_argument('--filename_base', type=str, required=True)
 p.add_argument('--sub_run_id', type=int)
 p.add_argument('--routine', type=str, required=True)
 p.add_argument('--reweight_model', type=str)
