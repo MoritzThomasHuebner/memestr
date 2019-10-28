@@ -48,17 +48,27 @@ def td_nr_sur_memory_only(times, mass_ratio, total_mass, s13, s23,
                           luminosity_distance, inc, phase, **kwargs):
     _, memory, _ = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                               luminosity_distance=luminosity_distance, phase=phase,
-                                              s13=s13, s23=s23, kwargs=kwargs)
+                                              s13=s13, s23=s23, kwargs=kwargs, fold_in_memory=True)
     return apply_window(waveform=memory, times=times, kwargs=kwargs)
 
 
 def td_nr_sur(times, mass_ratio, total_mass, s13, s23,
               luminosity_distance, inc, phase, **kwargs):
-    waveform, memory_generator = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio,
-                                                            inc=inc,
-                                                            luminosity_distance=luminosity_distance, phase=phase,
-                                                            s13=s13, s23=s23,
-                                                            kwargs=kwargs, fold_in_memory=False)
+    waveform, memory = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio,
+                                                  inc=inc, luminosity_distance=luminosity_distance, phase=phase,
+                                                  s13=s13, s23=s23,
+                                                  kwargs=kwargs, fold_in_memory=False)
+    return waveform
+
+
+def td_nr_sur_with_memory(times, mass_ratio, total_mass, s13, s23,
+                          luminosity_distance, inc, phase, **kwargs):
+    waveform, memory, _ = _evaluate_hybrid_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio,
+                                                     inc=inc, luminosity_distance=luminosity_distance, phase=phase,
+                                                     s13=s13, s23=s23,
+                                                     kwargs=kwargs, fold_in_memory=True)
+    for mode in waveform:
+        waveform[mode] += memory[mode]
     return waveform
 
 
