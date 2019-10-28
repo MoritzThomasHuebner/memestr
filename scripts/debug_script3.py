@@ -52,3 +52,12 @@ plt.plot(wg_2.time_array, wg_2.time_domain_strain()['cross'])
 plt.xlim(0, 16)
 plt.show()
 plt.clf()
+import bilby
+ifo = bilby.gw.detector.get_empty_interferometer('H1')
+ifo.set_strain_data_from_zero_noise(series.sampling_frequency, series.duration)
+ifo.inject_signal(waveform_generator=wg_2, parameters=params)
+plt.plot(ifo.frequency_array, np.abs(ifo.frequency_domain_strain))
+plt.loglog()
+plt.show()
+plt.clf()
+

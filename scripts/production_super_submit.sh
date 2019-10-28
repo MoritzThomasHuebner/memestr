@@ -2,10 +2,10 @@
 
 for i in {20000..20029}
 do
-    for j in {0..7}
+    for j in {100..131}
     do
         OUTDIR="injections/${i}_memory"
         mkdir -p ${OUTDIR}
-        bash production_IMR_reweight_submit.sh ${OUTDIR} ${j}
+        bash production_reweight_submit.sh ${OUTDIR} ${j}
     done
 done
