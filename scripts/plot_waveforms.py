@@ -18,7 +18,7 @@ wg_nr_osc = WaveformGenerator(
     sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
     waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
 wg_nr_osc_mem = WaveformGenerator(
-    time_domain_source_model=time_domain_nr_hyb_sur_waveform_with_memory,
+    time_domain_source_model=td_nr_sur_with_memory,
     sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
     waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
 wg_imr_osc = WaveformGenerator(frequency_domain_source_model=fd_imrd,
@@ -77,6 +77,7 @@ merger_index = np.argmax(wg_nr_osc_mem.time_domain_strain(params)['plus'])
 merger_time = wg_nr_osc_mem.time_array[merger_index]
 plt.plot(wg_nr_osc_mem.time_array - merger_time, 10**21*wg_nr_osc_mem.time_domain_strain(params)['plus'], label='Oscillatory + Memory')
 plt.plot(wg_nr_osc.time_array - merger_time, 10**21*wg_nr_osc.time_domain_strain(params)['plus'], label='Oscillatory')
+plt.plot(wg_nr_mem.time_array - merger_time, 10**21*wg_nr_mem.time_domain_strain(params)['plus'], label='Memory')
 # plt.plot(wg_nr_gws.time_array, np.roll(wg_nr_gws.time_domain_strain(params_gws)['plus'], 16000))
 plt.xlabel('Time [s]')
 plt.ylabel('Strain [$10^{-21}$]')
@@ -86,7 +87,7 @@ plt.grid()
 plt.legend(fontsize=14)
 plt.tight_layout()
 # plt.show()
-plt.savefig('test_waveform2')
+plt.savefig('test_waveform2.pdf')
 plt.clf()
 
 import sys

@@ -13,7 +13,7 @@ def setup_run(kwargs):
     recovery_model = kwargs['recovery_model']
     logger = logging.getLogger('bilby')
 
-    filename_base = kwargs['filename_base']
+    filename_base = kwargs['outdir']
 
     injection_parameters = get_injection_parameter_set(filename_base)
     priors = _setup_priors(injection_parameters, kwargs)
