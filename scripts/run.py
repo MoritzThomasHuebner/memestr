@@ -43,8 +43,11 @@ priors.from_file('bbh.prior')
 options = p.parse_args().__dict__
 options['priors'] = priors
 
-options['recovery_model'] = getattr(memestr.core.waveforms.models, str(options['recovery_model']), None)
-options['reweight_model'] = getattr(memestr.core.waveforms.models, str(options['reweight_model']), None)
+bilby.core.utils.logger.info(options['recovery_model'])
+bilby.core.utils.logger.info(getattr(memestr.core.waveforms.models, options['recovery_model'], None))
+
+options['recovery_model'] = getattr(memestr.core.waveforms.models, options['recovery_model'], None)
+options['reweight_model'] = getattr(memestr.core.waveforms.models, options['reweight_model'], None)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 routine = memestr.routines[options['routine']]
