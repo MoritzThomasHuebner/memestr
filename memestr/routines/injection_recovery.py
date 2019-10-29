@@ -11,7 +11,7 @@ def update_kwargs(default_kwargs, kwargs):
     return new_kwargs
 
 
-def run_production_injection(outdir, **kwargs):
+def run_production_injection(**kwargs):
     filename_base, ifos, likelihood, logger, priors, settings, sub_run_id = setup_run(
         kwargs)
 
