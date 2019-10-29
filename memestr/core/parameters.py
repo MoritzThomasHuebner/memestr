@@ -187,7 +187,6 @@ class AllSettings(object):
 
     def __repr__(self):
         return 'AllSettings(\n' + repr(self.injection_parameters) + \
-               ', \n' + repr(self.recovery_priors) + \
                ', \n' + repr(self.waveform_arguments) + \
                ', \n' + repr(self.waveform_data) + \
                ', \n' + repr(self.sampler_settings) + \
