@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for i in {20000..20029}
+for i in {20000..20000}
 do
     for j in {100..131}
     do
