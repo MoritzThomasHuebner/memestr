@@ -6,6 +6,6 @@ do
     do
         OUTDIR="injections/${i}_memory"
         mkdir -p ${OUTDIR}
-        bash production_reweight_submit.sh ${OUTDIR} ${j}
+        bash production_recovery_submit.sh ${OUTDIR} ${j}
     done
 done
