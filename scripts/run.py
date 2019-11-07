@@ -37,12 +37,16 @@ p.add_argument('--plot', type=bool, default=False)
 p.add_argument('--zero_noise', type=bool, default=False)
 p.add_argument('--detectors', type=list, default=['H1', 'L1', 'V1'])
 
-priors = bilby.gw.prior.BBHPriorDict()
-priors.from_file('bbh.prior')
+priors = bilby.core.prior.PriorDict(filename='bbh.prior')
+# keys = priors.keys()
+# for key in keys:
+#     del priors[key]
+# print(priors)
+# priors.from_file('bbh.prior')
+# print(priors)
 
 options = p.parse_args().__dict__
 options['priors'] = priors
-
 bilby.core.utils.logger.info(options['recovery_model'])
 
 bilby.core.utils.logger.info(memestr.core.waveforms.models.get(options.get('recovery_model'), ''), None)
