@@ -18,12 +18,12 @@ def run_production_injection(**kwargs):
     result = bilby.core.sampler.run_sampler(likelihood=likelihood,
                                             priors=priors,
                                             injection_parameters=deepcopy(settings.injection_parameters.__dict__),
-                                            outdir=settings.sampler_settings.outdir,
                                             save=True,
                                             verbose=True,
                                             save_bounds=False,
                                             check_point_plot=False,
                                             **settings.sampler_settings.__dict__)
+
     result.save_to_file()
     logger.info(str(result))
 
