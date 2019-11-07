@@ -34,6 +34,6 @@ def run_production_injection(**kwargs):
         del params['s21']
         del params['s22']
         del params['random_injection_parameters']
-        result.plot_corner(lionize=settings.other_settings.lionize, parameters=params, outdir=outdir)
+        result.plot_corner(lionize=settings.other_settings.lionize, parameters=params)
 
 
