@@ -44,10 +44,13 @@ options = p.parse_args().__dict__
 options['priors'] = priors
 
 bilby.core.utils.logger.info(options['recovery_model'])
-bilby.core.utils.logger.info(getattr(memestr.core.waveforms.models, getattr(options, 'recovery_model', ''), None))
 
-options['recovery_model'] = getattr(memestr.core.waveforms.models, getattr(options, 'recovery_model', ''), None)
-options['reweight_model'] = getattr(memestr.core.waveforms.models, getattr(options, 'reweight_model', ''), None)
+bilby.core.utils.logger.info(memestr.core.waveforms.models.get(options.get('recovery_model'), ''), None)
+
+print(options.get('recovery_model'))
+print(options.get('reweight_model'))
+options['recovery_model'] = memestr.core.waveforms.models.get(options.get('recovery_model', ''), None)
+options['reweight_model'] = memestr.core.waveforms.models.get(options.get('reweight_model', ''), None)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 routine = memestr.routines[options['routine']]
