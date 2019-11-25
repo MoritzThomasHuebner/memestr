@@ -68,7 +68,7 @@ print("Number of duty cycle days to detection: " + str(events_to_detection*np.me
 
 required_events = []
 for i in range(20000):
-    print(i)
+    # print(i)
     tot = 0
     j = 0
     while tot < 8:
