@@ -5,7 +5,7 @@ import scipy.stats
 import matplotlib.pyplot as plt
 import sys
 # label = sys.argv[1]
-label = 'aplus'
+label = 'kagra'
 # label = 'snr_8_12_mem'
 
 log_bfs = np.array([])

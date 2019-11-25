@@ -90,37 +90,38 @@ plt.tight_layout()
 plt.savefig('test_waveform2.pdf')
 plt.clf()
 
-import sys
-sys.exit(0)
+# import sys
+# sys.exit(0)
 
-# ifo_mem = bilby.gw.detector.get_empty_interferometer('H1')
-# ifo_mem.minimum_frequency = 10
-# ifo_mem.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-# ifo_mem.inject_signal_from_waveform_generator(params, wg_nr_mem)
-#
-# ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
-# ifo_osc.minimum_frequency = 10
-# ifo_osc.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-# ifo_osc.inject_signal_from_waveform_generator(params, wg_nr_osc)
+ifo_mem = bilby.gw.detector.get_empty_interferometer('H1')
+ifo_mem.minimum_frequency = 10
+ifo_mem.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
+ifo_mem.inject_signal_from_waveform_generator(params, wg_nr_mem)
+
+ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
+ifo_osc.minimum_frequency = 10
+ifo_osc.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
+ifo_osc.inject_signal_from_waveform_generator(params, wg_nr_osc)
 
 
-# ifo_gws = bilby.gw.detector.get_empty_interferometer('H1')
-# ifo_gws.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-# ifo_gws.inject_signal_from_waveform_generator(params_gws, wg_nr_gws)
+ifo_gws = bilby.gw.detector.get_empty_interferometer('H1')
+ifo_gws.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
+ifo_gws.inject_signal_from_waveform_generator(params_gws, wg_nr_gws)
 
-# ifo_imr = bilby.gw.detector.get_empty_interferometer('H1')
-# ifo_imr.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-# ifo_imr.inject_signal_from_waveform_generator(params, wg_imr_osc)
-#
+ifo_imr = bilby.gw.detector.get_empty_interferometer('H1')
+ifo_imr.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
+ifo_imr.inject_signal_from_waveform_generator(params, wg_imr_osc)
+
 # plt.plot(ifo_osc.frequency_array, np.abs(ifo_osc.frequency_domain_strain))
 # plt.plot(ifo_gws.frequency_array, np.abs(ifo_gws.frequency_domain_strain))
 # plt.plot(ifo_imr.frequency_array, np.abs(ifo_imr.frequency_domain_strain))
-# plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain))
-# plt.xlim(10, 1024)
-# plt.loglog()
-# plt.tight_layout()
-# plt.show()
-# plt.clf()
+plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain))
+plt.plot(ifo_mem.power_spectral_density.frequency_array, ifo_mem.power_spectral_density.asd_array)
+plt.xlim(10, 1024)
+plt.loglog()
+plt.tight_layout()
+plt.show()
+plt.clf()
 
 # from bilby.gw import utils as gwutils
 
