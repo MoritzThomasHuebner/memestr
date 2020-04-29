@@ -1,5 +1,8 @@
-import NRSur7dq2
-import gwsurrogate as gws
+try:
+    import NRSur7dq2
+    import gwsurrogate as gws
+except Exception as e:
+    pass
 import matplotlib
 import numpy as np
 from scipy.interpolate import interp1d
@@ -26,8 +29,10 @@ MPC = 3.08568e22  # Mpc in metres
 MSUN = 1.98855e30  # solar mass in  kg
 
 # Evaluate the NRHybSur waveform
-sur = gws.LoadSurrogate('NRHybSur3dq8')
-
+try:
+    sur = gws.LoadSurrogate('NRHybSur3dq8')
+except NameError as e:
+    sur = None
 
 def convert_time_strain_to_frequency(h, t, time, sampling_frequency, minimum_frequency, frequency):
     h = interp1d(t, h, bounds_error=False, fill_value=0.0)(time)

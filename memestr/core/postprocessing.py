@@ -4,7 +4,7 @@ import bilby.gw.utils as utils
 import itertools
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.misc import logsumexp
+from scipy.special import logsumexp
 from scipy.optimize import minimize
 import multiprocessing
 
