@@ -1,4 +1,3 @@
-import copy
 from copy import deepcopy
 
 import gwmemory

@@ -4,7 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain, wrap_at_maximum_from_2_2_mode
+from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain, wrap_at_maximum_from_2_2_mode, wrap_at_maximum
 
 
 def fd_imrd_bilby(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -125,7 +125,7 @@ def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
     waveform, _ = _evaluate_imrx(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                  luminosity_distance=luminosity_distance, phase=phase,
                                  s13=s13, s23=s23, fold_in_memory=False)
-
+    print('test')
     return waveform#apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
@@ -149,10 +149,15 @@ def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phas
                                                     S2=np.array([0., 0., s23]),
                                                     times=temp_times)
     oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
-    # oscillatory = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
+    oscillatory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
     if not fold_in_memory:
-        return oscillatory, memory_generator
+        return oscillatory_wrapped, memory_generator
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
-        # memory = wrap_at_maximum_from_2_2_mode(memory, memory_generator)[0]
-        return oscillatory, memory, memory_generator
+        memory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
+        return oscillatory_wrapped, memory_wrapped, memory_generator
+
+
+def default():
+    print("This is a test")
+

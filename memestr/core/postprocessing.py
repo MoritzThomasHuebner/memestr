@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import bilby.gw.utils as utils
 import itertools
-import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.special import logsumexp
 from scipy.optimize import minimize
@@ -153,7 +152,7 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
     # parameters['phase'] = new_phase
     # test_waveform = test_gw.time_domain_strain(parameters)
     # test_waveform_fd = test_gw.frequency_domain_strain(parameters)
-
+    # import matplotlib.pyplot as plt
     # plt.plot(recovery_wg.time_array, test_waveform['plus'])
     # plt.plot(recovery_wg.time_array, recovery_wg.time_domain_strain()['plus'])
     # plt.show()
@@ -246,6 +245,7 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
 
 
 def _plot_2d_overlap(reshaped_overlaps, time_grid_mesh, phase_grid_mesh):
+    import matplotlib.pyplot as plt
     plt.contourf(time_grid_mesh, phase_grid_mesh, reshaped_overlaps)
     plt.xlabel('Time shift')
     plt.ylabel('Phase shift')
@@ -257,6 +257,7 @@ def _plot_2d_overlap(reshaped_overlaps, time_grid_mesh, phase_grid_mesh):
 
 def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
     rs_overlaps = np.reshape(overlaps, (len(time_grid_init), len(phase_grid_init)))
+    import matplotlib.pyplot as plt
     for overlap in rs_overlaps.T:
         plt.plot(time_grid_init, overlap)
         plt.xlabel('Time shift')

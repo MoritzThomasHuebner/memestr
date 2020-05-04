@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='memestr',
-      version='0.0.2',
+      version='0.0.3',
       packages=['memestr', 'memestr.core', 'memestr.core.waveforms', 'memestr.routines'],
       package_dir={'memestr': 'memestr'},
       )

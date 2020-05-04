@@ -2,13 +2,11 @@ from __future__ import division
 
 import numpy as np
 from collections import namedtuple
-import random
 
 import bilby
 from bilby.gw import conversion
 import os
 import gwpopulation
-import matplotlib.pyplot as plt
 
 MassContainer = namedtuple('MassContainer', ['primary_masses', 'secondary_masses',
                                              'mass_ratios', 'total_masses', 'chirp_masses'])
@@ -67,6 +65,7 @@ def _generate_masses(m_mesh, q_mesh, size, alpha, m_min, m_max, beta):
 
 
 def mass_debug_plots(mass_ratios, primary_masses, secondary_masses, total_masses, chirp_masses):
+    import matplotlib.pyplot as plt
     plt.scatter(primary_masses, mass_ratios)
     plt.xlabel('Primary mass')
     plt.ylabel('Mass ratio')
@@ -94,6 +93,7 @@ def spin_debug_plot(spins):
 
 
 def _debug_histogram(parameter, name, log=True):
+    import matplotlib.pyplot as plt
     plt.hist(parameter, bins=int(np.sqrt(len(parameter))))
     if log:
         plt.semilogy()

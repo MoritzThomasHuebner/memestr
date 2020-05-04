@@ -2,26 +2,26 @@ try:
     import NRSur7dq2
     import gwsurrogate as gws
 except Exception as e:
-    pass
-import matplotlib
+    print("Warning: Did not import surrogate packages")
+# import matplotlib
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal.windows import tukey
 import gwmemory
 
-params = {
-    'axes.labelsize': 18,
-    'font.size': 24,
-    'legend.fontsize': 20,
-    'xtick.labelsize': 20,
-    'ytick.labelsize': 20,
-    'axes.titlesize': 20,
-    'text.usetex': True,
-    'figure.figsize': [8, 6],
-    'font.family': 'sans',
-    'font.serif': 'DejaVu'
-}
-matplotlib.rcParams.update(params)
+# params = {
+#     'axes.labelsize': 18,
+#     'font.size': 24,
+#     'legend.fontsize': 20,
+#     'xtick.labelsize': 20,
+#     'ytick.labelsize': 20,
+#     'axes.titlesize': 20,
+#     'text.usetex': True,
+#     'figure.figsize': [8, 6],
+#     'font.family': 'sans',
+#     'font.serif': 'DejaVu'
+# }
+# matplotlib.rcParams.update(params)
 
 MASS_TO_TIME = 4.925491025543576e-06  # solar masses to seconds
 MASS_TO_DISTANCE = 4.785415917274702e-20  # solar masses to Mpc
