@@ -99,8 +99,7 @@ def fd_imrx_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance
 
 
 def fd_imrx(frequencies, mass_ratio, total_mass, luminosity_distance,
-            s13, s23,
-            inc, phase, **kwargs):
+            s13, s23, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     waveform, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
@@ -108,6 +107,11 @@ def fd_imrx(frequencies, mass_ratio, total_mass, luminosity_distance,
                                                 luminosity_distance=luminosity_distance, phase=phase,
                                                 s13=s13, s23=s23, fold_in_memory=False)
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
+def fd_imrx_bilby(frequency_array, mass_ratio, total_mass, luminosity_distance, chi_1, chi_2, theta_jn, phase, **kwargs):
+    return fd_imrd(frequencies=frequency_array, mass_ratio=mass_ratio, total_mass=total_mass,
+                   luminosity_distance=luminosity_distance, s13=chi_1, s23=chi_2, inc=theta_jn, phase=phase, **kwargs)
 
 
 def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
