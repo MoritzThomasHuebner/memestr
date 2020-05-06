@@ -109,9 +109,9 @@ def fd_imrx(frequencies, mass_ratio, total_mass, luminosity_distance,
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
-def fd_imrx_bilby(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, theta_jn, phase, **kwargs):
-    return fd_imrd(frequencies=frequency_array, mass_ratio=mass_ratio, total_mass=total_mass,
-                   luminosity_distance=luminosity_distance, s13=s13, s23=s23, inc=theta_jn, phase=phase, **kwargs)
+def fd_imrx_bilby(frequency_array, mass_ratio, total_mass, luminosity_distance, chi_1, chi_2, theta_jn, phase, **kwargs):
+    return fd_imrx(frequencies=frequency_array, mass_ratio=mass_ratio, total_mass=total_mass,
+                   luminosity_distance=luminosity_distance, s13=chi_1, s23=chi_2, inc=theta_jn, phase=phase, **kwargs)
 
 
 def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
