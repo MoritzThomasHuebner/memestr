@@ -117,7 +117,7 @@ def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
                                          s13=s13, s23=s23, fold_in_memory=True)
     for mode in waveform:
         waveform[mode] += memory[mode]
-    return apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return waveform #apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
 def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
@@ -125,7 +125,6 @@ def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
     waveform, _ = _evaluate_imrx(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                  luminosity_distance=luminosity_distance, phase=phase,
                                  s13=s13, s23=s23, fold_in_memory=False)
-    print('test')
     return waveform#apply_window(waveform=waveform, times=times, kwargs=kwargs)
 
 
@@ -141,23 +140,20 @@ def td_imrx_memory_only(times, mass_ratio, total_mass, luminosity_distance,
 def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
                    s13, s23, fold_in_memory=True):
     temp_times = copy.copy(times)
-    memory_generator = gwmemory.waveforms.PhenomXHM(name='IMRPhenomXHM',
-                                                    q=mass_ratio,
+    memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
                                                     MTot=total_mass,
                                                     distance=luminosity_distance,
                                                     S1=np.array([0., 0., s13]),
                                                     S2=np.array([0., 0., s23]),
                                                     times=temp_times)
     oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
-    oscillatory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
+    # oscillatory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
     if not fold_in_memory:
-        return oscillatory_wrapped, memory_generator
+        return oscillatory, memory_generator
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
         memory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
-        return oscillatory_wrapped, memory_wrapped, memory_generator
+        return oscillatory, memory_wrapped, memory_generator
 
 
-def default():
-    print("This is a test")
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='memestr',
-      version='0.0.3',
+      version='0.0.4',
       packages=['memestr', 'memestr.core', 'memestr.core.waveforms', 'memestr.routines'],
       package_dir={'memestr': 'memestr'},
       )
