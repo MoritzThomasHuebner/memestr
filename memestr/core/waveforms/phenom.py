@@ -98,20 +98,14 @@ def fd_imrx_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
-def fd_imrx(frequencies, mass_ratio, total_mass, luminosity_distance,
-            s13, s23, inc, phase, **kwargs):
+def fd_imrx(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
-    series.frequency_array = frequencies
+    series.frequency_array = frequency_array
     waveform, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
                                                 mass_ratio=mass_ratio, inc=inc,
                                                 luminosity_distance=luminosity_distance, phase=phase,
                                                 s13=s13, s23=s23, fold_in_memory=False)
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
-
-
-def fd_imrx_bilby(frequency_array, mass_ratio, total_mass, luminosity_distance, chi_1, chi_2, theta_jn, phase, **kwargs):
-    return fd_imrx(frequencies=frequency_array, mass_ratio=mass_ratio, total_mass=total_mass,
-                   luminosity_distance=luminosity_distance, s13=chi_1, s23=chi_2, inc=theta_jn, phase=phase, **kwargs)
 
 
 def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
@@ -121,7 +115,7 @@ def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
                                          s13=s13, s23=s23, fold_in_memory=True)
     for mode in waveform:
         waveform[mode] += memory[mode]
-    return waveform #apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return waveform
 
 
 def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
@@ -129,7 +123,7 @@ def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
     waveform, _ = _evaluate_imrx(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
                                  luminosity_distance=luminosity_distance, phase=phase,
                                  s13=s13, s23=s23, fold_in_memory=False)
-    return waveform#apply_window(waveform=waveform, times=times, kwargs=kwargs)
+    return waveform
 
 
 def td_imrx_memory_only(times, mass_ratio, total_mass, luminosity_distance,
@@ -151,13 +145,11 @@ def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phas
                                                     S2=np.array([0., 0., s23]),
                                                     times=temp_times)
     oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
-    # oscillatory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
-        memory_wrapped = wrap_at_maximum_from_2_2_mode(oscillatory, memory_generator)[0]
-        return oscillatory, memory_wrapped, memory_generator
+        return oscillatory, memory, memory_generator
 
 
 
