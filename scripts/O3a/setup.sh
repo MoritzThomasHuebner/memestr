@@ -5,5 +5,5 @@ do
   FILENAME=$(find "./${EVENT}/submit/" -iname "*generation.sh")
   echo '#!/bin/bash' >  "${FILENAME}"
   echo 'echo 0' >> "${FILENAME}"
-  bash ${EVENT}/submit/run_master_slurm.sh
+  sbatch ${EVENT}/submit/run_master_slurm.sh
 done
