@@ -5,5 +5,6 @@ do
   FILENAME=$(find "./${EVENT}/submit/" -iname "*generation.sh")
   echo '#!/bin/bash' >  "${FILENAME}"
   echo 'echo 0' >> "${FILENAME}"
+  echo 'periodic-restart-time = 1209600' >> "${EVENT}/run_config_complete.ini"
   sbatch ${EVENT}/submit/run_master_slurm.sh
 done
