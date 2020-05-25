@@ -135,8 +135,49 @@ def td_imrx_memory_only(times, mass_ratio, total_mass, luminosity_distance,
     return apply_window(waveform=memory, times=times, kwargs=kwargs)
 
 
+def fd_imrx_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
+                        s13, s23, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+    waveform, memory, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
+                                                        mass_ratio=mass_ratio, inc=inc,
+                                                        luminosity_distance=luminosity_distance, phase=phase,
+                                                        s13=s13, s23=s23, fold_in_memory=True, modes=[(2, 2), (2, -2)])
+    for mode in memory:
+        waveform[mode] += memory[mode]
+    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
+def fd_imrx_22(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequency_array
+    waveform, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
+                                                mass_ratio=mass_ratio, inc=inc,
+                                                luminosity_distance=luminosity_distance, phase=phase,
+                                                s13=s13, s23=s23, fold_in_memory=False, modes=[(2, 2), (2, -2)])
+    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
+def td_imrx_22_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
+                        s23, inc, phase, **kwargs):
+    waveform, memory, _ = _evaluate_imrx(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                         luminosity_distance=luminosity_distance, phase=phase,
+                                         s13=s13, s23=s23, fold_in_memory=True, modes=[(2, 2), (2, -2)])
+    for mode in waveform:
+        waveform[mode] += memory[mode]
+    return waveform
+
+
+def td_imrx_22(times, mass_ratio, total_mass, luminosity_distance,
+            s13, s23, inc, phase, **kwargs):
+    waveform, _ = _evaluate_imrx(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                                 luminosity_distance=luminosity_distance, phase=phase,
+                                 s13=s13, s23=s23, fold_in_memory=False, modes=[(2, 2), (2, -2)])
+    return waveform
+
+
 def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
-                   s13, s23, fold_in_memory=True):
+                   s13, s23, fold_in_memory=True, modes=None):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
                                                     MTot=total_mass,
@@ -144,7 +185,7 @@ def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phas
                                                     S1=np.array([0., 0., s13]),
                                                     S2=np.array([0., 0., s23]),
                                                     times=temp_times)
-    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
+    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase, modes=modes)
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:

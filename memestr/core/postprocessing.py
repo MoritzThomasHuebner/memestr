@@ -273,21 +273,19 @@ def calculate_log_weights(new_likelihood, new_result, reference_likelihood, refe
     log_weights = []
 
     for i in range(len(new_result.posterior)):
-        if i % 20 == 0:
-            logger.info("{:0.2f}".format(i / len(new_result.posterior) * 100) + "%")
-        for parameter in ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance',
-                          'phase', 'ra', 'dec', 'psi', 'geocent_time', 's13', 's23']:
-            new_likelihood.parameters[parameter] = new_result.posterior.iloc[i][parameter]
-            reference_likelihood.parameters[parameter] = reference_result.posterior.iloc[i][parameter]
+        new_likelihood.parameters = new_result.posterior.iloc[i].to_dict()
+        # reference_likelihood.parameters = reference_result.posterior.iloc[i]
 
         reweighted_likelihood = new_likelihood.log_likelihood_ratio()
-        original_likelihood = reference_likelihood.log_likelihood_ratio()
-        # original_likelihood = reference_result.posterior.log_likelihood.iloc[i]
+        # original_likelihood = reference_likelihood.log_likelihood_ratio()
+        original_likelihood = reference_result.posterior.log_likelihood.iloc[i]
         weight = reweighted_likelihood - original_likelihood
         log_weights.append(weight)
-        logger.info("Original Log Likelihood: " + str(original_likelihood))
-        logger.info("Reweighted Log Likelihood: " + str(reweighted_likelihood))
-        logger.info("Log Weight: " + str(weight))
+        if i % 1000 == 0:
+            logger.info("{:0.2f}".format(i / len(new_result.posterior) * 100) + "%")
+            logger.info("Original Log Likelihood: " + str(original_likelihood))
+            logger.info("Reweighted Log Likelihood: " + str(reweighted_likelihood))
+            logger.info("Log Weight: " + str(weight))
 
     return log_weights
 
