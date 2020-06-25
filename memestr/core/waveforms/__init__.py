@@ -3,6 +3,7 @@ from .surrogate import *
 from .utils import *
 from .ethan import *
 from .mwm import *
+from .phenom import *
 
 models = dict(
     fd_nr_sur_with_memory=fd_nr_sur_with_memory,

@@ -45,9 +45,10 @@ def wrap_by_n_indices(shift, waveform):
 
 
 def apply_time_shift_frequency_domain(waveform, frequency_array, duration, shift):
-    for mode in deepcopy(waveform):
-        waveform[mode] = waveform[mode] * np.exp(-2j * np.pi * (duration + shift) * frequency_array)
-    return waveform
+    wf = deepcopy(waveform)
+    for mode in wf:
+        wf[mode] = wf[mode] * np.exp(-2j * np.pi * (duration + shift) * frequency_array)
+    return wf
 
 
 def nfft(time_domain_strain, sampling_frequency):
@@ -70,3 +71,11 @@ def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
     waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
                                                     duration=series.duration, shift=time_shift)
     return waveform_fd
+
+
+# def convert_to_frequency_domain_phenomxphm(series, waveform, **kwargs):
+#     waveform_fd = nfft(waveform, series.sampling_frequency)
+#     for mode in waveform:
+#         indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
+#         waveform_fd[mode][indexes] = 0
+#     return waveform_fd
