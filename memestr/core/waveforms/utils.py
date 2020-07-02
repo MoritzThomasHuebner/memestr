@@ -32,8 +32,13 @@ def wrap_at_maximum(waveform):
 
 
 def wrap_at_maximum_from_2_2_mode(waveform, memory_generator):
-    max_index = np.argmax(memory_generator.h_lm[(2, 2)])
-    shift = len(memory_generator.h_lm[(2, 2)]) - max_index
+    try:
+        max_index = np.argmax(memory_generator.h_lm[(2, 2)])
+        shift = len(memory_generator.h_lm[(2, 2)]) - max_index
+    except KeyError:
+        ref_mode = list(memory_generator.h_lm.keys())[0]
+        max_index = np.argmax(memory_generator.h_lm[ref_mode])
+        shift = len(memory_generator.h_lm[ref_mode]) - max_index
     waveform = wrap_by_n_indices(shift=shift, waveform=deepcopy(waveform))
     return waveform, shift
 

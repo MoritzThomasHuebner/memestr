@@ -4,7 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from memestr.core.waveforms import convert_to_frequency_domain, apply_window, gamma_lmlm
+from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
 
 
 def fd_imrd_bilby(frequencies, mass_ratio, total_mass, luminosity_distance,

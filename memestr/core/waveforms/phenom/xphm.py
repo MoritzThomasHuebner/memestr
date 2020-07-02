@@ -4,7 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from memestr.core.waveforms import convert_to_frequency_domain, apply_window, gamma_lmlm
+from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
 
 
 def fd_imrxp_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -45,7 +45,29 @@ def fd_imrxp(frequencies, mass_ratio, total_mass, luminosity_distance,
                                                  phi_jl=phi_jl, tilt_1=tilt_1, tilt_2=tilt_2,
                                                  phi_12=phi_12, a_1=a_1, a_2=a_2,
                                                  fold_in_memory=False)
+    fd_strain = convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+    # for mode in fd_strain:
+    #     fd_strain[mode] = np.conjugate(fd_strain[mode])
+    return fd_strain
+
+
+def fd_imrxp_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance,
+                          theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
+    modes = kwargs.get('modes')
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequency_array
+    waveform, memory_generator = _evaluate_imrxp(
+        times=series.time_array, total_mass=total_mass, mass_ratio=mass_ratio, theta_jn=theta_jn,
+        luminosity_distance=luminosity_distance, phase=phase,
+        phi_jl=phi_jl, tilt_1=tilt_1, tilt_2=tilt_2,
+        phi_12=phi_12, a_1=a_1, a_2=a_2, fold_in_memory=False, modes=modes)
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
+def fd_imrxp_22(frequency_array, mass_ratio, total_mass, luminosity_distance,
+                theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
+    return fd_imrxp_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance,
+                theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, modes=[(2, 2), (2, -2)], **kwargs)
 
 
 def fd_imrxp_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -59,18 +81,6 @@ def fd_imrxp_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_dist
         phi_12=phi_12, a_1=a_1, a_2=a_2, fold_in_memory=True, modes=[(2, 2), (2, -2)])
     for mode in memory:
         waveform[mode] += memory[mode]
-    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
-
-
-def fd_imrxp_22(frequency_array, mass_ratio, total_mass, luminosity_distance,
-                theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
-    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
-    series.frequency_array = frequency_array
-    waveform, memory_generator = _evaluate_imrxp(
-        times=series.time_array, total_mass=total_mass, mass_ratio=mass_ratio, theta_jn=theta_jn,
-        luminosity_distance=luminosity_distance, phase=phase,
-        phi_jl=phi_jl, tilt_1=tilt_1, tilt_2=tilt_2,
-        phi_12=phi_12, a_1=a_1, a_2=a_2, fold_in_memory=False, modes=[(2, 2), (2, -2)])
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 

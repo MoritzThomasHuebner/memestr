@@ -4,7 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from memestr.core.waveforms import convert_to_frequency_domain, apply_window, gamma_lmlm
+from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
 
 
 def fd_imrx_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -30,6 +30,35 @@ def fd_imrx(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
+def fd_imrx_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequency_array
+    modes = kwargs.get('modes')
+    waveform, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
+                                                mass_ratio=mass_ratio, inc=inc,
+                                                luminosity_distance=luminosity_distance, phase=phase,
+                                                s13=s13, s23=s23, fold_in_memory=False, modes=modes)
+    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
+def fd_imrx_22(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
+    return fd_imrx_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase,
+                                modes=[(2, 2), (2, -2)], **kwargs)
+
+
+def fd_imrx_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
+                           s13, s23, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequencies
+    waveform, memory, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
+                                                        mass_ratio=mass_ratio, inc=inc,
+                                                        luminosity_distance=luminosity_distance, phase=phase,
+                                                        s13=s13, s23=s23, fold_in_memory=True, modes=[(2, 2), (2, -2)])
+    for mode in memory:
+        waveform[mode] += memory[mode]
+    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
 def fd_imrx_memory_only(frequencies, mass_ratio, total_mass, luminosity_distance,
                         s13, s23, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
@@ -49,29 +78,6 @@ def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
     for mode in waveform:
         waveform[mode] += memory[mode]
     return waveform
-
-
-def fd_imrx_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
-                           s13, s23, inc, phase, **kwargs):
-    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
-    series.frequency_array = frequencies
-    waveform, memory, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
-                                                        mass_ratio=mass_ratio, inc=inc,
-                                                        luminosity_distance=luminosity_distance, phase=phase,
-                                                        s13=s13, s23=s23, fold_in_memory=True, modes=[(2, 2), (2, -2)])
-    for mode in memory:
-        waveform[mode] += memory[mode]
-    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
-
-
-def fd_imrx_22(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
-    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
-    series.frequency_array = frequency_array
-    waveform, memory_generator = _evaluate_imrx(series.time_array, total_mass=total_mass,
-                                                mass_ratio=mass_ratio, inc=inc,
-                                                luminosity_distance=luminosity_distance, phase=phase,
-                                                s13=s13, s23=s23, fold_in_memory=False, modes=[(2, 2), (2, -2)])
-    return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
 
 
 def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
