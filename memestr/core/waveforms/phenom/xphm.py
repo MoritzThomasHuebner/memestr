@@ -9,6 +9,7 @@ from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
 
 def fd_imrxp_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
                          theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
+    kwargs['alpha'] = 0
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     waveform, memory, memory_generator = _evaluate_imrxp(series.time_array, total_mass=total_mass,
@@ -24,6 +25,7 @@ def fd_imrxp_with_memory(frequencies, mass_ratio, total_mass, luminosity_distanc
 
 def fd_imrxp_memory_only(frequencies, mass_ratio, total_mass, luminosity_distance,
                          theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
+    kwargs['alpha'] = 0
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     _, memory, memory_generator = _evaluate_imrxp(series.time_array, total_mass=total_mass,
@@ -37,6 +39,7 @@ def fd_imrxp_memory_only(frequencies, mass_ratio, total_mass, luminosity_distanc
 
 def fd_imrxp(frequencies, mass_ratio, total_mass, luminosity_distance,
              theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
+    kwargs['alpha'] = 0
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     waveform, memory_generator = _evaluate_imrxp(series.time_array, total_mass=total_mass,
@@ -54,6 +57,7 @@ def fd_imrxp(frequencies, mass_ratio, total_mass, luminosity_distance,
 def fd_imrxp_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance,
                           theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
     modes = kwargs.get('modes')
+    kwargs['alpha'] = 0
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequency_array
     waveform, memory_generator = _evaluate_imrxp(
@@ -72,6 +76,7 @@ def fd_imrxp_22(frequency_array, mass_ratio, total_mass, luminosity_distance,
 
 def fd_imrxp_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
                             theta_jn, phi_jl, tilt_1, tilt_2, phi_12, a_1, a_2, phase, **kwargs):
+    kwargs['alpha'] = 0
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
     waveform, memory, memory_generator = _evaluate_imrxp(
