@@ -4,7 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
+from ..utils import apply_window, gamma_lmlm
 
 
 def fd_imrxp_with_memory(frequencies, mass_ratio, chirp_mass, luminosity_distance,
@@ -20,10 +20,9 @@ def fd_imrxp_with_memory(frequencies, mass_ratio, chirp_mass, luminosity_distanc
                                                          fold_in_memory=True)
     for mode in memory:
         waveform[mode] += memory[mode]
-    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     waveform_fd = dict()
     for mode in waveform:
-        waveform_fd[mode] = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        waveform_fd[mode], _ = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
     return waveform_fd
 
 
@@ -38,10 +37,10 @@ def fd_imrxp_memory_only(frequencies, mass_ratio, chirp_mass, luminosity_distanc
                                                   phi_jl=phi_jl, tilt_1=tilt_1, tilt_2=tilt_2,
                                                   phi_12=phi_12, a_1=a_1, a_2=a_2,
                                                   fold_in_memory=True)
-    waveform = apply_window(waveform=memory, times=series.time_array, kwargs=kwargs)
+    waveform = memory
     waveform_fd = dict()
     for mode in waveform:
-        waveform_fd[mode] = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        waveform_fd[mode], _ = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
     return waveform_fd
 
 
@@ -56,10 +55,9 @@ def fd_imrxp(frequencies, mass_ratio, chirp_mass, luminosity_distance,
                                                  phi_jl=phi_jl, tilt_1=tilt_1, tilt_2=tilt_2,
                                                  phi_12=phi_12, a_1=a_1, a_2=a_2,
                                                  fold_in_memory=False)
-    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     waveform_fd = dict()
     for mode in waveform:
-        waveform_fd[mode] = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        waveform_fd[mode], _ = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
     return waveform_fd
 
 
@@ -74,10 +72,9 @@ def fd_imrxp_select_modes(frequency_array, mass_ratio, chirp_mass, luminosity_di
         luminosity_distance=luminosity_distance, phase=phase,
         phi_jl=phi_jl, tilt_1=tilt_1, tilt_2=tilt_2,
         phi_12=phi_12, a_1=a_1, a_2=a_2, fold_in_memory=False, modes=modes)
-    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     waveform_fd = dict()
     for mode in waveform:
-        waveform_fd[mode] = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        waveform_fd[mode], _ = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
     return waveform_fd
 
 
@@ -98,10 +95,9 @@ def fd_imrxp_22_with_memory(frequencies, mass_ratio, chirp_mass, luminosity_dist
         phi_12=phi_12, a_1=a_1, a_2=a_2, fold_in_memory=True, modes=[(2, 2), (2, -2)])
     for mode in memory:
         waveform[mode] += memory[mode]
-    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     waveform_fd = dict()
     for mode in waveform:
-        waveform_fd[mode] = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+        waveform_fd[mode], _ = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
     return waveform_fd
 
 
@@ -176,12 +172,13 @@ def _evaluate_imrxp(times, total_mass, mass_ratio, luminosity_distance, phase,
                                                      times=temp_times)
     oscillatory = memory_generator.time_domain_oscillatory(inc=theta_jn, phase=phase, modes=modes)
     for mode in oscillatory:
-        oscillatory[mode] = np.roll(oscillatory[mode], -int(len(oscillatory[mode]) / 2))  # Put the merger at the
+        oscillatory[mode] = np.roll(oscillatory[mode], -int(len(oscillatory[mode]) / 2))  # Put the merger at the end
 
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:
         memory, _ = memory_generator.time_domain_memory(inc=theta_jn, phase=phase, gamma_lmlm=gamma_lmlm)
+        memory = apply_window(waveform=memory, times=times, kwargs=dict(alpha=0.1))
         for mode in oscillatory:
-            memory[mode] = np.roll(memory[mode], -int(len(memory[mode]) / 2))  # Put the merger at the
+            memory[mode] = np.roll(memory[mode], -int(len(memory[mode]) / 2))  # Put the merger at the end
         return oscillatory, memory, memory_generator
