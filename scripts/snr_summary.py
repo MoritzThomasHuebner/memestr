@@ -1,9 +1,10 @@
 from copy import deepcopy
 
-import bilby
-import memestr
+#import bilby
+#import memestr
 import numpy as np
 import json
+import matplotlib
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -105,12 +106,14 @@ for run_id in range(32, 48):
 #                                                        mem_log_bfs_sampled, mem_log_bfs_sampled_err]))
 # print(snrs)
 
+matplotlib.rcParams.update({'font.size': 15})
+
 fig = plt.figure(figsize=(7, 7))
 gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
 ax0 = plt.subplot(gs[0])
 ax1 = plt.subplot(gs[1])
 
-ax0.plot(snrs, mem_log_bfs_sampled, label='Sampling', linestyle='None', marker="v")
+ax0.plot(snrs, mem_log_bfs_sampled, label='Nested Sampling', linestyle='None', marker="v")
 ax0.plot(snrs, mem_log_bfs_reweight, label='Reweighting', linestyle='None', marker="o")
 ax0.plot(snrs, mem_log_bfs_injected, label='$\ln\mathcal{L}$ at injected value')
 # ax0.set_ylim(-2, 2)
@@ -119,7 +122,7 @@ ax0.legend()
 ax0.set_xticks([])
 
 
-ax1.plot(snrs, mem_log_bfs_sampled_err, label='Sampling', linestyle='None', marker="v")
+ax1.plot(snrs, mem_log_bfs_sampled_err, label='Nested Sampling', linestyle='None', marker="v")
 ax1.plot(snrs, mem_log_bfs_reweight_err, label='Reweighting', linestyle='None', marker="o")
 ax1.set_yscale('log')
 ax1.set_xlabel('$\\rho_{\mathrm{mf}}$')
@@ -128,6 +131,6 @@ ax1.set_yticks([1e-4, 1e-2, 1])
 ax1.set_xticks([10, 20, 30, 40, 50, 60])
 ax1.set_ylabel('$\Delta \ln \mathcal{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
-plt.savefig('snr_vs_evidence_new_data.pdf')
+plt.savefig('snr_vs_evidence_new_data.png')
 plt.show()
 plt.clf()
