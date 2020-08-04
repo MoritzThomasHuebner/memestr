@@ -47,7 +47,7 @@ for i in range(1):#len(result.posterior)):
     print(sample)
     for k, v in sample.items():
         print(f"{k}: {v}")
-    maximum_overlap = 0.
+    maximum_overlap = -1.
     time_shift = 0.
     new_phase = 0.
     iterations = 0.
@@ -74,7 +74,7 @@ for i in range(1):#len(result.posterior)):
     threshold = 0.99
     res = None
     counter = 0
-    while maximum_overlap < threshold and counter < 32:
+    while maximum_overlap < threshold and counter < 100:
         if counter == 0:
             init_guess_time = 0.
             init_guess_phase = sample['phase']
@@ -90,6 +90,7 @@ for i in range(1):#len(result.posterior)):
         maximum_overlap = -res.fun
         counter += 1
         print(counter)
+        print(maximum_overlap)
     print(i)
     maximum_overlap = -res.fun
     time_shift, new_phase = res.x[0], res.x[1]
