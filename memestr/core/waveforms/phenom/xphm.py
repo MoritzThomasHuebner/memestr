@@ -75,6 +75,7 @@ def fd_imrxp_select_modes(frequency_array, mass_ratio, chirp_mass, luminosity_di
     waveform_fd = dict()
     for mode in waveform:
         waveform_fd[mode], _ = bilby.core.utils.nfft(waveform[mode], series.sampling_frequency)
+    del waveform, memory_generator
     return waveform_fd
 
 
