@@ -267,25 +267,25 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
     return rs_overlaps
 
 
-def calculate_log_weights(new_likelihood, new_result, reference_likelihood, reference_result=None):
-    if reference_result is None:
-        reference_result = deepcopy(new_result)
+def calculate_log_weights(new_likelihood, result, reference_likelihood, use_stored_likelihood=False):
     log_weights = []
 
-    for i in range(len(new_result.posterior)):
-        new_likelihood.parameters = new_result.posterior.iloc[i].to_dict()
-        # reference_likelihood.parameters = reference_result.posterior.iloc[i]
-
+    for i in range(len(result.posterior)):
+        new_likelihood.parameters = result.posterior.iloc[i].to_dict()
+        reference_likelihood.parameters = result.posterior.iloc[i].to_dict()
         reweighted_likelihood = new_likelihood.log_likelihood_ratio()
-        # original_likelihood = reference_likelihood.log_likelihood_ratio()
-        original_likelihood = reference_result.posterior.log_likelihood.iloc[i]
-        weight = reweighted_likelihood - original_likelihood
-        log_weights.append(weight)
+        if use_stored_likelihood:
+            original_likelihood = result.posterior.log_likelihood.iloc[i]
+        else:
+            original_likelihood = reference_likelihood.log_likelihood_ratio()
+
+        log_weight = reweighted_likelihood - original_likelihood
+        log_weights.append(log_weight)
         if i % 1000 == 0:
-            logger.info("{:0.2f}".format(i / len(new_result.posterior) * 100) + "%")
+            logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
             logger.info("Original Log Likelihood: " + str(original_likelihood))
             logger.info("Reweighted Log Likelihood: " + str(reweighted_likelihood))
-            logger.info("Log Weight: " + str(weight))
+            logger.info("Log Weight: " + str(log_weight))
 
     return log_weights
 
@@ -298,17 +298,11 @@ def reweigh_log_evidence_by_weights(log_evidence, log_weights):
     return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
 
 
-def reweigh_by_likelihood(new_likelihood, new_result, reference_likelihood, reference_result=None):
-    try:
-        log_weights = calculate_log_weights(new_likelihood=new_likelihood,
-                                            new_result=new_result,
-                                            reference_likelihood=reference_likelihood,
-                                            reference_result=reference_result)
-        reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
-    except AttributeError as e:
-        logger.warning(e)
-        log_weights = np.nan
-        reweighted_log_bf = np.nan
+def reweigh_by_likelihood(result, new_likelihood, reference_likelihood):
+    log_weights = calculate_log_weights(new_likelihood=new_likelihood,
+                                        result=result,
+                                        reference_likelihood=reference_likelihood)
+    reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     return reweighted_log_bf, log_weights
 
 
