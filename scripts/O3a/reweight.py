@@ -1,8 +1,8 @@
 import pickle
-from copy import deepcopy
 import numpy as np
-from scipy.special import logsumexp
 from collections import namedtuple
+import matplotlib.pyplot as plt
+import sys
 
 import bilby
 
@@ -63,8 +63,8 @@ events = [
     Event(time_tag="1253885759.2", name="GW190930A", detectors="H1L1")
 ]
 
-# event_number = int(sys.argv[1])
-event_number = 0
+event_number = int(sys.argv[1])
+# event_number = 1
 time_tag = events[event_number].time_tag
 event = events[event_number].name
 detectors = events[event_number].detectors
@@ -87,54 +87,51 @@ wg_xhm_memory = bilby.gw.waveform_generator.WaveformGenerator(
 wg_xhm_lal = bilby.gw.waveform_generator.WaveformGenerator(
     sampling_frequency=ifos.sampling_frequency, duration=ifos.duration,
     frequency_domain_source_model=bilby.gw.source.lal_binary_black_hole,
-    waveform_arguments=dict(waveform_approximant="IMRPhenomXPHM"))
+    waveform_arguments=dict(waveform_approximant="IMRPhenomXHM"))
 bilby.core.utils.logger.disabled = False
 
 
 
 likelihood_xhm = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm)
-likelihood_xhm_lal = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_lal)
+# likelihood_xhm_lal = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_lal)
 likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_memory)
-# likelihood_22 = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xphm_22)
-# likelihood_hom = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xphm_hom)
-# likelihood_22.parameters = sample
-# likelihood_hom.parameters = sample
-# print(likelihood_22.log_likelihood_ratio())
-# print(sample['log_likelihood'])
-# print(likelihood_hom.log_likelihood_ratio())
-# print()
 
 sample = result.posterior.iloc[-1]
+print(sample)
 
 wg_xhm.parameters = dict(sample)
-wg_xhm_lal.parameters = dict(sample)
+# wg_xhm_lal.parameters = dict(sample)
 wg_xhm_memory.parameters = dict(sample)
 
-import matplotlib.pyplot as plt
+
 plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['plus'])
-plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['plus'])
+plt.plot(wg_xhm_memory.time_array, wg_xhm_memory.time_domain_strain()['plus'])
 plt.savefig('test_td_plus.pdf')
 plt.clf()
 
 plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['cross'])
-plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['cross'])
+plt.plot(wg_xhm_memory.time_array, wg_xhm_memory.time_domain_strain()['cross'])
 plt.savefig('test_td_cross.pdf')
 plt.clf()
 
 plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['plus']))
-plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['plus']))
+plt.plot(wg_xhm_memory.frequency_array, np.abs(wg_xhm_memory.frequency_domain_strain()['plus']))
 plt.savefig('test_fd_plus.pdf')
 plt.clf()
 
 plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['cross']))
-plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['cross']))
+plt.plot(wg_xhm_memory.frequency_array, np.abs(wg_xhm_memory.frequency_domain_strain()['cross']))
 plt.savefig('test_fd_cross.pdf')
 plt.clf()
 
+import time
+toc = time.time()
+wg_xhm.frequency_domain_strain()
+tic = time.time()
+print(str(tic - toc))
 reweighted_log_bf, log_weights = memestr.core.postprocessing.reweigh_by_likelihood(
-    new_likelihood=likelihood_xhm, new_result=result, reference_likelihood=likelihood_xhm_lal, reference_result=None)
+    new_likelihood=likelihood_xhm_memory, new_result=result, reference_likelihood=likelihood_xhm, reference_result=None)
 np.savetxt("{}_log_weights".format(event), log_weights)
-reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
 print(reweighted_log_bf)
 
 
