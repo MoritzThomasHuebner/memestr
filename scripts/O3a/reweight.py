@@ -3,6 +3,7 @@ import numpy as np
 from collections import namedtuple
 import matplotlib.pyplot as plt
 import sys
+from scipy.special import logsumexp
 
 import bilby
 
@@ -91,63 +92,43 @@ wg_xhm_memory = bilby.gw.waveform_generator.WaveformGenerator(
 bilby.core.utils.logger.disabled = False
 
 
-
 likelihood_xhm_22 = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm)
 likelihood_xhm_hom = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_hom)
 likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_memory)
 
-# sample = result.posterior.iloc[-1]
-sample = result.posterior.iloc[np.random.randint(len(result.posterior))]
+# sample = result.posterior.iloc[np.random.randint(len(result.posterior))]
 # lal_sample = dict(total_mass=sample['total_mass'], mass_ratio=sample['mass_ratio'],
 #                   luminosity_distance=sample['luminosity_distance'], a_1=sample['s13'], a_2=sample['s23'],
 #                   tilt_1=0, phi_12=0, tilt_2=0, phi_jl=0, theta_jn=sample['inc'], phase=sample['phase'])
+# wg_xhm.parameters = dict(sample)
+# wg_xhm_hom.parameters = dict(sample)
+# wg_xhm_memory.parameters = dict(sample)
 
+try:
+    log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
+    reweighted_hom_log_bf = logsumexp(log_hom_weights) - np.log(len(log_hom_weights))
+except Exception:
+    reweighted_hom_log_bf, log_hom_weights = memestr.core.postprocessing.reweigh_by_likelihood(
+        new_likelihood=likelihood_xhm_hom, result=result,
+        reference_likelihood=likelihood_xhm_22, use_stored_likelihood=True)
+    np.savetxt("{}_hom_log_weights".format(event), log_hom_weights)
 
-wg_xhm.parameters = dict(sample)
-wg_xhm_hom.parameters = dict(sample)
-wg_xhm_memory.parameters = dict(sample)
-
-# plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['plus'])
-# plt.plot(wg_xhm_memory.time_array, wg_xhm_memory.time_domain_strain()['plus'])
-# plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['plus'])
-# plt.savefig('test_td_plus.pdf')
-# plt.clf()
-#
-# plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['cross'])
-# plt.plot(wg_xhm_memory.time_array, wg_xhm_memory.time_domain_strain()['cross'])
-# plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['cross'])
-# plt.savefig('test_td_cross.pdf')
-# plt.clf()
-
-# plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['plus']))
-# plt.plot(wg_xhm_memory.frequency_array, np.abs(wg_xhm_memory.frequency_domain_strain()['plus']))
-# plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['plus']))
-# plt.savefig('test_fd_plus.pdf')
-# plt.clf()
-#
-# plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['cross']))
-# plt.plot(wg_xhm_memory.frequency_array, np.abs(wg_xhm_memory.frequency_domain_strain()['cross']))
-# plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['cross']))
-# plt.savefig('test_fd_cross.pdf')
-# plt.clf()
-
-
-reweighted_hom_log_bf, log_hom_weights = memestr.core.postprocessing.reweigh_by_likelihood(
-    new_likelihood=likelihood_xhm_memory, new_result=result, reference_likelihood=likelihood_xhm_22,
-    reference_result=None)
-np.savetxt("{}_hom_log_weights".format(event), log_hom_weights)
-
-reweighted_hom_memory_log_bf, log_hom_memory_weights = memestr.core.postprocessing.reweigh_by_likelihood(
-    new_likelihood=likelihood_xhm_memory, new_result=result, reference_likelihood=likelihood_xhm_22,
-    reference_result=None)
-np.savetxt("{}_hom_memory_log_weights".format(event), log_hom_memory_weights)
+try:
+    log_hom_memory_weights = np.loadtxt("{}_hom_memory_log_weights".format(event))
+    reweighted_hom_memory_log_bf = logsumexp(log_hom_memory_weights) - np.log(len(log_hom_memory_weights))
+except Exception:
+    reweighted_hom_memory_log_bf, log_hom_memory_weights = memestr.core.postprocessing.reweigh_by_likelihood(
+        new_likelihood=likelihood_xhm_memory, result=result,
+        reference_likelihood=likelihood_xhm_22, use_stored_likelihood=True)
+    np.savetxt("{}_hom_memory_log_weights".format(event), log_hom_memory_weights)
 
 n_eff_hom = np.sum(np.exp(log_hom_weights))**2/np.sum(np.exp(log_hom_weights)**2)
 n_eff_hom_memory = np.sum(np.exp(log_hom_memory_weights))**2/np.sum(np.exp(log_hom_memory_weights)**2)
-
+print(n_eff_hom)
+print(n_eff_hom_memory)
+print(reweighted_hom_log_bf)
 print(reweighted_hom_memory_log_bf)
-print(reweighted_hom_memory_log_bf)
-print(str(reweighted_hom_memory_log_bf - reweighted_hom_memory_log_bf))
+print(str(reweighted_hom_log_bf - reweighted_hom_memory_log_bf))
 
 
 
