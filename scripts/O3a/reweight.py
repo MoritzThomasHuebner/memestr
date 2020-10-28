@@ -81,72 +81,69 @@ bilby.core.utils.logger.disabled = True
 wg_xhm = bilby.gw.waveform_generator.WaveformGenerator(
     sampling_frequency=ifos.sampling_frequency, duration=ifos.duration,
     frequency_domain_source_model=memestr.core.waveforms.fd_imrx_22)
+wg_xhm_hom = bilby.gw.waveform_generator.WaveformGenerator(
+    sampling_frequency=ifos.sampling_frequency, duration=ifos.duration,
+    frequency_domain_source_model=memestr.core.waveforms.fd_imrx)
 wg_xhm_memory = bilby.gw.waveform_generator.WaveformGenerator(
     sampling_frequency=ifos.sampling_frequency, duration=ifos.duration,
     frequency_domain_source_model=memestr.core.waveforms.fd_imrx_with_memory)
-wg_xhm_lal = bilby.gw.waveform_generator.WaveformGenerator(
-    sampling_frequency=ifos.sampling_frequency, duration=ifos.duration,
-    frequency_domain_source_model=bilby.gw.source.lal_binary_black_hole,
-    waveform_arguments=dict(waveform_approximant="IMRPhenomXHM"))
+
 bilby.core.utils.logger.disabled = False
 
 
 
 likelihood_xhm = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm)
-likelihood_xhm_lal = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_lal)
+likelihood_xhm_hom = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_hom)
 likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_memory)
 
 # sample = result.posterior.iloc[-1]
 sample = result.posterior.iloc[np.random.randint(len(result.posterior))]
-lal_sample = dict(total_mass=sample['total_mass'], mass_ratio=sample['mass_ratio'],
-                  luminosity_distance=sample['luminosity_distance'], a_1=sample['s13'], a_2=sample['s23'],
-                  tilt_1=0, phi_12=0, tilt_2=0, phi_jl=0, theta_jn=sample['inc'], phase=sample['phase'])
+# lal_sample = dict(total_mass=sample['total_mass'], mass_ratio=sample['mass_ratio'],
+#                   luminosity_distance=sample['luminosity_distance'], a_1=sample['s13'], a_2=sample['s23'],
+#                   tilt_1=0, phi_12=0, tilt_2=0, phi_jl=0, theta_jn=sample['inc'], phase=sample['phase'])
 
 
 wg_xhm.parameters = dict(sample)
-wg_xhm_lal.parameters = dict(lal_sample)
+wg_xhm_hom.parameters = dict(sample)
 wg_xhm_memory.parameters = dict(sample)
 
-import time
-toc = time.time()
-wg_xhm.frequency_domain_strain()
-tic = time.time()
-print(str(tic - toc))
-toc = time.time()
-wg_xhm_lal.frequency_domain_strain()
-tic = time.time()
-print(str(tic - toc))
-assert False
-
-plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['plus'])
+# plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['plus'])
 # plt.plot(wg_xhm_memory.time_array, wg_xhm_memory.time_domain_strain()['plus'])
-plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['plus'])
-plt.savefig('test_td_plus.pdf')
-plt.clf()
-
-plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['cross'])
+# plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['plus'])
+# plt.savefig('test_td_plus.pdf')
+# plt.clf()
+#
+# plt.plot(wg_xhm.time_array, wg_xhm.time_domain_strain()['cross'])
 # plt.plot(wg_xhm_memory.time_array, wg_xhm_memory.time_domain_strain()['cross'])
-plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['cross'])
-plt.savefig('test_td_cross.pdf')
-plt.clf()
+# plt.plot(wg_xhm_lal.time_array, wg_xhm_lal.time_domain_strain()['cross'])
+# plt.savefig('test_td_cross.pdf')
+# plt.clf()
 
-plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['plus']))
+# plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['plus']))
 # plt.plot(wg_xhm_memory.frequency_array, np.abs(wg_xhm_memory.frequency_domain_strain()['plus']))
-plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['plus']))
-plt.savefig('test_fd_plus.pdf')
-plt.clf()
-
-plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['cross']))
+# plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['plus']))
+# plt.savefig('test_fd_plus.pdf')
+# plt.clf()
+#
+# plt.loglog(wg_xhm.frequency_array, np.abs(wg_xhm.frequency_domain_strain()['cross']))
 # plt.plot(wg_xhm_memory.frequency_array, np.abs(wg_xhm_memory.frequency_domain_strain()['cross']))
-plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['cross']))
-plt.savefig('test_fd_cross.pdf')
-plt.clf()
+# plt.plot(wg_xhm_lal.frequency_array, np.abs(wg_xhm_lal.frequency_domain_strain()['cross']))
+# plt.savefig('test_fd_cross.pdf')
+# plt.clf()
 
 
-reweighted_log_bf, log_weights = memestr.core.postprocessing.reweigh_by_likelihood(
+reweighted_hom_log_bf, log_hom_weights = memestr.core.postprocessing.reweigh_by_likelihood(
     new_likelihood=likelihood_xhm_memory, new_result=result, reference_likelihood=likelihood_xhm, reference_result=None)
-np.savetxt("{}_log_weights".format(event), log_weights)
-print(reweighted_log_bf)
+np.savetxt("{}_hom_log_weights".format(event), log_hom_weights)
+
+reweighted_hom_memory_log_bf, log_hom_memory_weights = memestr.core.postprocessing.reweigh_by_likelihood(
+    new_likelihood=likelihood_xhm_memory, new_result=result, reference_likelihood=likelihood_xhm, reference_result=None)
+np.savetxt("{}_hom_memory_log_weights".format(event), log_hom_memory_weights)
+
+
+print(reweighted_hom_memory_log_bf)
+print(reweighted_hom_memory_log_bf)
+print(str(reweighted_hom_memory_log_bf - reweighted_hom_memory_log_bf))
 
 
 
