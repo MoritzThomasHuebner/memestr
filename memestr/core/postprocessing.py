@@ -290,37 +290,14 @@ def calculate_log_weights(new_likelihood, result, reference_likelihood, use_stor
     return log_weights
 
 
-def calculate_log_weights_parallel(args):
-    return calculate_log_weights(args[0], args[1], args[2], args[3])
-
-
 def reweigh_log_evidence_by_weights(log_evidence, log_weights):
     return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
 
 
-def reweigh_by_likelihood(result, new_likelihood, reference_likelihood):
+def reweigh_by_likelihood(result, new_likelihood, reference_likelihood, use_stored_likelihood=True):
     log_weights = calculate_log_weights(new_likelihood=new_likelihood,
                                         result=result,
-                                        reference_likelihood=reference_likelihood)
-    reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
-    return reweighted_log_bf, log_weights
-
-
-def reweigh_by_likelihood_parallel(new_likelihood, new_result, reference_likelihood, reference_result, n_parallel=16):
-    p = multiprocessing.Pool(n_parallel)
-    new_posteriors = np.array_split(new_result.posterior, n_parallel, 0)
-    old_posteriors = np.array_split(reference_result.posterior, n_parallel, 0)
-    new_results = []
-    args_list = []
-    for i in range(n_parallel):
-        new_res = deepcopy(new_result)
-        reference_res = deepcopy(reference_result)
-        new_res.posterior = new_posteriors[i]
-        reference_res.posterior = old_posteriors[i]
-        new_results.append(new_res)
-        new_results.append(reference_res)
-        args_list.append([new_likelihood, new_res, reference_likelihood, reference_res])
-    log_weights = p.map(calculate_log_weights_parallel, args_list)
-    log_weights = list(itertools.chain.from_iterable(log_weights))
+                                        reference_likelihood=reference_likelihood,
+                                        use_stored_likelihood=use_stored_likelihood)
     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     return reweighted_log_bf, log_weights
