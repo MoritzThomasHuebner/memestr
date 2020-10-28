@@ -1,4 +1,4 @@
-total_mass = Uniform(name='total_mass', minimum=10, maximum=300, unit='$M_{\odot}$', boundary=None)
+total_mass = Uniform(name='total_mass', minimum=5, maximum=300, unit='$M_{\odot}$', boundary=None)
 mass_ratio = Uniform(name='mass_ratio', minimum=0.05, maximum=1, boundary=None)
 s13 = bilby.gw.prior.AlignedSpin(name='s12', a_prior=Uniform(minimum=0, maximum=0.8), boundary='reflective')
 s23 = bilby.gw.prior.AlignedSpin(name='s23', a_prior=Uniform(minimum=0, maximum=0.8), boundary='reflective')
