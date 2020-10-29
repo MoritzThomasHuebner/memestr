@@ -8,4 +8,3 @@
 
 
 srun python reweight.py ${1}
-srun python reweight.py ${1}
