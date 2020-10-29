@@ -65,7 +65,7 @@ events = [
 ]
 
 # event_number = int(sys.argv[1])
-event_number = 1
+event_number = 0
 time_tag = events[event_number].time_tag
 event = events[event_number].name
 detectors = events[event_number].detectors
