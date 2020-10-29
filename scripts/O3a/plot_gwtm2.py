@@ -62,11 +62,18 @@ log_bfs = []
 plot_event_list = []
 for event in events:
     try:
-        log_weights = np.loadtxt("{}_log_weights".format(event.name))
-        reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
-        print(reweighted_log_bf)
-        log_bfs.append(reweighted_log_bf)
-        plot_event_list.append(plot_event_list)
+        log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
+        log_hom_memory_weights = np.loadtxt("{}_hom_memory_log_weights".format(event))
+        reweighted_hom_log_bf = logsumexp(log_hom_weights) - np.log(len(log_hom_weights))
+        reweighted_hom_memory_log_bf = logsumexp(log_hom_memory_weights) - np.log(len(log_hom_memory_weights))
+        reweighted_memory_log_bf = reweighted_hom_log_bf - reweighted_hom_memory_log_bf
+        n_eff_hom = np.sum(np.exp(log_hom_weights)) ** 2 / np.sum(np.exp(log_hom_weights) ** 2)
+        print(event.name)
+        print(reweighted_memory_log_bf)
+        print(n_eff_hom)
+        print()
+        log_bfs.append(reweighted_memory_log_bf)
+        plot_event_list.append(event.name)
     except Exception as e:
         print(e)
 
