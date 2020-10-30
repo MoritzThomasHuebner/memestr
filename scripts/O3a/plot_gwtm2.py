@@ -3,6 +3,7 @@ from collections import namedtuple
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import logsumexp
+import matplotlib
 
 Event = namedtuple("Event", ["time_tag", "name", "detectors"])
 
@@ -23,7 +24,6 @@ events = [
     Event(time_tag="1239198206.7", name="GW190413B", detectors="H1L1V1"),
     Event(time_tag="1239917954.3", name="GW190421A", detectors="H1L1"),
     Event(time_tag="1240164426.1", name="GW190424A", detectors="L1"),
-    Event(time_tag="1240215503.0", name="GW190425", detectors="L1V1"),
     Event(time_tag="1240327333.3", name="GW190426A", detectors="H1L1V1"),
     Event(time_tag="1240944862.3", name="GW190503A", detectors="H1L1V1"),
     Event(time_tag="1241719652.4", name="GW190512A", detectors="H1L1V1"),
@@ -62,8 +62,8 @@ log_bfs = []
 plot_event_list = []
 for event in events:
     try:
-        log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
-        log_hom_memory_weights = np.loadtxt("{}_hom_memory_log_weights".format(event))
+        log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event.name))
+        log_hom_memory_weights = np.loadtxt("{}_hom_memory_log_weights".format(event.name))
         reweighted_hom_log_bf = logsumexp(log_hom_weights) - np.log(len(log_hom_weights))
         reweighted_hom_memory_log_bf = logsumexp(log_hom_memory_weights) - np.log(len(log_hom_memory_weights))
         reweighted_memory_log_bf = reweighted_hom_log_bf - reweighted_hom_memory_log_bf
@@ -78,11 +78,21 @@ for event in events:
         print(e)
 
 print(np.sum(log_bfs))
+matplotlib.rcParams.update({'font.size': 13})
 plt.scatter(np.arange(0, len(log_bfs)), log_bfs)
-#plt.scatter(np.arange(0, 10), gwtm_1_original, label="Huebner et al. (NRHybSur)")
 plt.xticks(ticks=np.arange(0, len(log_bfs)), labels=plot_event_list, rotation=75)
 plt.ylabel("ln BF")
-#plt.legend()
+plt.tight_layout()
+plt.clf()
+
+plt.figure(figsize=(18, 6))
+plt.plot(log_bfs, label='Memory ln BF', marker='H', linestyle='None', color='black')
+plt.grid(False)
+plt.axhline(0, color='grey', linestyle='--')
+plt.xticks(np.arange(len(plot_event_list)), tuple(plot_event_list), rotation=60)
+plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
 plt.savefig("gwtm-1_new.png")
+# plt.savefig('gwtc-1/gwtc-1.pdf')
 plt.clf()
+
