@@ -64,25 +64,29 @@ events = [
     Event(time_tag="1253885759-2", name="GW190930A", detectors="H1L1")
 ]
 
-event_number = int(sys.argv[1])
+# event_number = int(sys.argv[1])
 # event_number = 0
 # time_tag = events[event_number].time_tag
 # event = events[event_number].name
 # detectors = events[event_number].detectors
-e = Event(time_tag="1252064527-7", name="GW190909A", detectors="H1L1")
+# e = Event(time_tag="1252064527-7", name="GW190909A", detectors="H1L1")
 # e = Event(time_tag="1252150105-3", name="GW190910A", detectors="L1V1")
-time_tag = e.time_tag
-event = e.name
-detectors = e.detectors
+# time_tag = e.time_tag
+# event = e.name
+# detectors = e.detectors
 
+for e in events:
+    time_tag = e.time_tag
+    event = e.name
+    detectors = e.detectors
+    result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+    result.plot_corner()
+# print(len(result.posterior))
 
-result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-print(len(result.posterior))
-
+assert False
 with open(f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
     data_dump = pickle.load(f)
 ifos = data_dump.interferometers
-
 
 bilby.core.utils.logger.disabled = True
 wg_xhm = bilby.gw.waveform_generator.WaveformGenerator(
