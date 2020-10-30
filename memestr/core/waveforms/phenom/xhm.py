@@ -46,6 +46,11 @@ def fd_imrx_22(frequency_array, mass_ratio, total_mass, luminosity_distance, s13
                                 modes=[(2, 2), (2, -2)], **kwargs)
 
 
+def fd_imrx_22_32(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
+    return fd_imrx_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase,
+                                modes=[(2, 2), (2, -2), (3, 2), (3, -2)], **kwargs)
+
+
 def fd_imrx_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
                            s13, s23, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
