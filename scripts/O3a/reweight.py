@@ -84,7 +84,7 @@ for e in events:
     result.outdir = f'{event}/result/'
     result.label += '_reweighted'
     log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
-    result.plot_corner(np.exp(log_hom_weights))
+    result.plot_corner(weights=np.exp(log_hom_weights))
     print(e)
     # except Exception as ex:
     #     print(ex)
