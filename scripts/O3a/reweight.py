@@ -76,18 +76,18 @@ events = [
 # detectors = e.detectors
 
 for e in events:
-    try:
-        time_tag = e.time_tag
-        event = e.name
-        detectors = e.detectors
-        result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-        result.outdir = f'{event}/result/'
-        result.label += '_reweighted'
-        log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
-        result.plot_corner(np.exp(log_hom_weights))
-        print(e)
-    except Exception as ex:
-        print(ex)
+    # try:
+    time_tag = e.time_tag
+    event = e.name
+    detectors = e.detectors
+    result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+    result.outdir = f'{event}/result/'
+    result.label += '_reweighted'
+    log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
+    result.plot_corner(np.exp(log_hom_weights))
+    print(e)
+    # except Exception as ex:
+    #     print(ex)
 # print(len(result.posterior))
 
 assert False
