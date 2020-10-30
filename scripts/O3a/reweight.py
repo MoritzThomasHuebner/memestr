@@ -86,8 +86,8 @@ for e in events:
         log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
         result.plot_corner(np.exp(log_hom_weights))
         print(e)
-    except Exception:
-        print(e)
+    except Exception as ex:
+        print(ex)
 # print(len(result.posterior))
 
 assert False
