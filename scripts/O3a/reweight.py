@@ -66,9 +66,15 @@ events = [
 
 event_number = int(sys.argv[1])
 # event_number = 0
-time_tag = events[event_number].time_tag
-event = events[event_number].name
-detectors = events[event_number].detectors
+# time_tag = events[event_number].time_tag
+# event = events[event_number].name
+# detectors = events[event_number].detectors
+e = Event(time_tag="1252064527-7", name="GW190909A", detectors="H1L1")
+# e = Event(time_tag="1252150105-3", name="GW190910A", detectors="L1V1")
+time_tag = e.time_tag
+event = e.name
+detectors = e.detectors
+
 
 result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
 print(len(result.posterior))
@@ -129,7 +135,6 @@ print(n_eff_hom_memory)
 print(reweighted_hom_log_bf)
 print(reweighted_hom_memory_log_bf)
 print(str(reweighted_hom_log_bf - reweighted_hom_memory_log_bf))
-
 
 
 
