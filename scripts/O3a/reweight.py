@@ -63,33 +63,28 @@ events = [
     Event(time_tag="1253885759-2", name="GW190930A", detectors="H1L1")
 ]
 
-# event_number = int(sys.argv[1])
+event_number = int(sys.argv[1])
 # event_number = 0
-# time_tag = events[event_number].time_tag
-# event = events[event_number].name
-# detectors = events[event_number].detectors
-# e = Event(time_tag="1252064527-7", name="GW190909A", detectors="H1L1")
-# e = Event(time_tag="1252150105-3", name="GW190910A", detectors="L1V1")
-# time_tag = e.time_tag
-# event = e.name
-# detectors = e.detectors
+time_tag = events[event_number].time_tag
+event = events[event_number].name
+detectors = events[event_number].detectors
 
-for e in events:
-    try:
-        time_tag = e.time_tag
-        event = e.name
-        detectors = e.detectors
-        result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-        result.outdir = f'{event}/result/'
-        result.label += '_reweighted'
-        log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
-        result.plot_corner(weights=np.exp(log_hom_weights))
-        print(e)
-    except Exception as ex:
-        print(ex)
+# for e in events:
+#     try:
+#         time_tag = e.time_tag
+#         event = e.name
+#         detectors = e.detectors
+#         result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+#         result.outdir = f'{event}/result/'
+#         result.label += '_reweighted'
+#         log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
+#         result.plot_corner(weights=np.exp(log_hom_weights))
+#         print(e)
+#     except Exception as ex:
+#         print(ex)
 # print(len(result.posterior))
 
-assert False
+# assert False
 with open(f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
     data_dump = pickle.load(f)
 ifos = data_dump.interferometers
