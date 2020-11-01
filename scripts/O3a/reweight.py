@@ -78,6 +78,7 @@ for e in events:
         detectors = e.detectors
         result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
         result.outdir = f'{event}/result/'
+        result.plot_corner()
         result.label += '_reweighted'
         log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event))
         result.plot_corner(weights=np.exp(log_hom_weights))
