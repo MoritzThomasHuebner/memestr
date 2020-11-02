@@ -75,21 +75,21 @@ if event in hom_events:
 result = bilby.core.result.read_in_result(
     f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
 
-for e in events:
-    try:
-        time_tag = e.time_tag
-        event = e.name
-        detectors = e.detectors
-        result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-        result.outdir = f'{event}/result/'
-        result.plot_corner()
-        result.label += '_reweighted'
-        log_hom_weights = np.loadtxt(f"{event}_hom_log_weights")
-        result.plot_corner(weights=np.exp(log_hom_weights))
-        print(e)
-    except Exception as ex:
-        print(ex)
-print(len(result.posterior))
+# for e in events:
+#     try:
+#         time_tag = e.time_tag
+#         event = e.name
+#         detectors = e.detectors
+#         result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+#         result.outdir = f'{event}/result/'
+#         result.plot_corner()
+#         result.label += '_reweighted'
+#         log_hom_weights = np.loadtxt(f"{event}_hom_log_weights")
+#         result.plot_corner(weights=np.exp(log_hom_weights))
+#         print(e)
+#     except Exception as ex:
+#         print(ex)
+# print(len(result.posterior))
 
 # assert False
 with open(f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
