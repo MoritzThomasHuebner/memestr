@@ -18,7 +18,7 @@ events = [
     Event(time_tag="1186741861-5", name="GW170814", detectors="H1L1V1"),
     Event(time_tag="1187058327-1", name="GW170818", detectors="H1L1V1"),
     Event(time_tag="1187529256-5", name="GW170823", detectors="H1L1"),
-    Event(time_tag="1238782700.3", name="GW190408", detectors="H1L1V1"),
+    Event(time_tag="1238782700.3", name="GW190408A", detectors="H1L1V1"),
     Event(time_tag="1239082262.2", name="GW190412", detectors="H1L1V1"),
     Event(time_tag="1239168612.5", name="GW190413A", detectors="H1L1V1"),
     Event(time_tag="1239198206.7", name="GW190413B", detectors="H1L1V1"),
@@ -60,6 +60,7 @@ events = [
 
 log_bfs = []
 plot_event_list = []
+hom_log_bfs = []
 for event in events:
     try:
         log_hom_weights = np.loadtxt("{}_hom_log_weights".format(event.name))
@@ -68,7 +69,9 @@ for event in events:
         reweighted_hom_memory_log_bf = logsumexp(log_hom_memory_weights) - np.log(len(log_hom_memory_weights))
         reweighted_memory_log_bf = reweighted_hom_log_bf - reweighted_hom_memory_log_bf
         n_eff_hom = np.sum(np.exp(log_hom_weights)) ** 2 / np.sum(np.exp(log_hom_weights) ** 2)
+        hom_log_bfs.append(reweighted_hom_log_bf)
         print(event.name)
+        print(reweighted_hom_log_bf)
         print(reweighted_memory_log_bf)
         print(n_eff_hom)
         print()
@@ -77,13 +80,9 @@ for event in events:
     except Exception as e:
         print(e)
 
+print(np.sum(hom_log_bfs))
 print(np.sum(log_bfs))
-matplotlib.rcParams.update({'font.size': 13})
-plt.scatter(np.arange(0, len(log_bfs)), log_bfs)
-plt.xticks(ticks=np.arange(0, len(log_bfs)), labels=plot_event_list, rotation=75)
-plt.ylabel("ln BF")
-plt.tight_layout()
-plt.clf()
+
 
 plt.figure(figsize=(18, 6))
 plt.plot(log_bfs, label='Memory ln BF', marker='H', linestyle='None', color='black')
@@ -93,6 +92,17 @@ plt.xticks(np.arange(len(plot_event_list)), tuple(plot_event_list), rotation=60)
 plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
 plt.savefig("gwtm-1_new.png")
+# plt.savefig('gwtc-1/gwtc-1.pdf')
+plt.clf()
+
+plt.figure(figsize=(18, 6))
+plt.plot(hom_log_bfs, label='HOM ln BF', marker='H', linestyle='None', color='black')
+plt.grid(False)
+plt.axhline(0, color='grey', linestyle='--')
+plt.xticks(np.arange(len(plot_event_list)), tuple(plot_event_list), rotation=60)
+plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
+plt.tight_layout()
+plt.savefig("gwthom-1_new.png")
 # plt.savefig('gwtc-1/gwtc-1.pdf')
 plt.clf()
 
