@@ -4,7 +4,7 @@ import bilby
 import gwmemory
 import numpy as np
 
-from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
+from ..utils import convert_to_frequency_domain, convert_to_frequency_domain_fast, apply_window, gamma_lmlm
 
 
 def fd_imrx_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -28,6 +28,16 @@ def fd_imrx(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s
                                                 luminosity_distance=luminosity_distance, phase=phase,
                                                 s13=s13, s23=s23, fold_in_memory=False)
     return convert_to_frequency_domain(memory_generator, series, waveform, **kwargs)
+
+
+def fd_imrx_fast(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
+    series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
+    series.frequency_array = frequency_array
+    waveform = _evaluate_imrx_fast(series.time_array, total_mass=total_mass,
+                                   mass_ratio=mass_ratio, inc=inc,
+                                   luminosity_distance=luminosity_distance, phase=phase,
+                                   s13=s13, s23=s23)
+    return convert_to_frequency_domain_fast(series, waveform, **kwargs)
 
 
 def fd_imrx_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
@@ -93,6 +103,13 @@ def td_imrx(times, mass_ratio, total_mass, luminosity_distance,
     return waveform
 
 
+def td_imrx_fast(times, mass_ratio, total_mass, luminosity_distance,
+                 s13, s23, inc, phase, **kwargs):
+    hpc = _evaluate_imrx_fast(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
+                              luminosity_distance=luminosity_distance, phase=phase,
+                              s13=s13, s23=s23)
+    return hpc
+
 def td_imrx_memory_only(times, mass_ratio, total_mass, luminosity_distance,
                         s13, s23, inc, phase, **kwargs):
     _, memory, _ = _evaluate_imrx(times=times, total_mass=total_mass,
@@ -135,3 +152,17 @@ def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phas
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
         return oscillatory, memory, memory_generator
+
+
+def _evaluate_imrx_fast(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
+                        s13, s23):
+    temp_times = copy.copy(times)
+    memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
+                                                    MTot=total_mass,
+                                                    distance=luminosity_distance,
+                                                    S1=np.array([0., 0., s13]),
+                                                    S2=np.array([0., 0., s23]),
+                                                    times=temp_times)
+    hpc = memory_generator.time_domain_oscillatory_from_polarisations(inc=inc, phase=-phase) # Why the minus? Only god knows.
+    return hpc
+

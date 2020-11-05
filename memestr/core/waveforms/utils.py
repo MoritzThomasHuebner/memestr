@@ -66,17 +66,32 @@ def nfft(time_domain_strain, sampling_frequency):
 
 def convert_to_frequency_domain(memory_generator, series, waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
-    _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
-    time_shift = kwargs.get('time_shift', 0.)
-    time_shift += shift * (series.time_array[1] - series.time_array[0])
+    # _, shift = wrap_at_maximum_from_2_2_mode(waveform=waveform, memory_generator=memory_generator)
+    # time_shift = kwargs.get('time_shift', 0.)
+    # time_shift += shift * (series.time_array[1] - series.time_array[0])
+    # time_shift = 0
     waveform_fd = nfft(waveform, series.sampling_frequency)
     for mode in waveform:
         indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
         waveform_fd[mode][indexes] = 0
-    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
-                                                    duration=series.duration, shift=time_shift)
+    # waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
+    #                                                 duration=series.duration, shift=time_shift)
     return waveform_fd
 
+
+def convert_to_frequency_domain_fast(series, waveform, **kwargs):
+    waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
+    # _, shift = wrap_at_maximum(waveform=waveform)
+    # time_shift = kwargs.get('time_shift', 0.)
+    # time_shift += shift * (series.time_array[1] - series.time_array[0])
+    # time_shift = 0
+    waveform_fd = nfft(waveform, series.sampling_frequency)
+    for mode in waveform:
+        indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
+        waveform_fd[mode][indexes] = 0
+    # waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
+    #                                                 duration=series.duration, shift=time_shift)
+    return waveform_fd
 
 # def convert_to_frequency_domain_phenomxphm(series, waveform, **kwargs):
 #     waveform_fd = nfft(waveform, series.sampling_frequency)
