@@ -68,7 +68,7 @@ event_number = int(sys.argv[1])
 time_tag = events[event_number].time_tag
 event = events[event_number].name
 detectors = events[event_number].detectors
-suffix = "_fast"
+suffix = "fast"
 
 for e in events:
     try:
