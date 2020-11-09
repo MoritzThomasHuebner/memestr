@@ -68,7 +68,7 @@ event_number = int(sys.argv[1])
 time_tag = events[event_number].time_tag
 event = events[event_number].name
 detectors = events[event_number].detectors
-suffix = "fast"
+suffix = "long"
 result = bilby.core.result.read_in_result(f'{event}_{suffix}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
 # for e in events:
 #     try:
