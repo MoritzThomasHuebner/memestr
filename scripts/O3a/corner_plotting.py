@@ -68,7 +68,7 @@ for e in events:
         event = e.name
         detectors = e.detectors
         result = bilby.core.result.read_in_result(f'{event}_{suffix}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-        result.outdir = f'{event}{suffix}/result/'
+        result.outdir = f'{event}_{suffix}/result/'
         result.plot_corner()
     except Exception as ex:
         print(ex)
