@@ -68,25 +68,12 @@ event_number = int(sys.argv[1])
 time_tag = events[event_number].time_tag
 event = events[event_number].name
 detectors = events[event_number].detectors
-suffix = "long"
+suffix = "fast"
 result = bilby.core.result.read_in_result(f'{event}_{suffix}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-# for e in events:
-#     try:
-#         time_tag = e.time_tag
-#         event = e.name
-#         detectors = e.detectors
-#         result = bilby.core.result.read_in_result(f'{event}_{suffix}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-        # result.outdir = f'{event}{suffix}/result/'
-        # result.plot_corner()
-        # result.label += '_reweighted'
-        # log_hom_weights = np.loadtxt(f"{event}_hom_log_weights")
-        # result.plot_corner(weights=np.exp(log_hom_weights))
-#         print(e)
-#     except Exception as ex:
-#         print(ex)
-# print(len(result.posterior))
+result.outdir = f'{event}_{suffix}/result/'
+result.plot_corner()
+print(len(result.posterior))
 
-# assert False
 with open(f'{event}_{suffix}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
     data_dump = pickle.load(f)
 ifos = data_dump.interferometers
@@ -117,29 +104,3 @@ except Exception:
 n_eff_memory = np.sum(np.exp(log_memory_weights)) ** 2 / np.sum(np.exp(log_memory_weights) ** 2)
 print(n_eff_memory)
 print(reweighted_memory_log_bf)
-
-
-
-
-# log_bfs = []
-#
-# for event in events:
-#     log_weights = np.loadtxt("{}_log_weights".format(event))
-#     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
-#     print(reweighted_log_bf)
-#     log_bfs.append(reweighted_log_bf)
-#
-# gwtm_1_original = np.loadtxt("GWTM-1.txt")
-#
-# import matplotlib
-# matplotlib.rcParams.update({'font.size': 13})
-# import matplotlib.pyplot as plt
-#
-# plt.scatter(np.arange(0, 11), log_bfs, label="New (PhenomXHM)")
-# plt.scatter(np.arange(0, 10), gwtm_1_original, label="Huebner et al. (NRHybSur)")
-# plt.xticks(ticks=np.arange(0, 11), labels=events, rotation=75)
-# plt.ylabel("ln BF")
-# plt.legend()
-# plt.tight_layout()
-# plt.savefig("gwtm-1.png")
-# plt.clf()
