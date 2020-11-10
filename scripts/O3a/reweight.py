@@ -93,24 +93,19 @@ wg_xhm_memory = bilby.gw.waveform_generator.WaveformGenerator(
 bilby.core.utils.logger.disabled = False
 
 
-likelihood_xhm_fast = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_fast)
-likelihood_xhm = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm)
-likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(interferometers=ifos, waveform_generator=wg_xhm_memory)
+likelihood_xhm_osc = bilby.gw.likelihood.GravitationalWaveTransient(
+    interferometers=ifos, waveform_generator=wg_xhm_fast)
+likelihood_xhm_ref = bilby.gw.likelihood.GravitationalWaveTransient(
+    interferometers=ifos, waveform_generator=wg_xhm)
+likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(
+    interferometers=ifos, waveform_generator=wg_xhm_memory)
 
-
-try:
-    log_reweighted_time_shift_weights = np.loadtxt(f"{event}_time_shift_log_weights")
-except Exception:
-    reweighted_time_shift_log_bf, log_reweighted_time_shift_weights = memestr.core.postprocessing.reweigh_by_likelihood(
-        new_likelihood=likelihood_xhm, result=result,
-        reference_likelihood=likelihood_xhm_fast, use_stored_likelihood=True)
-    np.savetxt(f"{event}_time_shift_log_weights", log_reweighted_time_shift_weights)
 try:
     log_memory_weights = np.loadtxt(f"{event}_memory_log_weights")
 except Exception:
     reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.core.postprocessing.reweigh_by_likelihood(
         new_likelihood=likelihood_xhm_memory, result=result,
-        reference_likelihood=likelihood_xhm_fast, use_stored_likelihood=True)
+        reference_likelihood=likelihood_xhm_osc, use_stored_likelihood=True)
     np.savetxt(f"{event}_memory_log_weights", log_memory_weights)
 
 reweighted_memory_log_bf = logsumexp(log_memory_weights) - np.log(len(log_memory_weights))
