@@ -23,7 +23,7 @@ events = [
     Event(time_tag="1186741861-5", name="GW170814", detectors="H1L1V1"),
     Event(time_tag="1187058327-1", name="GW170818", detectors="H1L1V1"),
     Event(time_tag="1187529256-5", name="GW170823", detectors="H1L1"),
-    Event(time_tag="1238782700-3", name="GW190408", detectors="H1L1V1"),
+    Event(time_tag="1238782700-3", name="GW190408A", detectors="H1L1V1"),
     Event(time_tag="1239082262-2", name="GW190412", detectors="H1L1V1"),
     Event(time_tag="1239168612-5", name="GW190413A", detectors="H1L1V1"),
     Event(time_tag="1239198206-7", name="GW190413B", detectors="H1L1V1"),
