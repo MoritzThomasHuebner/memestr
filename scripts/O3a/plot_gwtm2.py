@@ -58,14 +58,13 @@ events = [
     Event(time_tag="1253885759.2", name="GW190930A", detectors="H1L1")
 ]
 
-outdir = "./"
-suffix = "fast"
+outdir = "."
 log_bfs = []
 plot_event_list = []
 
 for event in events:
     try:
-        log_memory_weights = np.loadtxt(f"{outdir}/{event.name}_{suffix}_memory_log_weights")
+        log_memory_weights = np.loadtxt(f"{outdir}/{event.name}_memory_log_weights")
         reweighted_memory_log_bf = logsumexp(log_memory_weights) - np.log(len(log_memory_weights))
         n_eff_hom = np.sum(np.exp(log_memory_weights)) ** 2 / np.sum(np.exp(log_memory_weights) ** 2)
         print(event.name)
