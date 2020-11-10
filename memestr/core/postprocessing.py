@@ -281,7 +281,7 @@ def calculate_log_weights(new_likelihood, result, reference_likelihood, use_stor
 
         log_weight = reweighted_likelihood - original_likelihood
         log_weights.append(log_weight)
-        if i % 1000 == 0:
+        if i % 100 == 0:
             logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
             logger.info("Original Log Likelihood: " + str(original_likelihood))
             logger.info("Reweighted Log Likelihood: " + str(reweighted_likelihood))
