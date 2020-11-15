@@ -68,13 +68,16 @@ event_number = int(sys.argv[1])
 time_tag = events[event_number].time_tag
 event = events[event_number].name
 detectors = events[event_number].detectors
-suffix = "fast"
-result = bilby.core.result.read_in_result(f'{event}_{suffix}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
-result.outdir = f'{event}_{suffix}/result/'
+# suffix = "fast"
+# result = bilby.core.result.read_in_result(f'{event}_{suffix}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+# result.outdir = f'{event}_{suffix}/result/'
+result.outdir = f'{event}/result/'
 result.plot_corner()
 print(len(result.posterior))
 
-with open(f'{event}_{suffix}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
+# with open(f'{event}_{suffix}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
+with open(f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
     data_dump = pickle.load(f)
 ifos = data_dump.interferometers
 bilby.core.utils.logger.disabled = True
