@@ -87,9 +87,3 @@ def convert_to_frequency_domain_fast(series, waveform, **kwargs):
                                                     duration=series.duration, shift=time_shift)
     return waveform_fd
 
-# def convert_to_frequency_domain_phenomxphm(series, waveform, **kwargs):
-#     waveform_fd = nfft(waveform, series.sampling_frequency)
-#     for mode in waveform:
-#         indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
-#         waveform_fd[mode][indexes] = 0
-#     return waveform_fd
