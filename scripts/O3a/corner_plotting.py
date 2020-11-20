@@ -2,7 +2,6 @@ import bilby
 
 from memestr.core.events import events
 
-suffix = 'long'
 
 for e in events:
     try:
