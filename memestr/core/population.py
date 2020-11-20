@@ -103,13 +103,15 @@ def _debug_histogram(parameter, name, log=True):
 
 
 def generate_extrinsic_parameters(size=10000, plot=False):
-    priors_inc = bilby.core.prior.Sine(latex_label="$\\theta_{jn}$")
-    priors_ra = bilby.core.prior.Uniform(minimum=0, maximum=2*np.pi)
-    priors_dec = bilby.core.prior.Cosine()
-    priors_phase = bilby.core.prior.Uniform(minimum=0, maximum=np.pi)
-    priors_psi = bilby.core.prior.Uniform(minimum=0, maximum=np.pi/2)
-    priors_geocent_time = bilby.core.prior.Uniform(minimum=0.0, maximum=16.0)
-    priors_luminosity_distance = bilby.gw.prior.UniformComovingVolume(minimum=10, maximum=5000,
+    priors = bilby.core.prior.PriorDict()
+    priors.from_file(filename='aligned_spin.prior')
+    priors_inc = priors['inc']
+    priors_ra = priors['ra']
+    priors_dec = priors['dec']
+    priors_phase = priors['phase']
+    priors_psi = priors['psi']
+    priors_geocent_time = bilby.core.prior.Uniform(minimum=-0.1, maximum=0.2)
+    priors_luminosity_distance = bilby.gw.prior.UniformComovingVolume(minimum=10, maximum=10000,
                                                                       name='luminosity_distance')
     inc = priors_inc.sample(size=size)
     ra = priors_ra.sample(size=size)
@@ -170,7 +172,7 @@ def setup_ifo(hf_signal, ifo, settings, aplus=False):
             sampling_frequency=settings.waveform_data.sampling_frequency,
             duration=settings.waveform_data.duration,
             start_time=start_time)
-    injection_polarizations = interferometer.inject_signal(
+    _ = interferometer.inject_signal(
         parameters=settings.injection_parameters.__dict__,
         injection_polarizations=hf_signal)
     return interferometer

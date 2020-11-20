@@ -16,35 +16,6 @@ gamma_lmlm = gwmemory.angles.load_gamma()
 roll_off = 0.2
 
 
-class PostprocessingResult(object):
-
-    def __init__(self, outdir, maximum_overlaps=None, memory_log_bf=None, memory_weights=None,
-                 hom_log_bf=None, hom_weights=None, filename='pp_result.json'):
-        self.maximum_overlaps = maximum_overlaps
-        self.memory_log_bf = memory_log_bf
-        self.memory_weights = memory_weights
-        self.hom_log_bf = hom_log_bf
-        self.hom_weights = hom_weights
-        self.outdir = outdir
-        self.filename = filename
-
-    def to_json(self):
-        with open(self.outdir + self.filename, 'w') as f:
-            json.dump(self.__dict__, f)
-
-    @classmethod
-    def from_json(cls, outdir, filename='pp_result.json'):
-        with open(outdir + filename, 'r') as f:
-            data = json.load(f)
-        return cls(outdir=outdir, maximum_overlaps=data['maximum_overlaps'],
-                   memory_log_bf=data['memory_log_bf'], memory_weights=data['memory_weights'],
-                   hom_log_bf=data['hom_log_bf'], hom_weights=data['hom_weights'])
-
-    @property
-    def effective_samples(self):
-        return np.sum(np.exp(self.hom_weights)) ** 2 / np.sum(np.exp(self.hom_weights) ** 2)
-
-
 def overlap_function(a, b, frequency, psd):
     psd_interp = psd.power_spectral_density_interpolated(frequency)
     duration = 1. / (frequency[1] - frequency[0])
@@ -146,55 +117,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
             counter += 1
         if maximum_overlap > threshold:
             break
-    # test_gw = bilby.gw.WaveformGenerator(frequency_domain_source_model=frequency_domain_nr_hyb_sur_waveform_without_memory_wrapped_no_shift_return,
-    #                                      start_time=0, duration=16, sampling_frequency=2048,
-    #                                      waveform_arguments=dict(time_shift=time_shift, minimum_frequency=20, alpha=alpha))
-    # parameters['phase'] = new_phase
-    # test_waveform = test_gw.time_domain_strain(parameters)
-    # test_waveform_fd = test_gw.frequency_domain_strain(parameters)
-    # import matplotlib.pyplot as plt
-    # plt.plot(recovery_wg.time_array, test_waveform['plus'])
-    # plt.plot(recovery_wg.time_array, recovery_wg.time_domain_strain()['plus'])
-    # plt.show()
-    # plt.clf()
-
-    # series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0, sampling_frequency=2048, duration=16)
-    # waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, parameters['inc'], new_phase)
-    # waveform_fd, _ = convert_to_frequency_domain(memory_generator=memory_generator, series=series,
-    #                                              waveform=waveform, alpha=alpha, time_shift=time_shift)
-    #
-    # print(overlap_function(waveform_fd, test_waveform_fd, recovery_wg.frequency_array, ifo.power_spectral_density))
-    # print(overlap_function(waveform_fd, full_wf, recovery_wg.frequency_array, ifo.power_spectral_density))
-    # print(overlap_function(test_waveform_fd, full_wf, recovery_wg.frequency_array, ifo.power_spectral_density))
-
-    # plt.loglog()
-    # plt.xlim(20, 1024)
-    # plt.plot(recovery_wg.frequency_array, np.abs(waveform_fd['plus']))
-    # plt.plot(recovery_wg.frequency_array, np.abs(test_waveform_fd['plus']))
-    # plt.show()
-    # plt.clf()
-
-    # plt.loglog()
-    # plt.xlim(20, 1024)
-    # plt.plot(recovery_wg.frequency_array, np.abs(full_wf['cross']))
-    # plt.plot(recovery_wg.frequency_array, np.abs(test_waveform_fd['cross']))
-    # plt.show()
-    # plt.clf()
-    #
-    # plt.semilogx()
-    # plt.xlim(20, 1024)
-    # plt.plot(recovery_wg.frequency_array, np.angle(full_wf['plus']))
-    # plt.plot(recovery_wg.frequency_array, np.angle(test_waveform_fd['plus']))
-    # plt.show()
-    # plt.clf()
-    #
-    # plt.semilogx()
-    # plt.xlim(20, 1024)
-    # plt.plot(recovery_wg.frequency_array, np.angle(full_wf['cross']))
-    # plt.plot(recovery_wg.frequency_array, np.angle(test_waveform_fd['cross']))
-    # plt.show()
-    # plt.clf()
-    #
     if verbose:
         logger.info("Maximum overlap: " + str(maximum_overlap))
         logger.info("Iterations " + str(iterations))
