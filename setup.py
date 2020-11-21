@@ -4,6 +4,6 @@ from setuptools import setup
 
 setup(name='memestr',
       version='0.0.5',
-      packages=['memestr', 'memestr.waveforms', 'memestr.waveforms.phenom', 'memestr.routines'],
+      packages=['memestr', 'memestr.waveforms', 'memestr.waveforms.phenom'],
       package_dir={'memestr': 'memestr'},
       )
