@@ -10,7 +10,7 @@ duration = 16
 sampling_frequency = 2048
 
 wg_nr_gws = WaveformGenerator(
-    frequency_domain_source_model=gws_nominal_hom,
+    frequency_domain_source_model=fd_imrx,
     sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
     waveform_arguments=dict(alpha=0.1))
 wg_nr_osc = WaveformGenerator(
