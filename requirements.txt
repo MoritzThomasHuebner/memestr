@@ -3,3 +3,4 @@ bilby
 NRSur7dq2
 matplotlib
 gwpopulation
+scipy
