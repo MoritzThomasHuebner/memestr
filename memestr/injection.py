@@ -1,11 +1,10 @@
-import json
 import warnings
 
 import pandas as pd
 from bilby.core.utils import logger
 
-from memestr.core.population import generate_all_parameters, setup_ifo
-from memestr.core.waveforms import *
+from memestr.population import generate_all_parameters, setup_ifo
+from memestr.waveforms import *
 
 warnings.filterwarnings("ignore")
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from bilby.gw.waveform_generator import WaveformGenerator
 
-from memestr.core.waveforms import *
+from memestr.waveforms import *
 
 start_time = 0
 duration = 16

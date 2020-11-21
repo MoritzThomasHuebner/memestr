@@ -222,7 +222,7 @@ print('90 percent CL on number of required events: ' + str(interval))
 # n_eff_fracs = []
 # for i in range(2000):
 #     try:
-#         pp_res = memestr.core.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
+#         pp_res = memestr.postprocessing.PostprocessingResult.from_json(str(i) + '_dynesty_production_IMR_non_mem_rec/')
 #         n_eff_frac = pp_res.effective_samples / len(pp_res.hom_weights)
 #         if np.isnan(n_eff_frac):
 #             n_eff_fracs.append(0)

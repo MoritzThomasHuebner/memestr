@@ -6,7 +6,7 @@ import sys
 from bilby.core.utils import logger
 from bilby.core.result import BilbyJsonEncoder
 
-from memestr.core.injection import create_injection
+from memestr.injection import create_injection
 
 warnings.filterwarnings("ignore")
 

@@ -1,6 +1,6 @@
 import bilby
 
-from memestr.core.events import events
+from memestr.events import events
 
 
 for e in events:

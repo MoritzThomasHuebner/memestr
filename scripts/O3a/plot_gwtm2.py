@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import logsumexp
 
-from memestr.core.events import events
+from memestr.events import events
 
 
 outdir = "."

@@ -1,13 +1,12 @@
 from copy import deepcopy
 
 import bilby.gw.utils as utils
-import itertools
 import pandas as pd
 from scipy.special import logsumexp
 from scipy.optimize import minimize
 import multiprocessing
 
-from memestr.core.waveforms.phenom import *
+from memestr.waveforms.phenom import *
 
 logger = bilby.core.utils.logger
 gamma_lmlm = gwmemory.angles.load_gamma()
