@@ -7,8 +7,6 @@ from scipy.special import logsumexp
 from scipy.optimize import minimize
 import multiprocessing
 
-import json
-
 from memestr.core.waveforms.phenom import *
 
 logger = bilby.core.utils.logger

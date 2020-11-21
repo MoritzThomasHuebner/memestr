@@ -151,8 +151,9 @@ def generate_all_parameters(size=10000, plot=False, **mass_kwargs):
                                  luminosity_distance=eps.luminosity_distance)
 
 
-def setup_ifo(hf_signal, ifo, settings, aplus=False):
-    start_time = settings.injection_parameters.geocent_time + 2 - settings.waveform_data.duration
+def setup_ifo(waveform_generator, ifo, geocent_time,
+              injection_parameters, zero_noise=False, aplus=False):
+    start_time = geocent_time + 2 - waveform_generator.duration
     interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
     if ifo in ['H1', 'L1']:
         if aplus:
@@ -162,17 +163,17 @@ def setup_ifo(hf_signal, ifo, settings, aplus=False):
     else:
         interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
             from_power_spectral_density_file('AdV_psd.txt')
-    if settings.detector_settings.zero_noise:
+    if zero_noise:
         interferometer.set_strain_data_from_zero_noise(
-            sampling_frequency=settings.waveform_data.sampling_frequency,
-            duration=settings.waveform_data.duration,
+            sampling_frequency=waveform_generator.sampling_frequency,
+            duration=waveform_generator.duration,
             start_time=start_time)
     else:
         interferometer.set_strain_data_from_power_spectral_density(
-            sampling_frequency=settings.waveform_data.sampling_frequency,
-            duration=settings.waveform_data.duration,
+            sampling_frequency=waveform_generator.sampling_frequency,
+            duration=waveform_generator.duration,
             start_time=start_time)
     _ = interferometer.inject_signal(
-        parameters=settings.injection_parameters.__dict__,
-        injection_polarizations=hf_signal)
+        parameters=injection_parameters,
+        waveform_generator=waveform_generator)
     return interferometer
