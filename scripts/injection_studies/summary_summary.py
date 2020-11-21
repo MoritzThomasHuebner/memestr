@@ -16,8 +16,8 @@ hom_log_bfs_injected = np.array([])
 gw_log_bfs = np.array([])
 gw_log_bfs_injected = np.array([])
 for min_event_id, max_event_id in zip(minimums, maximums):
-    memory_log_bfs = np.append(memory_log_bfs, np.loadtxt('summary/summary_memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
-    memory_log_bfs_injected = np.append(memory_log_bfs_injected, np.loadtxt('summary/summary_memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
+    memory_log_bfs = np.append(memory_log_bfs, np.loadtxt('summary/memory_log_bfs' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
+    memory_log_bfs_injected = np.append(memory_log_bfs_injected, np.loadtxt('summary/memory_log_bfs_injected' + str(min_event_id) + '_' + str(max_event_id) + '.txt'))
     invalid_indices = np.where(memory_log_bfs < -2)
     memory_log_bfs[invalid_indices] = 0
     memory_log_bfs_injected[invalid_indices] = 0
