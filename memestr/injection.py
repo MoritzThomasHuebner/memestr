@@ -3,13 +3,13 @@ import warnings
 import pandas as pd
 from bilby.core.utils import logger
 
-from memestr.population import generate_all_parameters, setup_ifo
+from memestr.population import generate_all_parameters
 from memestr.waveforms import *
 
 warnings.filterwarnings("ignore")
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
 logger.info('Generating population parameters')
-all_params = generate_all_parameters(size=10000, clean=False, plot=False)
+all_params = generate_all_parameters(size=10000, clean=False, plot=False, **mass_kwargs)
 logger.info('Generated population parameters')
 
 network_snrs = []
@@ -75,3 +75,32 @@ def create_injection():
                                's13': [np.random.choice(all_params.s13)],
                                's23': [np.random.choice(all_params.s23)]})
     return params
+
+
+def setup_ifo(waveform_generator, ifo, geocent_time,
+              injection_parameters, zero_noise=False, aplus=False):
+    start_time = geocent_time + 2 - waveform_generator.duration
+    interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
+    if ifo in ['H1', 'L1']:
+        if aplus:
+            interferometer.power_spectral_density = \
+                bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
+        else:
+            interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
+    else:
+        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
+            from_power_spectral_density_file('AdV_psd.txt')
+    if zero_noise:
+        interferometer.set_strain_data_from_zero_noise(
+            sampling_frequency=waveform_generator.sampling_frequency,
+            duration=waveform_generator.duration,
+            start_time=start_time)
+    else:
+        interferometer.set_strain_data_from_power_spectral_density(
+            sampling_frequency=waveform_generator.sampling_frequency,
+            duration=waveform_generator.duration,
+            start_time=start_time)
+    _ = interferometer.inject_signal(
+        parameters=injection_parameters,
+        waveform_generator=waveform_generator)
+    return interferometer

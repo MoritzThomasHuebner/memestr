@@ -139,8 +139,8 @@ def extrinsic_parameters_debug_plots(inc, ra, dec, phase, psi, geocent_time, lum
     _debug_histogram(luminosity_distance, 'Luminosity_distance', log=True)
 
 
-def generate_all_parameters(size=10000, plot=False, **mass_kwargs):
-    mps = generate_mass_parameters(size=size, plot=plot, **mass_kwargs)
+def generate_all_parameters(size=10000, clean=False, plot=False, **mass_kwargs):
+    mps = generate_mass_parameters(size=size, plot=plot, clean=clean, **mass_kwargs)
     sps = generate_spins(size=size, plot=plot)
     eps = generate_extrinsic_parameters(size=size, plot=plot)
     return AllParameterContainer(primary_masses=mps.primary_masses, secondary_masses=mps.secondary_masses,
@@ -151,30 +151,3 @@ def generate_all_parameters(size=10000, plot=False, **mass_kwargs):
                                  luminosity_distance=eps.luminosity_distance)
 
 
-def setup_ifo(waveform_generator, ifo, geocent_time,
-              injection_parameters, zero_noise=False, aplus=False):
-    start_time = geocent_time + 2 - waveform_generator.duration
-    interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
-    if ifo in ['H1', 'L1']:
-        if aplus:
-            interferometer.power_spectral_density = \
-                bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
-        else:
-            interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
-    else:
-        interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity. \
-            from_power_spectral_density_file('AdV_psd.txt')
-    if zero_noise:
-        interferometer.set_strain_data_from_zero_noise(
-            sampling_frequency=waveform_generator.sampling_frequency,
-            duration=waveform_generator.duration,
-            start_time=start_time)
-    else:
-        interferometer.set_strain_data_from_power_spectral_density(
-            sampling_frequency=waveform_generator.sampling_frequency,
-            duration=waveform_generator.duration,
-            start_time=start_time)
-    _ = interferometer.inject_signal(
-        parameters=injection_parameters,
-        waveform_generator=waveform_generator)
-    return interferometer
