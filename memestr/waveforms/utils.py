@@ -63,20 +63,16 @@ def nfft(time_domain_strain, sampling_frequency):
 def convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     _, shift = wrap_at_maximum_from_modes(waveform=waveform, memory_generator=memory_generator, inc=inc, phase=phase)
-    time_shift = kwargs.get('time_shift', 0.)
-    time_shift += shift * (series.time_array[1] - series.time_array[0])
-    waveform_fd = nfft(waveform, series.sampling_frequency)
-    for mode in waveform:
-        indexes = np.where(series.frequency_array < kwargs.get('minimum_frequency', 20))
-        waveform_fd[mode][indexes] = 0
-    waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
-                                                    duration=series.duration, shift=time_shift)
-    return waveform_fd
+    return nfft_and_time_shift(kwargs, series, shift, waveform)
 
 
 def convert_to_frequency_domain_fast(series, waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
     _, shift = wrap_at_maximum(waveform=waveform)
+    return nfft_and_time_shift(kwargs, series, shift, waveform)
+
+
+def nfft_and_time_shift(kwargs, series, shift, waveform):
     time_shift = kwargs.get('time_shift', 0.)
     time_shift += shift * (series.time_array[1] - series.time_array[0])
     waveform_fd = nfft(waveform, series.sampling_frequency)
@@ -86,4 +82,3 @@ def convert_to_frequency_domain_fast(series, waveform, **kwargs):
     waveform_fd = apply_time_shift_frequency_domain(waveform=waveform_fd, frequency_array=series.frequency_array,
                                                     duration=series.duration, shift=time_shift)
     return waveform_fd
-

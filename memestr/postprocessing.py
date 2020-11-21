@@ -46,8 +46,9 @@ def calculate_overlaps_optimizable(new_params, *args):
     series.time_array = memory_generator.times
 
     waveform = gwmemory.waveforms.combine_modes(memory_generator.h_lm, inc, phase)
-    waveform_fd = convert_to_frequency_domain(memory_generator=memory_generator, series=series,
-                                              waveform=waveform, alpha=alpha, time_shift=time_shift)
+    waveform_fd = convert_to_frequency_domain(
+        memory_generator=memory_generator, series=series, waveform=waveform, alpha=alpha,
+        time_shift=time_shift, inc=inc, phase=phase)
     return -overlap_function(a=full_wf, b=waveform_fd, frequency=frequency_array,
                              psd=power_spectral_density)
 

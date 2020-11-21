@@ -157,7 +157,8 @@ def setup_ifo(waveform_generator, ifo, geocent_time,
     interferometer = bilby.gw.detector.get_empty_interferometer(ifo)
     if ifo in ['H1', 'L1']:
         if aplus:
-            interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
+            interferometer.power_spectral_density = \
+                bilby.gw.detector.PowerSpectralDensity.from_amplitude_spectral_density_file('Aplus_asd.txt')
         else:
             interferometer.power_spectral_density = bilby.gw.detector.PowerSpectralDensity.from_aligo()
     else:
