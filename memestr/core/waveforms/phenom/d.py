@@ -7,14 +7,6 @@ import numpy as np
 from ..utils import convert_to_frequency_domain, apply_window, gamma_lmlm
 
 
-def fd_imrd_bilby(frequencies, mass_ratio, total_mass, luminosity_distance,
-                  s13, s23, inc, phase, **kwargs):
-    parameters = dict(mass_ratio=mass_ratio, total_mass=total_mass, luminosity_distance=luminosity_distance,
-                      theta_jn=inc, phase=phase, chi_1=s13, chi_2=s23)
-    parameters, _ = bilby.gw.conversion.convert_to_lal_binary_black_hole_parameters(parameters)
-    return bilby.gw.source.lal_binary_black_hole(frequency_array=frequencies, **parameters, **kwargs)
-
-
 def fd_imrd_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
                         s13, s23, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
