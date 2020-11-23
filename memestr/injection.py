@@ -9,7 +9,8 @@ from memestr.waveforms import *
 warnings.filterwarnings("ignore")
 mass_kwargs = dict(alpha=1.5, beta=3, mmin=8, mmax=45)
 logger.info('Generating population parameters')
-all_params = generate_all_parameters(size=10000, clean=False, plot=False, **mass_kwargs)
+# all_params = generate_all_parameters(size=10000, clean=False, plot=False, **mass_kwargs)
+all_params = dict()
 logger.info('Generated population parameters')
 
 network_snrs = []
