@@ -1,32 +1,19 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
+import bilby
 from bilby.gw.waveform_generator import WaveformGenerator
 
-from memestr.waveforms import *
-
+from memestr.waveforms import fd_imrx
+import numpy as np
 start_time = 0
 duration = 16
 sampling_frequency = 2048
 
-wg_nr_gws = WaveformGenerator(
-    frequency_domain_source_model=fd_imrx,
-    sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
-    waveform_arguments=dict(alpha=0.1))
-wg_nr_osc = WaveformGenerator(
-    time_domain_source_model=td_nr_sur,
-    sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
-    waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
-wg_nr_osc_mem = WaveformGenerator(
-    time_domain_source_model=td_nr_sur_with_memory,
-    sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
-    waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
-wg_imr_osc = WaveformGenerator(frequency_domain_source_model=fd_imrd,
+wg_imr_osc = WaveformGenerator(frequency_domain_source_model=fd_imrx,
                                sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
                                waveform_arguments=dict(alpha=0.1))
-wg_nr_mem = WaveformGenerator(time_domain_source_model=td_nr_sur_memory_only,
-                              sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
-                              waveform_arguments=dict(alpha=0.1, minimum_frequency=10))
+
 
 mass_1 = 36.
 mass_2 = 29.
@@ -43,62 +30,15 @@ dec = 0.
 params = dict(mass_ratio=mass_2 / mass_1, total_mass=mass_1 + mass_2, s13=chi_1, s23=chi_2,
               luminosity_distance=luminosity_distance, inc=theta_jn, phase=phase, ra=ra, dec=dec,
               geocent_time=geocent_time, psi=psi)
-params_gws = dict(mass_1=mass_1, mass_2=mass_2, chi_1=chi_1, chi_2=chi_2, luminosity_distance=luminosity_distance,
-                  theta_jn=theta_jn, phase=phase - np.pi / 2, ra=ra, dec=dec, geocent_time=geocent_time, psi=psi)
-matplotlib.rcParams.update(matplotlib.rcParamsDefault)
-# plt.style.use('fivethirtyeight')
-font = {'family': 'sans-serif', 'weight': 300, 'size': 15}
-matplotlib.rc('font', **font)
-# matplotlib.rcParams.update({'text.usetex': True})
-merger_index = np.argmax(wg_nr_osc_mem.time_domain_strain(params)['plus'])
-merger_time = wg_nr_osc_mem.time_array[merger_index]
-plt.plot(wg_nr_osc_mem.time_array - merger_time, 10**21*wg_nr_osc_mem.time_domain_strain(params)['plus'],
-         label='Oscillatory + Memory')
-plt.plot(wg_nr_mem.time_array - merger_time, 10**21*wg_nr_mem.time_domain_strain(params)['plus'], label='Memory', linestyle='--')
-plt.plot([12.31 - merger_time, 12.31 - merger_time], [0, 10**21*np.max(wg_nr_mem.time_domain_strain(params)['plus'])], label='Memory displacement')
-# plt.plot(wg_nr_gws.time_array, np.roll(wg_nr_gws.time_domain_strain(params_gws)['plus'], 16000))
-plt.xlabel('Time [s]')
-plt.ylabel('Strain [$10^{-21}$]')
-plt.ylim(-0.95, 1.5)
-plt.xlim(12.2 - merger_time, 12.32 - merger_time)
-plt.grid()
-plt.legend(fontsize=14)
-plt.tight_layout()
-# plt.show()
-plt.savefig('test_waveform.pdf')
-plt.clf()
 
-matplotlib.rcParams.update(matplotlib.rcParamsDefault)
-# plt.style.use('fivethirtyeight')
-font = {'family': 'sans-serif', 'weight': 300, 'size': 15}
-matplotlib.rc('font', **font)
-# matplotlib.rcParams.update({'text.usetex': True})
-merger_index = np.argmax(wg_nr_osc_mem.time_domain_strain(params)['plus'])
-merger_time = wg_nr_osc_mem.time_array[merger_index]
-plt.plot(wg_nr_osc_mem.time_array - merger_time, 10**21*wg_nr_osc_mem.time_domain_strain(params)['plus'], label='Oscillatory + Memory')
-plt.plot(wg_nr_osc.time_array - merger_time, 10**21*wg_nr_osc.time_domain_strain(params)['plus'], label='Oscillatory')
-plt.plot(wg_nr_mem.time_array - merger_time, 10**21*wg_nr_mem.time_domain_strain(params)['plus'], label='Memory')
-# plt.plot(wg_nr_gws.time_array, np.roll(wg_nr_gws.time_domain_strain(params_gws)['plus'], 16000))
-plt.xlabel('Time [s]')
-plt.ylabel('Strain [$10^{-21}$]')
-plt.ylim(-0.95, 1.5)
-plt.xlim(12.2 - merger_time, 12.32 - merger_time)
-plt.grid()
-plt.legend(fontsize=14)
-plt.tight_layout()
-# plt.show()
-plt.savefig('test_waveform2.pdf')
-plt.clf()
-
-# import sys
-# sys.exit(0)
+wg_imr_osc.parameters = params
 
 for total_mass in [4, 8, 16, 32, 64, 128, 192]:
     params['total_mass'] = total_mass
     ifo_mem = bilby.gw.detector.get_empty_interferometer('H1')
     ifo_mem.minimum_frequency = 1
     ifo_mem.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    ifo_mem.inject_signal_from_waveform_generator(params, wg_nr_mem)
+    injection = ifo_mem.inject_signal_from_waveform_generator(params, wg_imr_osc)
 
     # ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
     # ifo_osc.minimum_frequency = 1
@@ -117,13 +57,17 @@ for total_mass in [4, 8, 16, 32, 64, 128, 192]:
     # plt.plot(ifo_osc.frequency_array, np.abs(ifo_osc.frequency_domain_strain))
     # plt.plot(ifo_gws.frequency_array, np.abs(ifo_gws.frequency_domain_strain))
     # plt.plot(ifo_imr.frequency_array, np.abs(ifo_imr.frequency_domain_strain))
-    plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain), label=str(total_mass))
+    snr = ifo_mem.meta_data['optimal_SNR']
+    print(snr)
+    plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain)/total_mass, label=str(total_mass))
 plt.plot(ifo_mem.power_spectral_density.frequency_array, ifo_mem.power_spectral_density.asd_array, label='H1 ASD')
-plt.plot([1, 1000], [1e-24, 1e-27], label='1/x')
-plt.xlim(1, 1024)
+# plt.plot([1, 1000], [1e-24, 1e-27], label='1/x')
+plt.xlim(20, 100)
+plt.ylim(1e-25, 1e-24)
 plt.loglog()
 plt.legend()
 plt.tight_layout()
+plt.savefig('different_masses')
 plt.show()
 plt.clf()
 
