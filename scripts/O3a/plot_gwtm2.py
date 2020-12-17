@@ -70,7 +70,7 @@ for event in events:
         log_bfs.append(reweighted_memory_log_bf)
         plot_event_list.append(event.name)
         # print(event)
-        print(log_bfs[-1])
+        print(f"{event.name}\t{log_bfs[-1]}")
     except Exception as e:
         print(e)
 
