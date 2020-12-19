@@ -1,12 +1,10 @@
-import pickle
-import numpy as np
 import sys
-from scipy.special import logsumexp
 
 import bilby
+import numpy as np
+from scipy.special import logsumexp
 
 import memestr
-from memestr.events import events
 
 duration = 4.
 sampling_frequency = 2048.
