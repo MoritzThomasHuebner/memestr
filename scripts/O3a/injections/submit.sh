@@ -3,7 +3,8 @@
 #SBATCH --job-name=inj
 #
 #SBATCH --ntasks=1
-#SBATCH --time=72:00:00
+#SBATCH --time=12:00:00
 #SBATCH --mem-per-cpu=1G
 
-srun python run_injection.py ${1} ${2}
+#srun python run_injection.py ${1} ${2}
+srun python reweight_injections.py ${1} ${2}
