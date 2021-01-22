@@ -155,6 +155,7 @@ def _evaluate_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance,
                                                     times=times,
                                                     distance=luminosity_distance,
                                                     minimum_frequency=kwargs.get('minimum_frequency', 10),
+                                                    reference_frequency=kwargs.get('reference_frequency', 50),
                                                     units='mks'
                                                     )
 
