@@ -4,18 +4,6 @@ import gwmemory
 from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain
 
 
-# def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, s11, s12, s13, s21, s22, s23,
-#                    luminosity_distance, inc, phase, **kwargs):
-#     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
-#     series.frequency_array = frequencies
-#     waveform, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
-#                                                      mass_ratio=mass_ratio, inc=inc,
-#                                                      luminosity_distance=luminosity_distance, phase=phase,
-#                                                      s11=s11, s12=s12, s13=s13, s21=s21, s22=s22, s23=s23,
-#                                                      kwargs=kwargs, fold_in_memory=False)
-#     return convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs)
-
-
 def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
                    luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
@@ -24,8 +12,8 @@ def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
-                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
-                  reference_frequency=kwargs['reference_frequency'], phase=phase)
+                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
+                  reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
     waveform, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
@@ -46,8 +34,8 @@ def fd_nr_sur_7dq4_with_memory(frequencies, mass_ratio, total_mass, a_1, a_2, ti
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
-                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
-                  reference_frequency=kwargs['reference_frequency'], phase=phase)
+                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
+                  reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
     waveform, memory, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
@@ -72,8 +60,8 @@ def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, ti
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
-                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
-                  reference_frequency=kwargs['reference_frequency'], phase=phase)
+                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
+                  reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
     _, memory, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
@@ -93,8 +81,8 @@ def td_nr_sur_7dq4_memory_only(times, mass_ratio, total_mass, a_1, a_2, tilt_1, 
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
-                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
-                  reference_frequency=kwargs['reference_frequency'], phase=phase)
+                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
+                  reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
     _, memory, _ = _evaluate_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio, inc=inc,
@@ -112,8 +100,8 @@ def td_nr_sur_7dq4(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
-                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
-                  reference_frequency=kwargs['reference_frequency'], phase=phase)
+                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
+                  reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
     waveform, memory = _evaluate_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio,
@@ -132,7 +120,7 @@ def td_nr_sur_7dq4_with_memory(times, mass_ratio, total_mass, a_1, a_2, tilt_1, 
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
                   phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
-                  reference_frequency=kwargs['reference_frequency'], phase=phase)
+                  reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
     waveform, memory, _ = _evaluate_surrogate(times=times, total_mass=total_mass, mass_ratio=mass_ratio,
