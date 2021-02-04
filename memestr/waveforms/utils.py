@@ -25,7 +25,7 @@ def apply_window(waveform, times, kwargs):
 
 
 def wrap_at_maximum(waveform):
-    max_index = np.argmax(np.abs(waveform['plus'] + 1j * waveform['cross']))
+    max_index = np.argmax(np.abs(waveform['plus'] - 1j * waveform['cross']))
     shift = len(waveform['plus']) - max_index
     waveform = wrap_by_n_indices(shift=shift, waveform=deepcopy(waveform))
     return waveform, shift
@@ -33,7 +33,7 @@ def wrap_at_maximum(waveform):
 
 def wrap_at_maximum_from_modes(waveform, memory_generator, inc, phase):
     hpc = gwmemory.waveforms.combine_modes(h_lm=memory_generator.h_lm, inc=inc, phase=phase)
-    max_index = np.argmax(np.abs(hpc['plus'] + 1j * hpc['cross']))
+    max_index = np.argmax(np.abs(hpc['plus'] - 1j * hpc['cross']))
     shift = len(waveform['plus']) - max_index
     waveform = wrap_by_n_indices(shift=shift, waveform=deepcopy(waveform))
     return waveform, shift
@@ -60,9 +60,9 @@ def nfft(time_domain_strain, sampling_frequency):
     return frequency_domain_strain
 
 
-def convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs):
+def convert_to_frequency_domain(series, waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
-    _, shift = wrap_at_maximum_from_modes(waveform=waveform, memory_generator=memory_generator, inc=inc, phase=phase)
+    _, shift = wrap_at_maximum(waveform=waveform)
     return nfft_and_time_shift(kwargs, series, shift, waveform)
 
 

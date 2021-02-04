@@ -12,7 +12,7 @@ def fd_nr_sur(frequencies, mass_ratio, total_mass, s13, s23,
                                                             mass_ratio=mass_ratio, inc=inc,
                                                             luminosity_distance=luminosity_distance, phase=phase,
                                                             s13=s13, s23=s23, kwargs=kwargs, fold_in_memory=False)
-    return convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs)
+    return convert_to_frequency_domain(series, waveform, **kwargs)
 
 
 def fd_nr_sur_with_memory(frequencies, mass_ratio, total_mass, s13, s23,
@@ -28,7 +28,7 @@ def fd_nr_sur_with_memory(frequencies, mass_ratio, total_mass, s13, s23,
     for mode in memory:
         waveform[mode] += memory[mode]
 
-    return convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs)
+    return convert_to_frequency_domain(series, waveform, **kwargs)
 
 
 def fd_nr_sur_memory_only(frequencies, mass_ratio, total_mass, s13, s23,
@@ -41,7 +41,7 @@ def fd_nr_sur_memory_only(frequencies, mass_ratio, total_mass, s13, s23,
                                                              luminosity_distance=luminosity_distance,
                                                              phase=phase, s13=s13, s23=s23, kwargs=kwargs)
 
-    return convert_to_frequency_domain(memory_generator, series, memory, inc, phase, **kwargs)
+    return convert_to_frequency_domain(series, memory, **kwargs)
 
 
 def td_nr_sur_memory_only(times, mass_ratio, total_mass, s13, s23,
