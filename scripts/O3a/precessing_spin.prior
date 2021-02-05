@@ -1,5 +1,5 @@
 total_mass = Uniform(name='total_mass', minimum=5, maximum=300, unit='$M_{\odot}$', boundary=None)
-mass_ratio = Uniform(name='mass_ratio', minimum=0.05, maximum=1, boundary=None)
+mass_ratio = Uniform(name='mass_ratio', minimum=0.25, maximum=1, boundary=None)
 luminosity_distance = bilby.gw.prior.UniformSourceFrame(name='luminosity_distance', minimum=1e2, maximum=1e4, unit='Mpc', boundary=None)
 dec = Cosine(name='dec')
 ra = Uniform(name='ra', minimum=0, maximum=2 * np.pi, boundary='periodic')

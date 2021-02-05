@@ -1,3 +1,5 @@
+import numpy as np
+
 import bilby
 import gwmemory
 
@@ -15,14 +17,16 @@ def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2
                   phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
                   reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
-
-    waveform, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
-                                                     mass_ratio=mass_ratio, inc=inc,
-                                                     luminosity_distance=luminosity_distance, phase=phase,
-                                                     s11=params['spin_1x'], s12=params['spin_1y'],
-                                                     s13=params['spin_1z'], s21=params['spin_2x'],
-                                                     s22=params['spin_2y'], s23=params['spin_2z'],
-                                                     kwargs=kwargs, fold_in_memory=False)
+    try:
+        waveform, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
+                                                         mass_ratio=mass_ratio, inc=inc,
+                                                         luminosity_distance=luminosity_distance, phase=phase,
+                                                         s11=params['spin_1x'], s12=params['spin_1y'],
+                                                         s13=params['spin_1z'], s21=params['spin_2x'],
+                                                         s22=params['spin_2y'], s23=params['spin_2z'],
+                                                         kwargs=kwargs, fold_in_memory=False)
+    except RuntimeError:
+        return dict(plus=np.ones(len(frequencies)), cross=np.ones(len(frequencies)))
     return convert_to_frequency_domain(series, waveform, **kwargs)
 
 
@@ -151,19 +155,3 @@ def _evaluate_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance,
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
         return oscillatory, memory, memory_generator
-
-
-def _evaluate_surrogate_fast(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
-                             s11, s12, s13, s21, s22, s23, kwargs):
-    memory_generator = gwmemory.waveforms.NRSur7dq4(q=mass_ratio,
-                                                    total_mass=total_mass,
-                                                    S1=[s11, s12, s13],
-                                                    S2=[s21, s22, s23],
-                                                    times=times,
-                                                    distance=luminosity_distance,
-                                                    minimum_frequency=kwargs.get('minimum_frequency', 0),
-                                                    reference_frequency=kwargs.get('reference_frequency', 50),
-                                                    units='mks'
-                                                    )
-
-    return memory_generator.time_domain_oscillatory_from_polarisations(inc=inc, phase=phase)
