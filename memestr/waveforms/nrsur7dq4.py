@@ -77,7 +77,6 @@ def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, ti
 
 def td_nr_sur_7dq4_memory_only(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
                                luminosity_distance, inc, phase, **kwargs):
-
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
@@ -96,7 +95,6 @@ def td_nr_sur_7dq4_memory_only(times, mass_ratio, total_mass, a_1, a_2, tilt_1, 
 
 def td_nr_sur_7dq4(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
                    luminosity_distance, inc, phase, **kwargs):
-
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
@@ -115,7 +113,6 @@ def td_nr_sur_7dq4(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_
 
 def td_nr_sur_7dq4_with_memory(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
                                luminosity_distance, inc, phase, **kwargs):
-
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
@@ -153,3 +150,19 @@ def _evaluate_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance,
     else:
         memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
         return oscillatory, memory, memory_generator
+
+
+def _evaluate_surrogate_fast(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
+                             s11, s12, s13, s21, s22, s23, kwargs):
+    memory_generator = gwmemory.waveforms.NRSur7dq4(q=mass_ratio,
+                                                    total_mass=total_mass,
+                                                    S1=[s11, s12, s13],
+                                                    S2=[s21, s22, s23],
+                                                    times=times,
+                                                    distance=luminosity_distance,
+                                                    minimum_frequency=kwargs.get('minimum_frequency', 0),
+                                                    reference_frequency=kwargs.get('reference_frequency', 50),
+                                                    units='mks'
+                                                    )
+
+    return memory_generator.time_domain_oscillatory_from_polarisations(inc=inc, phase=phase)

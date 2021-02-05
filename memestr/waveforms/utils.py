@@ -19,7 +19,7 @@ def get_alpha(kwargs, times):
 def apply_window(waveform, times, kwargs):
     alpha = get_alpha(kwargs, times)
     window = tukey(M=len(times), alpha=alpha)
-    for mode in deepcopy(waveform):
+    for mode in waveform.keys():
         waveform[mode] *= window
     return waveform
 

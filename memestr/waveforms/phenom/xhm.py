@@ -158,6 +158,5 @@ def _evaluate_imrx_fast(times, total_mass, mass_ratio, inc, luminosity_distance,
                                                     S1=np.array([0., 0., s13]),
                                                     S2=np.array([0., 0., s23]),
                                                     times=temp_times)
-    hpc = memory_generator.time_domain_oscillatory_from_polarisations(inc=inc, phase=-phase) # Why the minus? Only god knows.
-    return hpc
+    return memory_generator.time_domain_oscillatory_from_polarisations(inc=inc, phase=phase)
 
