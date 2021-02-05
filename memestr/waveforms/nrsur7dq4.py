@@ -67,6 +67,7 @@ def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, ti
     _, memory, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
                                                       mass_ratio=mass_ratio, inc=inc,
                                                       luminosity_distance=luminosity_distance,
+                                                      phase=phase,
                                                       s11=params['spin_1x'], s12=params['spin_1y'],
                                                       s13=params['spin_1z'], s21=params['spin_2x'],
                                                       s22=params['spin_2y'], s23=params['spin_2z'],
