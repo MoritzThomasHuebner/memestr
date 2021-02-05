@@ -23,7 +23,7 @@ def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2
                                                      s13=params['spin_1z'], s21=params['spin_2x'],
                                                      s22=params['spin_2y'], s23=params['spin_2z'],
                                                      kwargs=kwargs, fold_in_memory=False)
-    return convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs)
+    return convert_to_frequency_domain(series, waveform, **kwargs)
 
 
 def fd_nr_sur_7dq4_with_memory(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
@@ -49,7 +49,7 @@ def fd_nr_sur_7dq4_with_memory(frequencies, mass_ratio, total_mass, a_1, a_2, ti
     for mode in memory:
         waveform[mode] += memory[mode]
 
-    return convert_to_frequency_domain(memory_generator, series, waveform, inc, phase, **kwargs)
+    return convert_to_frequency_domain(series, waveform, **kwargs)
 
 
 def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
@@ -72,7 +72,7 @@ def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, ti
                                                       s22=params['spin_2y'], s23=params['spin_2z'],
                                                       kwargs=kwargs)
 
-    return convert_to_frequency_domain(memory_generator, series, memory, inc, phase, **kwargs)
+    return convert_to_frequency_domain(series, memory, **kwargs)
 
 
 def td_nr_sur_7dq4_memory_only(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
