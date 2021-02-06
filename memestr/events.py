@@ -53,3 +53,28 @@ events = [
     Event(time_tag="1253755327-5", name="GW190929A", detectors="H1L1V1"),
     Event(time_tag="1253885759-2", name="GW190930A", detectors="H1L1")
 ]
+
+precessing_events = [
+    Event(time_tag="1239168612-5", name="GW190413A_prec", detectors="H1L1V1"),
+    Event(time_tag="1239198206-7", name="GW190413B_prec", detectors="H1L1V1"),
+    Event(time_tag="1239917954-3", name="GW190421A_prec", detectors="H1L1"),
+    Event(time_tag="1240164426-1", name="GW190424A_prec", detectors="L1"),
+    Event(time_tag="1240944862-3", name="GW190503A_prec", detectors="H1L1V1"),
+    Event(time_tag="1241816086-8", name="GW190513A_prec", detectors="H1L1V1"),
+    Event(time_tag="1241852074-8", name="GW190514A_prec", detectors="H1L1"),
+    Event(time_tag="1242107479-8", name="GW190517A_prec", detectors="H1L1V1"),
+    Event(time_tag="1242315362-4", name="GW190519A_prec", detectors="H1L1V1"),
+    Event(time_tag="1242442967-4", name="GW190521_prec", detectors="H1L1V1"),
+    Event(time_tag="1242459857-5", name="GW190521A_prec", detectors="H1L1"),
+    Event(time_tag="1242984073-8", name="GW190527A_prec", detectors="H1L1"),
+    Event(time_tag="1243533585-1", name="GW190602A_prec", detectors="H1L1V1"),
+    Event(time_tag="1245035079-3", name="GW190620A_prec", detectors="L1V1"),
+    Event(time_tag="1245955943-2", name="GW190630A_prec", detectors="L1V1"),
+    Event(time_tag="1246048404-6", name="GW190701A_prec", detectors="H1L1V1"),
+    Event(time_tag="1246487219-3", name="GW190706A_prec", detectors="H1L1V1"),
+    # Event(time_tag="1247608532-9", name="GW190719A_prec", detectors="H1L1"),
+    Event(time_tag="1248242632-0", name="GW190727A_prec", detectors="H1L1V1"),
+    Event(time_tag="1248617394-6", name="GW190731A_prec", detectors="H1L1"),
+    Event(time_tag="1248834439-9", name="GW190803A_prec", detectors="H1L1V1"),
+    Event(time_tag="1251009263-8", name="GW190828A_prec", detectors="H1L1V1"),
+]
