@@ -2,8 +2,9 @@ import numpy as np
 
 import bilby
 import gwmemory
+from copy import deepcopy
 
-from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain
+from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain, convert_to_frequency_domain_with_memory
 
 
 def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
@@ -50,10 +51,11 @@ def fd_nr_sur_7dq4_with_memory(frequencies, mass_ratio, total_mass, a_1, a_2, ti
                                                              s13=params['spin_1z'], s21=params['spin_2x'],
                                                              s22=params['spin_2y'], s23=params['spin_2z'],
                                                              kwargs=kwargs)
+    reference_waveform = deepcopy(waveform)
     for mode in memory:
         waveform[mode] += memory[mode]
 
-    return convert_to_frequency_domain(series, waveform, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, waveform, reference_waveform, **kwargs)
 
 
 def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
@@ -68,16 +70,16 @@ def fd_nr_sur_7dq4_memory_only(frequencies, mass_ratio, total_mass, a_1, a_2, ti
                   reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
-    _, memory, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
-                                                      mass_ratio=mass_ratio, inc=inc,
-                                                      luminosity_distance=luminosity_distance,
-                                                      phase=phase,
-                                                      s11=params['spin_1x'], s12=params['spin_1y'],
-                                                      s13=params['spin_1z'], s21=params['spin_2x'],
-                                                      s22=params['spin_2y'], s23=params['spin_2z'],
-                                                      kwargs=kwargs)
+    waveform, memory, memory_generator = _evaluate_surrogate(times=series.time_array, total_mass=total_mass,
+                                                             mass_ratio=mass_ratio, inc=inc,
+                                                             luminosity_distance=luminosity_distance,
+                                                             phase=phase,
+                                                             s11=params['spin_1x'], s12=params['spin_1y'],
+                                                             s13=params['spin_1z'], s21=params['spin_2x'],
+                                                             s22=params['spin_2y'], s23=params['spin_2z'],
+                                                             kwargs=kwargs)
 
-    return convert_to_frequency_domain(series, memory, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, memory, waveform, **kwargs)
 
 
 def td_nr_sur_7dq4_memory_only(times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,

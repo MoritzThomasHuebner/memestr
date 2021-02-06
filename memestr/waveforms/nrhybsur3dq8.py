@@ -1,7 +1,9 @@
 import bilby
 import gwmemory
+from copy import deepcopy
 
-from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain
+
+from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain, convert_to_frequency_domain_with_memory
 
 
 def fd_nr_sur(frequencies, mass_ratio, total_mass, s13, s23,
@@ -25,10 +27,11 @@ def fd_nr_sur_with_memory(frequencies, mass_ratio, total_mass, s13, s23,
                                                                     luminosity_distance=luminosity_distance,
                                                                     phase=phase,
                                                                     s13=s13, s23=s23, kwargs=kwargs)
+    reference_waveform = deepcopy(waveform)
     for mode in memory:
         waveform[mode] += memory[mode]
 
-    return convert_to_frequency_domain(series, waveform, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, waveform, reference_waveform, **kwargs)
 
 
 def fd_nr_sur_memory_only(frequencies, mass_ratio, total_mass, s13, s23,
@@ -36,12 +39,12 @@ def fd_nr_sur_memory_only(frequencies, mass_ratio, total_mass, s13, s23,
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
 
-    _, memory, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
-                                                             mass_ratio=mass_ratio, inc=inc,
-                                                             luminosity_distance=luminosity_distance,
-                                                             phase=phase, s13=s13, s23=s23, kwargs=kwargs)
+    waveform, memory, memory_generator = _evaluate_hybrid_surrogate(times=series.time_array, total_mass=total_mass,
+                                                                    mass_ratio=mass_ratio, inc=inc,
+                                                                    luminosity_distance=luminosity_distance,
+                                                                    phase=phase, s13=s13, s23=s23, kwargs=kwargs)
 
-    return convert_to_frequency_domain(series, memory, **kwargs)
+    return convert_to_frequency_domain(series, memory, waveform, **kwargs)
 
 
 def td_nr_sur_memory_only(times, mass_ratio, total_mass, s13, s23,

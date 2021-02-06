@@ -66,9 +66,9 @@ def convert_to_frequency_domain(series, waveform, **kwargs):
     return nfft_and_time_shift(kwargs, series, shift, waveform)
 
 
-def convert_to_frequency_domain_fast(series, waveform, **kwargs):
+def convert_to_frequency_domain_with_memory(series, waveform, reference_waveform, **kwargs):
     waveform = apply_window(waveform=waveform, times=series.time_array, kwargs=kwargs)
-    _, shift = wrap_at_maximum(waveform=waveform)
+    _, shift = wrap_at_maximum(waveform=reference_waveform)
     return nfft_and_time_shift(kwargs, series, shift, waveform)
 
 

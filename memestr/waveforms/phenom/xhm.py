@@ -1,10 +1,11 @@
 import copy
+from copy import deepcopy
 
 import bilby
 import gwmemory
 import numpy as np
 
-from ..utils import convert_to_frequency_domain, convert_to_frequency_domain_fast, apply_window, gamma_lmlm
+from ..utils import convert_to_frequency_domain, convert_to_frequency_domain_with_memory, apply_window, gamma_lmlm
 
 
 def fd_imrx_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -15,9 +16,10 @@ def fd_imrx_with_memory(frequencies, mass_ratio, total_mass, luminosity_distance
                                                         mass_ratio=mass_ratio, inc=inc,
                                                         luminosity_distance=luminosity_distance, phase=phase,
                                                         s13=s13, s23=s23, fold_in_memory=True)
+    reference_waveform = deepcopy(waveform)
     for mode in memory:
         waveform[mode] += memory[mode]
-    return convert_to_frequency_domain(series, waveform, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, waveform, reference_waveform, **kwargs)
 
 
 def fd_imrx(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
@@ -37,7 +39,7 @@ def fd_imrx_fast(frequency_array, mass_ratio, total_mass, luminosity_distance, s
                                    mass_ratio=mass_ratio, inc=inc,
                                    luminosity_distance=luminosity_distance, phase=phase,
                                    s13=s13, s23=s23)
-    return convert_to_frequency_domain_fast(series, waveform, **kwargs)
+    return convert_to_frequency_domain(series, waveform, **kwargs)
 
 
 def fd_imrx_select_modes(frequency_array, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase, **kwargs):
@@ -64,9 +66,10 @@ def fd_imrx_22_with_memory(frequencies, mass_ratio, total_mass, luminosity_dista
                                                         mass_ratio=mass_ratio, inc=inc,
                                                         luminosity_distance=luminosity_distance, phase=phase,
                                                         s13=s13, s23=s23, fold_in_memory=True, modes=[(2, 2), (2, -2)])
+    reference_waveform = deepcopy(waveform)
     for mode in memory:
         waveform[mode] += memory[mode]
-    return convert_to_frequency_domain(series, waveform, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, waveform, reference_waveform, **kwargs)
 
 
 def fd_imrx_memory_only(frequencies, mass_ratio, total_mass, luminosity_distance,
@@ -77,7 +80,7 @@ def fd_imrx_memory_only(frequencies, mass_ratio, total_mass, luminosity_distance
                                                         mass_ratio=mass_ratio, inc=inc,
                                                         luminosity_distance=luminosity_distance, phase=phase,
                                                         s13=s13, s23=s23, fold_in_memory=True)
-    return convert_to_frequency_domain(series, memory, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, memory, waveform, **kwargs)
 
 
 def td_imrx_with_memory(times, mass_ratio, total_mass, luminosity_distance, s13,
