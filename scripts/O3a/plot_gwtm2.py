@@ -114,7 +114,7 @@ for event in events:
 
 
 print(np.sum(log_bfs))
-print(np.sum(log_bfs_prec))
+print(np.sum(np.nan_to_num(log_bfs_prec)))
 
 
 plt.figure(figsize=(18, 6))
