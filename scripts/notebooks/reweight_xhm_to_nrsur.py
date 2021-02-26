@@ -85,7 +85,7 @@ for i in range(len(res_aligned.posterior)):
     res_aligned_shifted.posterior['phase'].iloc[i] = max_overlap_phase
     print(i/len(res_aligned.posterior))
     print(max_overlap)
-    print(new_params['phase'])
+    print(np.abs(new_params['phase'] - max_overlap_phase))
     print()
 
 res_aligned_shifted.label = 'res_aligned_shifted'
