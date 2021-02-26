@@ -123,7 +123,7 @@ def td_nr_sur_7dq4_with_memory(times, mass_ratio, total_mass, a_1, a_2, tilt_1, 
     mass_1, mass_2 = bilby.gw.conversion.total_mass_and_mass_ratio_to_component_masses(
         mass_ratio=mass_ratio, total_mass=total_mass)
     params = dict(a_1=a_1, a_2=a_2, tilt_1=tilt_1, tilt_2=tilt_2, phi_12=phi_12,
-                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2,
+                  phi_jl=phi_jl, theta_jn=inc, mass_1=mass_1, mass_2=mass_2, mass_ratio=mass_ratio,
                   reference_frequency=kwargs.get('reference_frequency', 50), phase=phase)
     params = bilby.gw.conversion.generate_spin_parameters(params)
 
