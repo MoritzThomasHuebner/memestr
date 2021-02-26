@@ -25,12 +25,12 @@ for i in range(len(events_official)):
     filename = f"all_posterior_samples/{event_name_official}"
     with h5py.File(filename, "r") as f:
         # List all groups
-        print("Keys: %s" % f.keys())
-        print()
-        for i in range(len(list(f.keys()))):
-            a_group_key = list(f.keys())[i]
+        # print("Keys: %s" % f.keys())
+        # print()
+        for j in range(len(list(f.keys()))):
+            a_group_key = list(f.keys())[j]
             print(a_group_key)
-            print()
+            # print()
 
             # Get the data
             data = list(f[a_group_key])
@@ -64,6 +64,6 @@ for i in range(len(events_official)):
                 V1_powers = f[a_group_key]['psds']['V1'][:, 1]
                 V1_file = np.array([V1_freqs, V1_powers]).T
                 np.savetxt(f"GWTC2_PSDs/{event_name_short}_Virgo_psd.txt", V1_file)
-            except KeyError:
+            except KeyError as e:
                 pass
 
