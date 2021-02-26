@@ -1,0 +1,5 @@
+EVENT_LIST="GW190519A_prec GW190521_prec GW190521A_prec GW190527A_prec GW190602A_prec GW190620A_prec GW190630A_prec GW190701A_prec GW190706A_prec"
+for EVENT in ${EVENT_LIST}
+do
+  bilby_pipe ${EVENT}.ini
+done
