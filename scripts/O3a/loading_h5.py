@@ -19,7 +19,7 @@ for i in range(len(events_official)):
     event_name_short = events[i + 10].name
     event_name_official = events_official[i]
     print(event_name_short[:8])
-    print(event_name_official[:8])
+    # print(event_name_official[:8])
     assert event_name_short[:8] == event_name_official[:8]
 
     filename = f"all_posterior_samples/{event_name_official}"
@@ -29,41 +29,43 @@ for i in range(len(events_official)):
         # print()
         for j in range(len(list(f.keys()))):
             a_group_key = list(f.keys())[j]
-            print(a_group_key)
+            # print(a_group_key)
             # print()
 
             # Get the data
             data = list(f[a_group_key])
             print(f[a_group_key])
-            print()
+            # print()
             try:
                 print(f[a_group_key]['psds'])
                 break
             except Exception:
                 print(f"{f[a_group_key]} has no psd")
                 continue
-        if 'H1' in events[i].detectors:
+        if 'H1' in events[i + 10].detectors:
             try:
                 H1_freqs = f[a_group_key]['psds']['H1'][:, 0]
                 H1_powers = f[a_group_key]['psds']['H1'][:, 1]
                 H1_file = np.array([H1_freqs, H1_powers]).T
                 np.savetxt(f"GWTC2_PSDs/{event_name_short}_LIGO_Hanford_psd.txt", H1_file)
-            except KeyError:
-                pass
-        if 'L1' in events[i].detectors:
+            except KeyError as e:
+                print(e)
+        if 'L1' in events[i + 10].detectors:
             try:
                 L1_freqs = f[a_group_key]['psds']['L1'][:, 0]
                 L1_powers = f[a_group_key]['psds']['L1'][:, 1]
                 L1_file = np.array([L1_freqs, L1_powers]).T
                 np.savetxt(f"GWTC2_PSDs/{event_name_short}_LIGO_Livingston_psd.txt", L1_file)
-            except KeyError:
-                pass
-        if 'V1' in events[i].detectors:
+            except KeyError as e:
+                print(e)
+        if 'V1' in events[i + 10].detectors:
             try:
                 V1_freqs = f[a_group_key]['psds']['V1'][:, 0]
                 V1_powers = f[a_group_key]['psds']['V1'][:, 1]
                 V1_file = np.array([V1_freqs, V1_powers]).T
                 np.savetxt(f"GWTC2_PSDs/{event_name_short}_Virgo_psd.txt", V1_file)
             except KeyError as e:
-                pass
+                print(e)
+        print()
+        print()
 
