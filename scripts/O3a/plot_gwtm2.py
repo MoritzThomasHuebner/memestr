@@ -93,23 +93,33 @@ plot_prec_event_list = []
 for event in events:
     try:
         log_memory_weights = np.loadtxt(f"{outdir}/{event.name}_memory_log_weights")
+        # n_1 = len(log_memory_weights)
+        # log_memory_weights = log_memory_weights[np.where(np.logical_and(log_memory_weights < 2, log_memory_weights > -2))]
+        # n_2 = len(log_memory_weights)
+
         reweighted_memory_log_bf = logsumexp(log_memory_weights) - np.log(len(log_memory_weights))
         log_bfs.append(reweighted_memory_log_bf)
         plot_event_list.append(event.name)
         # n_eff_hom = np.sum(np.exp(log_memory_weights)) ** 2 / np.sum(np.exp(log_memory_weights) ** 2)
         # print(event)
         print(f"{event.name}\t{log_bfs[-1]}")
+        print(f"Trimmed posterior samples {n_1 - n_2}")
     except Exception as e:
         print(e)
 
     try:
         log_memory_weights_prec = np.loadtxt(f"{outdir}/{event.name}_prec_memory_log_weights")
+        # n_1 = len(log_memory_weights_prec)
+        # log_memory_weights_prec = log_memory_weights_prec[np.where(np.logical_and(log_memory_weights_prec < 2, log_memory_weights_prec > -2))]
+        # n_2 = len(log_memory_weights_prec)
         reweighted_memory_log_bf_prec = logsumexp(log_memory_weights_prec) - np.log(len(log_memory_weights_prec))
         log_bfs_prec.append(reweighted_memory_log_bf_prec)
         print(f"{event.name}\t{log_bfs_prec[-1]}")
+        print(f"Trimmed posterior samples {n_1 - n_2}")
     except Exception as e:
         print(e)
         log_bfs_prec.append(np.nan)
+    print()
 
 
 
