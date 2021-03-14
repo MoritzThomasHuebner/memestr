@@ -56,7 +56,8 @@ class TestWaveforms(unittest.TestCase):
 
     def test_xhm_fd_consistency(self):
         for mode in self.modes:
-            self.assertTrue(np.array_equal(self.xhm_fd[mode], self.xhm_fast_fd[mode]))
+            self.assertTrue(np.allclose(self.xhm_fd[mode].real, self.xhm_fast_fd[mode].real, atol=1e-28))
+            self.assertTrue(np.allclose(self.xhm_fd[mode].imag, self.xhm_fast_fd[mode].imag, atol=1e-28))
 
     def test_xhm_vs_reference(self):
         for mode in self.modes:
