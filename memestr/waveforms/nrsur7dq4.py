@@ -147,8 +147,7 @@ def _evaluate_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance,
                                                     times=times,
                                                     distance=luminosity_distance,
                                                     minimum_frequency=kwargs.get('minimum_frequency', 0),
-                                                    reference_frequency=kwargs.get('reference_frequency', 50),
-                                                    units='mks'
+                                                    reference_frequency=kwargs.get('reference_frequency', 50)
                                                     )
 
     oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase, modes=kwargs.get('modes', None))
