@@ -54,7 +54,7 @@ try:
 except Exception:
     reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
         new_likelihood=likelihood_xhm_osc, result=result,
-        reference_likelihood=likelihood_xhm_ref, use_stored_likelihood=True)
+        reference_likelihood=likelihood_xhm_ref, use_stored_likelihood=False)
     # reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
     #     new_likelihood=likelihood_xhm_memory, result=result,
     #     reference_likelihood=likelihood_xhm_osc, use_stored_likelihood=True)
