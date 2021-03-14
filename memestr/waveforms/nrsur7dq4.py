@@ -151,7 +151,7 @@ def _evaluate_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance,
                                                     units='mks'
                                                     )
 
-    oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase, modes=kwargs.get('modes', None))
+    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase, modes=kwargs.get('modes', None))
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:
