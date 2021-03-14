@@ -49,23 +49,12 @@ likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(
     interferometers=ifos, waveform_generator=wg_xhm_memory)
 
 try:
-    raise Exception
     log_memory_weights = np.loadtxt(f"{event}_memory_log_weights")
     # log_memory_weights = np.loadtxt(f"{event}_memory_log_weights_par{part}")
 except Exception:
-    # result.posterior['phase'] = - result.posterior['phase']
-    max_like_params = result.posterior.iloc[-1].to_dict()
-    likelihood_xhm_osc.parameters = max_like_params
-    likelihood_xhm_ref.parameters = max_like_params
-    likelihood_xhm_memory.parameters = max_like_params
-    print(max_like_params['log_likelihood'])
-    print(likelihood_xhm_osc.log_likelihood_ratio())
-    print(likelihood_xhm_ref.log_likelihood_ratio())
-    print(likelihood_xhm_memory.log_likelihood_ratio())
-
-    # reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
-    #     new_likelihood=likelihood_xhm_osc, result=result,
-    #     reference_likelihood=likelihood_xhm_ref, use_stored_likelihood=False)
+    reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
+        new_likelihood=likelihood_xhm_osc, result=result,
+        reference_likelihood=likelihood_xhm_ref, use_stored_likelihood=False)
     # reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
     #     new_likelihood=likelihood_xhm_memory, result=result,
     #     reference_likelihood=likelihood_xhm_osc, use_stored_likelihood=True)
