@@ -185,7 +185,11 @@ def _plot_time_shifts(overlaps, phase_grid_init, time_grid_init):
     return rs_overlaps
 
 
-def calculate_log_weights(new_likelihood, result, reference_likelihood, use_stored_likelihood=False):
+def reweigh_log_evidence_by_weights(log_evidence, log_weights):
+    return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
+
+
+def reweigh_by_likelihood(result, new_likelihood, reference_likelihood, use_stored_likelihood=True):
     log_weights = []
 
     for i in range(len(result.posterior)):
@@ -199,23 +203,11 @@ def calculate_log_weights(new_likelihood, result, reference_likelihood, use_stor
 
         log_weight = reweighted_likelihood - original_likelihood
         log_weights.append(log_weight)
-        if i % 100 == 0:
+        if i % 10 == 0:
             logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
             logger.info("Original Log Likelihood: " + str(original_likelihood))
             logger.info("Reweighted Log Likelihood: " + str(reweighted_likelihood))
             logger.info("Log Weight: " + str(log_weight))
 
-    return log_weights
-
-
-def reweigh_log_evidence_by_weights(log_evidence, log_weights):
-    return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
-
-
-def reweigh_by_likelihood(result, new_likelihood, reference_likelihood, use_stored_likelihood=True):
-    log_weights = calculate_log_weights(new_likelihood=new_likelihood,
-                                        result=result,
-                                        reference_likelihood=reference_likelihood,
-                                        use_stored_likelihood=use_stored_likelihood)
     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     return reweighted_log_bf, log_weights

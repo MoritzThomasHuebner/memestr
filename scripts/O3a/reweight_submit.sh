@@ -7,4 +7,4 @@
 #SBATCH --mem-per-cpu=4G
 
 
-srun python reweight.py ${1}
+srun python reweight.py ${1} ${2}
