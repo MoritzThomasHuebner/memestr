@@ -91,12 +91,12 @@ plot_event_list = []
 plot_prec_event_list = []
 
 for event in events:
+    plot_event_list.append(event.name)
     try:
         log_memory_weights = np.loadtxt(f"{outdir}/{event.name}_memory_log_weights")
 
         reweighted_memory_log_bf = logsumexp(log_memory_weights) - np.log(len(log_memory_weights))
         log_bfs.append(reweighted_memory_log_bf)
-        plot_event_list.append(event.name)
         # n_eff_hom = np.sum(np.exp(log_memory_weights)) ** 2 / np.sum(np.exp(log_memory_weights) ** 2)
         # print(event)
         print(f"{event.name}\t{log_bfs[-1]}")
@@ -116,8 +116,8 @@ for event in events:
 
 
 
-print(np.sum(log_bfs))
-print(np.sum(np.nan_to_num(log_bfs_prec)))
+print(np.sum(np.nan_to_num(log_bfs, nan=0)))
+print(np.sum(np.nan_to_num(log_bfs_prec, nan=0)))
 
 
 plt.figure(figsize=(18, 6))
