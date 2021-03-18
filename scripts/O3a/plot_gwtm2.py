@@ -102,6 +102,7 @@ for event in events:
         print(f"{event.name}\t{log_bfs[-1]}")
     except Exception as e:
         print(e)
+        log_bfs.append(np.nan)
 
     try:
         log_memory_weights_prec = np.loadtxt(f"{outdir}/{event.name}_prec_memory_log_weights")
