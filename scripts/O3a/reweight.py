@@ -24,6 +24,8 @@ else:
 
 time_tag = event_list[event_number].time_tag
 event = event_list[event_number].name
+if precessing:
+    event += "_2000"
 detectors = event_list[event_number].detectors
 result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
 result.outdir = f'{event}/result/'
