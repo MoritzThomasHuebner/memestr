@@ -27,7 +27,7 @@ for event in events:
         log_bfs.append(np.nan)
 
     try:
-        log_memory_weights_prec = np.loadtxt(f"{outdir}_2000/{event.name}_prec_memory_log_weights")
+        log_memory_weights_prec = np.loadtxt(f"{outdir}/{event.name}_prec_2000_memory_log_weights")
         reweighted_memory_log_bf_prec = logsumexp(log_memory_weights_prec) - np.log(len(log_memory_weights_prec))
         log_bfs_prec.append(reweighted_memory_log_bf_prec)
         print(f"{event.name}\t{log_bfs_prec[-1]}")
