@@ -9,6 +9,7 @@ Event = namedtuple("Event", ["time_tag", "name", "detectors"])
 outdir = "."
 log_bfs = []
 log_bfs_prec = []
+log_bfs_prec_trimmed = []
 plot_event_list = []
 plot_prec_event_list = []
 
@@ -28,8 +29,11 @@ for event in events:
 
     try:
         log_memory_weights_prec = np.loadtxt(f"{outdir}/{event.name}_prec_2000_memory_log_weights")
+        log_memory_weights_prec_trimmed = log_memory_weights_prec[np.where(log_memory_weights_prec > -10)]
         reweighted_memory_log_bf_prec = logsumexp(log_memory_weights_prec) - np.log(len(log_memory_weights_prec))
+        reweighted_memory_log_bf_prec_trimmed = logsumexp(log_memory_weights_prec_trimmed) - np.log(len(log_memory_weights_prec_trimmed))
         log_bfs_prec.append(reweighted_memory_log_bf_prec)
+        log_bfs_prec_trimmed.append(reweighted_memory_log_bf_prec_trimmed)
         print(f"{event.name}\t{log_bfs_prec[-1]}")
     except Exception as e:
         print(e)
@@ -40,16 +44,18 @@ for event in events:
 
 print(np.sum(np.nan_to_num(log_bfs, nan=0)))
 print(np.sum(np.nan_to_num(log_bfs_prec, nan=0)))
+print(np.sum(np.nan_to_num(log_bfs_prec_trimmed, nan=0)))
 
 
 plt.figure(figsize=(18, 6))
 plt.plot(log_bfs, label='Memory ln BF IMRPhenomXHM', marker='H', linestyle='None', color='black')
 plt.plot(log_bfs_prec, label='Memory ln BF NRSur7dq4', marker='P', linestyle='None', color='orange')
+plt.plot(log_bfs_prec, label='Memory ln BF NRSur7dq4 Trimmed', marker='D', linestyle='None', color='blue')
 plt.grid(False)
 plt.axhline(0, color='grey', linestyle='--')
 plt.xticks(np.arange(len(plot_event_list)), tuple(plot_event_list), rotation=60)
 plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
 plt.tight_layout()
 plt.legend()
-plt.savefig("gwtc-2_new.pdf")
+plt.savefig("gwtc-2_trimmed.pdf")
 plt.clf()
