@@ -35,6 +35,7 @@ for event in events:
         log_bfs_prec.append(reweighted_memory_log_bf_prec)
         log_bfs_prec_trimmed.append(reweighted_memory_log_bf_prec_trimmed)
         print(f"{event.name}\t{log_bfs_prec[-1]}")
+        print(f"{event.name}\t{log_bfs_prec_trimmed[-1]}")
     except Exception as e:
         print(e)
         log_bfs_prec.append(np.nan)
