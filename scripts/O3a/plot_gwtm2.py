@@ -39,6 +39,7 @@ for event in events:
     except Exception as e:
         print(e)
         log_bfs_prec.append(np.nan)
+        log_bfs_prec_trimmed.append(np.nan)
     print()
 
 
