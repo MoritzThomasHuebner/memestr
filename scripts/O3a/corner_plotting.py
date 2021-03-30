@@ -20,7 +20,7 @@ for e in precessing_events:
         time_tag = e.time_tag
         event = e.name
         detectors = e.detectors
-        result = bilby.core.result.read_in_result(f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
+        result = bilby.core.result.read_in_result(f'{event}_2000/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
         result.plot_corner(filename=f'corner_plots/{e.name}_nrsur.png')
     except Exception as e:
         print(e)
