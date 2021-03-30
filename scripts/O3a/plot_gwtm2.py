@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 from scipy.special import logsumexp
 from collections import namedtuple
 from memestr.events import events
+
+matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+plt.style.use('paper.mplstyle')
 
 Event = namedtuple("Event", ["time_tag", "name", "detectors"])
 
