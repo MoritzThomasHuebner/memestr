@@ -52,11 +52,13 @@ print(np.sum(np.nan_to_num(log_bfs, nan=0)))
 print(np.sum(np.nan_to_num(log_bfs_prec, nan=0)))
 print(np.sum(np.nan_to_num(log_bfs_prec_trimmed, nan=0)))
 
+log_bfs_nrhybsur_gwtc_1 = np.loadtxt('O1O2_original_results.txt')
 
 plt.figure(figsize=(18, 6))
 markersize = 8
 plt.plot(log_bfs, label='Memory ln BF IMRPhenomXHM', marker='H', linestyle='None', color='black', markersize=markersize)
 plt.plot(log_bfs_prec_trimmed, label='Memory ln BF NRSur7dq4', marker='P', linestyle='None', color='orange', markersize=markersize)
+plt.plot(log_bfs_nrhybsur_gwtc_1, label='Memory ln BF NRHybSur3dq8', marker='D', linestyle='None', color='orange', markersize=markersize)
 # plt.plot(log_bfs_prec_trimmed, label='Memory ln BF NRSur7dq4 Trimmed', marker='D', linestyle='None', color='blue', markersize=markersize)
 plt.grid(False)
 plt.axhline(0, color='grey', linestyle='--')
