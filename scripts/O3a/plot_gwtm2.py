@@ -54,7 +54,7 @@ print(np.sum(np.nan_to_num(log_bfs_prec_trimmed, nan=0)))
 
 
 plt.figure(figsize=(18, 6))
-markersize = 6
+markersize = 8
 plt.plot(log_bfs, label='Memory ln BF IMRPhenomXHM', marker='H', linestyle='None', color='black', markersize=markersize)
 plt.plot(log_bfs_prec, label='Memory ln BF NRSur7dq4', marker='P', linestyle='None', color='orange', markersize=markersize)
 plt.plot(log_bfs_prec_trimmed, label='Memory ln BF NRSur7dq4 Trimmed', marker='D', linestyle='None', color='blue', markersize=markersize)
