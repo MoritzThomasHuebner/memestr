@@ -10,8 +10,9 @@ from memestr.events import events, precessing_events
 
 event_number = int(sys.argv[1])
 precessing = int(sys.argv[2]) == 1
+n_parallel = int(sys.argv[3])
+minimum_frequency = int(sys.argv[4])
 
-minimum_frequency = 20
 if precessing:
     event_list = precessing_events
     # waveform_arguments = dict(minimum_frequency=0)  # VERY IMPORTANT
@@ -32,7 +33,7 @@ detectors = event_list[event_number].detectors
 result = bilby.core.result.read_in_result(
     f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
 result.outdir = f'{event}/result/'
-result.plot_corner()
+# result.plot_corner()
 print(len(result.posterior))
 with open(f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
     data_dump = pickle.load(f)
@@ -61,7 +62,7 @@ except Exception:
     use_stored_likelihood = minimum_frequency == 0
     reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweight_by_likelihood_parallel(
         new_likelihood=likelihood_mem, result=result,
-        reference_likelihood=likelihood_osc, use_stored_likelihood=use_stored_likelihood, n_parallel=8)
+        reference_likelihood=likelihood_osc, use_stored_likelihood=use_stored_likelihood, n_parallel=n_parallel)
     np.savetxt(outfile_name, log_memory_weights)
 
 reweighted_memory_log_bf = logsumexp(log_memory_weights) - np.log(len(log_memory_weights))
