@@ -222,8 +222,8 @@ def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood
         res = deepcopy(new_result)
         res.posterior = posteriors[i]
         new_results.append(res)
-    iterable = [[new_result, new_likelihood, reference_likelihood, use_stored_likelihood] for new_result in new_results]
-    res = p.map(reweight_by_likelihood, iterable)
+    iterable = [(new_result, new_likelihood, reference_likelihood, use_stored_likelihood) for new_result in new_results]
+    res = p.starmap(reweight_by_likelihood, iterable)
     log_weights = np.concatenate([r[1] for r in res])
     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     return reweighted_log_bf, log_weights
