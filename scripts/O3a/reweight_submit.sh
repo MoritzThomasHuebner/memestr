@@ -9,4 +9,4 @@
 #SBATCH --cpus-per-task=16
 
 
-srun python reweight.py ${1} ${2} 16 20
+srun python reweight.py ${1} ${2} 16 ${3}
