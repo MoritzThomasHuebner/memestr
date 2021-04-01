@@ -11,9 +11,11 @@ from memestr.events import events, precessing_events
 event_number = int(sys.argv[1])
 precessing = int(sys.argv[2]) == 1
 
+minimum_frequency = 20
 if precessing:
     event_list = precessing_events
-    waveform_arguments = dict(minimum_frequency=0)  # VERY IMPORTANT
+    # waveform_arguments = dict(minimum_frequency=0)  # VERY IMPORTANT
+    waveform_arguments = dict(minimum_frequency=minimum_frequency)  # VERY IMPORTANT
     oscillatory_model = memestr.waveforms.fd_nr_sur_7dq4
     memory_model = memestr.waveforms.fd_nr_sur_7dq4_with_memory
 else:
@@ -49,13 +51,16 @@ likelihood_osc = bilby.gw.likelihood.GravitationalWaveTransient(
 likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
     interferometers=ifos, waveform_generator=wg_mem)
 
+outfile_name = f"{event}_memory_log_weights"
+if minimum_frequency == 20:
+    outfile_name += '_min_freq_20'
 try:
-    log_memory_weights = np.loadtxt(f"{event}_memory_log_weights")
+    log_memory_weights = np.loadtxt(outfile_name)
 except Exception:
-    reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
+    reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweight_by_likelihood_parallel(
         new_likelihood=likelihood_mem, result=result,
-        reference_likelihood=likelihood_osc, use_stored_likelihood=True)
-    np.savetxt(f"{event}_memory_log_weights", log_memory_weights)
+        reference_likelihood=likelihood_osc, use_stored_likelihood=True, n_parallel=8)
+    np.savetxt(outfile_name, log_memory_weights)
 
 reweighted_memory_log_bf = logsumexp(log_memory_weights) - np.log(len(log_memory_weights))
 n_eff_memory = np.sum(np.exp(log_memory_weights)) ** 2 / np.sum(np.exp(log_memory_weights) ** 2)

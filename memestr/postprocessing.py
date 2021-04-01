@@ -189,7 +189,7 @@ def reweigh_log_evidence_by_weights(log_evidence, log_weights):
     return log_evidence + logsumexp(log_weights) - np.log(len(log_weights))
 
 
-def reweigh_by_likelihood(result, new_likelihood, reference_likelihood, use_stored_likelihood=True):
+def reweight_by_likelihood(result, new_likelihood, reference_likelihood, use_stored_likelihood=True):
     log_weights = []
 
     for i in range(len(result.posterior)):
@@ -209,5 +209,21 @@ def reweigh_by_likelihood(result, new_likelihood, reference_likelihood, use_stor
             logger.info("Reweighted Log Likelihood: " + str(reweighted_likelihood))
             logger.info("Log Weight: " + str(log_weight))
 
+    reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
+    return reweighted_log_bf, log_weights
+
+
+def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood, use_stored_likelihood=True, n_parallel=2):
+    p = multiprocessing.Pool(n_parallel)
+    new_result = deepcopy(result)
+    posteriors = np.array_split(new_result.posterior, n_parallel)
+    new_results = []
+    for i in range(n_parallel):
+        res = deepcopy(new_result)
+        res.posterior = posteriors[i]
+        new_results.append(res)
+    iterable = [[new_result, new_likelihood, reference_likelihood, use_stored_likelihood] for new_result in new_results]
+    res = p.map(reweight_by_likelihood, iterable)
+    log_weights = np.concatenate([r[1] for r in res])
     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     return reweighted_log_bf, log_weights

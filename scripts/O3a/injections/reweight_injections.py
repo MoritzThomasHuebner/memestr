@@ -100,7 +100,7 @@ likelihood_xhm_memory = bilby.gw.likelihood.GravitationalWaveTransient(
 try:
     log_memory_weights = np.loadtxt(f"{mode}_{run_id}_memory_log_weights")
 except Exception:
-    reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweigh_by_likelihood(
+    reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweight_by_likelihood(
         new_likelihood=likelihood_xhm_memory, result=result,
         reference_likelihood=likelihood_recovery, use_stored_likelihood=True)
     np.savetxt(f"{mode}_{run_id}_memory_log_weights", log_memory_weights)
