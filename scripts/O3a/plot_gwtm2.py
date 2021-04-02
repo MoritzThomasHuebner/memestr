@@ -14,6 +14,7 @@ outdir = "."
 log_bfs = []
 log_bfs_prec = []
 log_bfs_prec_trimmed = []
+log_bfs_prec_min_freq_20 = []
 plot_event_list = []
 plot_prec_event_list = []
 
@@ -44,8 +45,16 @@ for event in events:
         print(e)
         log_bfs_prec.append(np.nan)
         log_bfs_prec_trimmed.append(np.nan)
-    print()
 
+    try:
+        log_memory_weights_prec_min_freq_20 = np.loadtxt(f"{outdir}/{event.name}_prec_2000_memory_log_weights_min_freq_20")
+        reweighted_memory_log_bf_prec_min_freq_20 = logsumexp(log_memory_weights_prec_min_freq_20) - np.log(len(log_memory_weights_prec_min_freq_20))
+        log_bfs_prec_min_freq_20.append(reweighted_memory_log_bf_prec_min_freq_20)
+        print(f"{event.name}\t{log_bfs_prec_min_freq_20[-1]}")
+    except Exception as e:
+        print(e)
+        log_bfs_prec_min_freq_20.append(np.nan)
+    print()
 
 
 print(np.sum(np.nan_to_num(log_bfs, nan=0)))
@@ -58,6 +67,7 @@ plt.figure(figsize=(18, 6))
 markersize = 8
 plt.plot(log_bfs, label=r'$\ln BF_{\mathrm{mem}}$ IMRPhenomXHM', marker='H', linestyle='None', color='black', markersize=markersize)
 plt.plot(log_bfs_prec_trimmed, label=r'$\ln BF_{\mathrm{mem}}$ NRSur7dq4', marker='P', linestyle='None', color='orange', markersize=markersize)
+plt.plot(log_bfs_prec_min_freq_20, label=r'$\ln BF_{\mathrm{mem}}$ min freq 20 NRSur7dq4', marker='P', linestyle='None', color='green', markersize=markersize, alpha=0.5)
 plt.plot(log_bfs_nrhybsur_gwtc_1, label=r'$\ln BF_{\mathrm{mem}}$ NRHybSur3dq8 (Huebner et al. 2020)', marker='D', linestyle='None', color='blue', markersize=markersize, alpha=0.5)
 # plt.plot(log_bfs_prec_trimmed, label='Memory ln BF NRSur7dq4 Trimmed', marker='D', linestyle='None', color='blue', markersize=markersize)
 plt.grid(False)
