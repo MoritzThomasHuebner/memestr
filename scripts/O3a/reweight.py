@@ -54,8 +54,8 @@ likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
     interferometers=ifos, waveform_generator=wg_mem)
 
 outfile_name = f"{event}_memory_log_weights"
-if minimum_frequency == 20:
-    outfile_name += '_min_freq_20'
+if minimum_frequency != 0:
+    outfile_name += f'_min_freq_{minimum_frequency}'
 try:
     log_memory_weights = np.loadtxt(outfile_name)
 except Exception:
