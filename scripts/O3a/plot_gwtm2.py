@@ -35,7 +35,7 @@ for event in events:
         log_bfs.append(np.nan)
 
     try:
-        if event.name in excluded_prec_events:
+        if event.name.replace('_prec', '') in excluded_prec_events:
             raise Exception
         log_memory_weights_prec = np.loadtxt(f"{outdir}/{event.name}_prec_2000_memory_log_weights")
         log_memory_weights_prec_trimmed = log_memory_weights_prec[np.where(log_memory_weights_prec > -10)]
@@ -70,5 +70,5 @@ plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
 plt.legend()
 plt.grid()
 plt.tight_layout()
-plt.savefig("gwtc-2_trimmed.pdf")
+plt.savefig("gwtc-2.pdf")
 plt.clf()
