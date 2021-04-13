@@ -54,9 +54,9 @@ log_bfs_nrhybsur_gwtc_1 = np.loadtxt('O1O2_original_results.txt')
 
 plt.figure(figsize=(18, 6))
 markersize = 8
-plt.plot(log_bfs, label=r'$\ln BF_{\mathrm{mem}}$ IMRPhenomXHM', marker='H', linestyle='None', color='black', markersize=markersize)
-plt.plot(log_bfs_prec, label=r'$\ln BF_{\mathrm{mem}}$ NRSur7dq4', marker='P', linestyle='None', color='orange', markersize=markersize)
-plt.plot(log_bfs_nrhybsur_gwtc_1, label=r'$\ln BF_{\mathrm{mem}}$ NRHybSur3dq8 (Huebner et al. 2020)', marker='D', linestyle='None', color='blue', markersize=markersize, alpha=0.5)
+plt.plot(log_bfs, label=r'$\ln \mathrm{BF}_{\mathrm{mem}}$ IMRPhenomXHM', marker='H', linestyle='None', color='black', markersize=markersize)
+plt.plot(log_bfs_prec, label=r'$\ln \mathrm{BF}_{\mathrm{mem}}$ NRSur7dq4', marker='P', linestyle='None', color='orange', markersize=markersize)
+plt.plot(log_bfs_nrhybsur_gwtc_1, label=r'$\ln \mathrm{BF}_{\mathrm{mem}}$ NRHybSur3dq8 (Huebner et al. 2020)', marker='D', linestyle='None', color='blue', markersize=markersize, alpha=0.5)
 # plt.plot(log_bfs_prec_trimmed, label='Memory ln BF NRSur7dq4 Trimmed', marker='D', linestyle='None', color='blue', markersize=markersize)
 plt.grid(False)
 plt.axhline(0, color='grey', linestyle='--')
