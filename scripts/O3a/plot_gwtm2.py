@@ -17,6 +17,9 @@ log_bfs_prec_trimmed = []
 plot_event_list = []
 plot_prec_event_list = []
 
+excluded_prec_events = ["GW151012", "GW190412", "GW190814", "GW190513A", "GW190707A",
+                        "GW190728A", "GW190728B", "GW190924A", "GW190929A"]
+
 for event in events:
     plot_event_list.append(event.name)
     try:
@@ -32,6 +35,8 @@ for event in events:
         log_bfs.append(np.nan)
 
     try:
+        if event.name in excluded_prec_events:
+            raise Exception
         log_memory_weights_prec = np.loadtxt(f"{outdir}/{event.name}_prec_2000_memory_log_weights")
         log_memory_weights_prec_trimmed = log_memory_weights_prec[np.where(log_memory_weights_prec > -10)]
         reweighted_memory_log_bf_prec = logsumexp(log_memory_weights_prec) - np.log(len(log_memory_weights_prec))
