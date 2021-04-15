@@ -79,6 +79,10 @@ for event in events:
         f.write("periodic-restart-time = 1209600")
 
 for event in precessing_events:
+    if event.name == "GW190521_prec":
+        reference_frequency = 11
+    else:
+        reference_frequency = 20
     trigger_time = event.time_tag.replace('-', '.')
 
     detectors_list = get_detector_list(event.detectors)
@@ -115,7 +119,7 @@ for event in precessing_events:
         f.write("calibration-model=None\n")
         f.write("\n")
         f.write("minimum-frequency=0\n")
-        f.write("reference-frequency=20\n")
+        f.write(f"reference-frequency={reference_frequency}\n")
         f.write("deltaT = 0.2\n")
         f.write("time-marginalization=False\n")
         f.write("distance-marginalization=False\n")

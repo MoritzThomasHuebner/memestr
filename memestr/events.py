@@ -76,7 +76,7 @@ precessing_events = [
     Event(time_tag="1241852074-8", name="GW190514A_prec", detectors="H1L1", duration=4),
     Event(time_tag="1242107479-8", name="GW190517A_prec", detectors="H1L1V1", duration=4),
     Event(time_tag="1242315362-4", name="GW190519A_prec", detectors="H1L1V1", duration=4),
-    Event(time_tag="1242442967-4", name="GW190521_prec", detectors="H1L1V1", duration=4),
+    Event(time_tag="1242442967-4", name="GW190521_prec", detectors="H1L1V1", duration=8),
     Event(time_tag="1242459857-5", name="GW190521A_prec", detectors="H1L1", duration=4),
     Event(time_tag="1242984073-8", name="GW190527A_prec", detectors="H1L1", duration=4),
     Event(time_tag="1243533585-1", name="GW190602A_prec", detectors="H1L1V1", duration=8),
