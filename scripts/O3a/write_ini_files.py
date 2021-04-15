@@ -115,7 +115,7 @@ for event in precessing_events:
         f.write("calibration-model=None\n")
         f.write("\n")
         f.write("minimum-frequency=0\n")
-        f.write("reference-frequency=50\n")
+        f.write("reference-frequency=20\n")
         f.write("deltaT = 0.2\n")
         f.write("time-marginalization=False\n")
         f.write("distance-marginalization=False\n")
