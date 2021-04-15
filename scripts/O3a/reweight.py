@@ -35,7 +35,9 @@ result = bilby.core.result.read_in_result(
 result.outdir = f'{event}/result/'
 # result.plot_corner()
 print(len(result.posterior))
-with open(f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle', "rb") as f:
+data_file = f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle'
+print(data_file)
+with open(data_file, "rb") as f:
     data_dump = pickle.load(f)
 ifos = data_dump.interferometers
 wg_osc = bilby.gw.waveform_generator.WaveformGenerator(
@@ -54,6 +56,7 @@ likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
     interferometers=ifos, waveform_generator=wg_mem)
 
 outfile_name = f"{event}_memory_log_weights"
+print(outfile_name)
 if minimum_frequency != 0:
     outfile_name += f'_min_freq_{minimum_frequency}'
 try:
