@@ -18,7 +18,7 @@ plot_event_list = []
 plot_prec_event_list = []
 
 excluded_prec_events = ["GW151012", "GW190412", "GW190814", "GW190513A", "GW190707A",
-                        "GW190728A", "GW190728B", "GW190924A", "GW190929A"]
+                        "GW190728A", "GW190924A", "GW190929A"]
 
 for event in events:
     plot_event_list.append(event.name)
