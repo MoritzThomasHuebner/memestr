@@ -16,7 +16,8 @@ for i in range(2000):
     snrs_squared = [res['meta_data']['likelihood']['interferometers'][ifo]['optimal_SNR']**2 for ifo in ['H1', 'L1', 'V1']]
     network_snrs.append(np.sqrt(np.sum(snrs_squared)))
     ln_bfs.append(pp_res['memory_log_bf'])
-
+    print(i)
+print()
 ln_bfs = np.array(ln_bfs)
 network_snrs = np.array(network_snrs)
 
