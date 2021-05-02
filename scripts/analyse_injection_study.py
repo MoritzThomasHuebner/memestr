@@ -8,8 +8,8 @@ for i in range(2000):
     try:
         with open(f'injections/{i}_memory/IMR_mem_inj_non_mem_rec_result.json') as f:
             res = json.load(f)
-    except Exception:
-        continue
+    except Exception as e:
+        print(e)
     with open(f'injections/{i}_memory/pp_result.json') as f:
         pp_res = json.load(f)
 
