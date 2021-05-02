@@ -76,5 +76,5 @@ plt.clf()
 from scipy.stats import kurtosis
 print()
 print(kurtosis(log_bfs))
-print(kurtosis(log_bfs_prec))
+print(kurtosis(log_bfs_prec[np.where(~np.isnan(log_bfs_prec))]))
 print(kurtosis(log_bfs_nrhybsur_gwtc_1))
