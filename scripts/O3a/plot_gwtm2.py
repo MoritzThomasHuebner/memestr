@@ -73,7 +73,14 @@ plt.tight_layout()
 plt.savefig("gwtc-2.pdf")
 plt.clf()
 
+log_bfs_prec = np.array(log_bfs_prec)
+log_bfs = np.array(log_bfs)
+log_bfs_nrhybsur_gwtc_1 = np.array(log_bfs_nrhybsur_gwtc_1)
+
 from scipy.stats import kurtosis
+np.savetxt("log_bfs_prec.txt", log_bfs_prec)
+np.savetxt("log_bfs_xhm.txt", log_bfs)
+np.savetxt("log_bfs_hybsur.txt", log_bfs_nrhybsur_gwtc_1)
 print()
 print(kurtosis(log_bfs))
 print(kurtosis(log_bfs_prec[np.where(~np.isnan(log_bfs_prec))]))
