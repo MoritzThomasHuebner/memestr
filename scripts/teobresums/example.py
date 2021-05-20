@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import bilby
-from memestr.waveforms.teobresumss import *
+from memestr.waveforms.teobresums import *
 
 
 mass_ratio = 0.8
@@ -21,7 +21,8 @@ times = series.time_array
 frequencies = series.frequency_array
 
 waveform = fd_teob_memory_only(frequencies=frequencies, mass_ratio=mass_ratio, total_mass=total_mass, chi_1=chi_1,
-                               chi_2=chi_2, luminosity_distance=luminosity_distance, inc=inc, phase=phase, ecc=ecc)
+                               chi_2=chi_2, luminosity_distance=luminosity_distance, inc=inc, phase=phase, ecc=ecc,
+                               modes=[[2, 2]], minimum_frequency=20)
 
 plt.loglog(frequencies, np.abs(waveform['plus']))
 plt.xlim(10, 1024)
