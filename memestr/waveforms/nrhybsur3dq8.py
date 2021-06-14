@@ -44,7 +44,7 @@ def fd_nr_sur_memory_only(frequencies, mass_ratio, total_mass, s13, s23,
                                                                     luminosity_distance=luminosity_distance,
                                                                     phase=phase, s13=s13, s23=s23, kwargs=kwargs)
 
-    return convert_to_frequency_domain(series, memory, waveform, **kwargs)
+    return convert_to_frequency_domain_with_memory(series, memory, waveform, **kwargs)
 
 
 def td_nr_sur_memory_only(times, mass_ratio, total_mass, s13, s23,

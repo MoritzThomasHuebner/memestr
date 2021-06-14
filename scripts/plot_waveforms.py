@@ -1,11 +1,10 @@
-import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 
 import bilby
 from bilby.gw.waveform_generator import WaveformGenerator
 
 from memestr.waveforms import fd_imrx, fd_imrx_memory_only
-import numpy as np
 start_time = 0
 duration = 16
 sampling_frequency = 2048
@@ -36,40 +35,22 @@ params = dict(mass_ratio=mass_2 / mass_1, total_mass=mass_1 + mass_2, s13=chi_1,
 
 wg_imr_mem.parameters = params
 
-# for total_mass in [4, 8, 16, 32, 64, 128, 192]:
 for mass_ratio in [0.125, 0.25, 0.5, 0.75, 1.]:
     # params['total_mass'] = total_mass
     params['mass_ratio'] = mass_ratio
     ifo_mem = bilby.gw.detector.get_empty_interferometer('H1')
     ifo_mem.minimum_frequency = 1
     ifo_mem.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    injection = ifo_mem.inject_signal_from_waveform_generator(params, wg_imr_mem)
+    _ = ifo_mem.inject_signal_from_waveform_generator(params, wg_imr_mem)
 
     ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
     ifo_osc.minimum_frequency = 1
     ifo_osc.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    injection = ifo_osc.inject_signal_from_waveform_generator(params, wg_imr_osc)
+    _ = ifo_osc.inject_signal_from_waveform_generator(params, wg_imr_osc)
 
-    # ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
-    # ifo_osc.minimum_frequency = 1
-    # ifo_osc.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    # ifo_osc.inject_signal_from_waveform_generator(params, wg_nr_osc)
-    #
-    #
-    # ifo_gws = bilby.gw.detector.get_empty_interferometer('H1')
-    # ifo_gws.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    # ifo_gws.inject_signal_from_waveform_generator(params_gws, wg_nr_gws)
-    #
-    # ifo_imr = bilby.gw.detector.get_empty_interferometer('H1')
-    # ifo_imr.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    # ifo_imr.inject_signal_from_waveform_generator(params, wg_imr_osc)
-
-    # plt.plot(ifo_osc.frequency_array, np.abs(ifo_osc.frequency_domain_strain))
-    # plt.plot(ifo_gws.frequency_array, np.abs(ifo_gws.frequency_domain_strain))
-    # plt.plot(ifo_imr.frequency_array, np.abs(ifo_imr.frequency_domain_strain))
     snr = ifo_osc.meta_data['optimal_SNR']
-    print(snr)
     plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain), label=str(mass_ratio))
+    print(snr)
     # plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain)/snr, label=str(total_mass))
 # plt.plot(ifo_mem.power_spectral_density.frequency_array, ifo_mem.power_spectral_density.asd_array, label='H1 ASD')
 # plt.plot([1, 1000], [1e-24, 1e-27], label='1/x')

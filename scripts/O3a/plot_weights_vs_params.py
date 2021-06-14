@@ -1,13 +1,9 @@
-import bilby
-import memestr
-import corner
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-import os
-from pesummary.io import read
-import pickle
-from scipy.special import logsumexp
+
+import bilby
+import corner
 
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 
@@ -17,22 +13,12 @@ event = "GW190521A"
 log_weights_aligned = np.loadtxt(f"data/{event}_memory_log_weights")
 log_weights_prec = np.loadtxt(f"data/{event}_prec_2000_memory_log_weights")
 
-# plt.hist(log_weights_aligned, bins='fd', density=True, color='C0', alpha=0.5, label='XHM')
-# plt.hist(log_weights_prec, bins='fd', density=True, color='C1', alpha=0.5, label='NRSur')
-# plt.plot()
-# # plt.xlim(-0.3, 0.3)
-# plt.legend()
-# plt.xlabel('log weight')
-# plt.ylabel('p(log weight)')
-# plt.show()
 
 res_aligned = bilby.result.read_in_result(f"data/{event}_result.json")
 res_prec = bilby.result.read_in_result(f"data/{event}_prec_result.json")
 res_prec_reweighted = bilby.result.read_in_result(f"data/{event}_prec_result.json")
 print(len(res_prec_reweighted.posterior))
 print(len(log_weights_prec))
-# cond = np.where(log_weights_prec < -0.2)[0]
-# res_prec_reweighted.posterior.drop([0], inplace=True)
 
 
 res_aligned.posterior['memory_log_weight'] = log_weights_aligned
@@ -46,7 +32,6 @@ defaults_kwargs = dict(
     plot_density=False, plot_datapoints=True, fill_contours=True,
     max_n_ticks=3, hist_kwargs=dict(density=True))
 
-import corner
 
 params = ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance', 'phase', 'psi', 'ra', 'dec', 'geocent_time', 'a_1',
           'a_2', 'tilt_1', 'tilt_2', 'phi_12', 'phi_jl', 's13', 's23']
@@ -84,7 +69,6 @@ for param, param_label in zip(params, labels):
         plt.xticks([0, np.pi/4, np.pi/2, 3*np.pi/4, np.pi], (r'$0$', r'$\pi/4$', r'$\pi/2$', r'$3\pi/4$', r'$\pi$'))
     plt.tight_layout()
     plt.savefig(f'corner_plots/{event}_{param}.png')
-    # plt.show()
     plt.clf()
 
 

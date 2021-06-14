@@ -43,7 +43,7 @@ detectors = event_list[event_number].detectors
 result = bilby.core.result.read_in_result(
     f'{event}/result/run_data0_{time_tag}_analysis_{detectors}_dynesty_merge_result.json')
 result.outdir = f'{event}/result/'
-# result.plot_corner()
+
 print(len(result.posterior))
 data_file = f'{event}/data/run_data0_{time_tag}_generation_data_dump.pickle'
 print(data_file)

@@ -1,5 +1,0 @@
-EVENT_LIST="GW190727A_prec GW190731A_prec GW190803A_prec GW190828A_prec GW190828B_prec GW190910A_prec GW190915A_prec GW190924A_prec GW190929A_prec GW190930A_prec"
-for EVENT in ${EVENT_LIST}
-do
-  bilby_pipe ${EVENT}.ini
-done

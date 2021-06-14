@@ -1,6 +1,7 @@
-import gwmemory
 import numpy as np
 from scipy.signal.windows import tukey
+
+import gwmemory
 from bilby.core.series import CoupledTimeAndFrequencySeries
 
 from .utils import nfft
@@ -46,4 +47,3 @@ def fd_mwm(frequencies, mass_ratio, total_mass, luminosity_distance, inc, phase,
     frequency_domain_memory = nfft(time_domain_memory, series.sampling_frequency)
 
     return frequency_domain_memory
-

@@ -1,8 +1,8 @@
 from memestr.events import events, precessing_events
 
 
-def get_detector_list(detectors):
-    return [event.detectors[2*i: 2*i+2] for i in range(int(len(event.detectors)/2))]
+def get_detector_list():
+    return [e.detectors[2 * i: 2 * i + 2] for i in range(int(len(e.detectors) / 2))]
 
 
 def get_detector_string(detectors):
@@ -24,22 +24,20 @@ def get_psd_dict_string(detectors, event):
     return repr(psd_dict).replace(": ", ":").replace("\'", "")
 
 
+for e in events:
+    trigger_time = e.time_tag.replace('-', '.')
 
-for event in events:
-    trigger_time = event.time_tag.replace('-', '.')
-
-    detectors_list = get_detector_list(event.detectors)
+    detectors_list = get_detector_list()
     detector_string = get_detector_string(detectors_list)
 
     channel_dict_string = repr({det: 'GWOSC' for det in detectors_list}).replace(": ", ":").replace("\'", "")
 
-    psd_dict_string = get_psd_dict_string(detectors_list, event.name)
-    # assert False
-    with open(f"{event.name}.ini", 'w') as f:
+    psd_dict_string = get_psd_dict_string(detectors_list, e.name)
+    with open(f"{e.name}.ini", 'w') as f:
         f.write(f"trigger-time = {trigger_time}\n")
-        f.write(f"outdir = {event.name}\n")
+        f.write(f"outdir = {e.name}\n")
         f.write(f"detectors = {detector_string}\n")
-        f.write(f"duration = {event.duration}\n")
+        f.write(f"duration = {e.duration}\n")
         f.write(f"channel-dict = {channel_dict_string}\n")
         f.write(f"psd-dict = {psd_dict_string}\n")
         f.write("\n")
@@ -78,25 +76,25 @@ for event in events:
         f.write("transfer-files = False\n")
         f.write("periodic-restart-time = 1209600")
 
-for event in precessing_events:
-    if event.name == "GW190521_prec":
+for e in precessing_events:
+    if e.name == "GW190521_prec":
         reference_frequency = 11
     else:
         reference_frequency = 20
-    trigger_time = event.time_tag.replace('-', '.')
+    trigger_time = e.time_tag.replace('-', '.')
 
-    detectors_list = get_detector_list(event.detectors)
+    detectors_list = get_detector_list()
     detector_string = get_detector_string(detectors_list)
 
     channel_dict_string = repr({det: 'GWOSC' for det in detectors_list}).replace(": ", ":").replace("\'", "")
 
-    psd_dict_string = get_psd_dict_string(detectors_list, event.name)
+    psd_dict_string = get_psd_dict_string(detectors_list, e.name)
 
-    with open(f"{event.name}.ini", 'w') as f:
+    with open(f"{e.name}.ini", 'w') as f:
         f.write(f"trigger-time = {trigger_time}\n")
-        f.write(f"outdir = {event.name}_2000\n")
+        f.write(f"outdir = {e.name}_2000\n")
         f.write(f"detectors = {detector_string}\n")
-        f.write(f"duration = {event.duration}\n")
+        f.write(f"duration = {e.duration}\n")
         f.write(f"channel-dict = {channel_dict_string}\n")
         f.write(f"psd-dict = {psd_dict_string}\n")
         f.write("\n")

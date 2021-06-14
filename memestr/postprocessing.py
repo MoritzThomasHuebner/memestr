@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import bilby.gw.utils as utils
 import pandas as pd
 from scipy.special import logsumexp
