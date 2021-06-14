@@ -21,7 +21,7 @@ excluded_prec_events = ["GW151012", "GW190412", "GW190814", "GW190513A", "GW1907
                         "GW190728A", "GW190924A", "GW190929A"]
 
 for event in events:
-    plot_event_list.append(event.name)
+    plot_event_list.append(event.label)
     try:
         log_memory_weights = np.loadtxt(f"{outdir}/{event.name}_memory_log_weights")
 
@@ -65,7 +65,7 @@ plt.plot(log_bfs_nrhybsur_gwtc_1, label=r'$\ln \mathrm{BF}_{\mathrm{mem}}$ NRHyb
 # plt.plot(log_bfs_prec_trimmed, label='Memory ln BF NRSur7dq4 Trimmed', marker='D', linestyle='None', color='blue', markersize=markersize)
 plt.grid(False)
 plt.axhline(0, color='grey', linestyle='--')
-plt.xticks(np.arange(len(plot_event_list)), tuple(plot_event_list), rotation=60)
+plt.xticks(np.arange(len(plot_event_list)), tuple(plot_event_list), rotation=90)
 plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
 plt.legend()
 plt.grid()

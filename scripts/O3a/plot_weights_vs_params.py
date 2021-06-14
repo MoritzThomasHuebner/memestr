@@ -50,7 +50,7 @@ import corner
 
 params = ['total_mass', 'mass_ratio', 'inc', 'luminosity_distance', 'phase', 'psi', 'ra', 'dec', 'geocent_time', 'a_1',
           'a_2', 'tilt_1', 'tilt_2', 'phi_12', 'phi_jl', 's13', 's23']
-labels = ['total mass', 'mass ratio', r'$\theta_{jn}\, \mathrm{[rad]}$', r'$d_L\, \mathrm{[Mpc]}$', 'phase', 'psi',
+labels = ['total mass', 'mass ratio', r'$\theta_{\mathrm{JN}}\, \mathrm{[rad]}$', r'$d_L\, \mathrm{[Mpc]}$', 'phase', 'psi',
           'ra', 'dec', 'geocent time', 'a 1', 'a 2', 'tilt 1', 'tilt 2', 'phi 12', 'phi jl', 's13', 's23']
 
 
