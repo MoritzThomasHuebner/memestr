@@ -4,15 +4,18 @@ import numpy as np
 import bilby
 from bilby.gw.waveform_generator import WaveformGenerator
 
-from memestr.waveforms import fd_imrx, fd_imrx_memory_only
+from memestr.waveforms import td_imrx_with_memory, td_imrx_memory_only
+
+plt.style.use('paper.mplstyle')
+
 start_time = 0
-duration = 16
+duration = 4
 sampling_frequency = 2048
 
-wg_imr_mem = WaveformGenerator(frequency_domain_source_model=fd_imrx_memory_only,
+wg_imr_mem = WaveformGenerator(time_domain_source_model=td_imrx_memory_only,
                                sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
                                waveform_arguments=dict(alpha=0.1))
-wg_imr_osc = WaveformGenerator(frequency_domain_source_model=fd_imrx,
+wg_imr_osc = WaveformGenerator(time_domain_source_model=td_imrx_with_memory,
                                sampling_frequency=sampling_frequency, duration=duration, start_time=start_time,
                                waveform_arguments=dict(alpha=0.1))
 
@@ -34,34 +37,45 @@ params = dict(mass_ratio=mass_2 / mass_1, total_mass=mass_1 + mass_2, s13=chi_1,
               geocent_time=geocent_time, psi=psi)
 
 wg_imr_mem.parameters = params
+wg_imr_osc.parameters = params
 
-for mass_ratio in [0.125, 0.25, 0.5, 0.75, 1.]:
-    # params['total_mass'] = total_mass
-    params['mass_ratio'] = mass_ratio
-    ifo_mem = bilby.gw.detector.get_empty_interferometer('H1')
-    ifo_mem.minimum_frequency = 1
-    ifo_mem.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    _ = ifo_mem.inject_signal_from_waveform_generator(params, wg_imr_mem)
-
-    ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
-    ifo_osc.minimum_frequency = 1
-    ifo_osc.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
-    _ = ifo_osc.inject_signal_from_waveform_generator(params, wg_imr_osc)
-
-    snr = ifo_osc.meta_data['optimal_SNR']
-    plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain), label=str(mass_ratio))
-    print(snr)
-    # plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain)/snr, label=str(total_mass))
-# plt.plot(ifo_mem.power_spectral_density.frequency_array, ifo_mem.power_spectral_density.asd_array, label='H1 ASD')
-# plt.plot([1, 1000], [1e-24, 1e-27], label='1/x')
-plt.xlim(20, 1000)
-# plt.ylim(1e-26, 1e-24)
-plt.loglog()
+plt.plot(wg_imr_osc.time_array, wg_imr_osc.time_domain_strain()['plus'], label='$h_{\mathrm{osc+mem}}(t)$')
+plt.plot(wg_imr_mem.time_array, wg_imr_mem.time_domain_strain()['plus'], label='$h_{\mathrm{mem}}(t)$')
+plt.xlabel('time [s]')
+plt.ylabel('strain')
+plt.xlim(1.6, 1.85)
 plt.legend()
 plt.tight_layout()
-plt.savefig('different_masses')
-plt.show()
+plt.savefig('test.pdf')
 plt.clf()
+
+# for mass_ratio in [0.125, 0.25, 0.5, 0.75, 1.]:
+#     # params['total_mass'] = total_mass
+#     params['mass_ratio'] = mass_ratio
+#     ifo_mem = bilby.gw.detector.get_empty_interferometer('H1')
+#     ifo_mem.minimum_frequency = 1
+#     ifo_mem.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
+#     _ = ifo_mem.inject_signal_from_waveform_generator(params, wg_imr_mem)
+#
+#     ifo_osc = bilby.gw.detector.get_empty_interferometer('H1')
+#     ifo_osc.minimum_frequency = 1
+#     ifo_osc.set_strain_data_from_zero_noise(sampling_frequency=sampling_frequency, start_time=start_time, duration=duration)
+#     _ = ifo_osc.inject_signal_from_waveform_generator(params, wg_imr_osc)
+#
+#     snr = ifo_osc.meta_data['optimal_SNR']
+#     plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain), label=str(mass_ratio))
+#     print(snr)
+#     # plt.plot(ifo_mem.frequency_array, np.abs(ifo_mem.frequency_domain_strain)/snr, label=str(total_mass))
+# # plt.plot(ifo_mem.power_spectral_density.frequency_array, ifo_mem.power_spectral_density.asd_array, label='H1 ASD')
+# # plt.plot([1, 1000], [1e-24, 1e-27], label='1/x')
+# plt.xlim(20, 1000)
+# # plt.ylim(1e-26, 1e-24)
+# plt.loglog()
+# plt.legend()
+# plt.tight_layout()
+# plt.savefig('different_masses')
+# plt.show()
+# plt.clf()
 
 # from bilby.gw import utils as gwutils
 
