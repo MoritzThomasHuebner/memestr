@@ -18,7 +18,42 @@ plot_event_list = []
 plot_prec_event_list = []
 
 excluded_prec_events = ["GW151012", "GW190412", "GW190814", "GW190513A", "GW190707A",
-                        "GW190728A", "GW190924A", "GW190929A"]
+                        "GW190728A", "GW190924A", "GW190929A", "GW191103A_prec",
+                        "GW191105A_prec",
+                        "GW191109A_prec",
+                        "GW191113A_prec",
+                        "GW191126A_prec",
+                        "GW191127A_prec",
+                        "GW191129A_prec",
+                        "GW191204A_prec",
+                        "GW191204B_prec",
+                        "GW191215A_prec",
+                        "GW191216A_prec",
+                        "GW191219A_prec",
+                        "GW191222A_prec",
+                        "GW191230A_prec",
+                        "GW200105A_prec",
+                        "GW200112A_prec",
+                        "GW200115A_prec",
+                        "GW200128A_prec",
+                        "GW200129A_prec",
+                        "GW200202A_prec",
+                        "GW200208A_prec",
+                        "GW200208B_prec",
+                        "GW200209A_prec",
+                        "GW200210A_prec",
+                        "GW200216A_prec",
+                        "GW200219A_prec",
+                        "GW200220A_prec",
+                        "GW200220B_prec",
+                        "GW200224A_prec",
+                        "GW200225A_prec",
+                        "GW200302A_prec",
+                        "GW200306A_prec",
+                        "GW200308A_prec",
+                        "GW200311A_prec",
+                        "GW200316A_prec",
+                        "GW200322A_prec"]
 
 for event in events:
     plot_event_list.append(event.label)
@@ -70,7 +105,7 @@ plt.ylabel('$\ln \, \mathrm{BF}_{\mathrm{mem}}$')
 plt.legend()
 plt.grid()
 plt.tight_layout()
-plt.savefig("gwtc-2.pdf")
+plt.savefig("gwtc-3.pdf")
 plt.clf()
 
 log_bfs_prec = np.array(log_bfs_prec)
