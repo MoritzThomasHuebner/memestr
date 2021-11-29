@@ -8,7 +8,7 @@ import corner
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 
 plt.style.use('paper.mplstyle')
-event = "GW190521A"
+event = "GW191216A"
 
 log_weights_aligned = np.loadtxt(f"data/{event}_memory_log_weights")
 log_weights_prec = np.loadtxt(f"data/{event}_prec_2000_memory_log_weights")
