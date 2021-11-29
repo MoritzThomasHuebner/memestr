@@ -14,7 +14,7 @@ log_weights_aligned = np.loadtxt(f"{event}_memory_log_weights")
 # log_weights_prec = np.loadtxt(f"data/{event}_prec_2000_memory_log_weights")
 
 
-res_aligned = bilby.result.read_in_result(f"{event}/run_data0_1260567236-4_analysis_H1V1_dynesty_merge_result.json")
+res_aligned = bilby.result.read_in_result(f"{event}/result/run_data0_1260567236-4_analysis_H1V1_dynesty_merge_result.json")
 # res_aligned = bilby.result.read_in_result(f"data/{event}_result.json")
 # res_prec = bilby.result.read_in_result(f"data/{event}_prec_result.json")
 # res_prec_reweighted = bilby.result.read_in_result(f"data/{event}_prec_result.json")
