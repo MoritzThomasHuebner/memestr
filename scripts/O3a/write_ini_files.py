@@ -16,11 +16,11 @@ def get_psd_dict_string(detectors, event):
     event = event.rstrip('_prec')
     psd_dict = {}
     if "H1" in detectors:
-        psd_dict["H1"] = f"GWTC2_PSDs/{event}_LIGO_Hanford_psd.txt"
+        psd_dict["H1"] = f"PSDs/{event}_LIGO_Hanford_psd.txt"
     if "L1" in detectors:
-        psd_dict["L1"] = f"GWTC2_PSDs/{event}_LIGO_Livingston_psd.txt"
+        psd_dict["L1"] = f"PSDs/{event}_LIGO_Livingston_psd.txt"
     if "V1" in detectors:
-        psd_dict["V1"] = f"GWTC2_PSDs/{event}_Virgo_psd.txt"
+        psd_dict["V1"] = f"PSDs/{event}_Virgo_psd.txt"
     return repr(psd_dict).replace(": ", ":").replace("\'", "")
 
 

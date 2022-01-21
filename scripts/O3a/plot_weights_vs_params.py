@@ -7,22 +7,23 @@ import corner
 
 matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 
-plt.style.use('paper.mplstyle')
-event = "GW190521A"
+# plt.style.use('paper.mplstyle')
+event = "GW191216A"
 
-log_weights_aligned = np.loadtxt(f"data/{event}_memory_log_weights")
-log_weights_prec = np.loadtxt(f"data/{event}_prec_2000_memory_log_weights")
+log_weights_aligned = np.loadtxt(f"{event}_memory_log_weights")
+# log_weights_prec = np.loadtxt(f"data/{event}_prec_2000_memory_log_weights")
 
 
-res_aligned = bilby.result.read_in_result(f"data/{event}_result.json")
-res_prec = bilby.result.read_in_result(f"data/{event}_prec_result.json")
-res_prec_reweighted = bilby.result.read_in_result(f"data/{event}_prec_result.json")
-print(len(res_prec_reweighted.posterior))
-print(len(log_weights_prec))
+res_aligned = bilby.result.read_in_result(f"{event}/result/run_data0_1260567236-4_analysis_H1V1_dynesty_merge_result.json")
+# res_aligned = bilby.result.read_in_result(f"data/{event}_result.json")
+# res_prec = bilby.result.read_in_result(f"data/{event}_prec_result.json")
+# res_prec_reweighted = bilby.result.read_in_result(f"data/{event}_prec_result.json")
+# print(len(res_prec_reweighted.posterior))
+# print(len(log_weights_prec))
 
 
 res_aligned.posterior['memory_log_weight'] = log_weights_aligned
-res_prec.posterior['memory_log_weight'] = log_weights_prec
+# res_prec.posterior['memory_log_weight'] = log_weights_prec
 
 defaults_kwargs = dict(
     bins=50, smooth=0.9, label_kwargs=dict(fontsize=16),
@@ -55,15 +56,15 @@ for param, param_label in zip(params, labels):
                       hist_kwargs=dict(density=True))
     except Exception:
         pass
-    try:
-        corner.hist2d(np.array(res_prec.posterior[param]), log_weights_prec, labels=[r"memory log weights", "param"],
-                      bins=50, smooth=0.9, label_kwargs=dict(fontsize=16), title_kwargs=dict(fontsize=16), color='C1',
-                      truth_color='tab:orange', quantiles=[0.16, 0.84],
-                      levels=(1 - np.exp(-0.5), 1 - np.exp(-2), 1 - np.exp(-9 / 2.)),
-                      plot_density=False, plot_datapoints=True, fill_contours=True, max_n_ticks=3,
-                      hist_kwargs=dict(density=True))
-    except Exception:
-        pass
+    # try:
+    #     corner.hist2d(np.array(res_prec.posterior[param]), log_weights_prec, labels=[r"memory log weights", "param"],
+    #                   bins=50, smooth=0.9, label_kwargs=dict(fontsize=16), title_kwargs=dict(fontsize=16), color='C1',
+    #                   truth_color='tab:orange', quantiles=[0.16, 0.84],
+    #                   levels=(1 - np.exp(-0.5), 1 - np.exp(-2), 1 - np.exp(-9 / 2.)),
+    #                   plot_density=False, plot_datapoints=True, fill_contours=True, max_n_ticks=3,
+    #                   hist_kwargs=dict(density=True))
+    # except Exception:
+    #     pass
     lgnd = plt.legend(labels=['IMRPhenomXHM', 'NRSur7dq4'], markerscale=5)
     if param == 'inc':
         plt.xticks([0, np.pi/4, np.pi/2, 3*np.pi/4, np.pi], (r'$0$', r'$\pi/4$', r'$\pi/2$', r'$3\pi/4$', r'$\pi$'))
