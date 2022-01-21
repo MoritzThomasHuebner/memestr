@@ -35,7 +35,7 @@ for e in events:
     psd_dict_string = get_psd_dict_string(detectors_list, e.name)
     with open(f"{e.name}.ini", 'w') as f:
         f.write(f"trigger-time = {trigger_time}\n")
-        f.write(f"outdir = {e.name}_memory_amplitude\n")
+        f.write(f"outdir = {e.name}_memory_amplitude_2000\n")
         f.write(f"detectors = {detector_string}\n")
         f.write(f"duration = {e.duration}\n")
         f.write(f"channel-dict = {channel_dict_string}\n")
@@ -92,7 +92,7 @@ for e in precessing_events:
 
     with open(f"{e.name}.ini", 'w') as f:
         f.write(f"trigger-time = {trigger_time}\n")
-        f.write(f"outdir = {e.name}_2000\n")
+        f.write(f"outdir = {e.name}_memory_amplitude_2000\n")
         f.write(f"detectors = {detector_string}\n")
         f.write(f"duration = {e.duration}\n")
         f.write(f"channel-dict = {channel_dict_string}\n")
