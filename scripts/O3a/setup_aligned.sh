@@ -2,5 +2,6 @@ EVENT_LIST="GW150914 GW151012 GW151226 GW170104 GW170608 GW170729 GW170809 GW170
 
 for EVENT in ${EVENT_LIST}
 do
-  bilby_pipe ${EVENT}.ini
+  sbatch ${EVENT}_memory_amplitude/submit/slurm_run_master.sh
+#  bilby_pipe ${EVENT}.ini
 done
