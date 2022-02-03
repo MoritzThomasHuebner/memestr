@@ -27,7 +27,7 @@ if precessing:
         waveform_arguments = dict(minimum_frequency=minimum_frequency, reference_frequency=reference_frequency)  # VERY IMPORTANT
     else:
         # waveform_arguments = dict(minimum_frequency=0)  # VERY IMPORTANT
-        waveform_arguments = dict(minimum_frequency=minimum_frequency)  # VERY IMPORTANT
+        waveform_arguments = dict(minimum_frequency=minimum_frequency, reference_frequency=20)  # VERY IMPORTANT
     oscillatory_model = memestr.waveforms.fd_nr_sur_7dq4
     memory_model = memestr.waveforms.fd_nr_sur_7dq4# _with_memory
 else:
@@ -72,7 +72,7 @@ if minimum_frequency != 0:
 try:
     log_memory_weights = np.loadtxt(outfile_name)
 except Exception:
-    use_stored_likelihood = minimum_frequency == 0
+    use_stored_likelihood = True# minimum_frequency == 0
     reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweight_by_likelihood_parallel(
         new_likelihood=likelihood_mem, result=result,
         reference_likelihood=likelihood_osc, use_stored_likelihood=use_stored_likelihood, n_parallel=n_parallel)
