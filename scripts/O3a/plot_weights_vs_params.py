@@ -11,12 +11,13 @@ matplotlib.rcParams.update(matplotlib.rcParamsDefault)
 event = "GW191109A"
 
 # log_weights_aligned = np.loadtxt(f"{event}_memory_log_weights")
-log_weights_prec = np.loadtxt(f"data/{event}_prec_2000_memory_log_weights")
+log_weights_prec = np.loadtxt(f"{event}_prec_2000_memory_log_weights")
 
 
 # res_aligned = bilby.result.read_in_result(f"{event}/result/run_data0_1257296855-2_analysis_H1L1_dynesty_merge_result.json")
+res_prec = bilby.result.read_in_result(f"{event}_prec_2000/result/run_data0_1257296855-2_analysis_H1L1_dynesty_merge_result.json")
 # res_aligned = bilby.result.read_in_result(f"data/{event}_result.json")
-res_prec = bilby.result.read_in_result(f"data/{event}_prec_result.json")
+# res_prec = bilby.result.read_in_result(f"{event}_prec_result.json")
 # res_prec_reweighted = bilby.result.read_in_result(f"data/{event}_prec_result.json")
 # print(len(res_prec_reweighted.posterior))
 # print(len(log_weights_prec))
