@@ -70,6 +70,7 @@ print(outfile_name)
 if minimum_frequency != 0:
     outfile_name += f'_min_freq_{minimum_frequency}'
 try:
+    raise Exception
     log_memory_weights = np.loadtxt(outfile_name)
 except Exception:
     use_stored_likelihood = minimum_frequency == 0
