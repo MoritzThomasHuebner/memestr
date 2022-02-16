@@ -1,4 +1,6 @@
 import bilby.gw.utils as utils
+import numpy as np
+from bilby.core.prior import Interped
 import pandas as pd
 from scipy.special import logsumexp
 from scipy.optimize import minimize
@@ -225,3 +227,78 @@ def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood
     log_weights = np.concatenate([r[1] for r in res])
     reweighted_log_bf = logsumexp(log_weights) - np.log(len(log_weights))
     return reweighted_log_bf, log_weights
+
+
+class MemoryAmplitudeReweighter(object):
+
+    def __init__(self, likelihood_memory, likelihood_oscillatory):
+        self.likelihood_memory = likelihood_memory
+        self.likelihood_oscillatory = likelihood_oscillatory
+        self.d_inner_h_mem = 0
+        self.optimal_snr_squared_h_mem = 0
+        self.h_osc_inner_h_mem = 0
+
+    @property
+    def interferometers(self):
+        return self.likelihood_oscillatory.interferometers
+
+    @property
+    def duration(self):
+        return self.interferometers[0].duration
+
+    def calculate_reweighting_terms(self, parameters, polarizations_oscillatory=None, polarizations_memory=None):
+        if polarizations_oscillatory is None:
+            polarizations_oscillatory = \
+                self.likelihood_oscillatory.waveform_generator.frequency_domain_strain(parameters=parameters)
+        if polarizations_memory is None:
+            parameters = parameters.copy()
+            parameters['memory_amplitude'] = 1
+            polarizations_memory = \
+                self.likelihood_memory.waveform_generator.frequency_domain_strain(parameters=parameters)
+        self.likelihood_memory.parameters = parameters
+        self.likelihood_oscillatory.parameters = parameters
+        self.d_inner_h_mem = 0
+        self.optimal_snr_squared_h_mem = 0
+        self.h_osc_inner_h_mem = 0
+
+        for interferometer in self.interferometers:
+            h_mem_snrs = self.likelihood_memory.calculate_snrs(
+                waveform_polarizations=polarizations_memory,
+                interferometer=interferometer)
+            signal_osc = interferometer.get_detector_response(polarizations_oscillatory, parameters)
+            signal_mem = interferometer.get_detector_response(polarizations_memory, parameters)
+
+            self.d_inner_h_mem += h_mem_snrs.d_inner_h
+            self.optimal_snr_squared_h_mem += np.real(h_mem_snrs.optimal_snr_squared)
+
+            self.h_osc_inner_h_mem += bilby.gw.utils.noise_weighted_inner_product(
+                signal_osc[interferometer.strain_data.frequency_mask],
+                signal_mem[interferometer.strain_data.frequency_mask],
+                power_spectral_density=interferometer.power_spectral_density_array[
+                    interferometer.strain_data.frequency_mask],
+                duration=self.duration)
+        self.h_osc_inner_h_mem = np.real(self.h_osc_inner_h_mem)
+
+    def reweight_with_memory_amplitude(self, memory_amplitude, reference_log_likelihood=None):
+        if reference_log_likelihood is None:
+            reference_log_likelihood = self.likelihood_oscillatory.log_likelihood()
+        return \
+            reference_log_likelihood + memory_amplitude * np.real(self.d_inner_h_mem) - 0.5 * memory_amplitude ** 2 \
+            * self.optimal_snr_squared_h_mem - memory_amplitude * self.h_osc_inner_h_mem
+
+    def sample_memory_amplitude(self, size=1):
+        memory_amplitudes = np.linspace(-500, 500, 10000)
+        log_weights = self.reweight_with_memory_amplitude(memory_amplitudes, reference_log_likelihood=0)
+        log_weights -= max(log_weights)
+        weights = np.exp(log_weights)
+        prob = Interped(memory_amplitudes, weights)
+        return prob.sample(size=size)
+
+    def calculate_memory_amplitude_pdf(self):
+        memory_amplitudes = np.linspace(-500, 500, 10000)
+        log_weights = self.reweight_with_memory_amplitude(memory_amplitudes, reference_log_likelihood=0)
+        log_weights -= max(log_weights)
+        weights = np.exp(log_weights)
+        # prob = Interped(memory_amplitudes, log_weights)
+        prob = Interped(memory_amplitudes, weights)
+        return memory_amplitudes, prob.prob(memory_amplitudes)
