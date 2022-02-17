@@ -10,7 +10,8 @@ from memestr.events import events, precessing_events
 
 event_number = int(sys.argv[1])
 precessing = int(sys.argv[2]) == 1
-minimum_frequency = int(sys.argv[3])
+n_parallel = int(sys.argv[3])
+minimum_frequency = int(sys.argv[4])
 
 
 if precessing:
@@ -66,7 +67,7 @@ likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
 outfile_name = f"{event}_memory_amplitude_samples"
 
 amplitude_samples = memestr.postprocessing.reconstruct_memory_amplitude_parallel(
-    result=result, likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc, n_parallel=4)
+    result=result, likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc, n_parallel=n_parallel)
 
 # ma = memestr.postprocessing.MemoryAmplitudeReweighter(likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc)
 # ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[0]))

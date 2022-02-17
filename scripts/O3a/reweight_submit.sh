@@ -10,4 +10,4 @@
 
 
 #srun python reweight.py ${1} ${2} 16 ${3}
-srun python reweight_memory_amplitude.py ${1} ${2} ${3}
+srun python reweight_memory_amplitude.py ${1} ${2} 16 ${3}
