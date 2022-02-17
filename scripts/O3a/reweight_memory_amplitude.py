@@ -82,8 +82,10 @@ amplitude_samples = memestr.postprocessing.reconstruct_memory_amplitude_parallel
 #     if i % 1000 == 0:
 #         bilby.utils.logger.info(f"Number of reconstructed: {i}")
 
-np.savetxt(f'memory_amplitude_results/{event.name}_memory_amplitude_posterior.txt', amplitude_samples)
+np.savetxt(f'memory_amplitude_results/{event}_memory_amplitude_posterior.txt', amplitude_samples)
 
-plt.hist(amplitude_samples, bins='fd')
-plt.savefig(f'memory_amplitude_results/{event.name}_memory_amplitude_posterior.png')
+plt.hist(amplitude_samples, bins='fd', density=True)
+plt.xlabel('Memory amplitude')
+plt.xlabel('p(Memory amplitude)')
+plt.savefig(f'memory_amplitude_results/{event}_memory_amplitude_posterior.png')
 

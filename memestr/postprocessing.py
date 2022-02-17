@@ -294,7 +294,8 @@ def reconstruct_memory_amplitude_parallel(result, likelihood_memory, likelihood_
     new_results = split_result(result=result, n_parallel=n_parallel)
     iterable = [(new_result, likelihood_memory, likelihood_oscillatory) for new_result in new_results]
     res = p.starmap(reconstruct_memory_amplitude, iterable)
-    return np.concatenate([r[1] for r in res])
+    print(res)
+    return np.concatenate(res)
 
 
 def reconstruct_memory_amplitude(result, likelihood_memory, likelihood_oscillatory):
