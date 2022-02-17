@@ -215,13 +215,7 @@ def reweight_by_likelihood(result, new_likelihood, reference_likelihood, use_sto
 
 def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood, use_stored_likelihood=True, n_parallel=2):
     p = multiprocessing.Pool(n_parallel)
-    new_result = deepcopy(result)
-    posteriors = np.array_split(new_result.posterior, n_parallel)
-    new_results = []
-    for i in range(n_parallel):
-        res = deepcopy(new_result)
-        res.posterior = posteriors[i]
-        new_results.append(res)
+    new_results = split_result(result=result, n_parallel=n_parallel)
     iterable = [(new_result, new_likelihood, reference_likelihood, use_stored_likelihood) for new_result in new_results]
     res = p.starmap(reweight_by_likelihood, iterable)
     log_weights = np.concatenate([r[1] for r in res])
@@ -294,11 +288,36 @@ class MemoryAmplitudeReweighter(object):
         prob = Interped(memory_amplitudes, weights)
         return prob.sample(size=size)
 
-    def calculate_memory_amplitude_pdf(self):
-        memory_amplitudes = np.linspace(-500, 500, 10000)
-        log_weights = self.reweight_with_memory_amplitude(memory_amplitudes, reference_log_likelihood=0)
-        log_weights -= max(log_weights)
-        weights = np.exp(log_weights)
-        # prob = Interped(memory_amplitudes, log_weights)
-        prob = Interped(memory_amplitudes, weights)
-        return memory_amplitudes, prob.prob(memory_amplitudes)
+
+def reconstruct_memory_amplitude_parallel(result, likelihood_memory, likelihood_oscillatory, n_parallel=2):
+    p = multiprocessing.Pool(n_parallel)
+    new_results = split_result(result=result, n_parallel=n_parallel)
+    iterable = [(new_result, likelihood_memory, likelihood_oscillatory) for new_result in new_results]
+    res = p.starmap(reconstruct_memory_amplitude, iterable)
+    return np.concatenate([r[1] for r in res])
+
+
+def reconstruct_memory_amplitude(result, likelihood_memory, likelihood_oscillatory):
+    ma = MemoryAmplitudeReweighter(likelihood_memory=likelihood_memory,
+                                   likelihood_oscillatory=likelihood_oscillatory)
+    ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[0]))
+    amplitude_samples = []
+    bilby.utils.logger.info(f"Number of posterior samples: {len(result.posterior)}")
+    for i in range(len(result.posterior)):
+        ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[i]))
+        amplitude_sample = ma.sample_memory_amplitude(size=1)[0]
+        amplitude_samples.append(amplitude_sample)
+        if i % 200 == 0:
+            logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
+    return amplitude_samples
+
+
+def split_result(result, n_parallel):
+    new_result = deepcopy(result)
+    posteriors = np.array_split(new_result.posterior, n_parallel)
+    new_results = []
+    for i in range(n_parallel):
+        res = deepcopy(new_result)
+        res.posterior = posteriors[i]
+        new_results.append(res)
+    return new_results

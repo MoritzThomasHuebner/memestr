@@ -65,18 +65,21 @@ likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
 
 outfile_name = f"{event}_memory_amplitude_samples"
 
-ma = memestr.postprocessing.MemoryAmplitudeReweighter(likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc)
-ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[0]))
+amplitude_samples = memestr.postprocessing.reconstruct_memory_amplitude_parallel(
+    result=result, likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc, n_parallel=4)
 
-
-amplitude_samples = []
-bilby.utils.logger.info(f"Number of posterior samples: {len(result.posterior)}")
-for i in range(len(result.posterior)):
-    ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[i]))
-    amplitude_sample = ma.sample_memory_amplitude(size=1)[0]
-    amplitude_samples.append(amplitude_sample)
-    if i % 1000 == 0:
-        bilby.utils.logger.info(f"Number of reconstructed: {i}")
+# ma = memestr.postprocessing.MemoryAmplitudeReweighter(likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc)
+# ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[0]))
+#
+#
+# amplitude_samples = []
+# bilby.utils.logger.info(f"Number of posterior samples: {len(result.posterior)}")
+# for i in range(len(result.posterior)):
+#     ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[i]))
+#     amplitude_sample = ma.sample_memory_amplitude(size=1)[0]
+#     amplitude_samples.append(amplitude_sample)
+#     if i % 1000 == 0:
+#         bilby.utils.logger.info(f"Number of reconstructed: {i}")
 
 np.savetxt(f'memory_amplitude_results/{event.name}_memory_amplitude_posterior.txt', amplitude_samples)
 
