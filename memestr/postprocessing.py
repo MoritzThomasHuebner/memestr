@@ -295,8 +295,7 @@ class MemoryAmplitudeReweighter(object):
 
 def reconstruct_memory_amplitude_parallel(result, likelihood_memory, likelihood_oscillatory, n_parallel=2):
     p = multiprocessing.Pool(n_parallel)
-    new_results = split_result(result=result, n_parallel=n_parallel + 1000)
-    new_results = new_results[:n_parallel]
+    new_results = split_result(result=result, n_parallel=n_parallel)
     iterable = [(new_result, likelihood_memory, likelihood_oscillatory) for new_result in new_results]
     return p.starmap(reconstruct_memory_amplitude, iterable)
 
