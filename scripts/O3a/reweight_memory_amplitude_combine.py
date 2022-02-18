@@ -41,20 +41,20 @@ integrated_probs = np.sum(probs * dx)
 probs /= integrated_probs
 cdf = np.cumsum(probs)
 
-plt.plot(amps, probs)
+plt.step(amps, probs, where='mid')
 plt.xlabel('memory amplitude')
 plt.ylabel('probability')
 plt.savefig(f'memory_amplitude_results/combined_result.png')
 plt.clf()
 
-plt.plot(amps, probs)
+plt.step(amps, probs, where='mid')
 plt.xlabel('memory amplitude')
 plt.ylabel('probability')
 plt.xlim(-50, 50)
 plt.savefig(f'memory_amplitude_results/combined_result_zoomed.png')
 plt.clf()
 
-plt.plot(amps, cdf)
+plt.step(amps, cdf, where='mid')
 plt.xlabel('memory amplitude')
 plt.ylabel('CDF')
 plt.savefig(f'memory_amplitude_results/combined_result_cdf.png')

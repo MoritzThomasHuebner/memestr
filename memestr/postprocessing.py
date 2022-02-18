@@ -1,12 +1,15 @@
 import bilby.gw.utils as utils
-import numpy as np
 from bilby.core.prior import Interped
+from collections import namedtuple
 import pandas as pd
 from scipy.special import logsumexp
 from scipy.optimize import minimize
 import multiprocessing
 
 from memestr.waveforms.phenom import *
+
+ReweightingTerms = namedtuple(
+    'ReweightingTerms', ['memory_amplitude_sample', 'd_inner_h_mem', 'optimal_snr_squared_h_mem', 'h_osc_inner_h_mem'])
 
 logger = bilby.core.utils.logger
 gamma_lmlm = gwmemory.angles.load_gamma()
@@ -154,7 +157,7 @@ def adjust_phase_and_geocent_time_complete_posterior_proper(result, ifo, verbose
         parameters = result.posterior.iloc[index].to_dict()
         time_shift, new_phase, maximum_overlap = \
             get_time_and_phase_shift(parameters, ifo, verbose=verbose, **kwargs)
-        new_phase %= 2*np.pi
+        new_phase %= 2 * np.pi
         maximum_overlaps.append(maximum_overlap)
         new_result.posterior.geocent_time.iloc[index] += time_shift
         new_result.posterior.phase.iloc[index] = new_phase
@@ -213,7 +216,8 @@ def reweight_by_likelihood(result, new_likelihood, reference_likelihood, use_sto
     return reweighted_log_bf, log_weights
 
 
-def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood, use_stored_likelihood=True, n_parallel=2):
+def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood, use_stored_likelihood=True,
+                                    n_parallel=2):
     p = multiprocessing.Pool(n_parallel)
     new_results = split_result(result=result, n_parallel=n_parallel)
     iterable = [(new_result, new_likelihood, reference_likelihood, use_stored_likelihood) for new_result in new_results]
@@ -299,16 +303,19 @@ def reconstruct_memory_amplitude_parallel(result, likelihood_memory, likelihood_
 def reconstruct_memory_amplitude(result, likelihood_memory, likelihood_oscillatory):
     ma = MemoryAmplitudeReweighter(likelihood_memory=likelihood_memory,
                                    likelihood_oscillatory=likelihood_oscillatory)
+
     ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[0]))
-    amplitude_samples = []
+    terms = []
     bilby.utils.logger.info(f"Number of posterior samples: {len(result.posterior)}")
     for i in range(len(result.posterior)):
         ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[i]))
         amplitude_sample = ma.sample_memory_amplitude(size=1)[0]
-        amplitude_samples.append(amplitude_sample)
+        terms.append(ReweightingTerms(
+            memory_amplitude_sample=amplitude_sample, d_inner_h_mem=ma.d_inner_h_mem,
+            optimal_snr_squared_h_mem=ma.optimal_snr_squared_h_mem, h_osc_inner_h_mem=ma.h_osc_inner_h_mem))
         if i % 200 == 0:
             logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-    return amplitude_samples
+    return terms
 
 
 def split_result(result, n_parallel):
