@@ -227,6 +227,12 @@ def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood
     return reweighted_log_bf, log_weights
 
 
+def reweight_by_memory_amplitude(memory_amplitude, d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem):
+    return \
+        memory_amplitude * np.real(d_inner_h_mem) - 0.5 * memory_amplitude ** 2 \
+        * optimal_snr_squared_h_mem - memory_amplitude * h_osc_inner_h_mem
+
+
 class MemoryAmplitudeReweighter(object):
 
     def __init__(self, likelihood_memory, likelihood_oscillatory):
@@ -281,8 +287,9 @@ class MemoryAmplitudeReweighter(object):
         if reference_log_likelihood is None:
             reference_log_likelihood = self.likelihood_oscillatory.log_likelihood()
         return \
-            reference_log_likelihood + memory_amplitude * np.real(self.d_inner_h_mem) - 0.5 * memory_amplitude ** 2 \
-            * self.optimal_snr_squared_h_mem - memory_amplitude * self.h_osc_inner_h_mem
+            reference_log_likelihood + reweight_by_memory_amplitude(
+                memory_amplitude=memory_amplitude, d_inner_h_mem=self.d_inner_h_mem,
+                optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem)
 
     def sample_memory_amplitude(self, size=1):
         memory_amplitudes = np.linspace(-500, 500, 10000)
