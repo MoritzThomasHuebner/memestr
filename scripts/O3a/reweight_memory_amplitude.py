@@ -79,7 +79,7 @@ h_osc_inner_h_mem = list(itertools.chain(*[[term.h_osc_inner_h_mem for term in r
 data = dict(amplitude_samples=amplitude_samples, d_inner_h_mem=d_inner_h_mem,
             optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
 data = pd.DataFrame.from_dict(data)
-data.to_csv(f'memory_amplitude_results/{event}_memory_amplitude_posterior.txt')
+data.to_csv(f'memory_amplitude_results/{event}_memory_amplitude_posterior.csv')
 
 plt.hist(amplitude_samples, bins='fd', density=True)
 plt.xlabel('Memory amplitude')
