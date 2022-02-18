@@ -27,7 +27,7 @@ if precessing:
         waveform_arguments = dict(minimum_frequency=minimum_frequency, reference_frequency=reference_frequency)  # VERY IMPORTANT
     else:
         # waveform_arguments = dict(minimum_frequency=0)  # VERY IMPORTANT
-        waveform_arguments = dict(minimum_frequency=minimum_frequency)  # VERY IMPORTANT
+        waveform_arguments = dict(minimum_frequency=minimum_frequency, reference_frequency=20)  # VERY IMPORTANT
     oscillatory_model = memestr.waveforms.fd_nr_sur_7dq4
     memory_model = memestr.waveforms.fd_nr_sur_7dq4_with_memory
 else:

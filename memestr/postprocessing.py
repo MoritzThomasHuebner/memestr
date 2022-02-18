@@ -293,9 +293,7 @@ def reconstruct_memory_amplitude_parallel(result, likelihood_memory, likelihood_
     p = multiprocessing.Pool(n_parallel)
     new_results = split_result(result=result, n_parallel=n_parallel)
     iterable = [(new_result, likelihood_memory, likelihood_oscillatory) for new_result in new_results]
-    res = p.starmap(reconstruct_memory_amplitude, iterable)
-    print(res)
-    return np.concatenate(res)
+    return p.starmap(reconstruct_memory_amplitude, iterable)
 
 
 def reconstruct_memory_amplitude(result, likelihood_memory, likelihood_oscillatory):

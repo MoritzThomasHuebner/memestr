@@ -4,6 +4,8 @@ from memestr.events import events, precessing_events
 
 
 for e in events:
+    if e.name not in ['GW191126A', 'GW191216A', 'GW200202A', 'GW200210A', 'GW200220A']:
+        continue
     try:
         time_tag = e.time_tag
         event = e.name
@@ -16,6 +18,8 @@ for e in events:
         print(ex)
 
 for e in precessing_events:
+    if e.name not in ['GW191105A_prec', 'GW191126A_prec', 'GW200202A_prec', 'GW200220A_prec']:
+        continue
     try:
         time_tag = e.time_tag
         event = e.name
