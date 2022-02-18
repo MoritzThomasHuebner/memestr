@@ -68,7 +68,7 @@ outfile_name = f"{event}_memory_amplitude_samples"
 
 reweighting_terms = memestr.postprocessing.reconstruct_memory_amplitude_parallel(
     result=result, likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc, n_parallel=n_parallel)
-print(reweighting_terms)
+# print(reweighting_terms)
 print(reweighting_terms[0])
 amplitude_samples = [term.memory_amplitude_sample for term in reweighting_terms]
 d_inner_h_mem = [term.d_inner_h_mem for term in reweighting_terms]
