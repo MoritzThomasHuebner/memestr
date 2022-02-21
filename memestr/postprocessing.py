@@ -265,6 +265,7 @@ class MemoryAmplitudeReweighter(object):
 
     @parameters.setter
     def parameters(self, parameters):
+        parameters = parameters or dict()
         self._parameters = parameters
         self.parameters['memory_amplitude'] = 1
         self.likelihood_memory.parameters = parameters
