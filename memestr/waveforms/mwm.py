@@ -1,7 +1,10 @@
 import numpy as np
 from scipy.signal.windows import tukey
 
-import gwmemory
+try:
+    import gwmemory
+except ModuleNotFoundError:
+    gwmemory = None
 from bilby.core.series import CoupledTimeAndFrequencySeries
 
 from .utils import nfft

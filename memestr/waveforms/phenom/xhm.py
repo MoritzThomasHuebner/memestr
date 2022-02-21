@@ -2,7 +2,10 @@ import copy
 from copy import deepcopy
 
 import bilby
-import gwmemory
+try:
+    import gwmemory
+except ModuleNotFoundError:
+    gwmemory = None
 import numpy as np
 
 from ..utils import convert_to_frequency_domain, convert_to_frequency_domain_with_memory, apply_window, gamma_lmlm

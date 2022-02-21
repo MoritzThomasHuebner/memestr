@@ -1,6 +1,9 @@
 from copy import deepcopy
 
-import gwmemory
+try:
+    import gwmemory
+except ModuleNotFoundError:
+    gwmemory = None
 import numpy as np
 from scipy.signal.windows import tukey
 
