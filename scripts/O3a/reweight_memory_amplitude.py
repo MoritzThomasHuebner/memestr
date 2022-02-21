@@ -1,4 +1,4 @@
-import itertools
+import numpy as np
 import pickle
 import sys
 
@@ -69,8 +69,10 @@ ma = memestr.postprocessing.MemoryAmplitudeReweighter(
     likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc)
 
 data = ma.reconstruct_memory_amplitude_parallel(result=result, n_parallel=n_parallel)
+df = pd.DataFrame.from_dict(data)
+df.to_csv(f'memory_amplitude_results/{event}_memory_amplitude_posterior.csv')
 
-plt.hist(data['amplitude_samples'], bins='fd', density=True)
+plt.hist(np.array(data['amplitude_samples']), bins='fd', density=True)
 plt.xlabel('Memory amplitude')
 plt.ylabel('p(Memory amplitude)')
 plt.savefig(f'memory_amplitude_results/{event}_memory_amplitude_posterior.png')
