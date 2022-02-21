@@ -241,10 +241,12 @@ def reweight_by_memory_amplitude(memory_amplitude, d_inner_h_mem, optimal_snr_sq
 
 
 class MemoryAmplitudeReweighter(object):
+    MEMORY_AMPLITUDES_INTERPOLATION_GRID = np.linspace(-500, 500, 10000)
 
-    def __init__(self, likelihood_memory, likelihood_oscillatory):
+    def __init__(self, likelihood_memory, likelihood_oscillatory, parameters=None):
         self.likelihood_memory = likelihood_memory
         self.likelihood_oscillatory = likelihood_oscillatory
+        self.parameters = parameters
         self.d_inner_h_mem = 0
         self.optimal_snr_squared_h_mem = 0
         self.h_osc_inner_h_mem = 0
@@ -257,46 +259,37 @@ class MemoryAmplitudeReweighter(object):
     def duration(self):
         return self.interferometers[0].duration
 
-    def calculate_reweighting_terms(self, parameters):
-        parameters['memory_amplitude'] = 1
-        polarizations_oscillatory = self.likelihood_oscillatory.waveform_generator.frequency_domain_strain(parameters=parameters)
-        polarizations_memory = self.likelihood_memory.waveform_generator.frequency_domain_strain(parameters=parameters)
+    @property
+    def parameters(self):
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, parameters):
+        self._parameters = parameters
+        self.parameters['memory_amplitude'] = 1
         self.likelihood_memory.parameters = parameters
         self.likelihood_oscillatory.parameters = parameters
+
+    def reset_terms(self):
         self.d_inner_h_mem = 0
         self.optimal_snr_squared_h_mem = 0
         self.h_osc_inner_h_mem = 0
 
-        for interferometer in self.interferometers:
-            h_mem_snrs = self.likelihood_memory.calculate_snrs(
-                waveform_polarizations=polarizations_memory,
-                interferometer=interferometer)
-            signal_osc = interferometer.get_detector_response(polarizations_oscillatory, parameters)
-            signal_mem = interferometer.get_detector_response(polarizations_memory, parameters)
+    @property
+    def d_inner_h_mem(self):
+        return self._d_inner_h_mem
 
-            self.d_inner_h_mem += h_mem_snrs.d_inner_h
-            self.optimal_snr_squared_h_mem += np.real(h_mem_snrs.optimal_snr_squared)
-            self.h_osc_inner_h_mem += bilby.gw.utils.noise_weighted_inner_product(
-                signal_osc[interferometer.strain_data.frequency_mask],
-                signal_mem[interferometer.strain_data.frequency_mask],
-                power_spectral_density=interferometer.power_spectral_density_array[
-                    interferometer.strain_data.frequency_mask],
-                duration=self.duration)
-        self.h_osc_inner_h_mem = np.real(self.h_osc_inner_h_mem)
+    @d_inner_h_mem.setter
+    def d_inner_h_mem(self, d_inner_h_mem):
+        self._d_inner_h_mem = d_inner_h_mem.real
 
-    def reweight_with_memory_amplitude(self, memory_amplitude):
-        return \
-            reweight_by_memory_amplitude(
-                memory_amplitude=memory_amplitude, d_inner_h_mem=self.d_inner_h_mem,
-                optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem)
+    @property
+    def polarizations_oscillatory(self):
+        return self.likelihood_oscillatory.waveform_generator.frequency_domain_strain(parameters=self.parameters)
 
-    def sample_memory_amplitude(self, size=1):
-        memory_amplitudes = np.linspace(-500, 500, 10000)
-        log_weights = self.reweight_with_memory_amplitude(memory_amplitudes)
-        log_weights -= max(log_weights)
-        weights = np.exp(log_weights)
-        prob = Interped(memory_amplitudes, weights)
-        return prob.sample(size=size)
+    @property
+    def polarizations_memory(self):
+        return self.likelihood_memory.waveform_generator.frequency_domain_strain(parameters=self.parameters)
 
     def reconstruct_memory_amplitude(self, result):
         terms = []
@@ -317,6 +310,45 @@ class MemoryAmplitudeReweighter(object):
         reweighting_terms_list = p.starmap(self.reconstruct_memory_amplitude, iterable)
         return self.package_results(reweighting_terms_list)
 
+
+    def calculate_reweighting_terms(self, parameters):
+        self.reset_terms()
+        self.parameters = parameters
+        for interferometer in self.interferometers:
+            self._add_single_ifo_terms(interferometer=interferometer)
+
+    def _add_single_ifo_terms(self, interferometer):
+        self._add_single_ifo_from_snrs(interferometer=interferometer)
+        self._add_single_ifo_h_osc_inner_h_mem(interferometer=interferometer)
+
+    def _add_single_ifo_from_snrs(self, interferometer):
+        h_mem_snrs = self.likelihood_memory.calculate_snrs(
+            waveform_polarizations=self.polarizations_memory,
+            interferometer=interferometer)
+        self.d_inner_h_mem += h_mem_snrs.d_inner_h
+        self.optimal_snr_squared_h_mem += np.real(h_mem_snrs.optimal_snr_squared)
+
+    def _add_single_ifo_h_osc_inner_h_mem(self, interferometer):
+        signal_osc = interferometer.get_detector_response(self.polarizations_oscillatory, self.parameters)
+        signal_mem = interferometer.get_detector_response(self.polarizations_memory, self.parameters)
+        self.h_osc_inner_h_mem += bilby.gw.utils.noise_weighted_inner_product(
+            signal_osc[interferometer.strain_data.frequency_mask],
+            signal_mem[interferometer.strain_data.frequency_mask],
+            power_spectral_density=interferometer.power_spectral_density_array[
+                interferometer.strain_data.frequency_mask],
+            duration=self.duration)
+
+    def sample_memory_amplitude(self, size=1):
+        log_weights = self.reweight_with_memory_amplitude(self.MEMORY_AMPLITUDES_INTERPOLATION_GRID)
+        weights = np.exp(log_weights - max(log_weights))
+        return Interped(self.MEMORY_AMPLITUDES_INTERPOLATION_GRID, weights).sample(size=size)
+
+    def reweight_with_memory_amplitude(self, memory_amplitude):
+        return \
+            reweight_by_memory_amplitude(
+                memory_amplitude=memory_amplitude, d_inner_h_mem=self.d_inner_h_mem,
+                optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem)
+
     @staticmethod
     def package_results(reweighting_terms_list):
         amplitude_samples = list(itertools.chain(
@@ -332,6 +364,21 @@ class MemoryAmplitudeReweighter(object):
         return dict(
             amplitude_samples=amplitude_samples, d_inner_h_mem=d_inner_h_mem,
             optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
+
+
+def _calculate_inner_sum(memory_amplitude, posterior):
+    return logsumexp(reweight_by_memory_amplitude(
+        memory_amplitude=memory_amplitude, d_inner_h_mem=posterior['d_inner_h_mem'],
+        optimal_snr_squared_h_mem=posterior['optimal_snr_squared_h_mem'],
+        h_osc_inner_h_mem=posterior['h_osc_inner_h_mem']))
+
+
+def _calculate_outer_sum(memory_amplitude, posteriors):
+    return np.sum([_calculate_inner_sum(memory_amplitude, p) - np.log(len(p)) for p in posteriors])
+
+
+def reconstruct_memory_amplitude_population_posterior(memory_amplitudes, posteriors):
+    return [_calculate_outer_sum(memory_amplitude=a, posteriors=posteriors) for a in memory_amplitudes]
 
 
 def split_result(result, n_parallel):
