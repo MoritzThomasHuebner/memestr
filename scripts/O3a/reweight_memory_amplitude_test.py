@@ -46,7 +46,7 @@ likelihood_comb = bilby.gw.likelihood.GravitationalWaveTransient(
     interferometers=ifos, waveform_generator=wg_comb)
 
 params = dict(result.posterior.iloc[-100])
-memory_amplitude = 0
+memory_amplitude = 5
 params['memory_amplitude'] = memory_amplitude
 likelihood_osc.parameters = params
 likelihood_mem.parameters = params
@@ -54,13 +54,13 @@ likelihood_comb.parameters = params
 plt.plot(likelihood_osc.waveform_generator.time_array, likelihood_osc.waveform_generator.time_domain_strain(parameters=params)['plus'])
 plt.plot(likelihood_comb.waveform_generator.time_array, likelihood_comb.waveform_generator.time_domain_strain(parameters=params)['plus'])
 plt.xlim(likelihood_comb.waveform_generator.time_array[-300], likelihood_comb.waveform_generator.time_array[-1])
-plt.savefig('test_plus.png')
+plt.savefig('test_plus_local.png')
 plt.clf()
 
 plt.plot(likelihood_osc.waveform_generator.time_array, likelihood_osc.waveform_generator.time_domain_strain(parameters=params)['cross'])
 plt.plot(likelihood_comb.waveform_generator.time_array, likelihood_comb.waveform_generator.time_domain_strain(parameters=params)['cross'])
 plt.xlim(likelihood_comb.waveform_generator.time_array[-300], likelihood_comb.waveform_generator.time_array[-1])
-plt.savefig('test_cross.png')
+plt.savefig('test_cross_local.png')
 plt.clf()
 
 ma = memestr.postprocessing.MemoryAmplitudeReweighter(likelihood_oscillatory=likelihood_osc,
@@ -75,7 +75,6 @@ log_l_comb = likelihood_comb.log_likelihood_ratio()
 
 print(params['log_likelihood'])
 print(log_l_osc)
-# print(log_l_mem)
 print(log_l_reweighted)
 print(log_l_reweighted + log_l_osc)
 print(log_l_comb)
