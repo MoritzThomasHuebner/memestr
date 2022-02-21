@@ -45,7 +45,7 @@ likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
 likelihood_comb = bilby.gw.likelihood.GravitationalWaveTransient(
     interferometers=ifos, waveform_generator=wg_comb)
 
-params = dict(result.posterior.iloc[-100])
+params = dict(result.posterior.iloc[-1])
 memory_amplitude = 5
 params['memory_amplitude'] = memory_amplitude
 likelihood_osc.parameters = params
@@ -66,15 +66,16 @@ plt.clf()
 ma = memestr.postprocessing.MemoryAmplitudeReweighter(likelihood_oscillatory=likelihood_osc,
                                                       likelihood_memory=likelihood_mem)
 ma.calculate_reweighting_terms(parameters=params)
-log_l_reweighted = reweight_by_memory_amplitude(
-    memory_amplitude=memory_amplitude, d_inner_h_mem=ma.d_inner_h_mem,
-    optimal_snr_squared_h_mem=ma.optimal_snr_squared_h_mem, h_osc_inner_h_mem=ma.h_osc_inner_h_mem)
+log_l_reweighted = ma.reweight_with_memory_amplitude(memory_amplitude=1)
+# log_l_reweighted = reweight_by_memory_amplitude(
+#     memory_amplitude=memory_amplitude, d_inner_h_mem=ma.d_inner_h_mem,
+#     optimal_snr_squared_h_mem=ma.optimal_snr_squared_h_mem, h_osc_inner_h_mem=ma.h_osc_inner_h_mem)
 log_l_osc = likelihood_osc.log_likelihood_ratio()
 log_l_mem = likelihood_mem.log_likelihood_ratio()
 log_l_comb = likelihood_comb.log_likelihood_ratio()
 
 print(params['log_likelihood'])
 print(log_l_osc)
-print(log_l_reweighted)
+print()
 print(log_l_reweighted + log_l_osc)
 print(log_l_comb)

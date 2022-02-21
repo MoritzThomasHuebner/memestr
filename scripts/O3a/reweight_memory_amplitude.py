@@ -1,3 +1,4 @@
+import itertools
 import pickle
 import sys
 
@@ -34,8 +35,6 @@ else:
     oscillatory_model = memestr.waveforms.fd_imrx_fast
     memory_model = memestr.waveforms.fd_imrx_memory_only
 
-
-
 if precessing:
     event += "_2000"
 detectors = event_list[event_number].detectors
@@ -66,23 +65,13 @@ likelihood_mem = bilby.gw.likelihood.GravitationalWaveTransient(
 
 outfile_name = f"{event}_memory_amplitude_samples"
 
-reweighting_terms_list = memestr.postprocessing.reconstruct_memory_amplitude_parallel(
-    result=result, likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc, n_parallel=n_parallel)
+ma = memestr.postprocessing.MemoryAmplitudeReweighter(
+    likelihood_memory=likelihood_mem, likelihood_oscillatory=likelihood_osc)
 
-import itertools
+data = ma.reconstruct_memory_amplitude_parallel(result=result, n_parallel=n_parallel)
 
-amplitude_samples = list(itertools.chain(*[[term.memory_amplitude_sample for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
-d_inner_h_mem = list(itertools.chain(*[[term.d_inner_h_mem for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
-optimal_snr_squared_h_mem = list(itertools.chain(*[[term.optimal_snr_squared_h_mem for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
-h_osc_inner_h_mem = list(itertools.chain(*[[term.h_osc_inner_h_mem for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
-
-data = dict(amplitude_samples=amplitude_samples, d_inner_h_mem=d_inner_h_mem,
-            optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
-data = pd.DataFrame.from_dict(data)
-data.to_csv(f'memory_amplitude_results/{event}_memory_amplitude_posterior.csv')
-
-plt.hist(amplitude_samples, bins='fd', density=True)
+plt.hist(data['amplitude_samples'], bins='fd', density=True)
 plt.xlabel('Memory amplitude')
-plt.xlabel('p(Memory amplitude)')
+plt.ylabel('p(Memory amplitude)')
 plt.savefig(f'memory_amplitude_results/{event}_memory_amplitude_posterior.png')
 

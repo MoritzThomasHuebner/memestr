@@ -1,3 +1,4 @@
+import itertools
 import bilby.gw.utils as utils
 from bilby.core.prior import Interped
 from collections import namedtuple
@@ -256,15 +257,10 @@ class MemoryAmplitudeReweighter(object):
     def duration(self):
         return self.interferometers[0].duration
 
-    def calculate_reweighting_terms(self, parameters, polarizations_oscillatory=None, polarizations_memory=None):
-        if polarizations_oscillatory is None:
-            polarizations_oscillatory = \
-                self.likelihood_oscillatory.waveform_generator.frequency_domain_strain(parameters=parameters)
-        if polarizations_memory is None:
-            parameters = parameters.copy()
-            parameters['memory_amplitude'] = 1
-            polarizations_memory = \
-                self.likelihood_memory.waveform_generator.frequency_domain_strain(parameters=parameters)
+    def calculate_reweighting_terms(self, parameters):
+        parameters['memory_amplitude'] = 1
+        polarizations_oscillatory = self.likelihood_oscillatory.waveform_generator.frequency_domain_strain(parameters=parameters)
+        polarizations_memory = self.likelihood_memory.waveform_generator.frequency_domain_strain(parameters=parameters)
         self.likelihood_memory.parameters = parameters
         self.likelihood_oscillatory.parameters = parameters
         self.d_inner_h_mem = 0
@@ -288,46 +284,54 @@ class MemoryAmplitudeReweighter(object):
                 duration=self.duration)
         self.h_osc_inner_h_mem = np.real(self.h_osc_inner_h_mem)
 
-    def reweight_with_memory_amplitude(self, memory_amplitude, reference_log_likelihood=None):
-        if reference_log_likelihood is None:
-            reference_log_likelihood = self.likelihood_oscillatory.log_likelihood()
+    def reweight_with_memory_amplitude(self, memory_amplitude):
         return \
-            reference_log_likelihood + reweight_by_memory_amplitude(
+            reweight_by_memory_amplitude(
                 memory_amplitude=memory_amplitude, d_inner_h_mem=self.d_inner_h_mem,
                 optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem)
 
     def sample_memory_amplitude(self, size=1):
         memory_amplitudes = np.linspace(-500, 500, 10000)
-        log_weights = self.reweight_with_memory_amplitude(memory_amplitudes, reference_log_likelihood=0)
+        log_weights = self.reweight_with_memory_amplitude(memory_amplitudes)
         log_weights -= max(log_weights)
         weights = np.exp(log_weights)
         prob = Interped(memory_amplitudes, weights)
         return prob.sample(size=size)
 
+    def reconstruct_memory_amplitude(self, result):
+        terms = []
+        bilby.utils.logger.info(f"Number of posterior samples: {len(result.posterior)}")
+        for i in range(len(result.posterior)):
+            self.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[i]))
+            amplitude_sample = self.sample_memory_amplitude(size=1)[0]
+            terms.append(ReweightingTerms(
+                memory_amplitude_sample=amplitude_sample, d_inner_h_mem=self.d_inner_h_mem.real,
+                optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem))
+            if i % 200 == 0:
+                logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
+        return terms
 
-def reconstruct_memory_amplitude_parallel(result, likelihood_memory, likelihood_oscillatory, n_parallel=2):
-    p = multiprocessing.Pool(n_parallel)
-    new_results = split_result(result=result, n_parallel=n_parallel)
-    iterable = [(new_result, likelihood_memory, likelihood_oscillatory) for new_result in new_results]
-    return p.starmap(reconstruct_memory_amplitude, iterable)
+    def reconstruct_memory_amplitude_parallel(self, result, n_parallel=2):
+        p = multiprocessing.Pool(n_parallel)
+        iterable = [[r] for r in split_result(result=result, n_parallel=n_parallel)]
+        reweighting_terms_list = p.starmap(self.reconstruct_memory_amplitude, iterable)
+        return self.package_results(reweighting_terms_list)
 
-
-def reconstruct_memory_amplitude(result, likelihood_memory, likelihood_oscillatory):
-    ma = MemoryAmplitudeReweighter(likelihood_memory=likelihood_memory,
-                                   likelihood_oscillatory=likelihood_oscillatory)
-
-    ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[0]))
-    terms = []
-    bilby.utils.logger.info(f"Number of posterior samples: {len(result.posterior)}")
-    for i in range(len(result.posterior)):
-        ma.calculate_reweighting_terms(parameters=dict(result.posterior.iloc[i]))
-        amplitude_sample = ma.sample_memory_amplitude(size=1)[0]
-        terms.append(ReweightingTerms(
-            memory_amplitude_sample=amplitude_sample, d_inner_h_mem=ma.d_inner_h_mem,
-            optimal_snr_squared_h_mem=ma.optimal_snr_squared_h_mem, h_osc_inner_h_mem=ma.h_osc_inner_h_mem))
-        if i % 200 == 0:
-            logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
-    return terms
+    @staticmethod
+    def package_results(reweighting_terms_list):
+        amplitude_samples = list(itertools.chain(
+            *[[term.memory_amplitude_sample for term in reweighting_terms] for reweighting_terms in
+              reweighting_terms_list]))
+        d_inner_h_mem = list(itertools.chain(
+            *[[term.d_inner_h_mem for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
+        optimal_snr_squared_h_mem = list(itertools.chain(
+            *[[term.optimal_snr_squared_h_mem for term in reweighting_terms] for reweighting_terms in
+              reweighting_terms_list]))
+        h_osc_inner_h_mem = list(itertools.chain(
+            *[[term.h_osc_inner_h_mem for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
+        return dict(
+            amplitude_samples=amplitude_samples, d_inner_h_mem=d_inner_h_mem,
+            optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
 
 
 def split_result(result, n_parallel):
