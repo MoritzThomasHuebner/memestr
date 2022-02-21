@@ -6,13 +6,19 @@ from scipy.special import logsumexp
 from scipy.optimize import minimize
 import multiprocessing
 
+try:
+    import gwmemory
+    gamma_lmlm = gwmemory.angles.load_gamma()
+except:
+    gwmemory = None
+    gamma_lmlm = None
+
 from memestr.waveforms.phenom import *
 
 ReweightingTerms = namedtuple(
     'ReweightingTerms', ['memory_amplitude_sample', 'd_inner_h_mem', 'optimal_snr_squared_h_mem', 'h_osc_inner_h_mem'])
 
 logger = bilby.core.utils.logger
-gamma_lmlm = gwmemory.angles.load_gamma()
 roll_off = 0.2
 
 
@@ -274,7 +280,6 @@ class MemoryAmplitudeReweighter(object):
 
             self.d_inner_h_mem += h_mem_snrs.d_inner_h
             self.optimal_snr_squared_h_mem += np.real(h_mem_snrs.optimal_snr_squared)
-
             self.h_osc_inner_h_mem += bilby.gw.utils.noise_weighted_inner_product(
                 signal_osc[interferometer.strain_data.frequency_mask],
                 signal_mem[interferometer.strain_data.frequency_mask],
