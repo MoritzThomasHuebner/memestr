@@ -70,7 +70,8 @@ print(outfile_name)
 if minimum_frequency != 0:
     outfile_name += f'_min_freq_{minimum_frequency}'
 try:
-    log_memory_weights = np.loadtxt(outfile_name)
+    # log_memory_weights = np.loadtxt(outfile_name)
+    raise Exception
 except Exception:
     use_stored_likelihood = minimum_frequency == 0
     reweighted_time_shift_memory_log_bf, log_memory_weights = memestr.postprocessing.reweight_by_likelihood_parallel(
