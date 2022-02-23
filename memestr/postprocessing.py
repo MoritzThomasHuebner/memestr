@@ -237,7 +237,15 @@ def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood
 def reweight_by_memory_amplitude(memory_amplitude, d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem):
     return \
         memory_amplitude * np.real(d_inner_h_mem) - 0.5 * memory_amplitude ** 2 \
-        * optimal_snr_squared_h_mem - memory_amplitude * h_osc_inner_h_mem
+        * optimal_snr_squared_h_mem - memory_amplitude * np.real(h_osc_inner_h_mem)
+
+
+def sample_memory_amplitude(d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem, memory_amplitudes=None, size=1):
+    amps = memory_amplitudes or np.linspace(-500, 500, 10000)
+    log_weights = reweight_by_memory_amplitude(memory_amplitude=amps, d_inner_h_mem=d_inner_h_mem,
+                                               optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
+    weights = np.exp(log_weights - max(log_weights))
+    return Interped(amps, weights).sample(size=size)
 
 
 class MemoryAmplitudeReweighter(object):
@@ -265,7 +273,8 @@ class MemoryAmplitudeReweighter(object):
 
     @parameters.setter
     def parameters(self, parameters):
-        parameters = parameters or dict()
+        if parameters is None:
+            parameters = dict()
         self._parameters = parameters
         self.parameters['memory_amplitude'] = 1
         self.likelihood_memory.parameters = parameters
@@ -300,7 +309,7 @@ class MemoryAmplitudeReweighter(object):
             amplitude_sample = self.sample_memory_amplitude(size=1)[0]
             terms.append(ReweightingTerms(
                 memory_amplitude_sample=amplitude_sample, d_inner_h_mem=self.d_inner_h_mem.real,
-                optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem))
+                optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem, h_osc_inner_h_mem=self.h_osc_inner_h_mem.real))
             if i % 200 == 0:
                 logger.info("{:0.2f}".format(i / len(result.posterior) * 100) + "%")
         return terms
@@ -310,7 +319,6 @@ class MemoryAmplitudeReweighter(object):
         iterable = [[r] for r in split_result(result=result, n_parallel=n_parallel)]
         reweighting_terms_list = p.starmap(self.reconstruct_memory_amplitude, iterable)
         return self.package_results(reweighting_terms_list)
-
 
     def calculate_reweighting_terms(self, parameters):
         self.reset_terms()
@@ -332,19 +340,22 @@ class MemoryAmplitudeReweighter(object):
     def _add_single_ifo_h_osc_inner_h_mem(self, interferometer):
         signal_osc = interferometer.get_detector_response(self.polarizations_oscillatory, self.parameters)
         signal_mem = interferometer.get_detector_response(self.polarizations_memory, self.parameters)
-        self.h_osc_inner_h_mem += bilby.gw.utils.noise_weighted_inner_product(
-            signal_osc[interferometer.strain_data.frequency_mask],
-            signal_mem[interferometer.strain_data.frequency_mask],
-            power_spectral_density=interferometer.power_spectral_density_array[
-                interferometer.strain_data.frequency_mask],
-            duration=self.duration)
+        self.h_osc_inner_h_mem += np.real(
+            bilby.gw.utils.noise_weighted_inner_product(
+                signal_osc[interferometer.strain_data.frequency_mask],
+                signal_mem[interferometer.strain_data.frequency_mask],
+                power_spectral_density=interferometer.power_spectral_density_array[
+                    interferometer.strain_data.frequency_mask],
+                duration=self.duration))
 
     def sample_memory_amplitude(self, size=1):
-        log_weights = self.reweight_with_memory_amplitude(self.MEMORY_AMPLITUDES_INTERPOLATION_GRID)
-        weights = np.exp(log_weights - max(log_weights))
-        return Interped(self.MEMORY_AMPLITUDES_INTERPOLATION_GRID, weights).sample(size=size)
+        return \
+            sample_memory_amplitude(
+                memory_amplitudes=self.MEMORY_AMPLITUDES_INTERPOLATION_GRID, d_inner_h_mem=self.d_inner_h_mem,
+                h_osc_inner_h_mem=self.h_osc_inner_h_mem, optimal_snr_squared_h_mem=self.optimal_snr_squared_h_mem,
+                size=size)
 
-    def reweight_with_memory_amplitude(self, memory_amplitude):
+    def reweight_by_memory_amplitude(self, memory_amplitude):
         return \
             reweight_by_memory_amplitude(
                 memory_amplitude=memory_amplitude, d_inner_h_mem=self.d_inner_h_mem,
@@ -391,3 +402,5 @@ def split_result(result, n_parallel):
         res.posterior = posteriors[i]
         new_results.append(res)
     return new_results
+
+

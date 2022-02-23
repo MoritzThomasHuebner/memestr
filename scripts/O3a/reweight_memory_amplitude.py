@@ -70,7 +70,7 @@ ma = memestr.postprocessing.MemoryAmplitudeReweighter(
 
 data = ma.reconstruct_memory_amplitude_parallel(result=result, n_parallel=n_parallel)
 df = pd.DataFrame.from_dict(data)
-df.to_csv(f'memory_amplitude_results/{event}_memory_amplitude_posterior.csv')
+df.to_csv(f'memory_amplitude_results/{event}_memory_amplitude_posterior.csv', index=False)
 
 plt.hist(np.array(data['amplitude_samples']), bins='fd', density=True)
 plt.xlabel('Memory amplitude')

@@ -66,7 +66,7 @@ plt.clf()
 ma = memestr.postprocessing.MemoryAmplitudeReweighter(likelihood_oscillatory=likelihood_osc,
                                                       likelihood_memory=likelihood_mem)
 ma.calculate_reweighting_terms(parameters=params)
-log_l_reweighted = ma.reweight_with_memory_amplitude(memory_amplitude=1)
+log_l_reweighted = ma.reweight_by_memory_amplitude(memory_amplitude=1)
 # log_l_reweighted = reweight_by_memory_amplitude(
 #     memory_amplitude=memory_amplitude, d_inner_h_mem=ma.d_inner_h_mem,
 #     optimal_snr_squared_h_mem=ma.optimal_snr_squared_h_mem, h_osc_inner_h_mem=ma.h_osc_inner_h_mem)
