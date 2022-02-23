@@ -241,11 +241,13 @@ def reweight_by_memory_amplitude(memory_amplitude, d_inner_h_mem, optimal_snr_sq
 
 
 def sample_memory_amplitude(d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem, memory_amplitudes=None, size=1):
-    amps = memory_amplitudes or np.linspace(-500, 500, 10000)
-    log_weights = reweight_by_memory_amplitude(memory_amplitude=amps, d_inner_h_mem=d_inner_h_mem,
-                                               optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
+    if memory_amplitudes is None:
+        memory_amplitudes = np.linspace(-500, 500, 10000)
+    log_weights = reweight_by_memory_amplitude(
+        memory_amplitude=memory_amplitudes, d_inner_h_mem=d_inner_h_mem,
+        optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
     weights = np.exp(log_weights - max(log_weights))
-    return Interped(amps, weights).sample(size=size)
+    return Interped(memory_amplitudes, weights).sample(size=size)
 
 
 class MemoryAmplitudeReweighter(object):
