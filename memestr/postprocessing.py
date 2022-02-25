@@ -242,7 +242,7 @@ def reweight_by_memory_amplitude(memory_amplitude, d_inner_h_mem, optimal_snr_sq
 
 def sample_memory_amplitude(d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem, memory_amplitudes=None, size=1):
     if memory_amplitudes is None:
-        memory_amplitudes = np.linspace(-500, 500, 10000)
+        memory_amplitudes = np.linspace(-50, 50, 10000)
     log_weights = reweight_by_memory_amplitude(
         memory_amplitude=memory_amplitudes, d_inner_h_mem=d_inner_h_mem,
         optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
@@ -251,7 +251,7 @@ def sample_memory_amplitude(d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inne
 
 
 class MemoryAmplitudeReweighter(object):
-    MEMORY_AMPLITUDES_INTERPOLATION_GRID = np.linspace(-500, 500, 10000)
+    MEMORY_AMPLITUDES_INTERPOLATION_GRID = np.linspace(-50, 50, 10000)
 
     def __init__(self, likelihood_memory, likelihood_oscillatory, parameters=None):
         self.likelihood_memory = likelihood_memory
