@@ -56,7 +56,7 @@ for x in range(len(event_list)):
     dx = amps[1] - amps[0]
 
     result = bilby.core.result.read_in_result(
-        f'{event_name}/result/run_data0_{event_list[x].time_tag}'
+        f'{event_name}_memory_amplitude_2000/result/run_data0_{event_list[x].time_tag}'
         f'_analysis_{event_list[x].detectors}_dynesty_merge_result.json')
 
     combined_log_l = reconstruct_memory_amplitude_population_posterior(
