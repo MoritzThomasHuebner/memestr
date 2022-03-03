@@ -80,14 +80,15 @@ for x in range(len(event_list)):
     print(amps[np.where(cdf < 0.05)[0][-1]])
     print(amps[np.where(cdf > 0.95)[0][0]])
 
-    plt.step(amps, probs, where='mid')
+    plt.step(amps, probs, where='mid', label="reconstructed posterior Eq.11")
     amp_samples = np.array(posteriors[0]['amplitude_samples'])[np.where(np.abs(np.array(posteriors[0]['amplitude_samples'])) < 20 )[0]]
-    plt.hist(amp_samples, bins='fd', density=True, alpha=0.5)
+    plt.hist(amp_samples, bins='fd', density=True, alpha=0.5, label="Resampled posterior")
     amps_samples = np.array(result.posterior['amplitude_samples'])[np.where(np.abs(np.array(result.posterior['amplitude_samples'])) < 20 )[0]]
-    plt.hist(amp_samples, bins='fd', density=True, alpha=0.5)
+    plt.hist(amp_samples, bins='fd', density=True, alpha=0.5, label="Sampled posterior")
     # plt.hist(posteriors[0]['amplitude_samples'], bins='fd', density=True, alpha=0.5)
     plt.xlabel('memory amplitude')
     plt.ylabel('probability')
+    plt.legend()
     # plt.savefig(f'memory_amplitude_results/combined_result.png')
     plt.savefig(f'memory_amplitude_results/{event_name}_memory_amplitude_posterior.png')
     plt.clf()
