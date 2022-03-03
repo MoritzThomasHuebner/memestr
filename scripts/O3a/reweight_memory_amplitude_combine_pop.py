@@ -55,9 +55,13 @@ for x in range(len(event_list)):
     amps = np.linspace(-20, 20, 1000)
     dx = amps[1] - amps[0]
 
-    result = bilby.core.result.read_in_result(
-        f'{event_name}_memory_amplitude_2000/result/run_data0_{event_list[x].time_tag}'
-        f'_analysis_{event_list[x].detectors}_dynesty_merge_result.json')
+    try:
+        result = bilby.core.result.read_in_result(
+            f'{event_name}_memory_amplitude_2000/result/run_data0_{event_list[x].time_tag}'
+            f'_analysis_{event_list[x].detectors}_dynesty_merge_result.json')
+    except OSError as e:
+        print(e)
+        continue
 
     combined_log_l = reconstruct_memory_amplitude_population_posterior(
         memory_amplitudes=amps, posteriors=posteriors)
