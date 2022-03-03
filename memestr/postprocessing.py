@@ -234,9 +234,9 @@ def reweight_by_likelihood_parallel(result, new_likelihood, reference_likelihood
     return reweighted_log_bf, log_weights
 
 
-def reweight_by_memory_amplitude(memory_amplitude, d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem):
-    return \
-        memory_amplitude * np.real(d_inner_h_mem) - 0.5 * memory_amplitude ** 2 \
+def reweight_by_memory_amplitude(
+        memory_amplitude, d_inner_h_mem, optimal_snr_squared_h_mem, h_osc_inner_h_mem):
+    return memory_amplitude * np.real(d_inner_h_mem) - 0.5 * memory_amplitude ** 2 \
         * optimal_snr_squared_h_mem - memory_amplitude * np.real(h_osc_inner_h_mem)
 
 
@@ -375,9 +375,13 @@ class MemoryAmplitudeReweighter(object):
               reweighting_terms_list]))
         h_osc_inner_h_mem = list(itertools.chain(
             *[[term.h_osc_inner_h_mem for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
+        log_l_osc = list(itertools.chain(
+            *[[term.log_l_osc for term in reweighting_terms] for reweighting_terms in reweighting_terms_list]))
         return dict(
             amplitude_samples=amplitude_samples, d_inner_h_mem=d_inner_h_mem,
-            optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem)
+            optimal_snr_squared_h_mem=optimal_snr_squared_h_mem, h_osc_inner_h_mem=h_osc_inner_h_mem,
+            log_l_osc=log_l_osc
+        )
 
 
 def _calculate_inner_sum(memory_amplitude, posterior):
