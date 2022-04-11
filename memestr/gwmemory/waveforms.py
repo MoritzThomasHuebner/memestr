@@ -1,10 +1,12 @@
 from __future__ import print_function, division, absolute_import
 
-from . import angles, constants, harmonics
-import numpy as np
+from itertools import product
 import lal # noqa
 import lalsimulation as lalsim # noqa
+import numpy as np
 from scipy.interpolate import interp1d
+
+from . import angles, constants, harmonics
 from .constants import cc, GG, Mpc, solar_mass
 from .utils import zero_pad_time_series, combine_modes
 
@@ -77,18 +79,9 @@ class MemoryGenerator(object):
             _ = self.time_domain_oscillatory()
         lms = self.modes
 
-        dhlm_dt = dict()
-        for lm in lms:
-            dhlm_dt[lm] = np.gradient(self.h_lm[lm], self.delta_t)
-
-        dhlm_dt_sq = dict()
-        for lm in lms:
-            for lmp in lms:
-                index = (lm, lmp)
-                dhlm_dt_sq[index] = dhlm_dt[lm] * np.conjugate(dhlm_dt[lmp])
-
-        if gamma_lmlm is None:
-            gamma_lmlm = angles.load_gamma()
+        dhlm_dt = {lm: np.gradient(self.h_lm[lm], self.delta_t) for lm in lms}
+        dhlm_dt_sq = {(lm, lmp): dhlm_dt[lm] * np.conjugate(dhlm_dt[lmp]) for lm, lmp in product(lms, lms)}
+        gamma_lmlm = gamma_lmlm or angles.load_gamma()
 
         # constant terms in SI units
         const = 1 / 4 / np.pi
@@ -103,7 +96,7 @@ class MemoryGenerator(object):
                 if abs(int(delta_m)) > ell:
                     continue
                 dh_mem_dt_lm[(ell, int(delta_m))] = np.sum(
-                    [dhlm_dt_sq[((l1, m1), (l2, m2))] * gamma_lmlm[delta_m]['{}{}{}{}'.format(l1, m1, l2, m2)][ii]
+                    [dhlm_dt_sq[((l1, m1), (l2, m2))] * gamma_lmlm[delta_m][f"{l1}{m1}{l2}{m2}"][ii]
                      for (l1, m1), (l2, m2) in dhlm_dt_sq.keys() if m1 - m2 == int(delta_m)], axis=0)
 
         self.h_mem_lm = {lm: const * np.cumsum(dh_mem_dt_lm[lm]) * self.delta_t for lm in dh_mem_dt_lm}
