@@ -12,7 +12,8 @@ if precessing:
 else:
     event_list = events
 
-amps = np.linspace(-500, 500, 1000)
+amps = np.linspace(-50, 50, 100)
+amps_bin_edges = np.linspace(-50, 50, 101)
 ln_probs = np.zeros(len(amps))
 dx = amps[1] - amps[0]
 unlogged_probs = np.ones(len(amps))
@@ -23,13 +24,13 @@ for event in event_list:
     if precessing:
         event_name += "_2000"
 
-    filename = f"memory_amplitude_results/{event_name}_memory_amplitude_posterior.txt"
+    filename = f"memory_amplitude_results/{event_name}_memory_amplitude_posterior_50.txt"
     try:
-        samples = np.array(pd.read_csv(f'memory_amplitude_results/{event_name}_memory_amplitude_posterior.csv')['amplitude_samples'])
+        samples = np.array(pd.read_csv(f'memory_amplitude_results/{event_name}_memory_amplitude_posterior_50.csv')['amplitude_samples'])
     except OSError as e:
         print(e)
         continue
-    probs, edges = np.histogram(samples, bins=1000, density=True)
+    probs, _ = np.histogram(samples, bins=amps_bin_edges, density=True)
     ln_probs += np.log(probs)
     unlogged_probs *= probs
     # plt.step(amps, probs)
@@ -50,27 +51,16 @@ print(amps[np.where(cdf > 0.95)[0][0]])
 plt.step(amps, probs, where='mid')
 plt.xlabel('memory amplitude')
 plt.ylabel('probability')
-plt.savefig(f'memory_amplitude_results/combined_result_alt.png')
-plt.clf()
-
-plt.step(amps, unlogged_probs, where='mid')
-plt.xlabel('memory amplitude')
-plt.ylabel('probability')
 plt.xlim(-50, 50)
-plt.savefig(f'memory_amplitude_results/combined_result_zoomed_alt_unlogged.png')
+plt.savefig(f'memory_amplitude_results/combined_result_alt_50.png')
 plt.clf()
 
-plt.step(amps, probs, where='mid')
-plt.xlabel('memory amplitude')
-plt.ylabel('probability')
-plt.xlim(-50, 50)
-plt.savefig(f'memory_amplitude_results/combined_result_zoomed_alt.png')
-plt.clf()
 
-plt.step(amps, cdf, where='mid')
-plt.xlabel('memory amplitude')
-plt.ylabel('CDF')
-plt.savefig(f'memory_amplitude_results/combined_result_cdf_alt.png')
-plt.clf()
+#
+# plt.step(amps_bins, cdf, where='mid')
+# plt.xlabel('memory amplitude')
+# plt.ylabel('CDF')
+# plt.savefig(f'memory_amplitude_results/combined_result_cdf_alt_50.png')
+# plt.clf()
 
 
