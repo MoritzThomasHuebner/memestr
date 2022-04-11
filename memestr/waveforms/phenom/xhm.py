@@ -136,8 +136,8 @@ def td_imrx_22(times, mass_ratio, total_mass, luminosity_distance,
 def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
                    s13, s23, fold_in_memory=True, modes=None):
     temp_times = copy.copy(times)
-    memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
-                                                    m_tot=total_mass,
+    memory_generator = gwmemory.waveforms.PhenomXHM(mass_ratio=mass_ratio,
+                                                    total_mass=total_mass,
                                                     distance=luminosity_distance,
                                                     s1=np.array([0., 0., s13]),
                                                     s2=np.array([0., 0., s23]),
@@ -153,8 +153,8 @@ def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phas
 def _evaluate_imrx_fast(times, total_mass, mass_ratio, inc, luminosity_distance, phase,
                         s13, s23):
     temp_times = copy.copy(times)
-    memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
-                                                    m_tot=total_mass,
+    memory_generator = gwmemory.waveforms.PhenomXHM(mass_ratio=mass_ratio,
+                                                    total_mass=total_mass,
                                                     distance=luminosity_distance,
                                                     s1=np.array([0., 0., s13]),
                                                     s2=np.array([0., 0., s23]),

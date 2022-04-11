@@ -125,8 +125,8 @@ class HybridSurrogate(MemoryGenerator):
     _surrogate_loaded = False
     MASS_TO_TIME = 4.925491025543576e-06
 
-    def __init__(self, q, total_mass=None, spin_1=None,
-                 spin_2=None, distance=None, l_max=4, modes=None, times=None,
+    def __init__(self, mass_ratio, total_mass=None, s1=None,
+                 s2=None, distance=None, l_max=4, modes=None, times=None,
                  minimum_frequency=10, reference_frequency=50., units='mks'):
         """
         Initialise Surrogate MemoryGenerator
@@ -136,15 +136,15 @@ class HybridSurrogate(MemoryGenerator):
             Maximum ell value for oscillatory time series.
         modes: dict, optional
             Modes to load in, default is all ell<=4.
-        q: float
+        mass_ratio: float
             Binary mass ratio
         total_mass: float, optional
             Total binary mass in solar units.
         distance: float, optional
             Distance to the binary in MPC.
-        spin_1: array-like
+        s1: array-like
             Spin vector of more massive black hole.
-        spin_2: array-like
+        s2: array-like
             Spin vector of less massive black hole.
         times: array-like
             Time array to evaluate the waveforms on, default is
@@ -155,10 +155,10 @@ class HybridSurrogate(MemoryGenerator):
             self.sur = gwsurrogate.LoadSurrogate('NRHybSur3dq8')
             self._surrogate_loaded = True
 
-        self.q = q
-        self.MTot = total_mass
-        self.chi_1 = spin_1
-        self.chi_2 = spin_2
+        self.mass_ratio = mass_ratio
+        self.total_mass = total_mass
+        self.s1 = s1
+        self.s2 = s2
         self.minimum_frequency = minimum_frequency
         self.distance = distance
         self.LMax = l_max
@@ -170,9 +170,9 @@ class HybridSurrogate(MemoryGenerator):
             self.h_to_geo = 1
             self.t_to_geo = 1
         else:
-            self.h_to_geo = self.distance * Mpc / self.MTot /\
-                solar_mass / GG * cc ** 2
-            self.t_to_geo = 1 / self.MTot / solar_mass / GG * cc ** 3
+            self.h_to_geo = self.distance * Mpc / self.total_mass / \
+                            solar_mass / GG * cc ** 2
+            self.t_to_geo = 1 / self.total_mass / solar_mass / GG * cc ** 3
 
         self.h_lm = None
         self.times = times
@@ -190,7 +190,7 @@ class HybridSurrogate(MemoryGenerator):
 
     @property
     def epsilon(self):
-        return 100 * self.MASS_TO_TIME * self.MTot
+        return 100 * self.MASS_TO_TIME * self.total_mass
 
     def time_domain_oscillatory(self, times=None, modes=None, inc=None,
                                 phase=None):
@@ -226,7 +226,7 @@ class HybridSurrogate(MemoryGenerator):
 
         if self.h_lm is None:
 
-            h_lm = self.sur([self.q, self.chi_1, self.chi_2], times=t_nr, f_low=0, M=self.MTot,
+            h_lm = self.sur([self.mass_ratio, self.s1, self.s2], times=t_nr, f_low=0, M=self.total_mass,
                             dist_mpc=self.distance, units='mks', f_ref=self.reference_frequency)
 
             del h_lm[(5, 5)]
@@ -262,11 +262,11 @@ class HybridSurrogate(MemoryGenerator):
             return combine_modes(h_lm, inc, phase), times
 
     @property
-    def q(self):
+    def mass_ratio(self):
         return self._q
 
-    @q.setter
-    def q(self, q):
+    @mass_ratio.setter
+    def mass_ratio(self, q):
         if q < 1:
             q = 1 / q
         if q > 8:
@@ -274,52 +274,54 @@ class HybridSurrogate(MemoryGenerator):
         self._q = q
 
     @property
-    def chi_1(self):
-        return self._chi_1
+    def s1(self):
+        return self._s1
 
-    @chi_1.setter
-    def chi_1(self, spin_1):
-        if spin_1 is None:
-            self._chi_1 = 0.0
-        elif len(np.atleast_1d(spin_1)) == 3:
-            self._chi_1 = spin_1[2]
+    @s1.setter
+    def s1(self, s1):
+        if s1 is None:
+            self._s1 = 0.0
+        elif len(np.atleast_1d(s1)) == 3:
+            self._s1 = s1[2]
         else:
-            self._chi_1 = spin_1
+            self._s1 = s1
 
     @property
-    def chi_2(self):
-        return self._chi_2
+    def s2(self):
+        return self._s2
 
-    @chi_2.setter
-    def chi_2(self, spin_2):
-        if spin_2 is None:
-            self._chi_2 = 0.0
-        elif len(np.atleast_1d(spin_2)) == 3:
-            self._chi_2 = spin_2[2]
+    @s2.setter
+    def s2(self, s2):
+        if s2 is None:
+            self._s2 = 0.0
+        elif len(np.atleast_1d(s2)) == 3:
+            self._s2 = s2[2]
         else:
-            self._chi_2 = spin_2
+            self._s2 = s2
 
 
 class BaseSurrogate(MemoryGenerator):
 
-    def __init__(self, q, name='', m_tot=None, s1=None, s2=None, distance=None, l_max=4, max_q=2, times=None):
+    def __init__(
+            self, mass_ratio, name='', total_mass=None, s1=None, s2=None,
+            distance=None, l_max=4, max_q=2, times=None):
 
         MemoryGenerator.__init__(self, name=name, distance=distance)
 
         self.max_q = max_q
-        self.q = q
-        self.MTot = m_tot
+        self.mass_ratio = mass_ratio
+        self.total_mass = total_mass
         self.s1 = s1
         self.s2 = s2
         self.LMax = l_max
         self.times = times
 
     @property
-    def q(self):
+    def mass_ratio(self):
         return self.__q
 
-    @q.setter
-    def q(self, q):
+    @mass_ratio.setter
+    def mass_ratio(self, q):
         if q < 1:
             q = 1 / q
         if q > self.max_q:
@@ -350,11 +352,11 @@ class BaseSurrogate(MemoryGenerator):
 
     @property
     def m1(self):
-        return self.MTot / (1 + self.q)
+        return self.total_mass / (1 + self.mass_ratio)
 
     @property
     def m2(self):
-        return self.m1 * self.q
+        return self.m1 * self.mass_ratio
 
     @property
     def m1_si(self):
@@ -370,17 +372,19 @@ class BaseSurrogate(MemoryGenerator):
 
     @property
     def h_to_geo(self):
-        if self.MTot is None:
+        if self.total_mass is None:
             return 1
         else:
-            return self.distance * constants.Mpc / self.MTot / constants.solar_mass / constants.GG * constants.cc ** 2
+            return \
+                self.distance * constants.Mpc / self.total_mass / \
+                constants.solar_mass / constants.GG * constants.cc ** 2
 
     @property
     def t_to_geo(self):
-        if self.MTot is None:
+        if self.total_mass is None:
             return None
         else:
-            return 1 / self.MTot / constants.solar_mass / constants.GG * constants.cc ** 3
+            return 1 / self.total_mass / constants.solar_mass / constants.GG * constants.cc ** 3
 
     @property
     def geo_to_t(self):
@@ -459,7 +463,7 @@ class NRSur7dq4(BaseSurrogate):
         self.units = units
         self.l_max = l_max
         self.h_lm = None
-        super().__init__(q=q, name='NRSur7dq4', m_tot=total_mass, s1=s1, s2=s2,
+        super().__init__(mass_ratio=q, name='NRSur7dq4', total_mass=total_mass, s1=s1, s2=s2,
                          distance=distance, l_max=l_max, max_q=4, times=times)
         self.h_lm = self.time_domain_oscillatory(modes=modes)
         self.zero_pad_h_lm()
@@ -501,7 +505,9 @@ class Approximant(MemoryGenerator):
     _eccentricity = 0.0
     _mean_per_ano = 0.0
 
-    def __init__(self, name, q, m_tot=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
+    def __init__(
+            self, name, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]),
+            s2=np.array([0, 0, 0]), distance=400, times=None):
         """
         Initialise Surrogate MemoryGenerator
         
@@ -509,9 +515,9 @@ class Approximant(MemoryGenerator):
         ----------
         name: str
             File name to load.
-        q: float
+        mass_ratio: float
             Binary mass ratio
-        m_tot: float, optional
+        total_mass: float, optional
             Total binary mass in solar units.
         distance: float, optional
             Distance to the binary in Mpc.
@@ -523,21 +529,21 @@ class Approximant(MemoryGenerator):
             Time array to evaluate the waveforms on, default is time array from lalsimulation.
             FIXME
         """
-        self.q = q
-        self.MTot = m_tot
-        self.__S1 = s1
-        self.__S2 = s2
+        self.mass_ratio = mass_ratio
+        self.total_mass = total_mass
+        self._s1 = s1
+        self._s2 = s2
         self._check_prececssion()
 
         MemoryGenerator.__init__(self, name=name, times=times, distance=distance)
 
     @property
     def m1(self):
-        return self.MTot / (1 + self.q)
+        return self.total_mass / (1 + self.mass_ratio)
 
     @property
     def m2(self):
-        return self.m1 * self.q
+        return self.m1 * self.mass_ratio
 
     @property
     def m1_si(self):
@@ -552,11 +558,11 @@ class Approximant(MemoryGenerator):
         return self.distance * constants.Mpc
 
     @property
-    def q(self):
+    def mass_ratio(self):
         return self.__q
 
-    @q.setter
-    def q(self, q):
+    @mass_ratio.setter
+    def mass_ratio(self, q):
         if q > 1:
             q = 1 / q
         self.__q = q
@@ -575,26 +581,26 @@ class Approximant(MemoryGenerator):
 
     @property
     def s1(self):
-        return self.__S1
+        return self._s1
 
     @s1.setter
     def s1(self, s1):
         if s1 is None:
-            self.__S1 = np.array([0., 0., 0.])
+            self._s1 = np.array([0., 0., 0.])
         else:
-            self.__S1 = np.array(s1)
+            self._s1 = np.array(s1)
         self._check_prececssion()
 
     @property
     def s2(self):
-        return self.__S2
+        return self._s2
 
     @s2.setter
     def s2(self, s2):
         if s2 is None:
-            self.__S2 = np.array([0., 0., 0.])
+            self._s2 = np.array([0., 0., 0.])
         else:
-            self.__S2 = np.array(s2)
+            self._s2 = np.array(s2)
         self._check_prececssion()
 
     @property
@@ -602,15 +608,15 @@ class Approximant(MemoryGenerator):
         return lalsim.GetApproximantFromString(self.name)
 
     def _check_prececssion(self):
-        if abs(self.__S1[0]) > 0 or abs(self.__S1[1]) > 0 or abs(self.__S2[0]) > 0 or abs(self.__S2[1]) > 0:
+        if abs(self._s1[0]) > 0 or abs(self._s1[1]) > 0 or abs(self._s2[0]) > 0 or abs(self._s2[1]) > 0:
             print('WARNING: Approximant decomposition works only for non-precessing waveforms.')
             print('Setting spins to be aligned')
-            self.__S1[0], self.__S1[1] = 0., 0.
-            self.__S2[0], self.__S2[1] = 0., 0.
-            print('New spins are: S1 = {}, S2 = {}'.format(self.__S1, self.__S2))
+            self._s1[0], self._s1[1] = 0., 0.
+            self._s2[0], self._s2[1] = 0., 0.
+            print('New spins are: S1 = {}, S2 = {}'.format(self._s1, self._s2))
         else:
-            self.__S1 = list(self.__S1)
-            self.__S2 = list(self.__S2)
+            self._s1 = list(self._s1)
+            self._s2 = list(self._s2)
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
         """
@@ -673,9 +679,10 @@ class PhenomXHM(Approximant):
     _eccentricity = 0.0
     _mean_per_ano = 0.0
 
-    def __init__(self, q, m_tot=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
+    def __init__(
+            self, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
         name = "IMRPhenomXHM"
-        super().__init__(name, q, m_tot, s1, s2, distance, times)
+        super().__init__(name, mass_ratio, total_mass, s1, s2, distance, times)
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
         if self.h_lm is None:
@@ -733,12 +740,12 @@ class TEOBResumS(MemoryGenerator):
 
     AVAILABLE_MODES = None
 
-    def __init__(self, q, m_tot=None, chi_1=0., chi_2=0., distance=None,
+    def __init__(self, mass_ratio, total_mass=None, chi_1=0., chi_2=0., distance=None,
                  max_q=20, times=None, minimum_frequency=35., ecc=0):
 
         self.max_q = max_q
-        self.q = q
-        self.MTot = m_tot
+        self.mass_ratio = mass_ratio
+        self.total_mass = total_mass
         self.chi_1 = chi_1
         self.chi_2 = chi_2
         self.times = times
@@ -750,11 +757,11 @@ class TEOBResumS(MemoryGenerator):
         super().__init__(name='TEOBResumS', h_lm=None, times=times, distance=distance)
 
     @property
-    def q(self):
+    def mass_ratio(self):
         return self.__q
 
-    @q.setter
-    def q(self, q):
+    @mass_ratio.setter
+    def mass_ratio(self, q):
         if q < 1:
             q = 1 / q
         if q > self.max_q:
@@ -785,11 +792,11 @@ class TEOBResumS(MemoryGenerator):
 
     @property
     def m1(self):
-        return self.MTot / (1 + self.q)
+        return self.total_mass / (1 + self.mass_ratio)
 
     @property
     def m2(self):
-        return self.m1 * self.q
+        return self.m1 * self.mass_ratio
 
     @property
     def m1_si(self):
@@ -819,8 +826,8 @@ class TEOBResumS(MemoryGenerator):
             self.h_lm = dict()
             for mode, k in zip(modes, ks):
                 parameters = {
-                    'M': self.MTot,
-                    'q': self.q,  # q > 1
+                    'M': self.total_mass,
+                    'q': self.mass_ratio,  # q > 1
                     'ecc': self.ecc,
                     'Lambda1': 0.,
                     'Lambda2': 0.,
@@ -848,7 +855,6 @@ class TEOBResumS(MemoryGenerator):
                 h_lm = h / harmonics.sYlm(-2, mode[0], mode[1], inclination, coalescing_angle)
 
                 self.h_lm.update({(mode[0], mode[1]): h_lm, (mode[0], -mode[1]): np.conjugate(h_lm)})
-            print(self.h_lm)
             self.zero_pad_h_lm()
 
         if inc is None or phase is None:

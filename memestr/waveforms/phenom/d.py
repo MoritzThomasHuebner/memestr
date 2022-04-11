@@ -76,8 +76,8 @@ def _evaluate_imrd(times, total_mass, mass_ratio, inc, luminosity_distance, phas
                    s13, s23, fold_in_memory=True):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Approximant(name='IMRPhenomD',
-                                                      q=mass_ratio,
-                                                      m_tot=total_mass,
+                                                      mass_ratio=mass_ratio,
+                                                      total_mass=total_mass,
                                                       distance=luminosity_distance,
                                                       s1=np.array([0., 0., s13]),
                                                       s2=np.array([0., 0., s23]),

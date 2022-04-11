@@ -73,10 +73,10 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
                           waveform_arguments=dict(alpha=0.1))
     full_wf = recovery_wg.frequency_domain_strain(parameters)
 
-    memory_generator = gwmemory.waveforms.HybridSurrogate(q=parameters['mass_ratio'],
+    memory_generator = gwmemory.waveforms.HybridSurrogate(mass_ratio=parameters['mass_ratio'],
                                                           total_mass=parameters['total_mass'],
-                                                          spin_1=parameters['s13'],
-                                                          spin_2=parameters['s23'],
+                                                          s1=parameters['s13'],
+                                                          s2=parameters['s23'],
                                                           times=recovery_wg.time_array,
                                                           distance=parameters['luminosity_distance'],
                                                           minimum_frequency=minimum_frequency,

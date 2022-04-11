@@ -77,10 +77,10 @@ def td_nr_sur_with_memory(times, mass_ratio, total_mass, s13, s23,
 
 def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s13, s23, kwargs,
                                fold_in_memory=True):
-    memory_generator = gwmemory.waveforms.HybridSurrogate(q=mass_ratio,
+    memory_generator = gwmemory.waveforms.HybridSurrogate(mass_ratio=mass_ratio,
                                                           total_mass=total_mass,
-                                                          spin_1=s13,
-                                                          spin_2=s23,
+                                                          s1=s13,
+                                                          s2=s23,
                                                           times=times,
                                                           distance=luminosity_distance,
                                                           minimum_frequency=kwargs.get('minimum_frequency', 10),
