@@ -1,24 +1,20 @@
 import itertools
-import bilby.gw.utils as utils
-from bilby.core.prior import Interped
 from collections import namedtuple
 import pandas as pd
 from scipy.special import logsumexp
 from scipy.optimize import minimize
 import multiprocessing
 
-try:
-    import gwmemory
-    gamma_lmlm = gwmemory.angles.load_gamma()
-except:
-    gwmemory = None
-    gamma_lmlm = None
+from bilby.core.prior import Interped
+import bilby.gw.utils as utils
 
 from memestr.waveforms.phenom import *
+from . import gwmemory
 
 ReweightingTerms = namedtuple(
     'ReweightingTerms', ['memory_amplitude_sample', 'd_inner_h_mem', 'optimal_snr_squared_h_mem', 'h_osc_inner_h_mem'])
 
+gamma_lmlm = gwmemory.angles.load_gamma()
 logger = bilby.core.utils.logger
 roll_off = 0.2
 

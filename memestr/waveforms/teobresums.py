@@ -1,10 +1,7 @@
 import bilby
-try:
-    import gwmemory
-except ModuleNotFoundError:
-    gwmemory = None
 from copy import deepcopy
 
+from .. import gwmemory
 from .utils import apply_window, gamma_lmlm, convert_to_frequency_domain, convert_to_frequency_domain_with_memory
 
 

@@ -1,15 +1,12 @@
 from copy import deepcopy
-
-try:
-    import gwmemory
-    gamma_lmlm = gwmemory.angles.load_gamma()
-except ModuleNotFoundError:
-    gwmemory = None
-    gamma_lmlm = None
 import numpy as np
 from scipy.signal.windows import tukey
 
+from .. import gwmemory
 
+
+
+gamma_lmlm = gwmemory.angles.load_gamma()
 roll_off = 0.2
 
 
