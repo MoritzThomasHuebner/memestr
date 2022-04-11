@@ -81,7 +81,6 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
                                                           distance=parameters['luminosity_distance'],
                                                           minimum_frequency=minimum_frequency,
                                                           sampling_frequency=sampling_frequency,
-                                                          units='mks',
                                                           )
 
     maximum_overlap = 0.

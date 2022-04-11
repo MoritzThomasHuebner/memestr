@@ -84,8 +84,7 @@ def _evaluate_hybrid_surrogate(times, total_mass, mass_ratio, inc, luminosity_di
                                                           times=times,
                                                           distance=luminosity_distance,
                                                           minimum_frequency=kwargs.get('minimum_frequency', 10),
-                                                          sampling_frequency=kwargs.get('sampling_frequency', 2048),
-                                                          units='mks'
+                                                          sampling_frequency=kwargs.get('sampling_frequency', 2048)
                                                           )
 
     oscillatory, _ = memory_generator.time_domain_oscillatory(times=times, inc=inc, phase=phase)

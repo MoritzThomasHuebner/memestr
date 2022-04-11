@@ -77,10 +77,10 @@ class MemoryGenerator(object):
         """
         if self.h_lm is None:
             _ = self.time_domain_oscillatory()
-        lms = self.modes
 
-        dhlm_dt = {lm: np.gradient(self.h_lm[lm], self.delta_t) for lm in lms}
-        dhlm_dt_sq = {(lm, lmp): dhlm_dt[lm] * np.conjugate(dhlm_dt[lmp]) for lm, lmp in product(lms, lms)}
+        dhlm_dt = {lm: np.gradient(self.h_lm[lm], self.delta_t) for lm in self.modes}
+        dhlm_dt_sq = {(lm, lmp): dhlm_dt[lm] * np.conjugate(dhlm_dt[lmp])
+                      for lm, lmp in product(self.modes, self.modes)}
         gamma_lmlm = gamma_lmlm or angles.load_gamma()
 
         # constant terms in SI units
@@ -120,7 +120,7 @@ class HybridSurrogate(MemoryGenerator):
 
     def __init__(self, mass_ratio, total_mass=None, s1=None,
                  s2=None, distance=None, l_max=4, modes=None, times=None,
-                 minimum_frequency=10, reference_frequency=50., units='mks'):
+                 minimum_frequency=10, reference_frequency=50.):
         """
         Initialise Surrogate MemoryGenerator
         Parameters
@@ -157,21 +157,14 @@ class HybridSurrogate(MemoryGenerator):
         self.LMax = l_max
         self.modes = modes
         self.reference_frequency = reference_frequency
-        self.units = units
 
-        if total_mass is None:
-            self.h_to_geo = 1
-            self.t_to_geo = 1
-        else:
-            self.h_to_geo = self.distance * Mpc / self.total_mass / \
-                            solar_mass / GG * cc ** 2
-            self.t_to_geo = 1 / self.total_mass / solar_mass / GG * cc ** 3
+        self.h_to_geo = \
+            self.distance * Mpc / self.total_mass / \
+            solar_mass / GG * cc ** 2
+        self.t_to_geo = 1 / self.total_mass / solar_mass / GG * cc ** 3
 
         self.h_lm = None
         self.times = times
-
-        if times is not None and self.units == 'dimensionless':
-            times *= self.t_to_geo
 
         h_lm, times = self.time_domain_oscillatory(modes=self.modes, times=times)
 
@@ -306,20 +299,20 @@ class BaseSurrogate(MemoryGenerator):
         self.total_mass = total_mass
         self.s1 = s1
         self.s2 = s2
-        self.LMax = l_max
+        self.l_max = l_max
         self.times = times
 
     @property
     def mass_ratio(self):
-        return self.__q
+        return self._mass_ratio
 
     @mass_ratio.setter
-    def mass_ratio(self, q):
-        if q < 1:
-            q = 1 / q
-        if q > self.max_q:
+    def mass_ratio(self, mass_ratio):
+        if mass_ratio < 1:
+            mass_ratio = 1 / mass_ratio
+        if mass_ratio > self.max_q:
             print(f'WARNING: Surrogate waveform not tested for q>{self.max_q}.')
-        self.__q = q
+        self._mass_ratio = mass_ratio
 
     @property
     def s1(self):
@@ -363,33 +356,6 @@ class BaseSurrogate(MemoryGenerator):
     def distance_si(self):
         return self.distance * constants.Mpc
 
-    @property
-    def h_to_geo(self):
-        if self.total_mass is None:
-            return 1
-        else:
-            return \
-                self.distance * constants.Mpc / self.total_mass / \
-                constants.solar_mass / constants.GG * constants.cc ** 2
-
-    @property
-    def t_to_geo(self):
-        if self.total_mass is None:
-            return None
-        else:
-            return 1 / self.total_mass / constants.solar_mass / constants.GG * constants.cc ** 3
-
-    @property
-    def geo_to_t(self):
-        return 1 / self.t_to_geo
-
-    @property
-    def geometric_times(self):
-        if self.times is not None:
-            return self.times * self.t_to_geo
-        else:
-            return None
-
 
 class NRSur7dq4(BaseSurrogate):
 
@@ -423,7 +389,7 @@ class NRSur7dq4(BaseSurrogate):
     """
 
     def __init__(self, q, total_mass=None, s1=None, s2=None, distance=None, l_max=4, modes=None, times=None,
-                 minimum_frequency=20., reference_frequency=20., units='mks'):
+                 minimum_frequency=20., reference_frequency=20.):
         """
         Initialise Surrogate MemoryGenerator
         Parameters
@@ -453,7 +419,6 @@ class NRSur7dq4(BaseSurrogate):
 
         self.minimum_frequency = minimum_frequency
         self.reference_frequency = reference_frequency
-        self.units = units
         self.l_max = l_max
         self.h_lm = None
         super().__init__(mass_ratio=q, name='NRSur7dq4', total_mass=total_mass, s1=s1, s2=s2,
@@ -490,8 +455,8 @@ class NRSur7dq4(BaseSurrogate):
 class Approximant(MemoryGenerator):
 
     AVAILABLE_MODES = [(2, 2), (2, -2)]
-    _f_min = 20.
-    _f_ref = 20
+    minimum_frequency = 20.
+    reference_frequency = 20
     _theta = 0.0
     _phi = 0.0
     _long_asc_nodes = 0.0
@@ -520,7 +485,6 @@ class Approximant(MemoryGenerator):
             Spin vector of less massive black hole.
         times: array_like
             Time array to evaluate the waveforms on, default is time array from lalsimulation.
-            FIXME
         """
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
@@ -559,18 +523,6 @@ class Approximant(MemoryGenerator):
         if q > 1:
             q = 1 / q
         self.__q = q
-
-    @property
-    def h_to_geo(self):
-        return self.distance_si / (self.m1_si + self.m2_si) / constants.GG * constants.cc ** 2
-
-    @property
-    def t_to_geo(self):
-        return 1 / (self.m1_si + self.m2_si) / constants.GG * constants.cc ** 3
-
-    @property
-    def delta_t(self):
-        return self.times[1] - self.times[0]
 
     @property
     def s1(self):
@@ -649,7 +601,7 @@ class Approximant(MemoryGenerator):
             h_plus, h_cross = lalsim.SimInspiralChooseTDWaveform(
                 self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
                 self.distance_si, self._theta, self._phi, self._long_asc_nodes, self._eccentricity, self._mean_per_ano,
-                self.delta_t, self._f_min, self._f_ref, wf_dict, self.approximant)
+                self.delta_t, self.minimum_frequency, self.reference_frequency, wf_dict, self.approximant)
 
             h = h_plus.data.data - 1j * h_cross.data.data
             h_22 = h / harmonics.sYlm(-2, 2, 2, self._theta, self._phi)
@@ -666,26 +618,18 @@ class Approximant(MemoryGenerator):
 class PhenomXHM(Approximant):
 
     AVAILABLE_MODES = [(2, 2), (2, -2), (2, 1), (2, -1), (3, 3), (3, -3), (3, 2), (3, -2), (4, 4), (4, -4)]
-    _f_min = 20.
-    _f_ref = 20.
-    _long_asc_nodes = 0.0
-    _eccentricity = 0.0
-    _mean_per_ano = 0.0
 
     def __init__(
             self, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
-        name = "IMRPhenomXHM"
-        super().__init__(name, mass_ratio, total_mass, s1, s2, distance, times)
+        super().__init__(
+            name="IMRPhenomXHM", mass_ratio=mass_ratio, total_mass=total_mass,
+            s1=s1, s2=s2, distance=distance, times=times)
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
         if self.h_lm is None:
-            if modes is None:
-                modes = self.AVAILABLE_MODES
+            modes = modes or self.AVAILABLE_MODES
 
-            self.h_lm = dict()
-            for mode in modes:
-                h_lm, times = self.single_mode_from_choose_td(ell=mode[0], m=mode[1])
-                self.h_lm[mode] = h_lm
+            self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1])[0] for mode in modes}
             self.zero_pad_h_lm()
 
         if inc is None or phase is None:
@@ -712,7 +656,7 @@ class PhenomXHM(Approximant):
         hp, hc = lalsim.SimInspiralChooseTDWaveform(
             self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
             self.distance_si, inc, phase, self._long_asc_nodes, self._eccentricity, self._mean_per_ano, self.delta_t,
-            self._f_min, self._f_ref, lalparams, lalsim.IMRPhenomXHM)
+            self.minimum_frequency, self.reference_frequency, lalparams, lalsim.IMRPhenomXHM)
 
         shift = hp.epoch.gpsSeconds + hp.epoch.gpsNanoSeconds / 1e9
         times = np.arange(len(hp.data.data)) * self.delta_t + shift
