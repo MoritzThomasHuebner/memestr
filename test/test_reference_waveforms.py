@@ -56,55 +56,50 @@ class TestWaveforms(unittest.TestCase):
 
     def test_xhm_fd_consistency(self):
         for mode in self.modes:
-            self.assertTrue(np.allclose(self.xhm_fd[mode].real, self.xhm_fast_fd[mode].real, atol=1e-28))
-            self.assertTrue(np.allclose(self.xhm_fd[mode].imag, self.xhm_fast_fd[mode].imag, atol=1e-28))
+            self.assertTrue(np.allclose(self.xhm_fd[mode].real, self.xhm_fast_fd[mode].real))
+            self.assertTrue(np.allclose(self.xhm_fd[mode].imag, self.xhm_fast_fd[mode].imag))
 
     def test_xhm_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}xhm_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, self.xhm[mode]))
+            self.assertTrue(np.allclose(ref_waveform, self.xhm[mode]))
 
     def test_xhm_memory_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}xhm_memory_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, self.xhm_memory[mode]))
+            self.assertTrue(np.allclose(ref_waveform, self.xhm_memory[mode]))
 
     def test_xhm_fd_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}xhm_fd_{mode}.txt')
-            print(ref_waveform/np.abs(self.xhm_fd[mode]))
-            print(max(ref_waveform/np.abs(self.xhm_fd[mode])))
-            print(min(ref_waveform/np.abs(self.xhm_fd[mode])))
-            self.assertTrue(np.array_equal(ref_waveform, np.abs(self.xhm_fd[mode])))
+            self.assertTrue(np.allclose(ref_waveform, np.abs(self.xhm_fd[mode])))
 
     def test_xhm_fast_fd_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}xhm_fd_fast_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, np.abs(self.xhm_fast_fd[mode])))
+            self.assertTrue(np.allclose(ref_waveform, np.abs(self.xhm_fast_fd[mode])))
 
     def test_xhm_memory_fd_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}xhm_memory_fd_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, np.abs(self.xhm_memory_fd[mode])))
+            self.assertTrue(np.allclose(ref_waveform, np.abs(self.xhm_memory_fd[mode])))
 
     def test_sur_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}sur7dq4_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, self.sur7dq4[mode]))
+            self.assertTrue(np.allclose(ref_waveform, self.sur7dq4[mode]))
 
     def test_sur_memory_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}sur7dq4_memory_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, self.sur7dq4_memory[mode]))
+            self.assertTrue(np.allclose(ref_waveform, self.sur7dq4_memory[mode]))
 
     def test_sur_fd_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}sur7dq4_fd_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, np.abs(self.sur7dq4_fd[mode])))
+            self.assertTrue(np.allclose(ref_waveform, np.abs(self.sur7dq4_fd[mode])))
 
     def test_sur_memory_fd_vs_reference(self):
         for mode in self.modes:
             ref_waveform = np.loadtxt(f'{self.outdir}sur7dq4_memory_fd_{mode}.txt')
-            self.assertTrue(np.array_equal(ref_waveform, np.abs(self.sur7dq4_memory_fd[mode])))
-
-
+            self.assertTrue(np.allclose(ref_waveform, np.abs(self.sur7dq4_memory_fd[mode])))
