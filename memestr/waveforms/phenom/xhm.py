@@ -137,10 +137,10 @@ def _evaluate_imrx(times, total_mass, mass_ratio, inc, luminosity_distance, phas
                    s13, s23, fold_in_memory=True, modes=None):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
-                                                    MTot=total_mass,
+                                                    m_tot=total_mass,
                                                     distance=luminosity_distance,
-                                                    S1=np.array([0., 0., s13]),
-                                                    S2=np.array([0., 0., s23]),
+                                                    s1=np.array([0., 0., s13]),
+                                                    s2=np.array([0., 0., s23]),
                                                     times=temp_times)
     oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase, modes=modes)
     if not fold_in_memory:
@@ -154,10 +154,10 @@ def _evaluate_imrx_fast(times, total_mass, mass_ratio, inc, luminosity_distance,
                         s13, s23):
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.PhenomXHM(q=mass_ratio,
-                                                    MTot=total_mass,
+                                                    m_tot=total_mass,
                                                     distance=luminosity_distance,
-                                                    S1=np.array([0., 0., s13]),
-                                                    S2=np.array([0., 0., s23]),
+                                                    s1=np.array([0., 0., s13]),
+                                                    s2=np.array([0., 0., s23]),
                                                     times=temp_times)
     return memory_generator.time_domain_oscillatory_from_polarisations(inc=inc, phase=phase)
 

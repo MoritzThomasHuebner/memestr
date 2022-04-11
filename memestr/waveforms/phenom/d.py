@@ -77,10 +77,10 @@ def _evaluate_imrd(times, total_mass, mass_ratio, inc, luminosity_distance, phas
     temp_times = copy.copy(times)
     memory_generator = gwmemory.waveforms.Approximant(name='IMRPhenomD',
                                                       q=mass_ratio,
-                                                      MTot=total_mass,
+                                                      m_tot=total_mass,
                                                       distance=luminosity_distance,
-                                                      S1=np.array([0., 0., s13]),
-                                                      S2=np.array([0., 0., s23]),
+                                                      s1=np.array([0., 0., s13]),
+                                                      s2=np.array([0., 0., s23]),
                                                       times=temp_times)
     oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
     if not fold_in_memory:

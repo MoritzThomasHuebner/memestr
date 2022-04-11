@@ -14,6 +14,7 @@ class MemoryGenerator(object):
     def __init__(self, name, h_lm=None, times=None, distance=None):
         self.name = name
         self.h_lm = h_lm
+        self.h_mem_lm = None
         self.times = times
         if self.h_lm is not None:
             try:
@@ -49,16 +50,16 @@ class MemoryGenerator(object):
     def delta_f(self):
         return 1/self.duration
 
-    def time_domain_memory(self, inc=None, phase=None, gamma_lmlm=None):
+    def time_domain_memory(self, inc, phase, gamma_lmlm=None):
         """
         Calculate the spherical harmonic decomposition of the nonlinear memory from a dictionary of spherical mode time
         series
 
         Parameters
         ----------
-        inc: float, optional
+        inc: float
             Inclination of the source, if None, the spherical harmonic modes will be returned.
-        phase: float, optional
+        phase: float
             Reference phase of the source, if None, the spherical harmonic modes will be returned.
             For CBCs this is the phase at coalescence.
         gamma_lmlm: dict
@@ -105,29 +106,14 @@ class MemoryGenerator(object):
                     [dhlm_dt_sq[((l1, m1), (l2, m2))] * gamma_lmlm[delta_m]['{}{}{}{}'.format(l1, m1, l2, m2)][ii]
                      for (l1, m1), (l2, m2) in dhlm_dt_sq.keys() if m1 - m2 == int(delta_m)], axis=0)
 
-        h_mem_lm = {lm: const * np.cumsum(dh_mem_dt_lm[lm]) * self.delta_t for lm in dh_mem_dt_lm}
-        self.h_mem_lm = h_mem_lm
+        self.h_mem_lm = {lm: const * np.cumsum(dh_mem_dt_lm[lm]) * self.delta_t for lm in dh_mem_dt_lm}
         if inc is None or phase is None:
-            return h_mem_lm, self.times
+            return self.h_mem_lm, self.times
         else:
-            return combine_modes(h_mem_lm, inc, phase), self.times
+            return combine_modes(self.h_mem_lm, inc, phase), self.times
 
     def time_domain_oscillatory(self, **kwargs):
         pass
-
-    def set_time_array(self, times):
-        """
-        Change the time array on which the waveform is evaluated.
-        
-        Parameters
-        ----------
-        times: array_like
-            New time array for waveform to be evaluated on.
-        """
-        for mode in self.modes:
-            interpolated_mode = interp1d(self.times, self.h_lm)
-            self.h_lm[mode] = interpolated_mode[times]
-        self.times = times
 
     def zero_pad_h_lm(self):
         for lm in self.h_lm:
@@ -137,6 +123,7 @@ class MemoryGenerator(object):
 class HybridSurrogate(MemoryGenerator):
 
     _surrogate_loaded = False
+    MASS_TO_TIME = 4.925491025543576e-06
 
     def __init__(self, q, total_mass=None, spin_1=None,
                  spin_2=None, distance=None, l_max=4, modes=None, times=None,
@@ -145,8 +132,6 @@ class HybridSurrogate(MemoryGenerator):
         Initialise Surrogate MemoryGenerator
         Parameters
         ----------
-        name: str
-            Name of the surrogate, default=NRSur7dq2.
         l_max: int
             Maximum ell value for oscillatory time series.
         modes: dict, optional
@@ -166,7 +151,7 @@ class HybridSurrogate(MemoryGenerator):
             np.linspace(-900, 100, 10001).
         """
         if not self._surrogate_loaded:
-            import gwsurrogate
+            import gwsurrogate # noqa
             self.sur = gwsurrogate.LoadSurrogate('NRHybSur3dq8')
             self._surrogate_loaded = True
 
@@ -199,6 +184,14 @@ class HybridSurrogate(MemoryGenerator):
 
         MemoryGenerator.__init__(self, h_lm=h_lm, times=times, distance=distance, name='HybridSurrogate')
 
+    @property
+    def duration(self):
+        return self.times[-1] - self.times[0] + self.delta_t
+
+    @property
+    def epsilon(self):
+        return 100 * self.MASS_TO_TIME * self.MTot
+
     def time_domain_oscillatory(self, times=None, modes=None, inc=None,
                                 phase=None):
         """
@@ -228,16 +221,12 @@ class HybridSurrogate(MemoryGenerator):
         times: np.array
             Times on which waveform is evaluated.
         """
-        MASS_TO_TIME = 4.925491025543576e-06
-        dt = times[1] - times[0]
-        duration = times[-1] - times[0] + dt
         times -= times[0]
-        epsilon = 100 * MASS_TO_TIME * self.MTot
-        t_NR = np.arange(-duration / 1.3 + epsilon, epsilon, dt)
+        t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
 
         if self.h_lm is None:
 
-            h_lm = self.sur([self.q, self.chi_1, self.chi_2], times=t_NR, f_low=0, M=self.MTot,
+            h_lm = self.sur([self.q, self.chi_1, self.chi_2], times=t_nr, f_low=0, M=self.MTot,
                             dist_mpc=self.distance, units='mks', f_ref=self.reference_frequency)
 
             del h_lm[(5, 5)]
@@ -262,10 +251,10 @@ class HybridSurrogate(MemoryGenerator):
         else:
             h_lm = self.h_lm
             times = self.times
-        t_NR -= t_NR[0]
+        t_nr -= t_nr[0]
         for mode in h_lm.keys():
             if len(times) != len(h_lm[mode]):
-                h_lm[mode] = interp1d(t_NR, h_lm[mode], bounds_error=False, fill_value=0.0)(times)
+                h_lm[mode] = interp1d(t_nr, h_lm[mode], bounds_error=False, fill_value=0.0)(times)
 
         if inc is None or phase is None:
             return h_lm, times
@@ -313,16 +302,16 @@ class HybridSurrogate(MemoryGenerator):
 
 class BaseSurrogate(MemoryGenerator):
 
-    def __init__(self, q, name='', MTot=None, S1=None, S2=None, distance=None, LMax=4, max_q=2, times=None):
+    def __init__(self, q, name='', m_tot=None, s1=None, s2=None, distance=None, l_max=4, max_q=2, times=None):
 
         MemoryGenerator.__init__(self, name=name, distance=distance)
 
         self.max_q = max_q
         self.q = q
-        self.MTot = MTot
-        self.S1 = S1
-        self.S2 = S2
-        self.LMax = LMax
+        self.MTot = m_tot
+        self.s1 = s1
+        self.s2 = s2
+        self.LMax = l_max
         self.times = times
 
     @property
@@ -338,26 +327,26 @@ class BaseSurrogate(MemoryGenerator):
         self.__q = q
 
     @property
-    def S1(self):
+    def s1(self):
         return self.__s1
 
-    @S1.setter
-    def S1(self, S1):
-        if S1 is None:
+    @s1.setter
+    def s1(self, s1):
+        if s1 is None:
             self.__s1 = np.array([0., 0., 0.])
         else:
-            self.__s1 = np.array(S1)
+            self.__s1 = np.array(s1)
 
     @property
-    def S2(self):
+    def s2(self):
         return self.__s2
 
-    @S2.setter
-    def S2(self, S2):
-        if S2 is None:
+    @s2.setter
+    def s2(self, s2):
+        if s2 is None:
             self.__s2 = np.array([0., 0., 0.])
         else:
-            self.__s2 = np.array(S2)
+            self.__s2 = np.array(s2)
 
     @property
     def m1(self):
@@ -368,15 +357,15 @@ class BaseSurrogate(MemoryGenerator):
         return self.m1 * self.q
 
     @property
-    def m1_SI(self):
+    def m1_si(self):
         return self.m1 * constants.solar_mass
 
     @property
-    def m2_SI(self):
+    def m2_si(self):
         return self.m2 * constants.solar_mass
 
     @property
-    def distance_SI(self):
+    def distance_si(self):
         return self.distance * constants.Mpc
 
     @property
@@ -436,14 +425,12 @@ class NRSur7dq4(BaseSurrogate):
         Spin vector of less massive black hole.
     """
 
-    def __init__(self, q, total_mass=None, S1=None, S2=None, distance=None, l_max=4, modes=None, times=None,
+    def __init__(self, q, total_mass=None, s1=None, s2=None, distance=None, l_max=4, modes=None, times=None,
                  minimum_frequency=20., reference_frequency=20., units='mks'):
         """
         Initialise Surrogate MemoryGenerator
         Parameters
         ----------
-        name: str
-            Name of the surrogate, default=NRSur7dq2.
         l_max: int
             Maximum ell value for oscillatory time series.
         modes: dict, optional
@@ -454,9 +441,9 @@ class NRSur7dq4(BaseSurrogate):
             Total binary mass in solar units.
         distance: float, optional
             Distance to the binary in MPC.
-        spin_1: array-like
+        s1: array-like
             Spin vector of more massive black hole.
-        spin_2: array-like
+        s2: array-like
             Spin vector of less massive black hole.
         times: array-like
             Time array to evaluate the waveforms on, default is
@@ -472,8 +459,8 @@ class NRSur7dq4(BaseSurrogate):
         self.units = units
         self.l_max = l_max
         self.h_lm = None
-        super().__init__(q=q, name='NRSur7dq4', MTot=total_mass, S1=S1, S2=S2,
-                         distance=distance, LMax=l_max, max_q=4, times=times)
+        super().__init__(q=q, name='NRSur7dq4', m_tot=total_mass, s1=s1, s2=s2,
+                         distance=distance, l_max=l_max, max_q=4, times=times)
         self.h_lm = self.time_domain_oscillatory(modes=modes)
         self.zero_pad_h_lm()
 
@@ -483,10 +470,10 @@ class NRSur7dq4(BaseSurrogate):
                 modes = self.AVAILABLE_MODES
             lal_params = lal.CreateDict()
             data = lalsim.SimInspiralChooseTDModes(
-                0.0, self.delta_t, self.m1_SI, self.m2_SI, self.S1[0], self.S1[1], self.S1[2],
-                self.S2[0], self.S2[1], self.S2[2], self.minimum_frequency,
-                self.reference_frequency, self.distance_SI, lal_params, self.l_max, lalsim.NRSur7dq4)
-            self.h_lm = {(l, m): lalsim.SphHarmTimeSeriesGetMode(data, l, m).data.data for l, m in modes}
+                0.0, self.delta_t, self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2],
+                self.s2[0], self.s2[1], self.s2[2], self.minimum_frequency,
+                self.reference_frequency, self.distance_si, lal_params, self.l_max, lalsim.NRSur7dq4)
+            self.h_lm = {(ell, m): lalsim.SphHarmTimeSeriesGetMode(data, ell, m).data.data for ell, m in modes}
             self.zero_pad_h_lm()
 
         if inc is None or phase is None:
@@ -496,8 +483,8 @@ class NRSur7dq4(BaseSurrogate):
 
     def time_domain_oscillatory_from_polarisations(self, inc, phase):
         hp, hc = lalsim.SimInspiralChooseTDWaveform(
-            self.m1_SI, self.m2_SI, self.S1[0], self.S1[1], self.S1[2], self.S2[0], self.S2[1], self.S2[2],
-            self.distance_SI, inc, phase, 0.0, 0.0, 0.0, self.delta_t, self.minimum_frequency,
+            self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
+            self.distance_si, inc, phase, 0.0, 0.0, 0.0, self.delta_t, self.minimum_frequency,
             self.reference_frequency, lal.CreateDict(), lalsim.NRSur7dq4)
         hpc = dict(plus=hp.data.data, cross=hc.data.data)
         return {mode: zero_pad_time_series(times=self.times, mode=hpc[mode]) for mode in hpc}
@@ -506,8 +493,15 @@ class NRSur7dq4(BaseSurrogate):
 class Approximant(MemoryGenerator):
 
     AVAILABLE_MODES = [(2, 2), (2, -2)]
+    _f_min = 20.
+    _f_ref = 20
+    _theta = 0.0
+    _phi = 0.0
+    _long_asc_nodes = 0.0
+    _eccentricity = 0.0
+    _mean_per_ano = 0.0
 
-    def __init__(self, name, q, MTot=60, S1=np.array([0, 0, 0]), S2=np.array([0, 0, 0]), distance=400, times=None):
+    def __init__(self, name, q, m_tot=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
         """
         Initialise Surrogate MemoryGenerator
         
@@ -517,22 +511,22 @@ class Approximant(MemoryGenerator):
             File name to load.
         q: float
             Binary mass ratio
-        MTot: float, optional
+        m_tot: float, optional
             Total binary mass in solar units.
         distance: float, optional
             Distance to the binary in Mpc.
-        S1: array_like
+        s1: array_like
             Spin vector of more massive black hole.
-        S2: array_like
+        s2: array_like
             Spin vector of less massive black hole.
         times: array_like
             Time array to evaluate the waveforms on, default is time array from lalsimulation.
             FIXME
         """
         self.q = q
-        self.MTot = MTot
-        self.__S1 = S1
-        self.__S2 = S2
+        self.MTot = m_tot
+        self.__S1 = s1
+        self.__S2 = s2
         self._check_prececssion()
 
         MemoryGenerator.__init__(self, name=name, times=times, distance=distance)
@@ -546,15 +540,15 @@ class Approximant(MemoryGenerator):
         return self.m1 * self.q
 
     @property
-    def m1_SI(self):
+    def m1_si(self):
         return self.m1 * constants.solar_mass
 
     @property
-    def m2_SI(self):
+    def m2_si(self):
         return self.m2 * constants.solar_mass
 
     @property
-    def distance_SI(self):
+    def distance_si(self):
         return self.distance * constants.Mpc
 
     @property
@@ -569,38 +563,38 @@ class Approximant(MemoryGenerator):
 
     @property
     def h_to_geo(self):
-        return self.distance_SI / (self.m1_SI + self.m2_SI) / constants.GG * constants.cc ** 2
+        return self.distance_si / (self.m1_si + self.m2_si) / constants.GG * constants.cc ** 2
 
     @property
     def t_to_geo(self):
-        return 1 / (self.m1_SI + self.m2_SI) / constants.GG * constants.cc ** 3
+        return 1 / (self.m1_si + self.m2_si) / constants.GG * constants.cc ** 3
 
     @property
     def delta_t(self):
         return self.times[1] - self.times[0]
 
     @property
-    def S1(self):
+    def s1(self):
         return self.__S1
 
-    @S1.setter
-    def S1(self, S1):
-        if S1 is None:
+    @s1.setter
+    def s1(self, s1):
+        if s1 is None:
             self.__S1 = np.array([0., 0., 0.])
         else:
-            self.__S1 = np.array(S1)
+            self.__S1 = np.array(s1)
         self._check_prececssion()
 
     @property
-    def S2(self):
+    def s2(self):
         return self.__S2
 
-    @S2.setter
-    def S2(self, S2):
-        if S2 is None:
+    @s2.setter
+    def s2(self, s2):
+        if s2 is None:
             self.__S2 = np.array([0., 0., 0.])
         else:
-            self.__S2 = np.array(S2)
+            self.__S2 = np.array(s2)
         self._check_prececssion()
 
     @property
@@ -643,32 +637,23 @@ class Approximant(MemoryGenerator):
             Times on which waveform is evaluated.
         """
         if self.h_lm is None:
-            if modes is None:
-                modes = self.AVAILABLE_MODES
-            else:
-                modes = modes
+            modes = modes or self.AVAILABLE_MODES
 
             if not set(modes).issubset(self.AVAILABLE_MODES):
-                print('Requested {} unavailable modes'.format(' '.join(set(modes).difference(self.AVAILABLE_MODES))))
-                modes = list(set(modes).union(self.AVAILABLE_MODES))
-                print('Using modes {}'.format(' '.join(modes)))
+                print(f"Requested {' '.join(set(modes).difference(self.AVAILABLE_MODES))} unavailable modes")
+                modes = set(modes).union(self.AVAILABLE_MODES)
+                modes = [str(m) for m in modes]
+                print(f"Using modes {' '.join(modes)}")
 
-            fmin = 20.
-            fRef = 20
-            theta = 0.0
-            phi = 0.0
-            longAscNodes = 0.0
-            eccentricity = 0.0
-            meanPerAno = 0.0
-            WFdict = lal.CreateDict()
+            wf_dict = lal.CreateDict()
 
-            hplus, hcross = lalsim.SimInspiralChooseTDWaveform(
-                self.m1_SI, self.m2_SI, self.S1[0], self.S1[1], self.S1[2], self.S2[0], self.S2[1], self.S2[2],
-                self.distance_SI, theta, phi, longAscNodes, eccentricity, meanPerAno, self.delta_t, fmin, fRef,
-                WFdict, self.approximant)
+            h_plus, h_cross = lalsim.SimInspiralChooseTDWaveform(
+                self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
+                self.distance_si, self._theta, self._phi, self._long_asc_nodes, self._eccentricity, self._mean_per_ano,
+                self.delta_t, self._f_min, self._f_ref, wf_dict, self.approximant)
 
-            h = hplus.data.data - 1j * hcross.data.data
-            h_22 = h / harmonics.sYlm(-2, 2, 2, theta, phi)
+            h = h_plus.data.data - 1j * h_cross.data.data
+            h_22 = h / harmonics.sYlm(-2, 2, 2, self._theta, self._phi)
 
             self.h_lm = {(2, 2): h_22, (2, -2): np.conjugate(h_22)}
             self.zero_pad_h_lm()
@@ -682,10 +667,15 @@ class Approximant(MemoryGenerator):
 class PhenomXHM(Approximant):
 
     AVAILABLE_MODES = [(2, 2), (2, -2), (2, 1), (2, -1), (3, 3), (3, -3), (3, 2), (3, -2), (4, 4), (4, -4)]
+    _f_min = 20.
+    _f_ref = 20.
+    _long_asc_nodes = 0.0
+    _eccentricity = 0.0
+    _mean_per_ano = 0.0
 
-    def __init__(self, q, MTot=60, S1=np.array([0, 0, 0]), S2=np.array([0, 0, 0]), distance=400, times=None):
+    def __init__(self, q, m_tot=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
         name = "IMRPhenomXHM"
-        super().__init__(name, q, MTot, S1, S2, distance, times)
+        super().__init__(name, q, m_tot, s1, s2, distance, times)
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
         if self.h_lm is None:
@@ -694,7 +684,7 @@ class PhenomXHM(Approximant):
 
             self.h_lm = dict()
             for mode in modes:
-                h_lm, times = self.single_mode_from_choose_td(l=mode[0], m=mode[1])
+                h_lm, times = self.single_mode_from_choose_td(ell=mode[0], m=mode[1])
                 self.h_lm[mode] = h_lm
             self.zero_pad_h_lm()
 
@@ -709,26 +699,20 @@ class PhenomXHM(Approximant):
         hpc, _ = self.get_polarisations(inc=inc, phase=phase, lalparams=lalparams)
         return {mode: zero_pad_time_series(times=self.times, mode=hpc[mode]) for mode in hpc}
 
-    def single_mode_from_choose_td(self, l, m):
+    def single_mode_from_choose_td(self, ell, m):
         inc = 0.4
         phi = np.pi / 2
-        lalparams = self._get_single_mode_lalparams_dict(l, m)
+        lalparams = self._get_single_mode_lalparams_dict(ell, m)
 
         hpc, times = self.get_polarisations(inc=inc, phase=phi, lalparams=lalparams)
-        hlm = (hpc['plus'] - 1j * hpc['cross']) / lal.SpinWeightedSphericalHarmonic(inc, np.pi - phi, -2, l, m)
+        hlm = (hpc['plus'] - 1j * hpc['cross']) / lal.SpinWeightedSphericalHarmonic(inc, np.pi - phi, -2, ell, m)
         return hlm, times
 
     def get_polarisations(self, inc, phase, lalparams):
-        f_min = 20.
-        f_ref = 20.
-        longAscNodes = 0.0
-        eccentricity = 0.0
-        meanPerAno = 0.0
-
         hp, hc = lalsim.SimInspiralChooseTDWaveform(
-            self.m1_SI, self.m2_SI, self.S1[0], self.S1[1], self.S1[2], self.S2[0], self.S2[1], self.S2[2],
-            self.distance_SI, inc, phase, longAscNodes, eccentricity, meanPerAno, self.delta_t, f_min, f_ref,
-            lalparams, lalsim.IMRPhenomXHM)
+            self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
+            self.distance_si, inc, phase, self._long_asc_nodes, self._eccentricity, self._mean_per_ano, self.delta_t,
+            self._f_min, self._f_ref, lalparams, lalsim.IMRPhenomXHM)
 
         shift = hp.epoch.gpsSeconds + hp.epoch.gpsNanoSeconds / 1e9
         times = np.arange(len(hp.data.data)) * self.delta_t + shift
@@ -736,11 +720,11 @@ class PhenomXHM(Approximant):
         return hpc, times
 
     @staticmethod
-    def _get_single_mode_lalparams_dict(l, m):
+    def _get_single_mode_lalparams_dict(ell, m):
         lalparams = lal.CreateDict()
-        ModeArray = lalsim.SimInspiralCreateModeArray()
-        lalsim.SimInspiralModeArrayActivateMode(ModeArray, l, m)
-        lalsim.SimInspiralWaveformParamsInsertModeArray(lalparams, ModeArray)
+        mode_array = lalsim.SimInspiralCreateModeArray()
+        lalsim.SimInspiralModeArrayActivateMode(mode_array, ell, m)
+        lalsim.SimInspiralWaveformParamsInsertModeArray(lalparams, mode_array)
         lalsim.SimInspiralWaveformParamsInsertPhenomXHMThresholdMband(lalparams, 0)
         return lalparams
 
@@ -749,16 +733,18 @@ class TEOBResumS(MemoryGenerator):
 
     AVAILABLE_MODES = None
 
-    def __init__(self, q, MTot=None, chi_1=0., chi_2=0., distance=None,
+    def __init__(self, q, m_tot=None, chi_1=0., chi_2=0., distance=None,
                  max_q=20, times=None, minimum_frequency=35., ecc=0):
 
         self.max_q = max_q
         self.q = q
-        self.MTot = MTot
+        self.MTot = m_tot
         self.chi_1 = chi_1
         self.chi_2 = chi_2
         self.times = times
         self.ecc = ecc
+        self._s1 = None
+        self._s2 = None
 
         self.minimum_frequency = minimum_frequency
         super().__init__(name='TEOBResumS', h_lm=None, times=times, distance=distance)
@@ -776,26 +762,26 @@ class TEOBResumS(MemoryGenerator):
         self.__q = q
 
     @property
-    def S1(self):
-        return self.__s1
+    def s1(self):
+        return self._s1
 
-    @S1.setter
-    def S1(self, S1):
-        if S1 is None:
-            self.__s1 = np.array([0., 0., 0.])
+    @s1.setter
+    def s1(self, s1):
+        if s1 is None:
+            self._s1 = np.array([0., 0., 0.])
         else:
-            self.__s1 = np.array(S1)
+            self._s1 = np.array(s1)
 
     @property
-    def S2(self):
-        return self.__s2
+    def s2(self):
+        return self._s2
 
-    @S2.setter
-    def S2(self, S2):
-        if S2 is None:
-            self.__s2 = np.array([0., 0., 0.])
+    @s2.setter
+    def s2(self, s2):
+        if s2 is None:
+            self._s2 = np.array([0., 0., 0.])
         else:
-            self.__s2 = np.array(S2)
+            self._s2 = np.array(s2)
 
     @property
     def m1(self):
@@ -806,27 +792,27 @@ class TEOBResumS(MemoryGenerator):
         return self.m1 * self.q
 
     @property
-    def m1_SI(self):
+    def m1_si(self):
         return self.m1 * constants.solar_mass
 
     @property
-    def m2_SI(self):
+    def m2_si(self):
         return self.m2 * constants.solar_mass
 
     @property
-    def distance_SI(self):
+    def distance_si(self):
         return self.distance * constants.Mpc
+
+    @staticmethod
+    def modes_to_k(ms):
+        return [int(x[0] * (x[0] - 1) / 2 + x[1] - 2) for x in ms]
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
         if self.h_lm is None:
-            import EOBRun_module
+            import EOBRun_module # noqa
             if modes is None:
                 modes = [[2, 2]]
-
-            def modes_to_k(modes):
-                return [int(x[0] * (x[0] - 1) / 2 + x[1] - 2) for x in modes]
-
-            ks = modes_to_k(modes)
+            ks = self.modes_to_k(modes)
 
             coalescing_angle = phase if phase is not None else 0.0
             inclination = inc if inc is not None else 0.0
@@ -846,17 +832,19 @@ class TEOBResumS(MemoryGenerator):
                     'use_mode_lm': [k],  # List of modes to use/output through EOBRunPy
                     'srate_interp': 4096.,  # srate at which to interpolate. Default = 4096.
                     'use_geometric_units': 0,  # Output quantities in geometric units. Default = 1
-                    'initial_frequency': self.minimum_frequency,  # in Hz if use_geometric_units = 0, else in geometric units
-                    'interp_uniform_grid': 1,  # Interpolate mode by mode on a uniform grid. Default = 0 (no interpolation)
+                    'initial_frequency': self.minimum_frequency,
+                    # in Hz if use_geometric_units = 0, else in geometric units
+                    'interp_uniform_grid': 1,
+                    # Interpolate mode by mode on a uniform grid. Default = 0 (no interpolation)
                     'distance': self.distance,
                     'inclination': inclination,
                     # - (np.pi / 4), # = iota for non-precessing; adjusted to match IMRPhenomD definition
                     'output_hpc': 0
                 }
 
-                t, hplus, hcross, hlm, dyn = EOBRun_module.EOBRunPy(parameters)
+                t, h_plus, h_cross, hlm, dyn = EOBRun_module.EOBRunPy(parameters)
 
-                h = hplus - 1j * hcross
+                h = h_plus - 1j * h_cross
                 h_lm = h / harmonics.sYlm(-2, mode[0], mode[1], inclination, coalescing_angle)
 
                 self.h_lm.update({(mode[0], mode[1]): h_lm, (mode[0], -mode[1]): np.conjugate(h_lm)})
