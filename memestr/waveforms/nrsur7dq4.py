@@ -35,7 +35,7 @@ def fd_nr_sur_7dq4(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2
 
 
 def fd_nr_sur_7dq4_with_memory(frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl,
-                               luminosity_distance, inc, phase, memory_amplitude, **kwargs):
+                               luminosity_distance, inc, phase, **kwargs):
     series = bilby.core.series.CoupledTimeAndFrequencySeries(start_time=0)
     series.frequency_array = frequencies
 
@@ -55,9 +55,6 @@ def fd_nr_sur_7dq4_with_memory(frequencies, mass_ratio, total_mass, a_1, a_2, ti
                                                              s22=params['spin_2y'], s23=params['spin_2z'],
                                                              kwargs=kwargs)
     reference_waveform = deepcopy(waveform)
-    for mode in memory:
-        waveform[mode] += memory[mode] * memory_amplitude
-
     return convert_to_frequency_domain_with_memory(series, waveform, reference_waveform, **kwargs)
 
 
