@@ -13,7 +13,7 @@ from .utils import zero_pad_time_series, combine_modes
 
 class MemoryGenerator(object):
 
-    def __init__(self, times=None, distance=None, modes=None):
+    def __init__(self, times, distance, modes=None):
         self.h_lm = None
         self.h_mem_lm = None
         self.times = times
@@ -124,9 +124,9 @@ class HybridSurrogate(MemoryGenerator):
     _surrogate_loaded = False
     MASS_TO_TIME = 4.925491025543576e-06
 
-    def __init__(self, mass_ratio, total_mass=None, s13=None,
-                 s23=None, distance=None, l_max=4, modes=None, times=None,
-                 minimum_frequency=10, reference_frequency=50.):
+    def __init__(
+            self, mass_ratio, total_mass, s13, s23, distance, l_max=4, modes=None, times=None,
+            minimum_frequency=10, reference_frequency=50.):
         """
         Initialise Surrogate MemoryGenerator
         Parameters
@@ -231,18 +231,15 @@ class BaseSurrogate(MemoryGenerator):
 
     MAX_Q = 2
 
-    def __init__(
-            self, mass_ratio, total_mass=None, s1=None, s2=None,
-            distance=None, l_max=4, times=None, modes=None):
+    def __init__(self, mass_ratio, total_mass, s1, s2, distance, l_max=4, times=None, modes=None):
 
-        MemoryGenerator.__init__(self, distance=distance, modes=modes)
+        MemoryGenerator.__init__(self, distance=distance, modes=modes, times=times)
 
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
-        self.s1 = s1
-        self.s2 = s2
+        self.s1 = np.array(s1)
+        self.s2 = np.array(s2)
         self.l_max = l_max
-        self.times = times
 
     @property
     def mass_ratio(self):
@@ -288,8 +285,9 @@ class NRSur7dq4(BaseSurrogate):
 
     MAX_Q = 6
 
-    def __init__(self, mass_ratio, total_mass=None, s1=None, s2=None, distance=None, l_max=4, modes=None, times=None,
-                 minimum_frequency=20., reference_frequency=20.):
+    def __init__(
+            self, mass_ratio, total_mass, s1, s2, distance, l_max=4, modes=None, times=None,
+            minimum_frequency=20., reference_frequency=20.):
         """
         Initialise Surrogate MemoryGenerator
         Parameters
@@ -355,9 +353,7 @@ class Approximant(MemoryGenerator):
     _eccentricity = 0.0
     _mean_per_ano = 0.0
 
-    def __init__(
-            self, name, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]),
-            s2=np.array([0, 0, 0]), distance=400, times=None, modes=None):
+    def __init__(self, name, mass_ratio, total_mass, s1, s2, distance, times, modes=None):
         """
         Initialise Surrogate MemoryGenerator
         
@@ -496,10 +492,7 @@ class PhenomXHM(Approximant):
 
     AVAILABLE_MODES = [(2, 2), (2, -2), (2, 1), (2, -1), (3, 3), (3, -3), (3, 2), (3, -2), (4, 4), (4, -4)]
 
-    def __init__(
-            self, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]),
-            distance=400, times=None, modes=None
-    ):
+    def __init__(self, mass_ratio, total_mass, s1, s2, distance, times, modes=None):
         super().__init__(
             name="IMRPhenomXHM", mass_ratio=mass_ratio, total_mass=total_mass,
             s1=s1, s2=s2, distance=distance, times=times, modes=modes)
@@ -508,13 +501,13 @@ class PhenomXHM(Approximant):
     def set_h_lm(self, modes=None):
         if self.h_lm is None:
             modes = self.modes or self.AVAILABLE_MODES
-            self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1])[0] for mode in modes}
+            self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1]) for mode in modes}
             self.zero_pad_h_lm()
 
     def time_domain_oscillatory_from_polarisations(self, inc, phase):
         lalparams = lal.CreateDict()
         lalsim.SimInspiralWaveformParamsInsertPhenomXHMThresholdMband(lalparams, 0)
-        hpc, _ = self.get_polarisations(inc=inc, phase=phase, lalparams=lalparams)
+        hpc = self.get_polarisations(inc=inc, phase=phase, lalparams=lalparams)
         return {mode: zero_pad_time_series(times=self.times, mode=hpc[mode]) for mode in hpc}
 
     def single_mode_from_choose_td(self, ell, m):
@@ -522,20 +515,15 @@ class PhenomXHM(Approximant):
         phi = np.pi / 2
         lalparams = self._get_single_mode_lalparams_dict(ell, m)
 
-        hpc, times = self.get_polarisations(inc=inc, phase=phi, lalparams=lalparams)
-        hlm = (hpc['plus'] - 1j * hpc['cross']) / lal.SpinWeightedSphericalHarmonic(inc, np.pi - phi, -2, ell, m)
-        return hlm, times
+        hpc = self.get_polarisations(inc=inc, phase=phi, lalparams=lalparams)
+        return (hpc['plus'] - 1j * hpc['cross']) / lal.SpinWeightedSphericalHarmonic(inc, np.pi - phi, -2, ell, m)
 
     def get_polarisations(self, inc, phase, lalparams):
         hp, hc = lalsim.SimInspiralChooseTDWaveform(
             self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
             self.distance_si, inc, phase, self._long_asc_nodes, self._eccentricity, self._mean_per_ano, self.delta_t,
             self.minimum_frequency, self.reference_frequency, lalparams, lalsim.IMRPhenomXHM)
-
-        shift = hp.epoch.gpsSeconds + hp.epoch.gpsNanoSeconds / 1e9
-        times = np.arange(len(hp.data.data)) * self.delta_t + shift
-        hpc = dict(plus=hp.data.data, cross=hc.data.data)
-        return hpc, times
+        return dict(plus=hp.data.data, cross=hc.data.data)
 
     @staticmethod
     def _get_single_mode_lalparams_dict(ell, m):
