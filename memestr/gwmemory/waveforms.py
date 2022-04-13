@@ -13,13 +13,13 @@ from .utils import zero_pad_time_series, combine_modes
 
 class MemoryGenerator(object):
 
-    def __init__(self, name, times=None, distance=None):
+    def __init__(self, name, times=None, distance=None, modes=None):
         self.name = name
         self.h_lm = None
         self.h_mem_lm = None
         self.times = times
         self.distance = distance
-        self._modes = None
+        self.modes = modes
 
     @property
     def modes(self):
@@ -103,7 +103,7 @@ class MemoryGenerator(object):
     def time_domain_oscillatory(self, **kwargs):
         pass
 
-    def set_h_lm(self, modes=None):
+    def set_h_lm(self):
         pass
 
     def zero_pad_h_lm(self):
@@ -146,7 +146,7 @@ class HybridSurrogate(MemoryGenerator):
             self.sur = gwsurrogate.LoadSurrogate('NRHybSur3dq8')
             self._surrogate_loaded = True
 
-        MemoryGenerator.__init__(self, times=times, distance=distance, name='HybridSurrogate')
+        MemoryGenerator.__init__(self, times=times, distance=distance, modes=modes, name='HybridSurrogate')
 
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
@@ -155,7 +155,6 @@ class HybridSurrogate(MemoryGenerator):
         self.minimum_frequency = minimum_frequency
         self.distance = distance
         self.LMax = l_max
-        self.modes = modes
         self.reference_frequency = reference_frequency
 
         self.h_to_geo = \
@@ -166,7 +165,7 @@ class HybridSurrogate(MemoryGenerator):
         self.h_lm = None
         self.times = times
         self.t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
-        self.set_h_lm(modes=modes)
+        self.set_h_lm()
 
     @property
     def duration(self):
@@ -208,7 +207,7 @@ class HybridSurrogate(MemoryGenerator):
         times -= times[0]
         t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
 
-        self.set_h_lm(modes)
+        self.set_h_lm()
 
         t_nr -= self.t_nr - self.t_nr[0]
         for mode in self.h_lm.keys():
@@ -216,7 +215,7 @@ class HybridSurrogate(MemoryGenerator):
                 self.h_lm[mode] = interp1d(t_nr, self.h_lm[mode], bounds_error=False, fill_value=0.0)(times)
         return combine_modes(self.h_lm, inc, phase)
 
-    def set_h_lm(self, modes=None):
+    def set_h_lm(self):
         if self.h_lm is None:
 
             h_lm = self.sur([self.mass_ratio, self.s1, self.s2], times=self.t_nr, f_low=0, M=self.total_mass,
@@ -229,7 +228,7 @@ class HybridSurrogate(MemoryGenerator):
                     h_lm[(ll, -mm)] = (- 1) ** ll * np.conj(h_lm[(ll, mm)])
 
             available_modes = set(h_lm.keys())
-            modes = modes or available_modes
+            modes = self.modes or available_modes
 
             if not set(modes).issubset(available_modes):
                 print('Requested {} unavailable modes'.format(
@@ -284,9 +283,9 @@ class BaseSurrogate(MemoryGenerator):
 
     def __init__(
             self, mass_ratio, name='', total_mass=None, s1=None, s2=None,
-            distance=None, l_max=4, times=None):
+            distance=None, l_max=4, times=None, modes=None):
 
-        MemoryGenerator.__init__(self, name=name, distance=distance)
+        MemoryGenerator.__init__(self, name=name, distance=distance, modes=modes)
 
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
@@ -391,20 +390,20 @@ class NRSur7dq4(BaseSurrogate):
             self._surrogate_loaded = True
 
         super().__init__(mass_ratio=q, name='NRSur7dq4', total_mass=total_mass, s1=s1, s2=s2,
-                         distance=distance, l_max=l_max, times=times)
+                         distance=distance, l_max=l_max, times=times, modes=modes)
 
         self.minimum_frequency = minimum_frequency
         self.reference_frequency = reference_frequency
         self.l_max = l_max
-        self.set_h_lm(modes=modes)
+        self.set_h_lm()
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
-        self.set_h_lm(modes=modes)
+        self.set_h_lm()
         return combine_modes(self.h_lm, inc, phase)
 
-    def set_h_lm(self, modes=None):
+    def set_h_lm(self):
         if self.h_lm is None:
-            modes = modes or self.AVAILABLE_MODES
+            modes = self.modes or self.AVAILABLE_MODES
             data = lalsim.SimInspiralChooseTDModes(
                 0.0, self.delta_t, self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2],
                 self.s2[0], self.s2[1], self.s2[2], self.minimum_frequency,
@@ -434,7 +433,7 @@ class Approximant(MemoryGenerator):
 
     def __init__(
             self, name, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]),
-            s2=np.array([0, 0, 0]), distance=400, times=None):
+            s2=np.array([0, 0, 0]), distance=400, times=None, modes=None):
         """
         Initialise Surrogate MemoryGenerator
         
@@ -455,7 +454,7 @@ class Approximant(MemoryGenerator):
         times: array_like
             Time array to evaluate the waveforms on, default is time array from lalsimulation.
         """
-        MemoryGenerator.__init__(self, name=name, times=times, distance=distance)
+        MemoryGenerator.__init__(self, name=name, times=times, distance=distance, modes=modes)
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
         self._s1 = s1
@@ -556,12 +555,12 @@ class Approximant(MemoryGenerator):
         times: np.array
             Times on which waveform is evaluated.
         """
-        self.set_h_lm(modes=modes)
+        self.set_h_lm()
         return combine_modes(h_lm=self.h_lm, inc=inc, phase=phase)
 
     def set_h_lm(self, modes=None):
         if self.h_lm is None:
-            modes = modes or self.AVAILABLE_MODES
+            modes = self.modes or self.AVAILABLE_MODES
 
             if not set(modes).issubset(self.AVAILABLE_MODES):
                 print(f"Requested {' '.join(set(modes).difference(self.AVAILABLE_MODES))} unavailable modes")
@@ -588,23 +587,25 @@ class PhenomXHM(Approximant):
     AVAILABLE_MODES = [(2, 2), (2, -2), (2, 1), (2, -1), (3, 3), (3, -3), (3, 2), (3, -2), (4, 4), (4, -4)]
 
     def __init__(
-            self, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]), distance=400, times=None):
+            self, mass_ratio, total_mass=60, s1=np.array([0, 0, 0]), s2=np.array([0, 0, 0]),
+            distance=400, times=None, modes=None
+    ):
         super().__init__(
             name="IMRPhenomXHM", mass_ratio=mass_ratio, total_mass=total_mass,
-            s1=s1, s2=s2, distance=distance, times=times)
+            s1=s1, s2=s2, distance=distance, times=times, modes=modes)
         self.set_h_lm()
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
-        self.set_h_lm(modes=modes)
+        self.set_h_lm()
 
         if inc is None or phase is None:
             return self.h_lm
         else:
             return combine_modes(h_lm=self.h_lm, inc=inc, phase=phase)
 
-    def set_h_lm(self, modes=None):
+    def set_h_lm(self):
         if self.h_lm is None:
-            modes = modes or self.AVAILABLE_MODES
+            modes = self.modes or self.AVAILABLE_MODES
             self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1])[0] for mode in modes}
             self.zero_pad_h_lm()
 
@@ -647,12 +648,12 @@ class PhenomXHM(Approximant):
 class TEOBResumS(MemoryGenerator):
 
     AVAILABLE_MODES = None
+    MAX_Q = 20
 
     def __init__(self, mass_ratio, total_mass=None, chi_1=0., chi_2=0., distance=None,
-                 max_q=20, times=None, minimum_frequency=35., ecc=0):
+                 times=None, minimum_frequency=35., ecc=0, modes=None):
 
-        super().__init__(name='TEOBResumS', times=times, distance=distance)
-        self.max_q = max_q
+        super().__init__(name='TEOBResumS', times=times, distance=distance, modes=modes)
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
         self.chi_1 = chi_1
@@ -667,15 +668,15 @@ class TEOBResumS(MemoryGenerator):
 
     @property
     def mass_ratio(self):
-        return self.__q
+        return self._mass_ratio
 
     @mass_ratio.setter
-    def mass_ratio(self, q):
-        if q < 1:
-            q = 1 / q
-        if q > self.max_q:
-            print(f'WARNING: Surrogate waveform not tested for q>{self.max_q}.')
-        self.__q = q
+    def mass_ratio(self, mass_ratio):
+        if mass_ratio < 1:
+            mass_ratio = 1 / mass_ratio
+        if mass_ratio > self.MAX_Q:
+            print(f'WARNING: Waveform not tested for q>{self.MAX_Q}.')
+        self._mass_ratio = mass_ratio
 
     @property
     def s1(self):
@@ -724,14 +725,13 @@ class TEOBResumS(MemoryGenerator):
         return [int(x[0] * (x[0] - 1) / 2 + x[1] - 2) for x in ms]
 
     def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
-        self.set_h_lm(modes=modes)
+        self.set_h_lm()
         return combine_modes(self.h_lm, inc, phase)
 
-    def set_h_lm(self, modes=None):
+    def set_h_lm(self):
         if self.h_lm is None:
             import EOBRun_module  # noqa
-            if modes is None:
-                modes = [[2, 2]]
+            modes = self.modes or [[2, 2]]
             ks = self.modes_to_k(modes)
 
             coalescing_angle = 0.0

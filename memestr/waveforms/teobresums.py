@@ -73,9 +73,10 @@ def _evaluate_teob(times, total_mass, mass_ratio, inc, luminosity_distance, phas
                    kwargs, ecc, fold_in_memory=True):
     memory_generator = gwmemory.waveforms.TEOBResumS(
         times=times, mass_ratio=mass_ratio, total_mass=total_mass, chi_1=chi_1, chi_2=chi_2,
-        distance=luminosity_distance, ecc=ecc, minimum_frequency=kwargs.get('minimum_frequency', 10))
+        distance=luminosity_distance, ecc=ecc, minimum_frequency=kwargs.get('minimum_frequency', 10),
+        modes=kwargs.get('modes', None))
 
-    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase, modes=kwargs.get('modes', None))
+    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:

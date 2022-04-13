@@ -137,17 +137,11 @@ def td_nr_sur_7dq4_with_memory(times, mass_ratio, total_mass, a_1, a_2, tilt_1, 
 
 def _evaluate_surrogate(times, total_mass, mass_ratio, inc, luminosity_distance, phase, s11, s12, s13, s21, s22, s23,
                         kwargs, fold_in_memory=True):
-    memory_generator = gwmemory.waveforms.NRSur7dq4(q=mass_ratio,
-                                                    total_mass=total_mass,
-                                                    s1=[s11, s12, s13],
-                                                    s2=[s21, s22, s23],
-                                                    times=times,
-                                                    distance=luminosity_distance,
-                                                    minimum_frequency=kwargs.get('minimum_frequency', 0),
-                                                    reference_frequency=kwargs.get('reference_frequency', 50)
-                                                    )
-
-    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase, modes=kwargs.get('modes', None))
+    memory_generator = gwmemory.waveforms.NRSur7dq4(
+        q=mass_ratio, total_mass=total_mass, s1=[s11, s12, s13], s2=[s21, s22, s23], times=times,
+        distance=luminosity_distance, minimum_frequency=kwargs.get('minimum_frequency', 0),
+        reference_frequency=kwargs.get('reference_frequency', 50), modes=kwargs.get('modes', None))
+    oscillatory = memory_generator.time_domain_oscillatory(inc=inc, phase=phase)
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:
