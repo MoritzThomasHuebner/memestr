@@ -101,9 +101,9 @@ class MemoryGenerator(object):
 
         self.h_mem_lm = {lm: const * np.cumsum(dh_mem_dt_lm[lm]) * self.delta_t for lm in dh_mem_dt_lm}
         if inc is None or phase is None:
-            return self.h_mem_lm, self.times
+            return self.h_mem_lm
         else:
-            return combine_modes(self.h_mem_lm, inc, phase), self.times
+            return combine_modes(self.h_mem_lm, inc, phase)
 
     def time_domain_oscillatory(self, **kwargs):
         pass
@@ -166,7 +166,7 @@ class HybridSurrogate(MemoryGenerator):
         self.h_lm = None
         self.times = times
 
-        h_lm, times = self.time_domain_oscillatory(modes=self.modes, times=times)
+        h_lm = self.time_domain_oscillatory(modes=self.modes, times=times)
 
         MemoryGenerator.__init__(self, h_lm=h_lm, times=times, distance=distance, name='HybridSurrogate')
 
@@ -243,9 +243,9 @@ class HybridSurrogate(MemoryGenerator):
                 h_lm[mode] = interp1d(t_nr, h_lm[mode], bounds_error=False, fill_value=0.0)(times)
 
         if inc is None or phase is None:
-            return h_lm, times
+            return h_lm
         else:
-            return combine_modes(h_lm, inc, phase), times
+            return combine_modes(h_lm, inc, phase)
 
     @property
     def mass_ratio(self):
@@ -516,13 +516,13 @@ class Approximant(MemoryGenerator):
 
     @property
     def mass_ratio(self):
-        return self.__q
+        return self._mass_ratio
 
     @mass_ratio.setter
-    def mass_ratio(self, q):
-        if q > 1:
-            q = 1 / q
-        self.__q = q
+    def mass_ratio(self, mass_ratio):
+        if mass_ratio > 1:
+            mass_ratio = 1 / mass_ratio
+        self._mass_ratio = mass_ratio
 
     @property
     def s1(self):

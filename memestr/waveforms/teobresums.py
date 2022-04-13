@@ -79,5 +79,5 @@ def _evaluate_teob(times, total_mass, mass_ratio, inc, luminosity_distance, phas
     if not fold_in_memory:
         return oscillatory, memory_generator
     else:
-        memory, _ = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
+        memory = memory_generator.time_domain_memory(inc=inc, phase=phase, gamma_lmlm=gamma_lmlm)
         return oscillatory, memory, memory_generator
