@@ -13,8 +13,7 @@ from .utils import zero_pad_time_series, combine_modes
 
 class MemoryGenerator(object):
 
-    def __init__(self, name, times=None, distance=None, modes=None):
-        self.name = name
+    def __init__(self, times=None, distance=None, modes=None):
         self.h_lm = None
         self.h_mem_lm = None
         self.times = times
@@ -155,7 +154,7 @@ class HybridSurrogate(MemoryGenerator):
             self.sur = gwsurrogate.LoadSurrogate('NRHybSur3dq8')
             self._surrogate_loaded = True
 
-        MemoryGenerator.__init__(self, times=times, distance=distance, modes=modes, name='HybridSurrogate')
+        MemoryGenerator.__init__(self, times=times, distance=distance, modes=modes)
 
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
@@ -259,10 +258,10 @@ class BaseSurrogate(MemoryGenerator):
     MAX_Q = 2
 
     def __init__(
-            self, mass_ratio, name='', total_mass=None, s1=None, s2=None,
+            self, mass_ratio, total_mass=None, s1=None, s2=None,
             distance=None, l_max=4, times=None, modes=None):
 
-        MemoryGenerator.__init__(self, name=name, distance=distance, modes=modes)
+        MemoryGenerator.__init__(self, distance=distance, modes=modes)
 
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
@@ -337,7 +336,7 @@ class NRSur7dq4(BaseSurrogate):
 
     MAX_Q = 6
 
-    def __init__(self, q, total_mass=None, s1=None, s2=None, distance=None, l_max=4, modes=None, times=None,
+    def __init__(self, mass_ratio, total_mass=None, s1=None, s2=None, distance=None, l_max=4, modes=None, times=None,
                  minimum_frequency=20., reference_frequency=20.):
         """
         Initialise Surrogate MemoryGenerator
@@ -347,7 +346,7 @@ class NRSur7dq4(BaseSurrogate):
             Maximum ell value for oscillatory time series.
         modes: dict, optional
             Modes to load in, default is all ell<=4.
-        q: float
+        mass_ratio: float
             Binary mass ratio
         total_mass: float, optional
             Total binary mass in solar units.
@@ -366,7 +365,7 @@ class NRSur7dq4(BaseSurrogate):
             self.surrogate = gwsurrogate.LoadSurrogate('NRSur7dq4')
             self._surrogate_loaded = True
 
-        super().__init__(mass_ratio=q, name='NRSur7dq4', total_mass=total_mass, s1=s1, s2=s2,
+        super().__init__(mass_ratio=mass_ratio, total_mass=total_mass, s1=s1, s2=s2,
                          distance=distance, l_max=l_max, times=times, modes=modes)
 
         self.minimum_frequency = minimum_frequency
@@ -427,7 +426,8 @@ class Approximant(MemoryGenerator):
         times: array_like
             Time array to evaluate the waveforms on, default is time array from lalsimulation.
         """
-        MemoryGenerator.__init__(self, name=name, times=times, distance=distance, modes=modes)
+        MemoryGenerator.__init__(self, times=times, distance=distance, modes=modes)
+        self.name = name
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
         self._s1 = s1
@@ -603,7 +603,7 @@ class TEOBResumS(MemoryGenerator):
     def __init__(self, mass_ratio, total_mass=None, chi_1=0., chi_2=0., distance=None,
                  times=None, minimum_frequency=35., ecc=0, modes=None):
 
-        super().__init__(name='TEOBResumS', times=times, distance=distance, modes=modes)
+        super().__init__(times=times, distance=distance, modes=modes)
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
         self.chi_1 = chi_1
