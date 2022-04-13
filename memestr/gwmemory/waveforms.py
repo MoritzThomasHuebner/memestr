@@ -124,8 +124,8 @@ class HybridSurrogate(MemoryGenerator):
     _surrogate_loaded = False
     MASS_TO_TIME = 4.925491025543576e-06
 
-    def __init__(self, mass_ratio, total_mass=None, s1=None,
-                 s2=None, distance=None, l_max=4, modes=None, times=None,
+    def __init__(self, mass_ratio, total_mass=None, s13=None,
+                 s23=None, distance=None, l_max=4, modes=None, times=None,
                  minimum_frequency=10, reference_frequency=50.):
         """
         Initialise Surrogate MemoryGenerator
@@ -141,9 +141,9 @@ class HybridSurrogate(MemoryGenerator):
             Total binary mass in solar units.
         distance: float, optional
             Distance to the binary in MPC.
-        s1: array-like
+        s13: array-like
             Spin vector of more massive black hole.
-        s2: array-like
+        s23: array-like
             Spin vector of less massive black hole.
         times: array-like
             Time array to evaluate the waveforms on, default is
@@ -158,8 +158,8 @@ class HybridSurrogate(MemoryGenerator):
 
         self.mass_ratio = mass_ratio
         self.total_mass = total_mass
-        self.s1 = s1
-        self.s2 = s2
+        self.s13 = s13
+        self.s23 = s23
         self.minimum_frequency = minimum_frequency
         self.distance = distance
         self.LMax = l_max
@@ -188,7 +188,7 @@ class HybridSurrogate(MemoryGenerator):
         information.
         """
         if self.h_lm is None:
-            h_lm = self.sur([self.mass_ratio, self.s1, self.s2], times=self.t_nr, f_low=0, M=self.total_mass,
+            h_lm = self.sur([self.mass_ratio, self.s13, self.s23], times=self.t_nr, f_low=0, M=self.total_mass,
                             dist_mpc=self.distance, units='mks', f_ref=self.reference_frequency)
 
             del h_lm[(5, 5)]
@@ -226,32 +226,6 @@ class HybridSurrogate(MemoryGenerator):
             raise ValueError('Surrogate waveform not valid for q>8.')
         self._mass_ratio = mass_ratio
 
-    @property
-    def s1(self):
-        return self._s1
-
-    @s1.setter
-    def s1(self, s1):
-        if s1 is None:
-            self._s1 = 0.0
-        elif len(np.atleast_1d(s1)) == 3:
-            self._s1 = s1[2]
-        else:
-            self._s1 = s1
-
-    @property
-    def s2(self):
-        return self._s2
-
-    @s2.setter
-    def s2(self, s2):
-        if s2 is None:
-            self._s2 = 0.0
-        elif len(np.atleast_1d(s2)) == 3:
-            self._s2 = s2[2]
-        else:
-            self._s2 = s2
-
 
 class BaseSurrogate(MemoryGenerator):
 
@@ -281,28 +255,6 @@ class BaseSurrogate(MemoryGenerator):
         if mass_ratio > self.MAX_Q:
             print(f'WARNING: Surrogate waveform not tested for q>{self.MAX_Q}.')
         self._mass_ratio = mass_ratio
-
-    @property
-    def s1(self):
-        return self._s1
-
-    @s1.setter
-    def s1(self, s1):
-        if s1 is None:
-            self._s1 = np.array([0., 0., 0.])
-        else:
-            self._s1 = np.array(s1)
-
-    @property
-    def s2(self):
-        return self._s2
-
-    @s2.setter
-    def s2(self, s2):
-        if s2 is None:
-            self._s2 = np.array([0., 0., 0.])
-        else:
-            self._s2 = np.array(s2)
 
     @property
     def m1(self):
@@ -610,8 +562,6 @@ class TEOBResumS(MemoryGenerator):
         self.chi_2 = chi_2
         self.times = times
         self.ecc = ecc
-        self._s1 = None
-        self._s2 = None
 
         self.minimum_frequency = minimum_frequency
         self.set_h_lm()
@@ -627,28 +577,6 @@ class TEOBResumS(MemoryGenerator):
         if mass_ratio > self.MAX_Q:
             print(f'WARNING: Waveform not tested for q>{self.MAX_Q}.')
         self._mass_ratio = mass_ratio
-
-    @property
-    def s1(self):
-        return self._s1
-
-    @s1.setter
-    def s1(self, s1):
-        if s1 is None:
-            self._s1 = np.array([0., 0., 0.])
-        else:
-            self._s1 = np.array(s1)
-
-    @property
-    def s2(self):
-        return self._s2
-
-    @s2.setter
-    def s2(self, s2):
-        if s2 is None:
-            self._s2 = np.array([0., 0., 0.])
-        else:
-            self._s2 = np.array(s2)
 
     @property
     def m1(self):

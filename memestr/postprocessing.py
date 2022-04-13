@@ -75,8 +75,8 @@ def get_time_and_phase_shift(parameters, ifo, verbose=False, **kwargs):
 
     memory_generator = gwmemory.waveforms.HybridSurrogate(mass_ratio=parameters['mass_ratio'],
                                                           total_mass=parameters['total_mass'],
-                                                          s1=parameters['s13'],
-                                                          s2=parameters['s23'],
+                                                          s13=parameters['s13'],
+                                                          s23=parameters['s23'],
                                                           times=recovery_wg.time_array,
                                                           distance=parameters['luminosity_distance'],
                                                           minimum_frequency=minimum_frequency,
