@@ -6,7 +6,8 @@ import numpy as np
 
 class TestWaveforms(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls) -> None:
         sampling_frequency = 2048
         duration = 4
         series = bilby.core.series.CoupledTimeAndFrequencySeries(sampling_frequency=sampling_frequency,
@@ -28,31 +29,31 @@ class TestWaveforms(unittest.TestCase):
         s13 = 0.1
         s23 = 0.4
 
-        self.xhm = memestr.waveforms.phenom.xhm.td_imrx_with_memory(
+        cls.xhm = memestr.waveforms.phenom.xhm.td_imrx_with_memory(
             times, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase)
-        self.xhm_memory = memestr.waveforms.phenom.xhm.td_imrx_memory_only(
+        cls.xhm_memory = memestr.waveforms.phenom.xhm.td_imrx_memory_only(
             times, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase)
 
-        self.xhm_fd = memestr.waveforms.phenom.xhm.fd_imrx(
+        cls.xhm_fd = memestr.waveforms.phenom.xhm.fd_imrx(
             frequencies, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase)
-        self.xhm_fast_fd = memestr.waveforms.phenom.xhm.fd_imrx_fast(
+        cls.xhm_fast_fd = memestr.waveforms.phenom.xhm.fd_imrx_fast(
             frequencies, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase)
-        self.xhm_memory_fd = memestr.waveforms.phenom.xhm.fd_imrx_memory_only(
+        cls.xhm_memory_fd = memestr.waveforms.phenom.xhm.fd_imrx_memory_only(
             frequencies, mass_ratio, total_mass, luminosity_distance, s13, s23, inc, phase)
 
-        self.sur7dq4 = memestr.waveforms.nrsur7dq4.td_nr_sur_7dq4_with_memory(
+        cls.sur7dq4 = memestr.waveforms.nrsur7dq4.td_nr_sur_7dq4_with_memory(
             times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl, luminosity_distance, inc, phase)
-        self.sur7dq4_memory = memestr.waveforms.nrsur7dq4.td_nr_sur_7dq4_memory_only(
+        cls.sur7dq4_memory = memestr.waveforms.nrsur7dq4.td_nr_sur_7dq4_memory_only(
             times, mass_ratio, total_mass, a_1, a_2, tilt_1, tilt_2, phi_12, phi_jl, luminosity_distance, inc, phase)
 
-        self.sur7dq4_fd = memestr.waveforms.nrsur7dq4.fd_nr_sur_7dq4(
+        cls.sur7dq4_fd = memestr.waveforms.nrsur7dq4.fd_nr_sur_7dq4(
             frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1,
             tilt_2, phi_12, phi_jl, luminosity_distance, inc, phase)
-        self.sur7dq4_memory_fd = memestr.waveforms.nrsur7dq4.fd_nr_sur_7dq4_memory_only(
+        cls.sur7dq4_memory_fd = memestr.waveforms.nrsur7dq4.fd_nr_sur_7dq4_memory_only(
             frequencies, mass_ratio, total_mass, a_1, a_2, tilt_1,
             tilt_2, phi_12, phi_jl, luminosity_distance, inc, phase)
-        self.outdir = 'reference_waveforms/'
-        self.modes = ['plus', 'cross']
+        cls.outdir = 'reference_waveforms/'
+        cls.modes = ['plus', 'cross']
 
     def test_xhm_fd_consistency(self):
         for mode in self.modes:
