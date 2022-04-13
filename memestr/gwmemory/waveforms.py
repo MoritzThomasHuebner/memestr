@@ -100,8 +100,17 @@ class MemoryGenerator(object):
         else:
             return combine_modes(self.h_mem_lm, inc, phase)
 
-    def time_domain_oscillatory(self, **kwargs):
-        pass
+    def time_domain_oscillatory(self, inc, phase):
+        """ Parameters
+        ----------
+        inc: float, optional
+            Inclination of the source, if None, the spherical harmonic modes
+            will be returned.
+        phase: float, optional
+            Phase at coalescence of the source, if None, the spherical harmonic
+            modes will be returned.
+        """
+        return combine_modes(self.h_lm, inc, phase)
 
     def set_h_lm(self):
         pass
@@ -157,12 +166,6 @@ class HybridSurrogate(MemoryGenerator):
         self.LMax = l_max
         self.reference_frequency = reference_frequency
 
-        self.h_to_geo = \
-            self.distance * Mpc / self.total_mass / \
-            solar_mass / GG * cc ** 2
-        self.t_to_geo = 1 / self.total_mass / solar_mass / GG * cc ** 3
-
-        self.h_lm = None
         self.times = times
         self.t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
         self.set_h_lm()
@@ -175,8 +178,7 @@ class HybridSurrogate(MemoryGenerator):
     def epsilon(self):
         return 100 * self.MASS_TO_TIME * self.total_mass
 
-    def time_domain_oscillatory(self, times=None, modes=None, inc=None,
-                                phase=None):
+    def set_h_lm(self):
         """
         Get the mode decomposition of the surrogate waveform.
         Calculates a BBH waveform using the surrogate models of Field et al.
@@ -185,39 +187,8 @@ class HybridSurrogate(MemoryGenerator):
         https://arxiv.org/abs/1705.07089
         See https://data.black-holes.org/surrogates/index.html for more
         information.
-        Parameters
-        ----------
-        times: np.array, optional
-            Time array on which to evaluate the waveform.
-        modes: list, optional
-            List of modes to try to generate.
-        inc: float, optional
-            Inclination of the source, if None, the spherical harmonic modes
-            will be returned.
-        phase: float, optional
-            Phase at coalescence of the source, if None, the spherical harmonic
-            modes will be returned.
-        Returns
-        -------
-        h_lm: dict
-            Spin-weighted spherical harmonic decomposed waveform.
-        times: np.array
-            Times on which waveform is evaluated.
         """
-        times -= times[0]
-        t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
-
-        self.set_h_lm()
-
-        t_nr -= self.t_nr - self.t_nr[0]
-        for mode in self.h_lm.keys():
-            if len(times) != len(self.h_lm[mode]):
-                self.h_lm[mode] = interp1d(t_nr, self.h_lm[mode], bounds_error=False, fill_value=0.0)(times)
-        return combine_modes(self.h_lm, inc, phase)
-
-    def set_h_lm(self):
         if self.h_lm is None:
-
             h_lm = self.sur([self.mass_ratio, self.s1, self.s2], times=self.t_nr, f_low=0, M=self.total_mass,
                             dist_mpc=self.distance, units='mks', f_ref=self.reference_frequency)
 
@@ -237,6 +208,12 @@ class HybridSurrogate(MemoryGenerator):
                 print('Using modes {}'.format(' '.join(modes)))
 
             self.h_lm = {(ell, m): h_lm[ell, m] for ell, m in modes}
+            times = self.times - self.times[0]
+            t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
+            t_nr -= self.t_nr - self.t_nr[0]
+            for mode in self.h_lm.keys():
+                if len(times) != len(self.h_lm[mode]):
+                    self.h_lm[mode] = interp1d(t_nr, self.h_lm[mode], bounds_error=False, fill_value=0.0)(times)
 
     @property
     def mass_ratio(self):
@@ -397,10 +374,6 @@ class NRSur7dq4(BaseSurrogate):
         self.l_max = l_max
         self.set_h_lm()
 
-    def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
-        self.set_h_lm()
-        return combine_modes(self.h_lm, inc, phase)
-
     def set_h_lm(self):
         if self.h_lm is None:
             modes = self.modes or self.AVAILABLE_MODES
@@ -531,7 +504,7 @@ class Approximant(MemoryGenerator):
             self._s1 = list(self._s1)
             self._s2 = list(self._s2)
 
-    def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
+    def set_h_lm(self, modes=None):
         """
         Get the mode decomposition of the waveform approximant.
 
@@ -543,22 +516,7 @@ class Approximant(MemoryGenerator):
         ----------
         modes: list, optional
             List of modes to try to generate.
-        inc: float, optional
-            Inclination of the source, if None, the spherical harmonic modes will be returned.
-        phase: float, optional
-            Phase at coalescence of the source, if None, the spherical harmonic modes will be returned.
-
-        Returns
-        -------
-        h_lm: dict
-            Spin-weighted spherical harmonic decomposed waveform.
-        times: np.array
-            Times on which waveform is evaluated.
         """
-        self.set_h_lm()
-        return combine_modes(h_lm=self.h_lm, inc=inc, phase=phase)
-
-    def set_h_lm(self, modes=None):
         if self.h_lm is None:
             modes = self.modes or self.AVAILABLE_MODES
 
@@ -595,15 +553,7 @@ class PhenomXHM(Approximant):
             s1=s1, s2=s2, distance=distance, times=times, modes=modes)
         self.set_h_lm()
 
-    def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
-        self.set_h_lm()
-
-        if inc is None or phase is None:
-            return self.h_lm
-        else:
-            return combine_modes(h_lm=self.h_lm, inc=inc, phase=phase)
-
-    def set_h_lm(self):
+    def set_h_lm(self, modes=None):
         if self.h_lm is None:
             modes = self.modes or self.AVAILABLE_MODES
             self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1])[0] for mode in modes}
@@ -723,10 +673,6 @@ class TEOBResumS(MemoryGenerator):
     @staticmethod
     def modes_to_k(ms):
         return [int(x[0] * (x[0] - 1) / 2 + x[1] - 2) for x in ms]
-
-    def time_domain_oscillatory(self, modes=None, inc=None, phase=None):
-        self.set_h_lm()
-        return combine_modes(self.h_lm, inc, phase)
 
     def set_h_lm(self):
         if self.h_lm is None:
