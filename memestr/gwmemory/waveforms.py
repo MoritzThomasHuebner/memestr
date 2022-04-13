@@ -165,7 +165,7 @@ class HybridSurrogate(MemoryGenerator):
 
         self.h_lm = None
         self.times = times
-
+        self.t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
         self.set_h_lm(modes=modes)
 
     @property
@@ -208,21 +208,28 @@ class HybridSurrogate(MemoryGenerator):
         times -= times[0]
         t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
 
+        self.set_h_lm(modes)
+
+        t_nr -= self.t_nr - self.t_nr[0]
+        for mode in self.h_lm.keys():
+            if len(times) != len(self.h_lm[mode]):
+                self.h_lm[mode] = interp1d(t_nr, self.h_lm[mode], bounds_error=False, fill_value=0.0)(times)
+        return combine_modes(self.h_lm, inc, phase)
+
+    def set_h_lm(self, modes=None):
         if self.h_lm is None:
 
-            h_lm = self.sur([self.mass_ratio, self.s1, self.s2], times=t_nr, f_low=0, M=self.total_mass,
+            h_lm = self.sur([self.mass_ratio, self.s1, self.s2], times=self.t_nr, f_low=0, M=self.total_mass,
                             dist_mpc=self.distance, units='mks', f_ref=self.reference_frequency)
 
             del h_lm[(5, 5)]
             old_keys = [(ll, mm) for ll, mm in h_lm.keys()]
             for ll, mm in old_keys:
                 if mm > 0:
-                    h_lm[(ll, -mm)] = (- 1)**ll * np.conj(h_lm[(ll, mm)])
+                    h_lm[(ll, -mm)] = (- 1) ** ll * np.conj(h_lm[(ll, mm)])
 
             available_modes = set(h_lm.keys())
-
-            if modes is None:
-                modes = available_modes
+            modes = modes or available_modes
 
             if not set(modes).issubset(available_modes):
                 print('Requested {} unavailable modes'.format(
@@ -230,32 +237,19 @@ class HybridSurrogate(MemoryGenerator):
                 modes = list(set(modes).union(available_modes))
                 print('Using modes {}'.format(' '.join(modes)))
 
-            h_lm = {(ell, m): h_lm[ell, m] for ell, m in modes}
-            self.h_lm = h_lm
-        else:
-            h_lm = self.h_lm
-            times = self.times
-        t_nr -= t_nr[0]
-        for mode in h_lm.keys():
-            if len(times) != len(h_lm[mode]):
-                h_lm[mode] = interp1d(t_nr, h_lm[mode], bounds_error=False, fill_value=0.0)(times)
-
-        if inc is None or phase is None:
-            return h_lm
-        else:
-            return combine_modes(h_lm, inc, phase)
+            self.h_lm = {(ell, m): h_lm[ell, m] for ell, m in modes}
 
     @property
     def mass_ratio(self):
-        return self._q
+        return self._mass_ratio
 
     @mass_ratio.setter
-    def mass_ratio(self, q):
-        if q < 1:
-            q = 1 / q
-        if q > 8:
+    def mass_ratio(self, mass_ratio):
+        if mass_ratio < 1:
+            mass_ratio = 1 / mass_ratio
+        if mass_ratio > 8:
             raise ValueError('Surrogate waveform not valid for q>8.')
-        self._q = q
+        self._mass_ratio = mass_ratio
 
     @property
     def s1(self):
