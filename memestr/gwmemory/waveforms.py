@@ -13,6 +13,8 @@ from .utils import zero_pad_time_series, combine_modes
 
 class MemoryGenerator(object):
 
+    AVAILABLE_MODES = None
+
     def __init__(self, times, distance, modes=None):
         self.h_lm = None
         self.h_mem_lm = None
@@ -24,10 +26,14 @@ class MemoryGenerator(object):
     def modes(self):
         if self._modes is None and self.h_lm is not None:
             self._modes = self.h_lm.keys()
+        elif self._modes is None and self.AVAILABLE_MODES is not None:
+            return self.AVAILABLE_MODES
         return self._modes
 
     @modes.setter
     def modes(self, modes):
+        if modes is not None and not set(modes).issubset(set(self.AVAILABLE_MODES)):
+            raise ValueError("Invalid set of modes.")
         self._modes = modes
 
     @property
@@ -210,9 +216,8 @@ class HybridSurrogate(MemoryGenerator):
             times = self.times - self.times[0]
             t_nr = np.arange(-self.duration / 1.3 + self.epsilon, self.epsilon, self.delta_t)
             t_nr -= self.t_nr - self.t_nr[0]
-            for mode in self.h_lm.keys():
-                if len(times) != len(self.h_lm[mode]):
-                    self.h_lm[mode] = interp1d(t_nr, self.h_lm[mode], bounds_error=False, fill_value=0.0)(times)
+            self.h_lm = {mode: interp1d(t_nr, self.h_lm[mode], bounds_error=False, fill_value=0.0)(times)
+                         for mode in modes}
 
     @property
     def mass_ratio(self):
@@ -325,12 +330,11 @@ class NRSur7dq4(BaseSurrogate):
 
     def set_h_lm(self):
         if self.h_lm is None:
-            modes = self.modes or self.AVAILABLE_MODES
             data = lalsim.SimInspiralChooseTDModes(
                 0.0, self.delta_t, self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2],
                 self.s2[0], self.s2[1], self.s2[2], self.minimum_frequency,
                 self.reference_frequency, self.distance_si, lal.CreateDict(), self.l_max, lalsim.NRSur7dq4)
-            self.h_lm = {(ell, m): lalsim.SphHarmTimeSeriesGetMode(data, ell, m).data.data for ell, m in modes}
+            self.h_lm = {(ell, m): lalsim.SphHarmTimeSeriesGetMode(data, ell, m).data.data for ell, m in self.modes}
             self.zero_pad_h_lm()
 
     def time_domain_oscillatory_from_polarisations(self, inc, phase):
@@ -466,16 +470,7 @@ class Approximant(MemoryGenerator):
             List of modes to try to generate.
         """
         if self.h_lm is None:
-            modes = self.modes or self.AVAILABLE_MODES
-
-            if not set(modes).issubset(self.AVAILABLE_MODES):
-                print(f"Requested {' '.join(set(modes).difference(self.AVAILABLE_MODES))} unavailable modes")
-                modes = set(modes).union(self.AVAILABLE_MODES)
-                modes = [str(m) for m in modes]
-                print(f"Using modes {' '.join(modes)}")
-
             wf_dict = lal.CreateDict()
-
             h_plus, h_cross = lalsim.SimInspiralChooseTDWaveform(
                 self.m1_si, self.m2_si, self.s1[0], self.s1[1], self.s1[2], self.s2[0], self.s2[1], self.s2[2],
                 self.distance_si, self._theta, self._phi, self._long_asc_nodes, self._eccentricity, self._mean_per_ano,
@@ -491,6 +486,8 @@ class Approximant(MemoryGenerator):
 class PhenomXHM(Approximant):
 
     AVAILABLE_MODES = [(2, 2), (2, -2), (2, 1), (2, -1), (3, 3), (3, -3), (3, 2), (3, -2), (4, 4), (4, -4)]
+    _INC = 0.4
+    _PHI = np.pi/2
 
     def __init__(self, mass_ratio, total_mass, s1, s2, distance, times, modes=None):
         super().__init__(
@@ -500,8 +497,7 @@ class PhenomXHM(Approximant):
 
     def set_h_lm(self, modes=None):
         if self.h_lm is None:
-            modes = self.modes or self.AVAILABLE_MODES
-            self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1]) for mode in modes}
+            self.h_lm = {mode: self.single_mode_from_choose_td(ell=mode[0], m=mode[1]) for mode in self.modes}
             self.zero_pad_h_lm()
 
     def time_domain_oscillatory_from_polarisations(self, inc, phase):
@@ -511,12 +507,12 @@ class PhenomXHM(Approximant):
         return {mode: zero_pad_time_series(times=self.times, mode=hpc[mode]) for mode in hpc}
 
     def single_mode_from_choose_td(self, ell, m):
-        inc = 0.4
-        phi = np.pi / 2
         lalparams = self._get_single_mode_lalparams_dict(ell, m)
 
-        hpc = self.get_polarisations(inc=inc, phase=phi, lalparams=lalparams)
-        return (hpc['plus'] - 1j * hpc['cross']) / lal.SpinWeightedSphericalHarmonic(inc, np.pi - phi, -2, ell, m)
+        hpc = self.get_polarisations(inc=self._INC, phase=self._PHI, lalparams=lalparams)
+        return \
+            (hpc['plus'] - 1j * hpc['cross']) / \
+            lal.SpinWeightedSphericalHarmonic(self._INC, np.pi - self._PHI, -2, ell, m)
 
     def get_polarisations(self, inc, phase, lalparams):
         hp, hc = lalsim.SimInspiralChooseTDWaveform(
@@ -593,13 +589,12 @@ class TEOBResumS(MemoryGenerator):
     def set_h_lm(self):
         if self.h_lm is None:
             import EOBRun_module  # noqa
-            modes = self.modes or [[2, 2]]
-            ks = self.modes_to_k(modes)
+            ks = self.modes_to_k(self.modes)
 
             coalescing_angle = 0.0
             inclination = 0.0
             self.h_lm = dict()
-            for mode, k in zip(modes, ks):
+            for mode, k in zip(self.modes, ks):
                 parameters = {
                     'M': self.total_mass,
                     'q': self.mass_ratio,  # q > 1
